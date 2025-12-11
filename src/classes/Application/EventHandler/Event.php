@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_EventHandler_Event} class.
- *
  * @package Application
  * @subpackeage Core
- * @see Application_EventHandler_Event
  */
 
 declare(strict_types=1);
@@ -13,6 +10,7 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
 
 /**
  * Event class for individual events: an instance of this is
@@ -25,8 +23,6 @@ use AppUtils\ConvertHelper;
  */
 class Application_EventHandler_Event
 {
-    public const ERROR_EVENT_NOT_CANCELLABLE = 13701;
-
     protected ?Application_EventHandler_Listener $selectedListener = null;
     protected bool $cancel = false;
     protected string $cancelReason = '';
@@ -57,20 +53,20 @@ class Application_EventHandler_Event
     * possible if the event is callable.
     *
     * @param string $reason The reason for which the event was cancelled
-    * @throws Application_Exception
     * @return Application_EventHandler_Event
+    *@throws Application_EventHandler_Exception {@see Application_EventHandler_Exception::ERROR_EVENT_NOT_CANCELLABLE}
     */
     public function cancel(string $reason) : Application_EventHandler_Event
     {
         if(!$this->isCancellable()) 
         {
-            throw new Application_Exception(
+            throw new Application_EventHandler_Exception(
                 'Event cannot be cancelled',
                 sprintf(
                     'The event [%s] cannot be cancelled.',
                     $this->getName()
                 ),
-                self::ERROR_EVENT_NOT_CANCELLABLE
+                Application_EventHandler_Exception::ERROR_EVENT_NOT_CANCELLABLE
             );
         }
 
@@ -92,12 +88,12 @@ class Application_EventHandler_Event
 
    /**
     * Retrieves the argument at the specified index, or null
-    * if it does not exist. The index is Zero-Based.
+    * if it does not exist.
     *
-    * @param int $index
+    * @param int $index Zero-based index of the argument.
     * @return NULL|mixed
     */
-    public function getArgument(int $index)
+    public function getArgument(int $index) : mixed
     {
         if(isset($this->args[$index])) 
         {
@@ -107,11 +103,19 @@ class Application_EventHandler_Event
         return null;
     }
 
+    /**
+     * @param int $index Zero-based index of the argument.
+     * @return string
+     */
     public function getArgumentString(int $index) : string
     {
         return (string)$this->getArgument($index);
     }
 
+    /**
+     * @param int $index Zero-based index of the argument.
+     * @return array<int|string,mixed>
+     */
     public function getArgumentArray(int $index) : array
     {
         $arg = $this->getArgument($index);
@@ -123,11 +127,20 @@ class Application_EventHandler_Event
         return array();
     }
 
+    /**
+     * @param int $index Zero-based index of the argument.
+     * @return int
+     */
     public function getArgumentInt(int $index) : int
     {
         return (int)$this->getArgument($index);
     }
 
+    /**
+     * @param int $index Zero-based index of the argument.
+     * @return bool
+     * @throws ConvertHelper_Exception
+     */
     public function getArgumentBool(int $index) : bool
     {
         return ConvertHelper::string2bool($this->getArgument($index));
@@ -137,7 +150,7 @@ class Application_EventHandler_Event
      * Fetches an object instance as argument, for the specified class.
      *
      * @template ClassInstanceType
-     * @param int $int
+     * @param int $int Zero-based index of the argument.
      * @param class-string<ClassInstanceType> $class
      * @return ClassInstanceType
      *
@@ -223,7 +236,7 @@ class Application_EventHandler_Event
      * @param mixed $value
      * @return $this
      */
-    protected function setArgument(int $index, $value) : self
+    protected function setArgument(int $index, mixed $value) : self
     {
         $this->args[$index] = $value;
         return $this;

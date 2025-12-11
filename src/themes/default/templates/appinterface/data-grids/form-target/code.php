@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 /** @var string $activeExampleID */
 
+use UI\Admin\Screens\AppInterfaceDevelMode;
+
 $grid = UI::getInstance()->createDataGrid('datagrid-example-form-target');
 
 $grid->addColumn('id', t('ID'));
@@ -11,7 +13,7 @@ $grid->addColumn('label', t('Label'));
 
 $grid->enableMultiSelect('id');
 $grid->addHiddenScreenVars();
-$grid->addHiddenVar(Application_Admin_Area_Devel_Appinterface::REQUEST_PARAM_EXAMPLE_ID, $activeExampleID);
+$grid->addHiddenVar(AppInterfaceDevelMode::REQUEST_PARAM_EXAMPLE_ID, $activeExampleID);
 
 $grid->addAction('submit-self', t('Submit'))
     ->setCallback('collectSubmittedGridValues');

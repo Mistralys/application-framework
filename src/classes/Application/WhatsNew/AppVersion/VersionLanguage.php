@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Application\WhatsNew\AppVersion;
 
 use Application;
-use Application\WhatsNew;
 use Application\WhatsNew\AppVersion;
+use Application\WhatsNew\WhatsNew;
 use Application_Exception;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper;

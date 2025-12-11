@@ -4,14 +4,16 @@
  * @subpackage Driver
  */
 
+use Application\Admin\ScreenException;
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Driver\VersionInfo;
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;
-use Application\WhatsNew;
+use Application\WhatsNew\WhatsNew;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
@@ -387,7 +389,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     protected $areas = array();
 
-    protected $areaIndex;
+    /**
+     * @var array<string,class-string<Application_Admin_Area>>|NULL
+     */
+    protected ?array $areaIndex = null;
 
     /**
      * Creates an area instance. This area will not be in admin mode,
@@ -445,24 +450,18 @@ abstract class Application_Driver implements Application_Driver_Interface
             );
         }
 
-        $areaName = $this->areaIndex[$lcID];
+        $areaClass = $this->areaIndex[$lcID];
 
-        $key = $areaName . ConvertHelper::bool2string($adminMode);
+        $key = $areaClass . ConvertHelper::bool2string($adminMode);
 
         if (isset($this->areas[$key]))
         {
             return $this->areas[$key];
         }
 
-        $className = ClassHelper::requireResolvedClass(sprintf(
-            '%s_Area_%s',
-            APP_CLASS_NAME,
-            $areaName
-        ));
-
         $this->areas[$key] = ClassHelper::requireObjectInstanceOf(
             Application_Admin_Area::class,
-            new $className($this, $adminMode)
+            new $areaClass($this, $adminMode)
         );
 
         return $this->areas[$key];
@@ -489,22 +488,31 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->areaIndex = array();
         $areas = $this->getAdminAreas();
 
-        foreach ($areas as $aid => $name)
+        foreach ($areas as $aid => $className)
         {
-            if(class_exists($name))
+            if(!is_a($className, AdminAreaInterface::class, true))
             {
-                $name = getClassTypeName($name);
+                throw new AdminException(
+                    'Invalid admin area type',
+                    sprintf(
+                        'The administration area class [%s] for area ID [%s] is not an instance of [%s].',
+                        $className,
+                        $aid,
+                        AdminAreaInterface::class
+                    ),
+                    self::ERROR_UNHANDLED_SCREEN_TYPE
+                );
             }
 
             if (!isset($this->areaIndex[$aid]))
             {
-                $this->areaIndex[$aid] = $name;
+                $this->areaIndex[$aid] = $className;
             }
 
-            $lcName = strtolower($name);
+            $lcName = strtolower(getClassTypeName($className));
             if (!isset($this->areaIndex[$lcName]))
             {
-                $this->areaIndex[$lcName] = $name;
+                $this->areaIndex[$lcName] = $className;
             }
         }
     }

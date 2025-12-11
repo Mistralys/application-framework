@@ -12,10 +12,9 @@ use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\API\Admin\Screens\BaseAPIClientsArea;
 use Application\Area\BaseTagsScreen;
+use Application\Development\Admin\Screens\DevelArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\BaseUsersArea;
-use Application_Admin_Area_Devel;
-use Application_Admin_Area_Devel_Appinterface;
 use Application_Admin_Area_Settings;
 use Application_Admin_Area_Welcome;
 use Application_Admin_TranslationsArea;
@@ -24,6 +23,7 @@ use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver_Area_WizardTest;
+use UI\Admin\Screens\AppInterfaceDevelMode;
 use UI\Page\Navigation\NavConfigurator;
 use UI\Page\Navigation\NavConfigurator\MenuConfigurator;
 
@@ -55,7 +55,7 @@ class MainNavConfigurator extends NavConfigurator
             ->addAreaChained(BaseAPIClientsArea::URL_NAME)
             ->addAreaChained(BaseUsersArea::URL_NAME)
             ->addSeparator()
-            ->addAreaChained(Application_Admin_Area_Devel::URL_NAME)
+            ->addAreaChained(DevelArea::URL_NAME)
             ->addAreaChained(TestingScreen::URL_NAME)
             ->addAreaChained(Application_Admin_TranslationsArea::URL_NAME);
     }
@@ -66,8 +66,8 @@ class MainNavConfigurator extends NavConfigurator
             ->setAutoActivate(false)
             ->addAreaChained(QuickNavScreen::URL_NAME)
             ->addPathChained(
-                Application_Admin_Area_Devel::URL_NAME,
-                Application_Admin_Area_Devel_Appinterface::URL_NAME
+                DevelArea::URL_NAME,
+                AppInterfaceDevelMode::URL_NAME
             )
             ->addArea(TestDriver_Area_WizardTest::URL_NAME);
     }

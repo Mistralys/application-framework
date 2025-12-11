@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminAreaInterface;
+use Application\Interfaces\Admin\AdminModeInterface;
+use Application\Interfaces\Admin\AdminSubmodeInterface;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use UI\AdminURLs\AdminURLInterface;
@@ -75,13 +78,13 @@ class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
     /**
      * Makes the item link to the specified administration area.
      *
-     * @param Application_Admin_Area $area
+     * @param AdminAreaInterface $area
      * @param array<string,mixed> $params
      * @return $this
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      */
-    public function makeLinkedFromArea(Application_Admin_Area $area, array $params = array()) : self
+    public function makeLinkedFromArea(AdminAreaInterface $area, array $params = array()) : self
     {
         return $this->makeLinked($area->getURL($params));
     }
@@ -89,14 +92,14 @@ class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
     /**
      * Makes the item link to the specified administration mode.
      *
-     * @param Application_Admin_Area_Mode $mode
+     * @param AdminModeInterface $mode
      * @param array<string,mixed> $params
      * @return $this
      *
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      */
-    public function makeLinkedFromMode(Application_Admin_Area_Mode $mode, array $params = array()) : self
+    public function makeLinkedFromMode(AdminModeInterface $mode, array $params = array()) : self
     {
         return $this->makeLinked($mode->getURL($params));
     }
@@ -104,11 +107,11 @@ class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
     /**
      * Makes the item link to the specified administration submode.
      *
-     * @param Application_Admin_Area_Mode_Submode $submode
+     * @param AdminSubmodeInterface $submode
      * @param array<string,mixed> $params
      * @return $this
      */
-    public function makeLinkedFromSubmode(Application_Admin_Area_Mode_Submode $submode, array $params = array()) : self
+    public function makeLinkedFromSubmode(AdminSubmodeInterface $submode, array $params = array()) : self
     {
         return $this->makeLinked($submode->getURL($params));
     }

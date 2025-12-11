@@ -10,8 +10,8 @@ use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Area\BaseTagsScreen;
 use Application\ConfigSettings\BaseConfigRegistry;
+use Application\Development\Admin\Screens\DevelArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
-use Application\Tags\TagCollection;
 use TestDriver\Area\APIClientsArea;
 use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\MediaLibraryScreen;
@@ -47,9 +47,9 @@ class TestDriver extends Application_Driver
      */
     public function getAdminAreas() : array
     {
-        $areas = array(
+        return array(
+            DevelArea::URL_NAME => DevelArea::class,
             Application_Admin_Area_Welcome::URL_NAME_WELCOME => WelcomeScreen::class,
-            Application_Admin_Area_Devel::URL_NAME => TestDriver_Area_Devel::class,
             Application_Admin_Area_Settings::URL_NAME => TestDriver_Area_Settings::class,
             Application_Admin_TranslationsArea::URL_NAME => TranslationsScreen::class,
             TestDriver_Area_WizardTest::URL_NAME => TestDriver_Area_WizardTest::class,
@@ -61,14 +61,9 @@ class TestDriver extends Application_Driver
             BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
             CountriesScreen::URL_NAME => CountriesScreen::class,
             UsersArea::URL_NAME => UsersArea::class,
-            APIClientsArea::URL_NAME => APIClientsArea::class
+            APIClientsArea::URL_NAME => APIClientsArea::class,
+            BaseTagsScreen::URL_NAME => TagsScreen::class
         );
-
-        if(TagCollection::tableExists()) {
-            $areas[BaseTagsScreen::URL_NAME] = TagsScreen::class;
-        }
-
-        return $areas;
     }
 
     /**

@@ -14,6 +14,7 @@ use Application_EventHandler;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
+use AppUtils\FileHelper\FolderInfo;
 use Mistralys\AppFrameworkDocs\DocumentationPages;
 
 /**
@@ -54,6 +55,11 @@ class CacheManager extends BaseStringPrimaryCollection implements \Application_I
     private function __construct()
     {
         $this->logIdentifier = 'CacheManager';
+    }
+
+    public static function getAdminScreensFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__ . '/Admin/Screens')->requireExists();
     }
 
     public function getLogIdentifier(): string

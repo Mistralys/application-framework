@@ -14,6 +14,7 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\PaginationHelper;
@@ -106,7 +107,12 @@ class UI
         $this->themes = new UI_Themes($this);
         $this->resourceManager = new UI_ResourceManager($this);
     }
-    
+
+    public static function getAdminScreensFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/UI/Admin/Screens')->requireExists();
+    }
+
    /**
     * Retrieves this UI object's instance key, which is unique
     * to each UI object.

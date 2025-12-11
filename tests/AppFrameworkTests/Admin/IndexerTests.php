@@ -7,6 +7,7 @@ namespace AppFrameworkTests\Admin;
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\Admin\Index\AdminScreenIndex;
 use Application\Admin\Index\AdminScreenIndexer;
+use Application\Admin\Index\ScreenDataInterface;
 use Application\AppFactory;
 use TestDriver\Area\APIClientsArea\ViewAPIClientMode\APIKeysSubmode\APIKeysListAction;
 
@@ -16,13 +17,13 @@ final class IndexerTests extends ApplicationTestCase
     {
         $data = new AdminScreenIndexer(AppFactory::createDriver())->serialize();
 
-        $this->assertArrayHasKey(AdminScreenIndex::KEY_URL_PATHS, $data);
-        $this->assertArrayHasKey(AdminScreenIndex::KEY_FLAT, $data);
-        $this->assertArrayHasKey(AdminScreenIndex::KEY_TREE, $data);
+        $this->assertArrayHasKey(ScreenDataInterface::KEY_ROOT_URL_PATHS, $data);
+        $this->assertArrayHasKey(ScreenDataInterface::KEY_ROOT_FLAT, $data);
+        $this->assertArrayHasKey(ScreenDataInterface::KEY_ROOT_TREE, $data);
 
-        $this->assertNotEmpty($data[AdminScreenIndex::KEY_URL_PATHS]);
-        $this->assertNotEmpty($data[AdminScreenIndex::KEY_FLAT]);
-        $this->assertNotEmpty($data[AdminScreenIndex::KEY_TREE]);
+        $this->assertNotEmpty($data[ScreenDataInterface::KEY_ROOT_URL_PATHS]);
+        $this->assertNotEmpty($data[ScreenDataInterface::KEY_ROOT_FLAT]);
+        $this->assertNotEmpty($data[ScreenDataInterface::KEY_ROOT_TREE]);
     }
 
     public function test_accessIndex() : void

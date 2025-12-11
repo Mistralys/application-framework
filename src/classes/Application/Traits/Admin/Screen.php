@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Admin\Index\AdminScreenIndex;
 use Application\Admin\ScreenException;
 use Application\Admin\Screens\Events\ActionsHandledEvent;
 use Application\Admin\Screens\Events\BeforeActionsHandledEvent;
@@ -19,6 +20,7 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
@@ -643,7 +645,7 @@ trait Application_Traits_Admin_Screen
 
     /**
      * @return UI_Page_Sidebar
-     * @throws Application_Admin_Exception
+     * @throws AdminException
      */
     public function requireSidebar() : UI_Page_Sidebar
     {
@@ -652,7 +654,7 @@ trait Application_Traits_Admin_Screen
             return $this->sidebar;
         }
 
-        throw new Application_Admin_Exception(
+        throw new AdminException(
             'No sidebar available at this time.',
             '',
             AdminScreenInterface::ERROR_SIDEBAR_NOT_AVAILABLE_YET
@@ -682,7 +684,7 @@ trait Application_Traits_Admin_Screen
     /**
      * Retrieves the screen's admin area instance, if any.
      * @return Application_Admin_Area
-     * @throws Application_Admin_Exception
+     * @throws AdminException
      */
     public function getArea() : Application_Admin_Area
     {
@@ -698,7 +700,7 @@ trait Application_Traits_Admin_Screen
             return $parent->getArea();
         }
         
-        throw new Application_Admin_Exception(
+        throw new AdminException(
             'Administration screen has no area.',
             'Path to screen: '.$this->getURLPath(),
             AdminScreenInterface::ERROR_SCREEN_HAS_NO_AREA
@@ -880,56 +882,14 @@ trait Application_Traits_Admin_Screen
      *
      * > NOTE: Does not check if the file contains a valid subscreen class.
      *
-     * @return array<string,string> Class ID => URL name pairs
-     *
-     * @throws FileHelper_Exception
-     * @throws UI_Exception
+     * @return array<string,string> Screen ID => URL name pairs
      */
     public function getSubscreenIDs() : array
     {
-        if(isset($this->subscreenIDs))
-        {
-            return $this->subscreenIDs;
-        }
-        
-        $this->subscreenIDs = array();
-        
-        $folder = $this->getSubscreensFolder();
-
-        if(!is_dir($folder))
-        {
-            return $this->subscreenIDs;
+        if(!isset($this->subscreenIDs)){
+            $this->subscreenIDs = AdminScreenIndex::getInstance()->getSubscreenIDNames($this);
         }
 
-        $ids = FileHelper::createFileFinder($folder)
-            ->getFiles()
-            ->PHPClassNames();
-
-        foreach($ids as $id)
-        {
-            try
-            {
-                $screen = $this->createSubscreenInstance($id, false);
-                $this->subscreenIDs[$id] = $screen->getURLName();
-            }
-            catch (Throwable $e)
-            {
-                $this->getLogger()->logUI(
-                    'Cannot create screen instance: [%s.%s]. Error: [%s]',
-                    $this->getURLPath(),
-                    $id,
-                    $e->getMessage()
-                );
-
-                throw new UI_Exception(
-                    'Cannot instantiate admin screen.',
-                    'An exception occurred when creating the screen.',
-                    AdminScreenInterface::ERROR_CANNOT_INSTANTIATE_SCREEN,
-                    $e
-                );
-            }
-        }
-        
         return $this->subscreenIDs;
     }
 
@@ -961,21 +921,29 @@ trait Application_Traits_Admin_Screen
     */
     public function hasSubscreens() : bool
     {
-        $ids = $this->getSubscreenIDs();
-        
-        return !empty($ids);
+        return !empty($this->getSubscreenIDs());
     }
     
     public function hasSubscreen(string $id) : bool
     {
-        $screenID = $this->resolveSubscreenID($id);
-        
-        return !empty($screenID);
+        return $this->resolveSubscreenID($id) !== null;
     }
     
     public function getSubscreenByID(string $id, bool $adminMode) : AdminScreenInterface
     {
         return $this->createSubscreen($id, $adminMode);
+    }
+
+    public function getSubscreens() : array
+    {
+        $result = array();
+
+        foreach($this->getSubscreenIDs() as $subscreenID => $urlName)
+        {
+            $result[] = $this->createSubscreen($subscreenID, $this->isAdminMode());
+        }
+
+        return $result;
     }
 
     /**
@@ -1024,11 +992,7 @@ trait Application_Traits_Admin_Screen
         if(class_exists($idOrClass)) {
             $class = $idOrClass;
         } else {
-            $class = ClassHelper::requireResolvedClass(sprintf(
-                '%s_%s',
-                get_class($this),
-                $idOrClass
-            ));
+            $class = AdminScreenIndex::getInstance()->getSubscreenClass($this, $idOrClass);
         }
 
         $instance = ClassHelper::requireObjectInstanceOf(
@@ -1080,7 +1044,7 @@ trait Application_Traits_Admin_Screen
                 'The administration screen [%s] has no child screen [%s]. Available child screens are [%s]. Looking in URL parameter [%s].',
                 get_class($this),
                 $id,
-                implode(', ', array_keys($this->getSubscreenIDs())),
+                JSONConverter::var2json($this->getSubscreenIDs(), JSON_PRETTY_PRINT),
                 $this->getURLParam()
             ),
             Application_Admin_Skeleton::ERROR_NO_SUCH_CHILD_ADMIN_SCREEN

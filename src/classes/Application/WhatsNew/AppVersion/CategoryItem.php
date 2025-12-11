@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\WhatsNew\AppVersion;
 
-use Application\WhatsNew;
+use Application\WhatsNew\WhatsNew;
 use Application_Driver;
 use AppUtils\ConvertHelper;
 use SimpleXMLElement;

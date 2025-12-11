@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
-use Application\Development\AppDevAdminURLs;
+use Application\Development\Admin\AppDevAdminURLs;
 use Application_Admin_Area_Mode;
 use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Admin\TestingScreenTrait;

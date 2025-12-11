@@ -12,10 +12,9 @@ declare(strict_types=1);
 namespace Application\WhatsNew;
 
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\WhatsNew;
-use Application_Admin_Area_Devel_WhatsNewEditor_Edit;
-use Application_Exception;
+use Application\WhatsNew\Admin\Screens\EditSubmode;
 use Application\WhatsNew\AppVersion\VersionLanguage;
+use Application_Exception;
 use SimpleXMLElement;
 
 /**
@@ -157,7 +156,7 @@ class AppVersion
      */
     public function getAdminEditURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_Edit::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = EditSubmode::URL_NAME;
         $params[self::REQUEST_PARAM_NUMBER] = $this->getNumber();
 
         return $this->getWhatsNew()->getAdminURL($params);

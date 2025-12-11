@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Application\WhatsNew;
 
-use Application\WhatsNew;
 use AppUtils\FileHelper;
 
 /**

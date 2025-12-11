@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace TestDriver\Area;
 
+use Application\Development\Admin\Screens\DevelArea;
 use Application_Admin_Area;
-use Application_Admin_Area_Devel;
-use Application_Admin_Area_Devel_Appinterface;
 use AppUtils\OutputBuffering;
 use tests\TestDriver\Admin\BaseArea;
+use UI\Admin\Screens\AppInterfaceDevelMode;
 
 /**
  * Abstract base class for navigation items in the quick navigation.
@@ -71,8 +71,8 @@ class QuickNavScreen extends BaseArea
             ->setAreaID(self::URL_NAME);
 
         $this->quickNav->addScreen(t('Interface refs'))
-            ->setAreaID(Application_Admin_Area_Devel::URL_NAME)
-            ->setModeID(Application_Admin_Area_Devel_Appinterface::URL_NAME);
+            ->setAreaID(DevelArea::URL_NAME)
+            ->setModeID(AppInterfaceDevelMode::URL_NAME);
 
         $this->quickNav->addURL(t('External link'), 'https://mistralys.eu')
             ->makeNewTab();

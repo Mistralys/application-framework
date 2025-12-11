@@ -8,13 +8,12 @@ declare(strict_types=1);
 
 namespace testsuites\Application;
 
-use Application\AppFactory;
-use Application\WhatsNew;
-use Application\WhatsNew\AppVersion\VersionLanguage;
 use AppFrameworkTestClasses\ApplicationTestCase;
-use AppUtils\FileHelper;
-use TestDriver;
+use Application\AppFactory;
+use Application\WhatsNew\AppVersion\VersionLanguage;
+use Application\WhatsNew\WhatsNew;
 use Application\WhatsNew\XMLFileWriter;
+use AppUtils\FileHelper;
 
 /**
  * @package Application

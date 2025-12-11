@@ -14,7 +14,7 @@ abstract class BaseRecordListSubmode
 {
     use RecordListScreenTrait;
 
-    final public function getDefaultAction(): string
+    public function getDefaultAction(): string
     {
         return '';
     }

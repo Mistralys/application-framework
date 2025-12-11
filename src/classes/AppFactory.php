@@ -13,6 +13,7 @@ use Application;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;
+use Application\AppSettings\AppSettingsRegistry;
 use Application\CacheControl\CacheManager;
 use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\Driver\DevChangelog;
@@ -25,6 +26,7 @@ use Application\SourceFolders\SourceFoldersManager;
 use Application\SystemMails\SystemMailer;
 use Application\Tags\TagCollection;
 use Application\TimeTracker\TimeTrackerCollection;
+use Application\WhatsNew\WhatsNew;
 use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
@@ -64,6 +66,11 @@ use function AppUtils\parseVariable;
 class AppFactory
 {
     // region: A - Factory methods
+
+    public static function createAppSettings() : AppSettingsRegistry
+    {
+        return AppSettingsRegistry::getInstance();
+    }
 
     /**
      * Get the manager instance that handles folders from which classes

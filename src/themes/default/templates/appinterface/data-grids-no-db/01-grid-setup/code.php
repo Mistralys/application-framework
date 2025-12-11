@@ -2,6 +2,8 @@
 
 /** @var string $activeExampleID */
 
+use UI\Admin\Screens\AppInterfaceDevelMode;
+
 $grid = UI::getInstance()->createDataGrid('datagrid-example');
 
 // ----------------------------------------------
@@ -31,4 +33,4 @@ $grid->addColumn('grams', t('Grams'))
 // ----------------------------------------------
 
 $grid->addHiddenScreenVars();
-$grid->addHiddenVar(Application_Admin_Area_Devel_Appinterface::REQUEST_PARAM_EXAMPLE_ID, $activeExampleID);
+$grid->addHiddenVar(AppInterfaceDevelMode::REQUEST_PARAM_EXAMPLE_ID, $activeExampleID);

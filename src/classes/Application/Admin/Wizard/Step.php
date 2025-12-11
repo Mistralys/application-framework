@@ -26,9 +26,9 @@ use function AppUtils\parseVariable;
  */
 abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 {
-    public const ERROR_CANNOT_UPDATE_FROM_UNMONITORED_STEP = 558002;
-    public const ERROR_UNHANDLED_STEP_UPDATE = 558003;
-    public const ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION = 558004;
+    public const int ERROR_CANNOT_UPDATE_FROM_UNMONITORED_STEP = 558002;
+    public const int ERROR_UNHANDLED_STEP_UPDATE = 558003;
+    public const int ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION = 558004;
 
     protected Application_Interfaces_Admin_Wizardable $wizard;
     protected int $number;
@@ -822,6 +822,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function getActiveSubscreen(): ?AdminScreenInterface {return null;}
     public function hasSubscreen(string $id): bool { return false; }
     public function getSubscreenIDs(): array { return array(); }
+    public function getSubscreens() : array { return array(); }
     public function hasSubscreens(): bool { return false; }
     public function getSubscreenByID(string $id, bool $adminMode): AdminScreenInterface
     {

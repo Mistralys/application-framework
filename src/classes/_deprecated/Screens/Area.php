@@ -8,6 +8,11 @@ declare(strict_types=1);
 
 use Application\Admin\Area\Events\UIHandlingCompleteEvent;
 use Application\Admin\BaseArea;
+use Application\Interfaces\Admin\AdminActionInterface;
+use Application\Interfaces\Admin\AdminAreaInterface;
+use Application\Interfaces\Admin\AdminModeInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Interfaces\Admin\AdminSubmodeInterface;
 use UI\Page\Navigation\QuickNavigation;
 
 /**
@@ -15,7 +20,7 @@ use UI\Page\Navigation\QuickNavigation;
  * @subpackage Administration
  * @deprecated Use {@see BaseArea} instead.
  */
-abstract class Application_Admin_Area extends Application_Admin_Skeleton
+abstract class Application_Admin_Area extends Application_Admin_Skeleton implements AdminAreaInterface
 {
     use Application_Traits_Admin_Screen;
 
@@ -35,46 +40,18 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         
         $this->uiStarted = false;
     }
-    
-   /**
-    * @return string
-    */
-    abstract public function getDefaultMode() : string;
 
-    /**
-     * @return string
-     */
-    abstract public function getNavigationGroup() : string;
-
-    abstract public function isUserAllowed() : bool;
+    final public function getParentScreenClass(): null
+    {
+        return null;
+    }
     
-   /**
-    * Retrieves the names of administration areas this 
-    * area depends on, and which may not be disabled as
-    * a result when this is enabled.
-    * 
-    * @return string[] The URL names of the areas
-    */
-    abstract public function getDependencies() : array;
-    
-   /**
-    * Whether this administration area is a core area that
-    * cannot be disabled in the application sets.
-    * 
-    * @return boolean
-    */
-    abstract public function isCore() : bool;
-
-    public function getDefaultSubscreenID() : string
+    final public function getDefaultSubscreenID() : string
     {
         return $this->getDefaultMode();
     }
     
-    /**
-     * Checks whether this page has different modes (sub- administration sections).
-     * @return boolean
-     */
-    public function hasModes() : bool
+    final public function hasModes() : bool
     {
         return $this->hasSubscreens();
     }
@@ -86,12 +63,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
      */
     protected ?UI_Page_Navigation_Item $navigationItem = null;
 
-    /**
-     * Adds the page to the main navigation.
-     * @param UI_Page_Navigation $nav
-     * @return UI_Page_Navigation_Item|null
-     */
-    public function addToNavigation(UI_Page_Navigation $nav) : ?UI_Page_Navigation_Item
+    final public function addToNavigation(UI_Page_Navigation $nav) : ?UI_Page_Navigation_Item
     {
         if (!$this->isUserAllowed()) {
             return null;
@@ -121,15 +93,11 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         return $this->navigationItem;
     }
 
-    /**
-     * Retrieves the active mode object if any.
-     * @return Application_Admin_Area_Mode|NULL
-     */
-    public function getMode() : ?Application_Admin_Area_Mode
+    final public function getMode() : ?AdminModeInterface
     {
         $screen = $this->getActiveSubscreen();
         
-        if($screen instanceof Application_Admin_Area_Mode)
+        if($screen instanceof AdminModeInterface)
         {
             return $screen;
         }
@@ -137,38 +105,17 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         return null;
     }
 
-    /**
-     * Retrieves the active submode object, if any.
-     * 
-     * @return Application_Admin_Area_Mode_Submode|NULL
-     */
-    public function getSubmode() : ?Application_Admin_Area_Mode_Submode
+    final public function getSubmode() : ?AdminSubmodeInterface
     {
         return $this->getMode()?->getSubmode();
     }
 
-    /**
-     * Retrieves the active action object if any.
-     * @return Application_Admin_Area_Mode_Submode_Action|NULL
-     */
-    public function getAction() : ?Application_Admin_Area_Mode_Submode_Action
+    final public function getAction() : ?AdminActionInterface
     {
         return $this->getSubmode()?->getAction();
     }
 
-   /**
-    * Sets up the available UI elements, by calling
-    * the according <code>handleXXX</code> methods.
-    * These recurse into any subscreens as applicable.
-    * 
-    * @see Application_Traits_Admin_Screen::handleSidebar()
-    * @see Application_Traits_Admin_Screen::handleSubnavigation()
-    * @see Application_Traits_Admin_Screen::handleBreadcrumb()
-    * @see Application_Traits_Admin_Screen::handleHelp()
-    * @see Application_Traits_Admin_Screen::handleContextMenu()
-    * @see Application_Traits_Admin_Screen::handleTabs()
-    */
-    public function handleUI() : void
+    final public function handleUI() : void
     {
         $this->logUI('Starting the UI.');
 
@@ -194,23 +141,12 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         $subNav->initDone();
     }
     
-    /**
-     * Returns an optional icon object which will be used to display
-     * the area in the main navigation.
-     *
-     * @return UI_Icon|NULL
-     */
     public function getNavigationIcon() : ?UI_Icon
     {
         return null;
     }
     
-   /**
-    * Retrieves all areas this area depends on to work.
-    * 
-    * @return Application_Admin_Area[]
-    */
-    public function getDependentAreas() : array
+    final public function getDependentAreas() : array
     {
         $ids = $this->getDependencies();
         if(empty($ids)) {
@@ -222,16 +158,14 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
             $areas[] = $this->driver->createArea($id);
         }
         
-        usort($areas, array($this, 'callback_sortAreas'));
+        usort($areas, static function(AdminAreaInterface $a, AdminAreaInterface $b): int
+        {
+            return strnatcasecmp($a->getTitle(), $b->getTitle());
+        });
         
         return $areas;
     }
     
-    public function callback_sortAreas(Application_Admin_Area $a, Application_Admin_Area $b): int
-    {
-        return strnatcasecmp($a->getTitle(), $b->getTitle());
-    }
-
     public function render() : string
     {
         return $this->renderContent();

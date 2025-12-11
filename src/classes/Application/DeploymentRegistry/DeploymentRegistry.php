@@ -8,12 +8,12 @@ declare(strict_types=1);
 
 namespace Application\DeploymentRegistry;
 
-use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
 use Application\AppFactory;
+use Application\DeploymentRegistry\Admin\Screens\DeploymentHistoryMode;
 use Application\DeploymentRegistry\Tasks\WriteLocalizationFilesTask;
+use Application\Development\Admin\Screens\DevelArea;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\SourceFolders\Sources\DeploymentTaskFolders;
-use Application_Admin_Area_Devel;
 use Application_Driver;
 use Application_Exception;
 use Application_Interfaces_Loggable;
@@ -69,6 +69,11 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
         $this->historyCache = $result;
 
         return $result;
+    }
+
+    public static function getAdminScreensFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
     }
 
     public function getDefaultID(): string
@@ -183,15 +188,15 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
 
     public function getAdminURLDeleteHistory(array $params=array()) : string
     {
-         $params[BaseDeploymentHistoryScreen::REQUEST_PARAM_DELETE_HISTORY] = 'yes';
+         $params[DeploymentHistoryMode::REQUEST_PARAM_DELETE_HISTORY] = 'yes';
 
          return $this->getAdminURLHistory($params);
     }
 
     public function getAdminURLHistory(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseDeploymentHistoryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = DevelArea::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = DeploymentHistoryMode::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()

@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace Application\Admin\Index;
 
 use Application;
-use Application_Admin_Exception;
+use Application\Interfaces\Admin\AdminScreenInterface;
+use AdminException;
 use AppUtils\ArrayDataCollection;
 use AppUtils\FileHelper\PHPFile;
 use UI\AdminURLs\AdminURLInterface;
 
 class AdminScreenIndex
 {
-    public const string KEY_URL_PATHS = 'urlPaths';
-    public const string KEY_FLAT = 'flat';
-    public const string KEY_TREE = 'tree';
-
     /**
      * @var array<string,class-string<AdminURLInterface>>
      */
@@ -47,34 +44,34 @@ class AdminScreenIndex
         $file = self::getIndexFile();
 
         if(!$file->exists()) {
-            throw new Application_Admin_Exception(
+            throw new AdminException(
                 'Admin screen index file not found.',
                 sprintf(
                     'The admin screen index file was not found at expected location [%s].',
                     $file->getPath()
                 ),
-                Application_Admin_Exception::ERROR_SCREEN_INDEX_NOT_FOUND
+                AdminException::ERROR_SCREEN_INDEX_NOT_FOUND
             );
         }
 
         $info = include $file->getPath();
 
-        if(!is_array($info) || !isset($info[self::KEY_URL_PATHS], $info[self::KEY_FLAT], $info[self::KEY_TREE])) {
-            throw new Application_Admin_Exception(
+        if(!is_array($info) || !isset($info[ScreenDataInterface::KEY_ROOT_URL_PATHS], $info[ScreenDataInterface::KEY_ROOT_FLAT], $info[ScreenDataInterface::KEY_ROOT_TREE])) {
+            throw new AdminException(
                 'Admin screen index file is invalid.',
                 sprintf(
                     'The admin screen index file at [%s] did not return a valid array.',
                     $file->getPath()
                 ),
-                Application_Admin_Exception::ERROR_SCREEN_INDEX_INVALID
+                AdminException::ERROR_SCREEN_INDEX_INVALID
             );
         }
 
         $data = ArrayDataCollection::create($info);
 
-        $this->paths = $data->getArrayFlavored(self::KEY_URL_PATHS)->filterAssocString();
-        $this->flat = $data->getArray(self::KEY_FLAT);
-        $this->tree = $data->getArray(self::KEY_TREE);
+        $this->paths = $data->getArrayFlavored(ScreenDataInterface::KEY_ROOT_URL_PATHS)->filterAssocString();
+        $this->flat = $data->getArray(ScreenDataInterface::KEY_ROOT_FLAT);
+        $this->tree = $data->getArray(ScreenDataInterface::KEY_ROOT_TREE);
     }
 
     private static ?PHPFile $indexFile = null;
@@ -96,5 +93,72 @@ class AdminScreenIndex
     public function getClassByURLPath(string $path) : ?string
     {
         return $this->paths[$path] ?? null;
+    }
+
+    /**
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $subject
+     * @return array<string,string> Screen ID => URL Name pairs
+     */
+    public function getSubscreenIDNames(AdminScreenInterface|string $subject) : array
+    {
+        $result = array();
+        foreach($this->getSubscreenClasses($subject) as $class) {
+            $id = $this->flat[$class][ScreenDataInterface::KEY_SCREEN_ID];
+            $result[$id] = $this->flat[$class][ScreenDataInterface::KEY_SCREEN_URL_NAME];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $subject
+     * @return class-string<AdminScreenInterface>[]
+     */
+    public function getSubscreenClasses(AdminScreenInterface|string $subject) : array
+    {
+        $className = $this->subject2class($subject);
+
+        return $this->flat[$className][ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES];
+    }
+
+    /**
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $subject
+     * @param string $idOrName
+     * @return class-string<AdminScreenInterface>
+     */
+    public function getSubscreenClass(AdminScreenInterface|string $subject, string $idOrName) : string
+    {
+        foreach($this->getSubscreenClasses($subject) as $class) {
+            if($idOrName === $this->flat[$class][ScreenDataInterface::KEY_SCREEN_ID]) {
+                return $class;
+            }
+
+            if($idOrName === $this->flat[$class][ScreenDataInterface::KEY_SCREEN_URL_NAME]) {
+                return $class;
+            }
+        }
+
+        throw new AdminException(
+            'Subscreen not found.',
+            sprintf(
+                'The subscreen with ID or URL name [%s] was not found for the screen/class [%s].',
+                $idOrName,
+                $this->subject2class($subject)
+            ),
+            AdminException::ERROR_SCREEN_SUBSCREEN_NOT_FOUND
+        );
+    }
+
+    /**
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $subject
+     * @return class-string<AdminScreenInterface>
+     */
+    private function subject2class(AdminScreenInterface|string $subject) : string
+    {
+        if($subject instanceof AdminScreenInterface) {
+            return get_class($subject);
+        }
+
+        return $subject;
     }
 }

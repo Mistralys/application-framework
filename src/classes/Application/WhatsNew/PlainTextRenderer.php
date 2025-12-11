@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\WhatsNew;
 
-use Application\WhatsNew;
 use Application\WhatsNew\AppVersion\CategoryItem;
 use Application\WhatsNew\AppVersion\LanguageCategory;
 

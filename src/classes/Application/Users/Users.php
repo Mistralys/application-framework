@@ -4,7 +4,9 @@
  * @subpackage Users
  */
 
-use Application\Disposables\DisposableDisposedException;
+declare(strict_types=1);
+
+use Application\Development\Admin\Screens\DevelArea;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Users\Admin\UsersAdminURLs;
 use Application\Users\UserSelector;
@@ -15,8 +17,8 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\FileHelper\FolderInfo;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
-use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * User management class: allows retrieving and modifying the
@@ -50,6 +52,11 @@ class Application_Users extends DBHelper_BaseCollection
     public const int COL_FOREIGN_ID_MAX_LENGTH = 250;
     public const int COL_FOREIGN_NICKNAME_MAX_LENGTH = 180;
     public const int COL_NICKNAME_MAX_LENGTH = 180;
+
+    public static function getAdminScreensFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
+    }
 
     public function getRecordClassName() : string
     {
@@ -225,7 +232,7 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getAdminURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = DevelArea::URL_NAME;
         $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Mode_Users::URL_NAME;
 
         return Application_Driver::getInstance()

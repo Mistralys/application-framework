@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminAreaInterface;
+
 class UI_Page_Breadcrumb implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
@@ -47,12 +49,12 @@ class UI_Page_Breadcrumb implements UI_Renderable_Interface
      * area instance. The optional request parameters are added to
      * the generated URL.
      *
-     * @param Application_Admin_Area $area
+     * @param AdminAreaInterface $area
      * @param array<string,mixed> $params
      * @return UI_Page_Breadcrumb_Item
      * @throws UI_Exception
      */
-    public function appendArea(Application_Admin_Area $area, array $params = array()) : UI_Page_Breadcrumb_Item
+    public function appendArea(AdminAreaInterface $area, array $params = array()) : UI_Page_Breadcrumb_Item
     {
         return $this->appendItem($area->getNavigationTitle())
             ->makeLinkedFromArea($area, $params);

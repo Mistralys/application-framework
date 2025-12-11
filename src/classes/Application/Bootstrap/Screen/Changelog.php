@@ -10,7 +10,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\WhatsNew;
+use Application\WhatsNew\WhatsNew;
 
 /**
  * Bootstrap screen used to display the application's changelog

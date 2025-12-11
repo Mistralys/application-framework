@@ -1,7 +1,7 @@
 <?php
 
 use Application\AppFactory;
-use Application\WhatsNew;
+use Application\WhatsNew\WhatsNew;
 use AppLocalize\Localization;
 
 class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod

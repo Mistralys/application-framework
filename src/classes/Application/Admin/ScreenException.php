@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Application\Admin;
 
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_Admin_Exception;
+use AdminException;
 use Throwable;
 
 /**
@@ -22,7 +22,7 @@ use Throwable;
  * @subpackage Exceptions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class ScreenException extends Application_Admin_Exception
+class ScreenException extends AdminException
 {
     public const int NO_RECORD_SPECIFIED_IN_REQUEST = 185101;
 

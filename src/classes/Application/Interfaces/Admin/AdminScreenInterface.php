@@ -236,15 +236,15 @@ interface AdminScreenInterface
     /**
      * Retrieves the area this screen is a child of.
      *
-     * @return Application_Admin_Area
+     * @return AdminAreaInterface
      */
-    public function getArea() : Application_Admin_Area;
+    public function getArea() : AdminAreaInterface;
 
     /**
      * Retrieves this screen's parent screen: only the
      * areas have no parent.
      *
-     * @return AdminScreenInterface
+     * @return AdminScreenInterface|NULL
      */
     public function getParentScreen() : ?AdminScreenInterface;
 
@@ -284,6 +284,11 @@ interface AdminScreenInterface
     public function hasSubscreen(string $id) : bool;
 
     public function getSubscreenByID(string $id, bool $adminMode) : AdminScreenInterface;
+
+    /**
+     * @return AdminScreenInterface[]
+     */
+    public function getSubscreens() : array;
 
     /**
      * Retrieves the ID of the active subscreen, if any.

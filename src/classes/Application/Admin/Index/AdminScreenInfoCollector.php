@@ -8,7 +8,7 @@ use Application\Admin\ClassLoaderScreenInterface;
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\AllowableMigrationInterface;
-use Application_Admin_Exception;
+use AdminException;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
@@ -50,13 +50,13 @@ class AdminScreenInfoCollector
             return $file;
         }
 
-        throw new Application_Admin_Exception(
+        throw new AdminException(
             'Could not find screen source file.',
             sprintf(
                 'Could not find source file for class [%s].',
                 get_class($this->screen)
             ),
-            Application_Admin_Exception::ERROR_SCREEN_SOURCE_NOT_FOUND
+            AdminException::ERROR_SCREEN_SOURCE_NOT_FOUND
         );
     }
 
@@ -116,26 +116,43 @@ class AdminScreenInfoCollector
         return $this->screen->getURLName();
     }
 
+    /**
+     * @return class-string<AdminScreenInterface>[]
+     */
+    public function getSubscreenClasses() : array
+    {
+        $result = array();
+
+        foreach($this->subscreens as $subscreen) {
+            $result[] = $subscreen->getClass();
+        }
+
+        sort($result);
+
+        return $result;
+    }
+
     public function toArray() : array
     {
         $array = array(
-            'id' => $this->screen->getID(),
-            'urlName' => $this->screen->getURLName(),
-            'urlPath' => $this->getURLPath(),
-            'title' => $this->screen->getTitle(),
-            'navigationTitle' => $this->screen->getNavigationTitle(),
-            'requiredRight' => null,
-            'featureRights' => null,
-            'class' => $this->getClass(),
-            'path' => FileHelper::relativizePath($this->getFolder()->getPath(), AppFactory::createDriver()->getClassesFolder()),
+            ScreenDataInterface::KEY_SCREEN_ID => $this->screen->getID(),
+            ScreenDataInterface::KEY_SCREEN_URL_NAME => $this->screen->getURLName(),
+            ScreenDataInterface::KEY_SCREEN_URL_PATH => $this->getURLPath(),
+            ScreenDataInterface::KEY_SCREEN_TITLE => $this->screen->getTitle(),
+            ScreenDataInterface::KEY_SCREEN_NAVIGATION_TITLE => $this->screen->getNavigationTitle(),
+            ScreenDataInterface::KEY_SCREEN_REQUIRED_RIGHT => null,
+            ScreenDataInterface::KEY_SCREEN_FEATURE_RIGHTS => null,
+            ScreenDataInterface::KEY_SCREEN_CLASS => $this->getClass(),
+            ScreenDataInterface::KEY_SCREEN_PATH => FileHelper::relativizePath($this->getFolder()->getPath(), AppFactory::createDriver()->getClassesFolder()),
+            ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES => $this->getSubscreenClasses()
         );
 
         if($this->screen instanceof AllowableMigrationInterface)
         {
-            $array['requiredRight'] = $this->screen->getRequiredRight();
-            $array['featureRights'] = $this->screen->getFeatureRights();
+            $array[ScreenDataInterface::KEY_SCREEN_REQUIRED_RIGHT] = $this->screen->getRequiredRight();
+            $array[ScreenDataInterface::KEY_SCREEN_FEATURE_RIGHTS] = $this->screen->getFeatureRights();
 
-            ksort($array['featureRights']);
+            ksort($array[ScreenDataInterface::KEY_SCREEN_FEATURE_RIGHTS]);
         }
 
         return $array;

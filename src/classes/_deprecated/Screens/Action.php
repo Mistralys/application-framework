@@ -7,21 +7,25 @@
 declare(strict_types=1);
 
 use Application\Admin\Area\Mode\Submode\BaseAction;
+use Application\Interfaces\Admin\AdminActionInterface;
+use Application\Interfaces\Admin\AdminAreaInterface;
+use Application\Interfaces\Admin\AdminModeInterface;
+use Application\Interfaces\Admin\AdminSubmodeInterface;
 
 /**
  * @package Application
  * @subpackage Administration
  * @deprecated Use {@see BaseAction} instead.
  */
-abstract class Application_Admin_Area_Mode_Submode_Action extends Application_Admin_Skeleton
+abstract class Application_Admin_Area_Mode_Submode_Action extends Application_Admin_Skeleton implements AdminActionInterface
 {
     use Application_Traits_Admin_Screen;
     
-    protected Application_Admin_Area_Mode $mode;
-    protected Application_Admin_Area_Mode_Submode $submode;
-    protected Application_Admin_Area $area;
+    protected AdminModeInterface $mode;
+    protected AdminSubmodeInterface $submode;
+    protected AdminAreaInterface $area;
 
-    public function __construct(Application_Driver $driver, Application_Admin_Area_Mode_Submode $submode)
+    public function __construct(Application_Driver $driver, AdminSubmodeInterface $submode)
     {
         $this->adminMode = $submode->isAdminMode();
         $this->submode = $submode;
@@ -33,18 +37,12 @@ abstract class Application_Admin_Area_Mode_Submode_Action extends Application_Ad
         $this->initScreen();
     }
     
-   /**
-    * @return Application_Admin_Area_Mode_Submode
-    */
-    public function getSubmode() : Application_Admin_Area_Mode_Submode
+    public function getSubmode() : AdminSubmodeInterface
     {
         return $this->submode;
     }
 
-    /**
-     * @return Application_Admin_Area_Mode
-     */
-    public function getMode() : Application_Admin_Area_Mode
+    public function getMode() : AdminModeInterface
     {
         return $this->mode;
     }

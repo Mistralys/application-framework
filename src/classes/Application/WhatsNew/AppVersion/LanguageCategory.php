@@ -11,8 +11,7 @@ declare(strict_types=1);
 
 namespace Application\WhatsNew\AppVersion;
 
-use Application\WhatsNew;
-use SimpleXMLElement;
+use Application\WhatsNew\WhatsNew;
 
 /**
  * Container for entries within a single category from

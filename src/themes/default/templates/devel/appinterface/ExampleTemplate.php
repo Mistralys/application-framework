@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Themes\DefaultTemplate\devel\appinterface;
 
 use Application\MarkdownRenderer;
-use Application_Admin_Area_Devel_Appinterface;
+use UI\Admin\Screens\AppInterfaceDevelMode;
 use AppUtils\Highlighter;
 use Mistralys\Examples\UserInterface\ExampleFile;
 use Mistralys\Examples\UserInterface\ExamplesCategory;
@@ -98,7 +98,7 @@ class ExampleTemplate extends UI_Page_Template_Custom
 
     protected function preRender(): void
     {
-        $this->example = $this->getObjectVar(Application_Admin_Area_Devel_Appinterface::TEMPLATE_VAR_ACTIVE_ID, ExampleFile::class);
+        $this->example = $this->getObjectVar(AppInterfaceDevelMode::TEMPLATE_VAR_ACTIVE_ID, ExampleFile::class);
         $this->category = $this->example->getCategory();
     }
 }

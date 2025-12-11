@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Admin\Index;
 
-use Application;
-use Application\Admin\Area\Mode\BaseSubmode;
-use Application\Admin\Area\Mode\Submode\BaseAction;
-use Application\Admin\BaseArea;
+use Application\AppFactory;
+use Application\Interfaces\Admin\AdminActionInterface;
+use Application\Interfaces\Admin\AdminAreaInterface;
+use Application\Interfaces\Admin\AdminModeInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Interfaces\Admin\AdminSubmodeInterface;
+use Application\OfflineEvents\RegisterAdminScreenFoldersEvent;
 use Application_Admin_Area;
 use Application_Admin_Wizard_Step;
 use Application_Driver;
@@ -42,6 +44,22 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
     public function __construct(Application_Driver $driver)
     {
         $this->driver = $driver;
+
+        AppFactory::createOfflineEvents()->triggerEvent(
+            RegisterAdminScreenFoldersEvent::EVENT_NAME,
+            array(),
+            RegisterAdminScreenFoldersEvent::class
+        );
+    }
+
+    /**
+     * @var array<string,FolderInfo>
+     */
+    private static array $folders = array();
+
+    public static function registerFolder(FolderInfo $folder) : void
+    {
+        self::$folders[$folder->getPath()] = $folder;
     }
 
     public function index() : self
@@ -101,9 +119,9 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
         ksort($paths);
 
         return array(
-            AdminScreenIndex::KEY_URL_PATHS => $paths,
-            AdminScreenIndex::KEY_FLAT => $flat,
-            AdminScreenIndex::KEY_TREE => $tree
+            ScreenDataInterface::KEY_ROOT_URL_PATHS => $paths,
+            ScreenDataInterface::KEY_ROOT_FLAT => $flat,
+            ScreenDataInterface::KEY_ROOT_TREE => $tree
         );
     }
 
@@ -137,28 +155,28 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
             return null;
         }
 
-        if(is_a($class, Application_Admin_Area::class, true) || is_a($class, BaseArea::class, true)) {
+        if(is_a($class, AdminAreaInterface::class, true)) {
             return ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, false)
             );
         }
 
-        if(is_a($class, \Application_Admin_Area_Mode::class, true)) {
+        if(is_a($class, AdminModeInterface::class, true)) {
             return ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, $this->stubArea)
             );
         }
 
-        if(is_a($class, \Application_Admin_Area_Mode_Submode::class, true) || is_a($class, BaseSubmode::class, true)) {
+        if(is_a($class, AdminSubmodeInterface::class, true)) {
             return ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, $this->stubMode)
             );
         }
 
-        if(is_a($class, \Application_Admin_Area_Mode_Submode_Action::class, true) || is_a($class, BaseAction::class, true)) {
+        if(is_a($class, AdminActionInterface::class, true)) {
             return ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, $this->stubSubmode)
@@ -179,9 +197,11 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
     public function getClassFolders(): array
     {
-        return array(
-            FolderInfo::factory($this->driver->getClassesFolder().'/Area')
-        );
+        $folders = array_values(self::$folders);
+        $folders[] = FolderInfo::factory(__DIR__.'/../Area');
+        $folders[] = FolderInfo::factory($this->driver->getClassesFolder().'/Area');
+
+        return $folders;
     }
 
     public function isRecursive(): bool

@@ -27,6 +27,7 @@ use Application_Interfaces_Eventable;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 
 /**
@@ -102,6 +103,11 @@ class Environment implements Application_Interfaces_Eventable
                 $this->activate();
             }
         });
+    }
+
+    public static function getAdminScreensFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__ . '/Admin/Screens')->requireExists();
     }
 
     public function isDev(): bool

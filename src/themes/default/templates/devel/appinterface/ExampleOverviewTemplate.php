@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Themes\DefaultTemplate\devel\appinterface;
 
-use Application_Admin_Area_Devel_Appinterface;
+use UI\Admin\Screens\AppInterfaceDevelMode;
 use Mistralys\Examples\UserInterface\ExampleFile;
 use Mistralys\Examples\UserInterface\ExamplesCategory;
 use UI_Page_Template_Custom;
@@ -71,6 +71,6 @@ class ExampleOverviewTemplate extends UI_Page_Template_Custom
 
     protected function preRender(): void
     {
-        $this->categories = $this->getArrayVar(Application_Admin_Area_Devel_Appinterface::TEMPLATE_VAR_CATEGORIES);
+        $this->categories = $this->getArrayVar(AppInterfaceDevelMode::TEMPLATE_VAR_CATEGORIES);
     }
 }
