@@ -211,7 +211,7 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
             Application_EventHandler::addListener(
                 $this->triggerName,
                 $listener->getCallable(),
-                'offline-event'
+                $this->getEventName()
             );
         }
 
