@@ -119,7 +119,13 @@ class AdminScreenIndex
     {
         $className = $this->subject2class($subject);
 
-        return $this->flat[$className][ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES];
+        $list = $this->flat[$className][ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES] ?? null;
+
+        if(is_array($list)) {
+            return $list;
+        }
+
+        return array();
     }
 
     /**
