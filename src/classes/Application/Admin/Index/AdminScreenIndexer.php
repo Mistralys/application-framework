@@ -40,6 +40,7 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
     private StubMode $stubMode;
     private StubSubmode $stubSubmode;
     private bool $indexed = false;
+    private int $countContentScreens;
 
     public function __construct(Application_Driver $driver)
     {
@@ -78,11 +79,18 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
         $this->infos = array();
         $this->roots = array();
+        $this->countContentScreens = 0;
         foreach($this->getAll() as $item) {
             $this->infos[] = $item;
 
             if($item->getScreen() instanceof Application_Admin_Area) {
                 $this->roots[] = $item;
+            }
+
+            // Only screens without subscreens actually generate
+            // content.
+            if(!$item->getScreen()->hasSubscreens()) {
+                $this->countContentScreens++;
             }
         }
 
@@ -96,6 +104,11 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
     public function countScreens() : int
     {
         return count($this->infos);
+    }
+
+    public function countContentScreens() : int
+    {
+        return $this->countContentScreens;
     }
 
     public function serialize() : array

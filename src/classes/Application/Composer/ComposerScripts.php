@@ -76,7 +76,11 @@ class ComposerScripts
         $indexer = new AdminScreenIndexer(AppFactory::createDriver());
         $indexer->index();
 
-        echo '- Found '.$indexer->countScreens().' screens.'.PHP_EOL;
+        echo sprintf(
+            '- Found %s screens total (%s content screens).'.PHP_EOL,
+            $indexer->countScreens(),
+            $indexer->countContentScreens()
+        );
     }
 
     public static function doApiMethodIndex() : void
