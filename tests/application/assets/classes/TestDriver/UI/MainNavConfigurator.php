@@ -15,8 +15,8 @@ use Application\Area\BaseTagsScreen;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\BaseUsersArea;
-use Application_Admin_Area_Settings;
-use Application_Admin_Area_Welcome;
+use Application\Users\Admin\Screens\UserSettingsArea;
+use Application\Admin\Area\WelcomeArea;
 use Application_Admin_TranslationsArea;
 use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\QuickNavScreen;
@@ -35,7 +35,7 @@ class MainNavConfigurator extends NavConfigurator
 {
     public function configure() : void
     {
-        $this->addArea(Application_Admin_Area_Welcome::URL_NAME_WELCOME, true);
+        $this->addArea(WelcomeArea::URL_NAME, true);
 
         $this->configureReferencesMenu($this->addMenu(t('References')));
         $this->configureManageMenu($this->addMenu(t('Manage')));
@@ -44,7 +44,7 @@ class MainNavConfigurator extends NavConfigurator
     private function configureManageMenu(MenuConfigurator $menu) : void
     {
         $menu
-            ->addAreaChained(Application_Admin_Area_Settings::URL_NAME)
+            ->addAreaChained(UserSettingsArea::URL_NAME)
             ->addSeparator()
             ->addAreaChained(CountriesScreen::URL_NAME)
             ->addAreaChained(BaseNewsScreen::URL_NAME)

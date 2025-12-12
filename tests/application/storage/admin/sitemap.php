@@ -35,6 +35,7 @@ return array (
     'devel.cache-control' => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
     'devel.css-gen' => 'UI\\Admin\\Screens\\CSSGenDevelMode',
     'devel.dbdump' => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
+    'devel.deepl-test' => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
     'devel.deploy-history' => 'Application\\DeploymentRegistry\\Admin\\Screens\\DeploymentHistoryMode',
     'devel.errorlog' => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
     'devel.errorlog.list' => 'Application\\ErrorLog\\Admin\\Screens\\ListSubmode',
@@ -80,7 +81,7 @@ return array (
     'quicknav' => 'TestDriver\\Area\\QuickNavScreen',
     'revisionable' => 'TestDriver\\Area\\RevisionableScreen',
     'revisionable.list' => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
-    'settings' => 'Application_Admin_Area_Settings',
+    'settings' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
     'tag-tree' => 'Application\\Area\\Tags\\ViewTag\\BaseTagTreeScreen',
     'tagging' => 'Application\\Admin\\Area\\Media\\View\\BaseMediaTagsScreen',
     'tags' => 'TestDriver\\Area\\TagsScreen',
@@ -113,8 +114,9 @@ return array (
     'users.view' => 'TestDriver\\Area\\UsersArea\\ViewUserMode',
     'users.view.settings' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserSettingsSubmode',
     'users.view.status' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserStatusSubmode',
-    'welcome' => 'TestDriver\\Area\\WelcomeScreen',
-    'welcome.overview' => 'TestDriver\\Area\\WelcomeScreen\\OverviewScreen',
+    'welcome' => 'Application\\Admin\\Area\\WelcomeArea',
+    'welcome.overview' => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
+    'welcome.settings' => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
     'wizardtest' => 'TestDriver_Area_WizardTest',
     'wizardtest.wizard' => 'TestDriver_Area_WizardTest_Wizard',
   ),
@@ -163,6 +165,59 @@ return array (
       ),
       'class' => 'Application\\Admin\\Area\\Media\\View\\BaseMediaTagsScreen',
       'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Media/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Admin\\Area\\WelcomeArea' => 
+    array (
+      'id' => 'WelcomeArea',
+      'urlName' => 'welcome',
+      'urlPath' => 'welcome',
+      'title' => 'Quickstart',
+      'navigationTitle' => '',
+      'requiredRight' => NULL,
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Area\\WelcomeArea',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
+        1 => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
+      ),
+    ),
+    'Application\\Admin\\Area\\Welcome\\OverviewMode' => 
+    array (
+      'id' => 'OverviewMode',
+      'urlName' => 'overview',
+      'urlPath' => 'welcome.overview',
+      'title' => 'Quickstart',
+      'navigationTitle' => 'Quickstart',
+      'requiredRight' => NULL,
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Admin\\Area\\Welcome\\SettingsMode' => 
+    array (
+      'id' => 'SettingsMode',
+      'urlName' => 'settings',
+      'urlPath' => 'welcome.settings',
+      'title' => 'Quickstart settings',
+      'navigationTitle' => '',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
       'subscreenClasses' => 
       array (
       ),
@@ -298,8 +353,9 @@ return array (
         11 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
         12 => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
         13 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-        14 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-        15 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
+        14 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
+        15 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
+        16 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
       ),
     ),
     'Application\\Development\\Admin\\Screens\\DevelOverviewMode' => 
@@ -654,6 +710,23 @@ return array (
       array (
       ),
     ),
+    'Application\\Users\\Admin\\Screens\\UserSettingsArea' => 
+    array (
+      'id' => 'UserSettingsArea',
+      'urlName' => 'settings',
+      'urlPath' => 'settings',
+      'title' => 'User settings',
+      'navigationTitle' => 'User settings',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Users/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
     'Application\\WhatsNew\\Admin\\Screens\\EditSubmode' => 
     array (
       'id' => 'EditSubmode',
@@ -689,48 +762,19 @@ return array (
         0 => 'Application\\WhatsNew\\Admin\\Screens\\EditSubmode',
       ),
     ),
-    'Application_Admin_Area_Settings' => 
+    'DeeplHelper\\Admin\\Screens\\DeepLTestScreen' => 
     array (
-      'id' => 'Settings',
-      'urlName' => 'settings',
-      'urlPath' => 'settings',
-      'title' => 'User settings',
-      'navigationTitle' => 'User settings',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'Application_Admin_Area_Settings',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
-      'subscreenClasses' => 
+      'id' => 'DeepLTestScreen',
+      'urlName' => 'deepl-test',
+      'urlPath' => 'devel.deepl-test',
+      'title' => 'DeepL Test',
+      'navigationTitle' => 'DeepL Test',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
       array (
       ),
-    ),
-    'Application_Admin_Area_Welcome' => 
-    array (
-      'id' => 'Welcome',
-      'urlName' => 'welcome',
-      'urlPath' => 'welcome',
-      'title' => 'Quickstart',
-      'navigationTitle' => '',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'Application_Admin_Area_Welcome',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'Application_Admin_Area_Welcome_Overview',
-      ),
-    ),
-    'Application_Admin_Area_Welcome_Overview' => 
-    array (
-      'id' => 'Overview',
-      'urlName' => 'overview',
-      'urlPath' => 'welcome.overview',
-      'title' => 'Quickstart',
-      'navigationTitle' => 'Quickstart',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'Application_Admin_Area_Welcome_Overview',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
+      'class' => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/DeeplHelper/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -1433,7 +1477,9 @@ return array (
       'title' => 'Quick navigation',
       'navigationTitle' => 'QuickNav',
       'requiredRight' => NULL,
-      'featureRights' => NULL,
+      'featureRights' => 
+      array (
+      ),
       'class' => 'TestDriver\\Area\\QuickNavScreen',
       'path' => 'Area',
       'subscreenClasses' => 
@@ -2015,37 +2061,6 @@ return array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserStatusSubmode',
       'path' => 'Area/UsersArea/ViewUserMode',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\WelcomeScreen' => 
-    array (
-      'id' => 'WelcomeScreen',
-      'urlName' => 'welcome',
-      'urlPath' => 'welcome',
-      'title' => 'Quickstart',
-      'navigationTitle' => '',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\WelcomeScreen',
-      'path' => 'Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\WelcomeScreen\\OverviewScreen',
-      ),
-    ),
-    'TestDriver\\Area\\WelcomeScreen\\OverviewScreen' => 
-    array (
-      'id' => 'OverviewScreen',
-      'urlName' => 'overview',
-      'urlPath' => 'welcome.overview',
-      'title' => 'Quickstart',
-      'navigationTitle' => 'Quickstart',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\WelcomeScreen\\OverviewScreen',
-      'path' => 'Area/WelcomeScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2661,8 +2676,9 @@ return array (
         11 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
         12 => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
         13 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-        14 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-        15 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
+        14 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
+        15 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
+        16 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
       ),
       'subscreens' => 
       array (
@@ -2883,6 +2899,26 @@ return array (
           ),
           'class' => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
           'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'deepl-test' => 
+        array (
+          'id' => 'DeepLTestScreen',
+          'urlName' => 'deepl-test',
+          'urlPath' => 'devel.deepl-test',
+          'title' => 'DeepL Test',
+          'navigationTitle' => 'DeepL Test',
+          'requiredRight' => 'Developer',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
+          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/DeeplHelper/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3562,7 +3598,9 @@ return array (
       'title' => 'Quick navigation',
       'navigationTitle' => 'QuickNav',
       'requiredRight' => NULL,
-      'featureRights' => NULL,
+      'featureRights' => 
+      array (
+      ),
       'class' => 'TestDriver\\Area\\QuickNavScreen',
       'path' => 'Area',
       'subscreenClasses' => 
@@ -3607,24 +3645,6 @@ return array (
           array (
           ),
         ),
-      ),
-    ),
-    'settings' => 
-    array (
-      'id' => 'Settings',
-      'urlName' => 'settings',
-      'urlPath' => 'settings',
-      'title' => 'User settings',
-      'navigationTitle' => 'User settings',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'Application_Admin_Area_Settings',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
-      'subscreenClasses' => 
-      array (
-      ),
-      'subscreens' => 
-      array (
       ),
     ),
     'tags' => 
@@ -4193,34 +4213,79 @@ return array (
         ),
       ),
     ),
+    'settings' => 
+    array (
+      'id' => 'UserSettingsArea',
+      'urlName' => 'settings',
+      'urlPath' => 'settings',
+      'title' => 'User settings',
+      'navigationTitle' => 'User settings',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Users/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+      ),
+      'subscreens' => 
+      array (
+      ),
+    ),
     'welcome' => 
     array (
-      'id' => 'WelcomeScreen',
+      'id' => 'WelcomeArea',
       'urlName' => 'welcome',
       'urlPath' => 'welcome',
       'title' => 'Quickstart',
       'navigationTitle' => '',
       'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\WelcomeScreen',
-      'path' => 'Area',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Area\\WelcomeArea',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
       'subscreenClasses' => 
       array (
-        0 => 'TestDriver\\Area\\WelcomeScreen\\OverviewScreen',
+        0 => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
+        1 => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
       ),
       'subscreens' => 
       array (
         'overview' => 
         array (
-          'id' => 'OverviewScreen',
+          'id' => 'OverviewMode',
           'urlName' => 'overview',
           'urlPath' => 'welcome.overview',
           'title' => 'Quickstart',
           'navigationTitle' => 'Quickstart',
           'requiredRight' => NULL,
-          'featureRights' => NULL,
-          'class' => 'TestDriver\\Area\\WelcomeScreen\\OverviewScreen',
-          'path' => 'Area/WelcomeScreen',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
+          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'settings' => 
+        array (
+          'id' => 'SettingsMode',
+          'urlName' => 'settings',
+          'urlPath' => 'welcome.settings',
+          'title' => 'Quickstart settings',
+          'navigationTitle' => '',
+          'requiredRight' => 'Login',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
+          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
           'subscreenClasses' => 
           array (
           ),

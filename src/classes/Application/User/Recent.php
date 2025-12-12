@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Admin\Area\Welcome\SettingsMode;
+use Application\Admin\Area\WelcomeArea;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
@@ -222,14 +224,14 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Welcome::URL_NAME_WELCOME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = WelcomeArea::URL_NAME;
 
         return Application_Driver::getInstance()->getRequest()->buildURL($params);
     }
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Welcome_Settings::URL_NAME_SETTINGS;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = SettingsMode::URL_NAME_SETTINGS;
 
         return $this->getAdminURL($params);
     }

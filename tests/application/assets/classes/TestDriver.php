@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
+use Application\Users\Admin\Screens\UserSettingsArea;
+use Application\Admin\Area\WelcomeArea;
 use Application\Area\BaseTagsScreen;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Development\Admin\Screens\DevelArea;
@@ -23,7 +25,6 @@ use TestDriver\Area\TestingScreen;
 use TestDriver\Area\TimeTrackerScreen;
 use TestDriver\Area\TranslationsScreen;
 use TestDriver\Area\UsersArea;
-use TestDriver\Area\WelcomeScreen;
 use TestDriver\CustomIcon;
 use TestDriver\UnitTestRedirectException;
 use UI\AdminURLs\AdminURLInterface;
@@ -49,8 +50,8 @@ class TestDriver extends Application_Driver
     {
         return array(
             DevelArea::URL_NAME => DevelArea::class,
-            Application_Admin_Area_Welcome::URL_NAME_WELCOME => WelcomeScreen::class,
-            Application_Admin_Area_Settings::URL_NAME => TestDriver_Area_Settings::class,
+            WelcomeArea::URL_NAME => WelcomeArea::class,
+            UserSettingsArea::URL_NAME => UserSettingsArea::class,
             Application_Admin_TranslationsArea::URL_NAME => TranslationsScreen::class,
             TestDriver_Area_WizardTest::URL_NAME => TestDriver_Area_WizardTest::class,
             QuickNavScreen::URL_NAME => QuickNavScreen::class,

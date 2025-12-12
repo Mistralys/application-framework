@@ -7,6 +7,7 @@
  * @see Application_User
  */
 
+use Application\Users\Admin\Screens\UserSettingsArea;
 use Application\Countries\Rights\CountryRightsInterface;
 use Application\Countries\Rights\CountryRightsTrait;
 use Application\Driver\DriverException;
@@ -910,7 +911,7 @@ abstract class Application_User
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Settings::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = UserSettingsArea::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()

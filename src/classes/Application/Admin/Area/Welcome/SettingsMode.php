@@ -2,12 +2,20 @@
 
 declare(strict_types=1);
 
-use AppUtils\ConvertHelper;
+namespace Application\Admin\Area\Welcome;
 
-class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mode
+use Application\Admin\Area\BaseMode;
+use Application\Admin\Area\WelcomeArea;
+use Application\Admin\ClassLoaderScreenInterface;
+use Application_User;
+use Application_User_Recent;
+use Application_User_Recent_Category;
+use UI;
+
+class SettingsMode extends BaseMode implements ClassLoaderScreenInterface
 {
-    public const URL_NAME_SETTINGS = 'settings';
-    public const FORM_NAME = 'welcome_settings';
+    public const string URL_NAME_SETTINGS = 'settings';
+    public const string FORM_NAME = 'welcome_settings';
 
     private Application_User_Recent $recent;
 
@@ -16,47 +24,56 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
      */
     private array $categories;
 
-    public function getDefaultSubmode() : string
+    public function getDefaultSubmode(): string
     {
         return '';
     }
 
-    public function isUserAllowed() : bool
+    public function getDefaultSubscreenClass(): null
     {
-        return true;
+        return null;
     }
 
-    public function getURLName() : string
+    public function getParentScreenClass(): string
+    {
+        return WelcomeArea::class;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return Application_User::RIGHT_LOGIN;
+    }
+
+    public function getURLName(): string
     {
         return self::URL_NAME_SETTINGS;
     }
 
-    public function getNavigationTitle() : string
+    public function getNavigationTitle(): string
     {
         return '';
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return t('Quickstart settings');
     }
 
-    protected function _handleActions() : bool
+    protected function _handleActions(): bool
     {
         $this->recent = $this->user->getRecent();
         $this->categories = $this->recent->getCategories();
 
         $this->createSettingsForm();
 
-        if($this->isFormValid())
-        {
+        if ($this->isFormValid()) {
             $this->handleSaveSettings($this->getFormValues());
         }
 
         return true;
     }
 
-    protected function _handleHelp() : void
+    protected function _handleHelp(): void
     {
         $this->renderer->setTitle($this->getTitle());
     }
@@ -68,13 +85,13 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
             ->makeWithSidebar();
     }
 
-    protected function _handleBreadcrumb() : void
+    protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendItem(t('Quickstart'))->makeLinked($this->recent->getAdminURL());
         $this->breadcrumb->appendItem(t('Settings'))->makeLinked($this->recent->getAdminSettingsURL());
     }
 
-    protected function _handleSidebar() : void
+    protected function _handleSidebar(): void
     {
         $this->sidebar->addButton('save_settings', t('Save now'))
             ->setIcon(UI::icon()->save())
@@ -85,19 +102,18 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
             ->makeLinked($this->recent->getAdminURL());
     }
 
-    private function getDefaultFormValues() : array
+    private function getDefaultFormValues(): array
     {
         $result = array();
 
-        foreach($this->categories as $category)
-        {
+        foreach ($this->categories as $category) {
             $result[$this->getCategoryElementName($category)] = $category->getMaxItems();
         }
 
         return $result;
     }
 
-    private function createSettingsForm() : void
+    private function createSettingsForm(): void
     {
         $this->createFormableForm(self::FORM_NAME, $this->getDefaultFormValues());
 
@@ -109,10 +125,9 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
                 ->note()
                 ->t('Setting the amount to %1$s effectively hides the category.', sb()->code('0'))
 
-        );
+            );
 
-        foreach($this->categories as $category)
-        {
+        foreach ($this->categories as $category) {
             $el = $this->addElementInteger(
                 $this->getCategoryElementName($category),
                 $category->getLabel(),
@@ -124,17 +139,16 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
         }
     }
 
-    private function getCategoryElementName(Application_User_Recent_Category $category) : string
+    private function getCategoryElementName(Application_User_Recent_Category $category): string
     {
-        return 'category_'.$category->getAlias();
+        return 'category_' . $category->getAlias();
     }
 
-    private function handleSaveSettings(array $formValues) : void
+    private function handleSaveSettings(array $formValues): void
     {
         $this->startTransaction();
 
-        foreach($this->categories as $category)
-        {
+        foreach ($this->categories as $category) {
             $name = $this->getCategoryElementName($category);
             $value = (int)$formValues[$name];
 

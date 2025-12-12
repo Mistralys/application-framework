@@ -6,9 +6,11 @@
 
 declare(strict_types=1);
 
+use Application\Users\Admin\Screens\UserSettingsArea;
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\User\LayoutWidths;use AppUtils\ClassHelper;
+use Application\User\LayoutWidths;
+use AppUtils\ClassHelper;
 use AppUtils\OutputBuffering;
 use UI\Event\PageRendered;
 use UI\Page\Navigation\QuickNavigation;
@@ -208,7 +210,7 @@ SAME SQL STATEMENT: (<?php echo count($duplicates) ?>)
     private function getBodyClasses() : array
     {
         $bodyClasses = array();
-        $bodyClasses[] = 'layout-'.$this->user->getSetting(Application_Admin_Area_Settings::SETTING_LAYOUT_WIDTH, LayoutWidths::DEFAULT_WIDTH);
+        $bodyClasses[] = 'layout-'.$this->user->getSetting(UserSettingsArea::SETTING_LAYOUT_WIDTH, LayoutWidths::DEFAULT_WIDTH);
         $bodyClasses[] = 'fontsize-'.$this->user->getSetting('layout_fontsize', 'standard');
 
         if($this->user->isDeveloper()) {

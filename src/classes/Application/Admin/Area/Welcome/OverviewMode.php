@@ -2,72 +2,89 @@
 
 declare(strict_types=1);
 
+namespace Application\Admin\Area\Welcome;
+
+use Application\Admin\Area\BaseMode;
+use Application\Admin\Area\WelcomeArea;
+use Application\Admin\ClassLoaderScreenInterface;
+use Application_User_Notepad;
+use Application_User_Recent;
+use Application_User_Recent_Category;
+use Application_User_Recent_NoteCategory;
+use UI;
+
 /**
  * @see template_default_content_welcome
  */
-class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mode
+class OverviewMode extends BaseMode implements ClassLoaderScreenInterface
 {
-    public const URL_NAME_OVERVIEW = 'overview';
+    public const string URL_NAME = 'overview';
 
     private Application_User_Recent $recent;
 
-    public function getDefaultSubmode() : string
+    public function getDefaultSubmode(): string
     {
         return '';
     }
 
-    public function isUserAllowed() : bool
+    public function getDefaultSubscreenClass(): null
     {
-        return true;
+        return null;
     }
 
-    public function getURLName() : string
+    public function getURLName(): string
     {
-        return self::URL_NAME_OVERVIEW;
+        return self::URL_NAME;
     }
 
-    public function getNavigationTitle() : string
+    public function getParentScreenClass(): string
+    {
+        return WelcomeArea::class;
+    }
+
+    public function getRequiredRight(): null
+    {
+        return null;
+    }
+
+    public function getNavigationTitle(): string
     {
         return t('Quickstart');
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return t('Quickstart');
     }
 
-    protected function _handleActions() : bool
+    protected function _handleActions(): bool
     {
         $this->recent = $this->user->getRecent();
 
         $clearParam = Application_User_Recent_Category::REQUEST_PARAM_CLEAR_CATEGORY;
         $unpinParam = Application_User_Recent_NoteCategory::REQUEST_PARAM_UNPIN_NOTE;
 
-        if($this->request->hasParam($clearParam))
-        {
+        if ($this->request->hasParam($clearParam)) {
             $this->handleClearCategory((string)$this->request->getParam($clearParam));
-        }
-        else if($this->request->hasParam($unpinParam))
-        {
+        } else if ($this->request->hasParam($unpinParam)) {
             $this->handleUnpinNote((int)$this->request->getParam($unpinParam));
         }
 
         return true;
     }
 
-    private function getCategoryLabels() : array
+    private function getCategoryLabels(): array
     {
         $categories = $this->recent->getCategories();
         $items = array();
-        foreach ($categories as $category)
-        {
+        foreach ($categories as $category) {
             $items[] = $category->getLabel();
         }
 
         return $items;
     }
 
-    protected function _handleHelp() : void
+    protected function _handleHelp(): void
     {
         $this->help->setSummary(t('Your personal activity tracker'));
 
@@ -86,7 +103,7 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
             ->t(
                 'By default, up to %1$s elements are shown in each category (you can customize this in the %2$ssettings%3$s).',
                 $this->recent->getMaxItemsDefault(),
-                '<a href="'.$this->recent->getAdminSettingsURL().'">',
+                '<a href="' . $this->recent->getAdminSettingsURL() . '">',
                 '</a>'
             )
             ->t('The oldest elements are dropped off the end of the list when the maximum amount is reached.')
@@ -101,7 +118,7 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
             ->ol(array(
                 t(
                     'Open the %1$snotepad%2$s (will open above),',
-                    '<a href="#" onclick="'.Application_User_Notepad::getJSOpen().';return false;">',
+                    '<a href="#" onclick="' . Application_User_Notepad::getJSOpen() . ';return false;">',
                     '</a>'
                 ),
                 sb()->t('Click a note\'s pin icon:')->add(UI::icon()->pin()->makeInformation()),
@@ -116,7 +133,7 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
             ->t('However, you can change the page you see when you log in.')
             ->t(
                 'For this, go into your %1$suser settings%2$s, and select the startup tab you would prefer.',
-                '<a href="'.$this->user->getAdminSettingsURL().'">',
+                '<a href="' . $this->user->getAdminSettingsURL() . '">',
                 '</a>'
             )
             ->t('The quickstart will still be available should you need it later.')
@@ -153,7 +170,7 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
             ->makeWithoutSidebar();
     }
 
-    private function handleClearCategory(string $categoryAlias) : void
+    private function handleClearCategory(string $categoryAlias): void
     {
         $category = $this->recent->getCategoryByAlias($categoryAlias);
         $category->clearEntries();
@@ -164,12 +181,11 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
         );
     }
 
-    private function handleUnpinNote(int $noteID) : void
+    private function handleUnpinNote(int $noteID): void
     {
         $notepad = $this->user->getNotepad();
 
-        if(!$notepad->idExists($noteID))
-        {
+        if (!$notepad->idExists($noteID)) {
             return;
         }
 
