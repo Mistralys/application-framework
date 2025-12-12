@@ -222,7 +222,13 @@ trait DocumentTrait
      */
     public function getFilesize() : int
     {
-        $size = filesize($this->getPath());
+        $path = $this->getPath();
+
+        if(!file_exists($path)) {
+            return 0;
+        }
+
+        $size = filesize($path);
         if($size !== false) {
             return $size;
         }
