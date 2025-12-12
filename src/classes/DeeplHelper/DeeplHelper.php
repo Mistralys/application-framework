@@ -6,7 +6,10 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
+use AppUtils\FileHelper\FolderInfo;
+use DeeplHelper\Admin\DeeplAdminURLs;
 use DeeplHelper\DeeplHelperException;
 use DeeplXML\Translator;
 
@@ -14,13 +17,19 @@ use DeeplXML\Translator;
  * Deepl translation helper, which handles the configuration
  * of the translation layer including the proxy, if enabled.
  *
+ * ## Usage
+ *
+ * Create an instance of the helper using {@see AppFactory::createDeeplHelper()}.
+ *
  * @package DeeplHelper
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class DeeplHelper
 {
-    public const ERROR_DEEPL_API_KEY_NOT_SET = 109601;
-    public const ERROR_DEEPL_PROXY_URL_EMPTY = 109602;
+    public static function getAdminScreensFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
+    }
 
     /**
      * @param Application_Countries_Country $fromCountry
@@ -76,7 +85,7 @@ class DeeplHelper
                 'The configuration setting [%s] is not defined.',
                 BaseConfigRegistry::DEEPL_API_KEY
             ),
-            self::ERROR_DEEPL_API_KEY_NOT_SET
+            DeeplHelperException::ERROR_DEEPL_API_KEY_NOT_SET
         );
     }
 
@@ -112,7 +121,19 @@ class DeeplHelper
         throw new DeeplHelperException(
             'The DeepL proxy is enabled, but no proxy URI has been specified.',
             '',
-            self::ERROR_DEEPL_PROXY_URL_EMPTY
+            DeeplHelperException::ERROR_DEEPL_PROXY_URL_EMPTY
         );
+    }
+
+    private ?DeeplAdminURLs $adminURLs = null;
+
+    public function adminURL() : DeeplAdminURLs
+    {
+        if(!isset($this->adminURLs))
+        {
+            $this->adminURLs = new DeeplAdminURLs();
+        }
+
+        return $this->adminURLs;
     }
 }
