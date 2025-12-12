@@ -13,21 +13,29 @@ use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\PHPFile;
+use AppUtils\Interfaces\StringPrimaryRecordInterface;
 
-class AdminScreenInfoCollector
+class AdminScreenInfoCollector implements StringPrimaryRecordInterface
 {
     private AdminScreenInterface $screen;
     private PHPFile $classPath;
     private FolderInfo $subscreensPath;
     private string $class;
     private AdminScreenInfoCollector $parentScreen;
+    private string $id;
 
     public function __construct(AdminScreenInterface $screen)
     {
         $this->screen = $screen;
         $this->class = get_class($screen);
+        $this->id = md5($this->class);
         $this->classPath = $this->findSourceFile();
         $this->subscreensPath = FolderInfo::factory($this->classPath->getFolder().'/'.getClassTypeName($screen));
+    }
+
+    public function getID(): string
+    {
+        return $this->id;
     }
 
     public function getScreen() : AdminScreenInterface
