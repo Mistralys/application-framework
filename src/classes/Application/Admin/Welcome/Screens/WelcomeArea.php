@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area;
+namespace Application\Admin\Welcome\Screens;
 
 use Application\Admin\ClassLoaderScreenInterface;
-use Application\Admin\Area\Welcome\OverviewMode;
+use Application\AppFactory;
+use Application\OfflineEvents\WelcomeQuickNavEvent;
 use tests\TestDriver\Admin\BaseArea;
 use UI;
 use UI_Icon;
@@ -62,5 +63,14 @@ class WelcomeArea extends BaseArea implements ClassLoaderScreenInterface
     public function getNavigationIcon(): ?UI_Icon
     {
         return UI::icon()->home();
+    }
+
+    protected function _handleQuickNavigation(): void
+    {
+        AppFactory::createOfflineEvents()->triggerEvent(
+            WelcomeQuickNavEvent::EVENT_NAME,
+            array($this, $this->quickNav),
+            WelcomeQuickNavEvent::class
+        );
     }
 }

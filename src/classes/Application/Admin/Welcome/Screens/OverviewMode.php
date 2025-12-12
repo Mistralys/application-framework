@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Welcome;
+namespace Application\Admin\Welcome\Screens;
 
 use Application\Admin\Area\BaseMode;
-use Application\Admin\Area\WelcomeArea;
 use Application\Admin\ClassLoaderScreenInterface;
 use Application_User_Notepad;
 use Application_User_Recent;
 use Application_User_Recent_Category;
 use Application_User_Recent_NoteCategory;
 use UI;
+use UI_Themes_Theme_ContentRenderer;
 
 /**
  * @see template_default_content_welcome
@@ -159,7 +159,7 @@ class OverviewMode extends BaseMode implements ClassLoaderScreenInterface
         );
     }
 
-    public function _renderContent()
+    public function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         $tpl = $this->ui->createTemplate('content/welcome')
             ->setVar('user', $this->user)

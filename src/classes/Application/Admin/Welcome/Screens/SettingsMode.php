@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Welcome;
+namespace Application\Admin\Welcome\Screens;
 
 use Application\Admin\Area\BaseMode;
-use Application\Admin\Area\WelcomeArea;
 use Application\Admin\ClassLoaderScreenInterface;
 use Application_User;
 use Application_User_Recent;
