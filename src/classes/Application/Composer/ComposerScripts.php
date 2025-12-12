@@ -69,7 +69,7 @@ class ComposerScripts
         self::doIndexAdminScreens();
     }
 
-    private static function doIndexAdminScreens() : void
+    public static function doIndexAdminScreens() : void
     {
         echo 'Indexing admin screens...'.PHP_EOL;
 
