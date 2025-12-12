@@ -1,5 +1,15 @@
 # Application Framework Changelog
 
+## v6.3.0 - Admin Screen Loading overhaul
+- Admin: Screens can now be connected by class names to disconnect them from the fixed folder structure.
+- Admin: Screens can now be loaded from external source folders.
+- Admin: Use the new offline event `RegisterAdminScreenFolders` to register locations.
+- Admin: The entire admin screen sitemap is now generated on build.
+- Admin: Added a developer screen to review the sitemap.
+- Admin: The developer screens now use the new screen loading system.
+- Admin: The "Welcome" screen is now loaded via the new system.
+- Admin: The "User Settings" screen is now loaded via the new system.
+
 ## v6.2.0 - API improvements
 - API: Added support for optional rules in API method parameters.
 - API: Added `selectValue()` to parameter containers.
