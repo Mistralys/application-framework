@@ -12,6 +12,7 @@ namespace TestDriver\Area;
 use Application\Development\Admin\Screens\DevelArea;
 use Application_Admin_Area;
 use AppUtils\OutputBuffering;
+use HTML\QuickForm2\Traits\RenderableElementTrait;
 use tests\TestDriver\Admin\BaseArea;
 use UI\Admin\Screens\AppInterfaceDevelMode;
 
@@ -23,7 +24,7 @@ use UI\Admin\Screens\AppInterfaceDevelMode;
  */
 class QuickNavScreen extends BaseArea
 {
-    public const URL_NAME = 'quicknav';
+    public const string URL_NAME = 'quicknav';
 
     public function getURLName() : string
     {
@@ -40,9 +41,9 @@ class QuickNavScreen extends BaseArea
         return '';
     }
 
-    public function isUserAllowed() : bool
+    public function getRequiredRight(): null
     {
-        return true;
+        return null;
     }
 
     public function getDependencies() : array
