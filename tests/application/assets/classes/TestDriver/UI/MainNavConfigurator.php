@@ -10,13 +10,13 @@ namespace TestDriver\UI;
 
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
+use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\API\Admin\Screens\BaseAPIClientsArea;
 use Application\Area\BaseTagsScreen;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\BaseUsersArea;
 use Application\Users\Admin\Screens\UserSettingsArea;
-use Application\Admin\Area\WelcomeArea;
 use Application_Admin_TranslationsArea;
 use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\QuickNavScreen;
