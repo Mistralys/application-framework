@@ -114,9 +114,9 @@ return array (
     'users.view' => 'TestDriver\\Area\\UsersArea\\ViewUserMode',
     'users.view.settings' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserSettingsSubmode',
     'users.view.status' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserStatusSubmode',
-    'welcome' => 'Application\\Admin\\Area\\WelcomeArea',
-    'welcome.overview' => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
-    'welcome.settings' => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
+    'welcome' => 'Application\\Admin\\Welcome\\Screens\\WelcomeArea',
+    'welcome.overview' => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
+    'welcome.settings' => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
     'wizardtest' => 'TestDriver_Area_WizardTest',
     'wizardtest.wizard' => 'TestDriver_Area_WizardTest_Wizard',
   ),
@@ -169,59 +169,6 @@ return array (
       array (
       ),
     ),
-    'Application\\Admin\\Area\\WelcomeArea' => 
-    array (
-      'id' => 'WelcomeArea',
-      'urlName' => 'welcome',
-      'urlPath' => 'welcome',
-      'title' => 'Quickstart',
-      'navigationTitle' => '',
-      'requiredRight' => NULL,
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'Application\\Admin\\Area\\WelcomeArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
-        1 => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
-      ),
-    ),
-    'Application\\Admin\\Area\\Welcome\\OverviewMode' => 
-    array (
-      'id' => 'OverviewMode',
-      'urlName' => 'overview',
-      'urlPath' => 'welcome.overview',
-      'title' => 'Quickstart',
-      'navigationTitle' => 'Quickstart',
-      'requiredRight' => NULL,
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'Application\\Admin\\Area\\Welcome\\SettingsMode' => 
-    array (
-      'id' => 'SettingsMode',
-      'urlName' => 'settings',
-      'urlPath' => 'welcome.settings',
-      'title' => 'Quickstart settings',
-      'navigationTitle' => '',
-      'requiredRight' => 'Login',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
     'Application\\Admin\\Index\\Screens\\SitemapMode' => 
     array (
       'id' => 'SitemapMode',
@@ -237,6 +184,59 @@ return array (
       'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Index/Screens',
       'subscreenClasses' => 
       array (
+      ),
+    ),
+    'Application\\Admin\\Welcome\\Screens\\OverviewMode' => 
+    array (
+      'id' => 'OverviewMode',
+      'urlName' => 'overview',
+      'urlPath' => 'welcome.overview',
+      'title' => 'Quickstart',
+      'navigationTitle' => 'Quickstart',
+      'requiredRight' => NULL,
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Admin\\Welcome\\Screens\\SettingsMode' => 
+    array (
+      'id' => 'SettingsMode',
+      'urlName' => 'settings',
+      'urlPath' => 'welcome.settings',
+      'title' => 'Quickstart settings',
+      'navigationTitle' => '',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Admin\\Welcome\\Screens\\WelcomeArea' => 
+    array (
+      'id' => 'WelcomeArea',
+      'urlName' => 'welcome',
+      'urlPath' => 'welcome',
+      'title' => 'Quickstart',
+      'navigationTitle' => '',
+      'requiredRight' => NULL,
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Welcome\\Screens\\WelcomeArea',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
+        1 => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
       ),
     ),
     'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode' => 
@@ -4244,12 +4244,12 @@ return array (
       'featureRights' => 
       array (
       ),
-      'class' => 'Application\\Admin\\Area\\WelcomeArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
+      'class' => 'Application\\Admin\\Welcome\\Screens\\WelcomeArea',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
       'subscreenClasses' => 
       array (
-        0 => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
-        1 => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
+        0 => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
+        1 => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
       ),
       'subscreens' => 
       array (
@@ -4264,8 +4264,8 @@ return array (
           'featureRights' => 
           array (
           ),
-          'class' => 'Application\\Admin\\Area\\Welcome\\OverviewMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
+          'class' => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
+          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -4284,8 +4284,8 @@ return array (
           'featureRights' => 
           array (
           ),
-          'class' => 'Application\\Admin\\Area\\Welcome\\SettingsMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Welcome',
+          'class' => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
+          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
           'subscreenClasses' => 
           array (
           ),
