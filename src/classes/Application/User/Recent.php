@@ -9,8 +9,8 @@
 
 declare(strict_types=1);
 
-use Application\Admin\Area\Welcome\SettingsMode;
-use Application\Admin\Area\WelcomeArea;
+use Application\Admin\Welcome\Screens\SettingsMode;
+use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;

@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-use Application\Admin\Area\Welcome\OverviewMode;
+use Application\Admin\Welcome\Screens\OverviewMode;
 use AppUtils\ConvertHelper;
 
 /**

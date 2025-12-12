@@ -8,12 +8,12 @@ declare(strict_types=1);
 
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
-use Application\Users\Admin\Screens\UserSettingsArea;
-use Application\Admin\Area\WelcomeArea;
+use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\Area\BaseTagsScreen;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
+use Application\Users\Admin\Screens\UserSettingsArea;
 use TestDriver\Area\APIClientsArea;
 use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\MediaLibraryScreen;
