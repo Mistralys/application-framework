@@ -21,7 +21,7 @@ use AppUtils\FileHelper\FolderInfo;
 use ReflectionClass;
 
 /**
- * @method AdminScreenInterface[] getAll()
+ * @method AdminScreenInfoCollector[] getAll()
  */
 class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 {
@@ -79,11 +79,10 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
         $this->infos = array();
         $this->roots = array();
         foreach($this->getAll() as $item) {
-            $info = new AdminScreenInfoCollector($item);
-            $this->infos[] = $info;
+            $this->infos[] = $item;
 
-            if($info->getScreen() instanceof Application_Admin_Area) {
-                $this->roots[] = $info;
+            if($item->getScreen() instanceof Application_Admin_Area) {
+                $this->roots[] = $item;
             }
         }
 
@@ -141,7 +140,7 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
         }
     }
 
-    protected function createItemInstance(string $class): ?AdminScreenInterface
+    protected function createItemInstance(string $class): ?AdminScreenInfoCollector
     {
         $reflect = new ReflectionClass($class);
         if(
@@ -156,38 +155,34 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
         }
 
         if(is_a($class, AdminAreaInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
+            $screen = ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, false)
             );
-        }
-
-        if(is_a($class, AdminModeInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
+        } else if(is_a($class, AdminModeInterface::class, true)) {
+            $screen = ClassHelper::requireObjectInstanceOf(
+                AdminScreenInterface::class,
+                new $class($this->driver, $this->stubArea)
+            );
+        } else if(is_a($class, AdminSubmodeInterface::class, true)) {
+            $screen = ClassHelper::requireObjectInstanceOf(
+                AdminScreenInterface::class,
+                new $class($this->driver, $this->stubMode)
+            );
+        } else if(is_a($class, AdminActionInterface::class, true)) {
+            $screen = ClassHelper::requireObjectInstanceOf(
+                AdminScreenInterface::class,
+                new $class($this->driver, $this->stubSubmode)
+            );
+        } else {
+            // Fall back to the skeleton constructor
+            $screen = ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, $this->stubArea)
             );
         }
 
-        if(is_a($class, AdminSubmodeInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
-                AdminScreenInterface::class,
-                new $class($this->driver, $this->stubMode)
-            );
-        }
-
-        if(is_a($class, AdminActionInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
-                AdminScreenInterface::class,
-                new $class($this->driver, $this->stubSubmode)
-            );
-        }
-
-        // Fall back to the skeleton constructor
-        return ClassHelper::requireObjectInstanceOf(
-            AdminScreenInterface::class,
-            new $class($this->driver, $this->stubArea)
-        );
+        return new AdminScreenInfoCollector($screen);
     }
 
     public function getInstanceOfClassName(): string
