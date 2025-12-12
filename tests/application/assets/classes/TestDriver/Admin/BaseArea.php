@@ -12,7 +12,7 @@ use TestDriver_User;
 /**
  * @property TestDriver_User $user
  */
-abstract class BaseArea extends Application_Admin_Area
+abstract class BaseArea extends \Application\Admin\BaseArea
 {
     public static function renderCodeExample(string $file) : string
     {
