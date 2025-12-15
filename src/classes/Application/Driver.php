@@ -992,12 +992,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     abstract protected function setUpUI() : void;
 
-    /**
-     * Retrieves the instance of the currently active administration area.
-     * @return Application_Admin_Area
-     * @throws DriverException
-     */
-    public function getActiveArea() : Application_Admin_Area
+    public function getActiveArea() : AdminAreaInterface
     {
         if (!isset($this->activeArea))
         {
@@ -1698,12 +1693,17 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public function getClassesFolder() : string
     {
-        return APP_ROOT . '/assets/classes/' . APP_CLASS_NAME;
+        return $this->getRootFolder() . '/assets/classes/' . APP_CLASS_NAME;
+    }
+
+    public function getRootFolder() : string
+    {
+        return APP_ROOT;
     }
 
     public function getConfigFolder() : string
     {
-        return APP_ROOT . '/config';
+        return $this->getRootFolder() . '/config';
     }
 
     /**
