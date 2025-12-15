@@ -2,18 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media;
+namespace Application\Media\Admin\Screens\Mode;
 
+use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Traits\MediaModeInterface;
+use Application\Media\Admin\Traits\MediaModeTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Tags\TagCollection;
-use Application_Admin_Area_Mode;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseMediaSettingsScreen extends Application_Admin_Area_Mode
+class GlobalSettingsMode extends BaseMode implements MediaModeInterface
 {
-    public const URL_NAME = 'settings';
+    use MediaModeTrait;
+
+    public const string URL_NAME = 'settings';
     private TagCollection $tags;
     private MediaCollection $media;
 
@@ -22,14 +27,9 @@ abstract class BaseMediaSettingsScreen extends Application_Admin_Area_Mode
         return self::URL_NAME;
     }
 
-    public function getDefaultSubmode(): string
+    public function getRequiredRight(): string
     {
-        return '';
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return $this->user->canAdministrateMedia();
+        return MediaScreenRights::SCREEN_MEDIA_SETTINGS;
     }
 
     public function getNavigationTitle(): string
@@ -90,8 +90,8 @@ abstract class BaseMediaSettingsScreen extends Application_Admin_Area_Mode
 
     // region: Form
 
-    public const FORM_NAME = 'media_settings';
-    public const SETTING_ROOT_TAG = 'root_media_tag';
+    public const string FORM_NAME = 'media_settings';
+    public const string SETTING_ROOT_TAG = 'root_media_tag';
 
     private function createSettingsForm() : void
     {

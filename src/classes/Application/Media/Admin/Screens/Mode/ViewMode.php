@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media;
+namespace Application\Media\Admin\Screens\Mode;
 
-use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
 use Application\AppFactory;
 use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Screens\Mode\View\StatusSubmode;
+use Application\Media\Admin\Traits\MediaModeInterface;
+use Application\Media\Admin\Traits\MediaModeTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
@@ -16,8 +18,10 @@ use UI\AdminURLs\AdminURLInterface;
 /**
  * @property MediaRecord $record
  */
-abstract class BaseViewMediaScreen extends BaseRecordMode
+class ViewMode extends BaseRecordMode implements MediaModeInterface
 {
+    use MediaModeTrait;
+
     public const string URL_NAME = 'view';
 
     public function getURLName(): string
@@ -30,11 +34,6 @@ abstract class BaseViewMediaScreen extends BaseRecordMode
         return MediaScreenRights::SCREEN_VIEW;
     }
 
-    protected function createCollection() : MediaCollection
-    {
-        return AppFactory::createMediaCollection();
-    }
-
     public function getRecordMissingURL(): AdminURLInterface
     {
         return $this->createCollection()->adminURL()->list();
@@ -42,7 +41,12 @@ abstract class BaseViewMediaScreen extends BaseRecordMode
 
     public function getDefaultSubmode(): string
     {
-        return BaseMediaStatusScreen::URL_NAME;
+        return StatusSubmode::URL_NAME;
+    }
+
+    public function getDefaultSubscreenClass(): string
+    {
+        return StatusSubmode::class;
     }
 
     public function getNavigationTitle(): string

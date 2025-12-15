@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media\View;
+namespace Application\Media\Admin\Screens\Mode\View;
 
 use Application\AppFactory;
 use Application\MarkdownRenderer;
 use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Traits\MediaViewInterface;
+use Application\Media\Admin\Traits\MediaViewTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Media_Document;
 use AppUtils\FileHelper;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
@@ -20,11 +23,13 @@ use UI_Themes_Theme_ContentRenderer;
 /**
  * @property MediaRecord $record
  */
-abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
+abstract class StatusSubmode extends BaseRecordSubmode implements MediaViewInterface
 {
+    use MediaViewTrait;
+
     public const string URL_NAME = 'status';
     public const string REQUEST_PARAM_DOWNLOAD = 'download';
-    public const int TUMBNAIL_SIZE = 460;
+    public const int THUMBNAIL_SIZE = 460;
     private Application_Media_Document $document;
 
     public function getURLName(): string
@@ -35,11 +40,6 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
     public function getRequiredRight(): string
     {
         return MediaScreenRights::SCREEN_VIEW_STATUS;
-    }
-
-    protected function createCollection() : MediaCollection
-    {
-        return AppFactory::createMediaCollection();
     }
 
     public function getRecordMissingURL(): AdminURLInterface
@@ -55,11 +55,6 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
     public function getTitle(): string
     {
         return t('Status');
-    }
-
-    public function getDefaultAction(): string
-    {
-        return '';
     }
 
     protected function _handleActions(): bool
@@ -124,10 +119,10 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
 
     private function injectPreview(UI_PropertiesGrid $grid) : void
     {
-        $this->record->renderThumbnail(self::TUMBNAIL_SIZE);
+        $this->record->renderThumbnail(self::THUMBNAIL_SIZE);
 
         // Get a thumbnail size adapted to the document type.
-        $imageSize = $this->document->getThumbnailDefaultSize(self::TUMBNAIL_SIZE);
+        $imageSize = $this->document->getThumbnailDefaultSize(self::THUMBNAIL_SIZE);
 
         $grid->addHeader(t('Preview'));
         $grid->addMerged(

@@ -2,26 +2,36 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area;
+namespace Application\Media\Admin\Screens;
 
-use Application\Admin\Area\Media\BaseMediaListScreen;
+use Application\Admin\BaseArea;
+use Application\Admin\ClassLoaderScreenInterface;
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Screens\Mode\ListMode;
 use Application\Media\Collection\MediaCollection;
-use Application\Media\Collection\MediaFilterCriteria;
-use Application\Media\Collection\MediaFilterSettings;
-use Application_Admin_Area;
-use Application_User;
+use Application\Media\MediaRightsInterface;
 use UI;
 use UI_Icon;
 
-abstract class BaseMediaLibraryScreen extends Application_Admin_Area
+class MediaLibraryArea extends BaseArea implements ClassLoaderScreenInterface
 {
     public const string URL_NAME = 'media';
     private MediaCollection $media;
 
+    public function getRequiredRight(): string
+    {
+        return MediaScreenRights::SCREEN_MAIN;
+    }
+
     public function getDefaultMode(): string
     {
-        return BaseMediaListScreen::URL_NAME;
+        return ListMode::URL_NAME;
+    }
+
+    public function getDefaultSubscreenClass(): string
+    {
+        return ListMode::class;
     }
 
     public function getNavigationGroup(): string
@@ -32,11 +42,6 @@ abstract class BaseMediaLibraryScreen extends Application_Admin_Area
     public function getNavigationIcon(): UI_Icon
     {
         return UI::icon()->media();
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return $this->user->canViewMedia();
     }
 
     public function getDependencies(): array
@@ -95,6 +100,6 @@ abstract class BaseMediaLibraryScreen extends Application_Admin_Area
             $this->media->adminURL()->settings()
         )
             ->setIcon(UI::icon()->settings())
-            ->requireRight(Application_User::RIGHT_ADMIN_MEDIA);
+            ->requireRight(MediaRightsInterface::RIGHT_ADMIN_MEDIA);
     }
 }

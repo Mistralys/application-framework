@@ -2,28 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media;
+namespace Application\Media\Admin\Screens\Mode;
 
+use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Traits\MediaModeInterface;
+use Application\Media\Admin\Traits\MediaModeTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\Collection\MediaFilterSettings;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\MediaException;
-use Application_Admin_Area_Mode;
 use Application_Media_Document_Image;
-use AppUtils\AttributeCollection;
 use AppUtils\ClassHelper;
 use AppUtils\PaginationHelper;
 use UI;
 use UI\PaginationRenderer;
 
-class BaseImageGalleryScreen extends Application_Admin_Area_Mode
+class ImageGalleryMode extends BaseMode implements MediaModeInterface
 {
-    public const URL_NAME = 'image-gallery';
-    public const PREFERRED_THUMBNAIL_SIZE = 260;
-    public const REQUEST_PARAM_PAGE_NUMBER = 'page-number';
-    public const STYLESHEET_FILE = 'media-image-gallery.css';
+    use MediaModeTrait;
+
+    public const string URL_NAME = 'image-gallery';
+    public const int PREFERRED_THUMBNAIL_SIZE = 260;
+    public const string REQUEST_PARAM_PAGE_NUMBER = 'page-number';
+    public const string STYLESHEET_FILE = 'media-image-gallery.css';
+
     private MediaCollection $media;
     private MediaFilterCriteria $criteria;
     private MediaFilterSettings $filterSettings;
@@ -37,9 +42,9 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
         return '';
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canViewMedia();
+        return MediaScreenRights::SCREEN_IMAGE_GALLERY;
     }
 
     public function getURLName(): string

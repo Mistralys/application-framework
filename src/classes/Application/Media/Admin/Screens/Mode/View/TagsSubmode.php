@@ -6,10 +6,12 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media\View;
+namespace Application\Media\Admin\Screens\Mode\View;
 
 use Application\AppFactory;
 use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Traits\MediaViewInterface;
+use Application\Media\Admin\Traits\MediaViewTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Tags\AdminScreens\RecordTaggingScreenInterface;
@@ -23,11 +25,14 @@ use UI\AdminURLs\AdminURLInterface;
  * @subpackage Admin Screens
  * @property MediaRecord $record
  */
-class BaseMediaTagsScreen
+class TagsSubmode
     extends BaseRecordSubmode
-    implements RecordTaggingScreenInterface
+    implements
+    RecordTaggingScreenInterface,
+    MediaViewInterface
 {
     use RecordTaggingScreenTrait;
+    use MediaViewTrait;
 
     public const string URL_NAME = 'tagging';
     public const string FORM_NAME = 'media_tags';
@@ -40,11 +45,6 @@ class BaseMediaTagsScreen
     public function getRequiredRight(): string
     {
         return MediaScreenRights::SCREEN_VIEW_TAGS;
-    }
-
-    protected function createCollection() : MediaCollection
-    {
-        return AppFactory::createMediaCollection();
     }
 
     public function getRecordMissingURL(): AdminURLInterface
@@ -60,11 +60,6 @@ class BaseMediaTagsScreen
     public function getTitle(): string
     {
         return t('Tags');
-    }
-
-    public function getDefaultAction(): string
-    {
-        return '';
     }
 
     protected function _handleHelp(): void

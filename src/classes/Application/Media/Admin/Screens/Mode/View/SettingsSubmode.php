@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media\View;
+namespace Application\Media\Admin\Screens\Mode\View;
 
-use Application\AppFactory;
 use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Traits\MediaViewInterface;
+use Application\Media\Admin\Traits\MediaViewTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
@@ -15,8 +16,10 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 /**
  * @property MediaRecord $record
  */
-abstract class BaseMediaSettingsScreen extends BaseRecordSettingsSubmode
+class SettingsSubmode extends BaseRecordSettingsSubmode implements MediaViewInterface
 {
+    use MediaViewTrait;
+
     public const string URL_NAME = 'settings';
 
     public function getURLName() : string
@@ -44,11 +47,6 @@ abstract class BaseMediaSettingsScreen extends BaseRecordSettingsSubmode
     public function getSettingsManager() : MediaSettingsManager
     {
         return MediaCollection::createSettingsManager($this, $this->record);
-    }
-
-    public function createCollection() : MediaCollection
-    {
-        return AppFactory::createMediaCollection();
     }
 
     public function getSuccessMessage(DBHelperRecordInterface $record): string

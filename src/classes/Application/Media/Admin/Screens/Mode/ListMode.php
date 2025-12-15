@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media;
+namespace Application\Media\Admin\Screens\Mode;
 
-use Application\AppFactory;
 use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Traits\MediaModeInterface;
+use Application\Media\Admin\Traits\MediaModeTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application_User;
@@ -18,8 +19,10 @@ use DBHelper_BaseFilterCriteria_Record;
 use UI;
 use UI_DataGrid_Action;
 
-abstract class BaseMediaListScreen extends BaseRecordListMode
+class ListMode extends BaseRecordListMode implements MediaModeInterface
 {
+    use MediaModeTrait;
+
     public const string URL_NAME = 'list';
     public const string REQUEST_PARAM_UPDATE_SIZES = 'update-sizes';
 
@@ -39,14 +42,6 @@ abstract class BaseMediaListScreen extends BaseRecordListMode
     public function getRequiredRight(): string
     {
         return MediaScreenRights::SCREEN_LIST;
-    }
-
-    /**
-     * @return MediaCollection
-     */
-    protected function createCollection(): MediaCollection
-    {
-        return AppFactory::createMediaCollection();
     }
 
     protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array

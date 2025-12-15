@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Application\Media\Collection;
+namespace Application\Media\Admin;
 
-use Application\Admin\Area\Media\BaseViewMediaScreen;
-use Application\Admin\Area\Media\View\BaseMediaSettingsScreen;
-use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
-use Application\Admin\Area\Media\View\BaseMediaTagsScreen;
 use Application\AppFactory;
+use Application\Media\Admin\Screens\Mode\View\SettingsSubmode;
+use Application\Media\Admin\Screens\Mode\View\StatusSubmode;
+use Application\Media\Admin\Screens\Mode\View\TagsSubmode;
+use Application\Media\Admin\Screens\Mode\ViewMode;
+use Application\Media\Collection\MediaCollection;
 use UI\AdminURLs\AdminURL;
 
 class MediaRecordAdminURLs
@@ -23,26 +24,26 @@ class MediaRecordAdminURLs
     public function download() : AdminURL
     {
         return $this->view()
-            ->submode(BaseMediaStatusScreen::URL_NAME)
-            ->string(BaseMediaStatusScreen::REQUEST_PARAM_DOWNLOAD, 'yes');
+            ->submode(StatusSubmode::URL_NAME)
+            ->string(StatusSubmode::REQUEST_PARAM_DOWNLOAD, 'yes');
     }
 
     public function status() : AdminURL
     {
         return $this->view()
-            ->submode(BaseMediaStatusScreen::URL_NAME);
+            ->submode(StatusSubmode::URL_NAME);
     }
 
     public function tagging() : AdminURL
     {
         return $this->view()
-            ->submode(BaseMediaTagsScreen::URL_NAME);
+            ->submode(TagsSubmode::URL_NAME);
     }
 
     public function settings() : AdminURL
     {
         return $this->view()
-            ->submode(BaseMediaSettingsScreen::URL_NAME);
+            ->submode(SettingsSubmode::URL_NAME);
     }
 
     public function view() : AdminURL
@@ -55,7 +56,7 @@ class MediaRecordAdminURLs
         return AppFactory::createMediaCollection()
             ->adminURL()
             ->base()
-            ->mode(BaseViewMediaScreen::URL_NAME)
+            ->mode(ViewMode::URL_NAME)
             ->int(MediaCollection::PRIMARY_NAME, $this->recordID);
     }
 }

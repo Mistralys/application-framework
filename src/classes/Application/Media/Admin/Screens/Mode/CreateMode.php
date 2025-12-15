@@ -2,22 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Media;
+namespace Application\Media\Admin\Screens\Mode;
 
-use Application\AppFactory;
 use Application\Media\Admin\MediaScreenRights;
+use Application\Media\Admin\Traits\MediaModeInterface;
+use Application\Media\Admin\Traits\MediaModeTrait;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
-use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property MediaRecord|NULL $record
  * @property MediaCollection $collection
  */
-abstract class BaseCreateMediaScreen extends BaseRecordCreateSubmode
+class CreateMode extends BaseRecordCreateMode implements MediaModeInterface
 {
+    use MediaModeTrait;
+
     public const string URL_NAME = 'create';
 
     public function getURLName(): string
@@ -33,11 +36,6 @@ abstract class BaseCreateMediaScreen extends BaseRecordCreateSubmode
     public function getSettingsManager() : MediaSettingsManager
     {
         return MediaCollection::createSettingsManager($this, $this->record);
-    }
-
-    public function createCollection() : MediaCollection
-    {
-        return AppFactory::createMediaCollection();
     }
 
     public function getSuccessURL(DBHelperRecordInterface $record): string

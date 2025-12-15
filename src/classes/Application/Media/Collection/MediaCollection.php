@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Application\Media\Collection;
 
 use Application;
-use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\Media\MediaAdminURLs;
+use Application\Media\Admin\MediaAdminURLs;
+use Application\Media\Admin\Screens\MediaLibraryArea;
 use Application\Media\MediaTagConnector;
 use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
 use Application\Tags\TagCollection;
@@ -149,7 +149,7 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseMediaLibraryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = MediaLibraryArea::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);
