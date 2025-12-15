@@ -18,4 +18,9 @@ abstract class BaseRecordCreateMode extends BaseMode implements RecordCreateScre
     {
         return '';
     }
+
+    public function getDefaultSubscreenClass() : ?string
+    {
+        return null;
+    }
 }

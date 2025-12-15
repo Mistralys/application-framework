@@ -14,7 +14,12 @@ abstract class BaseRecordListMode
 {
     use RecordListScreenTrait;
 
-    final public function getDefaultSubmode(): string
+    public function getDefaultSubmode(): string
+    {
+        return '';
+    }
+
+    public function getDefaultSubscreenClass(): string
     {
         return '';
     }
