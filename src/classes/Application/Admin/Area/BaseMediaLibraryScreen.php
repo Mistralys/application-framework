@@ -14,9 +14,9 @@ use Application_User;
 use UI;
 use UI_Icon;
 
-class BaseMediaLibraryScreen extends Application_Admin_Area
+abstract class BaseMediaLibraryScreen extends Application_Admin_Area
 {
-    public const URL_NAME = 'media';
+    public const string URL_NAME = 'media';
     private MediaCollection $media;
 
     public function getDefaultMode(): string
