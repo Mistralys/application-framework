@@ -17,7 +17,9 @@ use Application_Driver;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseClassLoaderCollectionMulti;
+use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
+use Mistralys\AppFramework\AppFramework;
 use ReflectionClass;
 
 /**
@@ -60,6 +62,18 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
     public static function registerFolder(FolderInfo $folder) : void
     {
+        $driverPath = FileHelper::resolvePathDots(AppFactory::createDriver()->getClassesFolder());
+        $frameworkPath = FileHelper::resolvePathDots(AppFramework::getInstance()->getInstallFolder().'/src/classes');
+        $folderPath = FileHelper::resolvePathDots($folder->getPath());
+
+        if(str_starts_with($folderPath, $driverPath)) {
+            $folderPath = '(Driver) '.FileHelper::relativizePath($folderPath, $driverPath);
+        } else if(str_starts_with($folderPath, $frameworkPath)) {
+            $folderPath = '(Framework) '.FileHelper::relativizePath($folderPath, $frameworkPath);
+        }
+
+        AppFactory::createLogger()->log(sprintf('ScreenIndexer | Add Folder [%s]', $folderPath));
+
         self::$folders[$folder->getPath()] = $folder;
     }
 
