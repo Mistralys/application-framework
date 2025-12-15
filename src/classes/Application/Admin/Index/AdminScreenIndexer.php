@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Admin\Index;
 
+use Application\Admin\ScreenException;
 use Application\AppFactory;
+use Application\Framework\AppFolder;
 use Application\Interfaces\Admin\AdminActionInterface;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminModeInterface;
@@ -62,17 +64,9 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
     public static function registerFolder(FolderInfo $folder) : void
     {
-        $driverPath = FileHelper::resolvePathDots(AppFactory::createDriver()->getClassesFolder());
-        $frameworkPath = FileHelper::resolvePathDots(AppFramework::getInstance()->getInstallFolder().'/src/classes');
-        $folderPath = FileHelper::resolvePathDots($folder->getPath());
+        $appFolder = AppFolder::create($folder)->requireValid();
 
-        if(str_starts_with($folderPath, $driverPath)) {
-            $folderPath = '(Driver) '.FileHelper::relativizePath($folderPath, $driverPath);
-        } else if(str_starts_with($folderPath, $frameworkPath)) {
-            $folderPath = '(Framework) '.FileHelper::relativizePath($folderPath, $frameworkPath);
-        }
-
-        AppFactory::createLogger()->log(sprintf('ScreenIndexer | Add Folder [%s]', $folderPath));
+        AppFactory::createLogger()->log(sprintf('ScreenIndexer | Add Folder [%s]', $appFolder));
 
         self::$folders[$folder->getPath()] = $folder;
     }
