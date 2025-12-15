@@ -19,8 +19,8 @@ abstract class BaseRecordListMode
         return '';
     }
 
-    public function getDefaultSubscreenClass(): string
+    public function getDefaultSubscreenClass(): ?string
     {
-        return '';
+        return null;
     }
 }
