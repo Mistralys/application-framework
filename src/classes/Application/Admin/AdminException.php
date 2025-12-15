@@ -10,4 +10,5 @@ class AdminException extends ApplicationException
     public const int ERROR_SCREEN_INDEX_NOT_FOUND = 188403;
     public const int ERROR_SCREEN_INDEX_INVALID = 188404;
     public const int ERROR_SCREEN_SUBSCREEN_NOT_FOUND = 188405;
+    public const int ERROR_INVALID_APP_SOURCE_FOLDER = 188406;
 }
