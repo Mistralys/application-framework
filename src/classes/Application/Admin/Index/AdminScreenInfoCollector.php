@@ -6,6 +6,7 @@ namespace Application\Admin\Index;
 
 use Application\Admin\ClassLoaderScreenInterface;
 use Application\AppFactory;
+use Application\Framework\AppFolder;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\AllowableMigrationInterface;
 use AdminException;
@@ -151,7 +152,7 @@ class AdminScreenInfoCollector implements StringPrimaryRecordInterface
             ScreenDataInterface::KEY_SCREEN_REQUIRED_RIGHT => null,
             ScreenDataInterface::KEY_SCREEN_FEATURE_RIGHTS => null,
             ScreenDataInterface::KEY_SCREEN_CLASS => $this->getClass(),
-            ScreenDataInterface::KEY_SCREEN_PATH => FileHelper::relativizePath($this->getFolder()->getPath(), AppFactory::createDriver()->getClassesFolder()),
+            ScreenDataInterface::KEY_SCREEN_PATH => AppFolder::create($this->getFolder())->getIdentifier(),
             ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES => $this->getSubscreenClasses()
         );
 
