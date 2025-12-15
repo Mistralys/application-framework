@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Mistralys\AppFramework;
 
-use Application\Framework\ApplicationFolder;
-use Application_Exception;
+use Application\ApplicationException;
 use AppUtils\BaseException;
 use AppUtils\FileHelper\FileInfo;
-use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 use Mistralys\ChangelogParser\ChangelogParser;
 use Mistralys\VersionParser\VersionParser;
@@ -68,10 +66,9 @@ class AppFramework
      * 1. The `VERSION` file, if it exists and is current.
      * 2. The `changelog.md` file
      *
-     * NOTE: The `VERSION` file is automatically created and updated as necessary.
+     * > NOTE: The `VERSION` file is automatically created and updated as necessary.
      *
      * @return VersionParser
-     * @throws Application_Exception
      * @throws BaseException
      * @throws FileHelper_Exception
      */
@@ -95,7 +92,7 @@ class AppFramework
             return $version->getVersionInfo();
         }
 
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Could not determine framework version.',
             sprintf(
                 'The version could not be determined from the changelog file at [%s].',
