@@ -7,6 +7,7 @@ namespace TestDriver\TestDBRecords;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use Closure;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
@@ -21,15 +22,15 @@ use UI;
  */
 class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_LABEL = 'local-label';
-    public const SETTING_ALIAS = 'local-alias';
-    public const SETTING_GENERATE_ALIAS = 'local-generate-alias';
-    public const SETTING_STATIC = 'local-static';
+    public const string SETTING_LABEL = 'local-label';
+    public const string SETTING_ALIAS = 'local-alias';
+    public const string SETTING_GENERATE_ALIAS = 'local-generate-alias';
+    public const string SETTING_STATIC = 'local-static';
 
-    public const VALUE_PREFIX_ALIAS = 'generate-';
-    public const VALUE_STATIC = 'static-value';
+    public const string VALUE_PREFIX_ALIAS = 'generate-';
+    public const string VALUE_STATIC = 'static-value';
 
-    public function __construct(Application_Formable $formable, ?TestDBRecord $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, ?TestDBRecord $record = null)
     {
         parent::__construct($formable, ClassFactory::createTestDBCollection(), $record);
 

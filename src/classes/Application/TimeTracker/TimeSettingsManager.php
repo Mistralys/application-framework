@@ -10,6 +10,7 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use AppUtils\DateTimeHelper\DaytimeStringInfo;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\DateTimeHelper\TimeDurationCalculator;
@@ -31,7 +32,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
     public const string FORMAT_PLACEHOLDER = '$format';
     public const string SETTING_TICKET_URL = 'ticketURL';
 
-    public function __construct(Application_Formable $formable, ?TimeEntry $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, ?TimeEntry $record = null)
     {
         parent::__construct($formable, AppFactory::createTimeTracker(), $record);
 

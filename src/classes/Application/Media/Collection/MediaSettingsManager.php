@@ -10,6 +10,7 @@ use Application\Media\MediaException;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use Application_Media_Document;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
@@ -26,16 +27,16 @@ use UI;
  */
 class MediaSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const ERROR_NO_DOCUMENT_IN_CREATE_MODE = 146101;
+    public const int ERROR_NO_DOCUMENT_IN_CREATE_MODE = 146101;
 
-    public const SETTING_NAME = 'name';
-    public const SETTING_FILE = 'file';
-    public const SETTING_DESCRIPTION = 'description';
-    public const SETTING_KEYWORDS = 'keywords';
+    public const string SETTING_NAME = 'name';
+    public const string SETTING_FILE = 'file';
+    public const string SETTING_DESCRIPTION = 'description';
+    public const string SETTING_KEYWORDS = 'keywords';
 
     private HTML_QuickForm2_Element_InputFile $fileElement;
 
-    public function __construct(Application_Formable $formable, ?MediaRecord $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, ?MediaRecord $record = null)
     {
         parent::__construct($formable, AppFactory::createMediaCollection(), $record);
 

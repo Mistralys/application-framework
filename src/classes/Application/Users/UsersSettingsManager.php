@@ -9,6 +9,7 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use Application_Users;
 use Application_Users_User;
 use DBHelper\Interfaces\DBHelperRecordInterface;
@@ -25,7 +26,7 @@ class UsersSettingsManager extends Application_Formable_RecordSettings_Extended
     public const string SETTING_FOREIGN_NICKNAME = 'foreign_nickname';
     public const string SETTING_NICKNAME = 'nickname';
 
-    public function __construct(Application_Formable $formable, ?Application_Users_User $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, ?Application_Users_User $record = null)
     {
         parent::__construct($formable, AppFactory::createUsers(), $record);
 

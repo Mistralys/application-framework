@@ -63,7 +63,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      */
     private bool $defaultsUseStorage = false;
 
-    public function __construct(Application_Formable $formable, DBHelperCollectionInterface $collection, ?DBHelperRecordInterface $record=null)
+    public function __construct(Application_Interfaces_Formable $formable, DBHelperCollectionInterface $collection, ?DBHelperRecordInterface $record=null)
     {
         parent::__construct($formable);
         

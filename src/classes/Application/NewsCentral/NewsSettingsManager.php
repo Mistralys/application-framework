@@ -8,6 +8,7 @@ use Application\NewsCentral\Categories\CategorySelector;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use AppLocalize\Localization;
 use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
@@ -36,7 +37,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elDateModified;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elDateCreated;
 
-    public function __construct(Application_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
     {
         parent::__construct($formable, $collection, $record);
 
