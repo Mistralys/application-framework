@@ -23,7 +23,7 @@ use UI_Themes_Theme_ContentRenderer;
 /**
  * @property MediaRecord $record
  */
-abstract class StatusSubmode extends BaseRecordSubmode implements MediaViewInterface
+class StatusSubmode extends BaseRecordSubmode implements MediaViewInterface
 {
     use MediaViewTrait;
 
