@@ -6,17 +6,16 @@
 
 declare(strict_types=1);
 
-use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\Area\BaseTagsScreen;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Development\Admin\Screens\DevelArea;
+use Application\Media\Admin\Screens\MediaLibraryArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\UserSettingsArea;
 use TestDriver\Area\APIClientsArea;
 use TestDriver\Area\CountriesScreen;
-use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
@@ -56,7 +55,7 @@ class TestDriver extends Application_Driver
             TestDriver_Area_WizardTest::URL_NAME => TestDriver_Area_WizardTest::class,
             QuickNavScreen::URL_NAME => QuickNavScreen::class,
             BaseNewsScreen::URL_NAME => NewsScreen::class,
-            BaseMediaLibraryScreen::URL_NAME => MediaLibraryScreen::class,
+            MediaLibraryArea::URL_NAME => MediaLibraryArea::class,
             TestingScreen::URL_NAME => TestingScreen::class,
             RevisionableScreen::URL_NAME => RevisionableScreen::class,
             BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
