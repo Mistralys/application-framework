@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Mistralys\AppFramework;
 
+use Application\Framework\ApplicationFolder;
 use Application_Exception;
 use AppUtils\BaseException;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 use Mistralys\ChangelogParser\ChangelogParser;
 use Mistralys\VersionParser\VersionParser;
 
 class AppFramework
 {
-    private const GITHUB_URL = 'https://github.com/Mistralys/application-framework.git';
+    private const string GITHUB_URL = 'https://github.com/Mistralys/application-framework.git';
 
-    public const ERROR_CANNOT_DETERMINE_VERSION = 162401;
+    public const int ERROR_CANNOT_DETERMINE_VERSION = 162401;
 
     private static ?AppFramework $instance = null;
     private string $installFolder;
@@ -23,7 +25,7 @@ class AppFramework
 
     private function __construct()
     {
-        $this->installFolder = __DIR__.'/../../';
+        $this->installFolder = __DIR__.'/../../../../';
     }
 
     public function getName() : string
@@ -34,6 +36,11 @@ class AppFramework
     public function getInstallFolder(): string
     {
         return $this->installFolder;
+    }
+
+    public function getClassesFolder() : string
+    {
+        return rtrim($this->getInstallFolder(), '/').'/src/classes';
     }
 
     public function getNameLinked() : string
