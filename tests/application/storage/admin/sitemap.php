@@ -56,16 +56,15 @@ return array (
     'devel.whatsneweditor.create' => 'Application\\WhatsNew\\Admin\\Screens\\CreateSubmode',
     'devel.whatsneweditor.edit' => 'Application\\WhatsNew\\Admin\\Screens\\EditSubmode',
     'devel.whatsneweditor.list' => 'Application\\WhatsNew\\Admin\\Screens\\ListSubmode',
-    'image-gallery' => 'Application\\Admin\\Area\\Media\\BaseImageGalleryScreen',
-    'media' => 'Application\\Admin\\Area\\BaseMediaLibraryScreen',
-    'media.create' => 'TestDriver\\Area\\MediaLibraryScreen\\CreateMediaScreen',
-    'media.image-gallery' => 'TestDriver\\Area\\MediaLibraryScreen\\ImageGalleryScreen',
-    'media.list' => 'TestDriver\\Area\\MediaLibraryScreen\\MediaListScreen',
-    'media.settings' => 'TestDriver\\Area\\MediaLibraryScreen\\MediaSettingsScreen',
-    'media.view' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen',
-    'media.view.settings' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaSettingsScreen',
-    'media.view.status' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaStatusScreen',
-    'media.view.tagging' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaTagsScreen',
+    'media' => 'Application\\Media\\Admin\\Screens\\MediaLibraryArea',
+    'media.create' => 'Application\\Media\\Admin\\Screens\\Mode\\CreateMode',
+    'media.image-gallery' => 'Application\\Media\\Admin\\Screens\\Mode\\ImageGalleryMode',
+    'media.list' => 'Application\\Media\\Admin\\Screens\\Mode\\ListMode',
+    'media.settings' => 'Application\\Media\\Admin\\Screens\\Mode\\GlobalSettingsMode',
+    'media.view' => 'Application\\Media\\Admin\\Screens\\Mode\\ViewMode',
+    'media.view.settings' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+    'media.view.status' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\StatusSubmode',
+    'media.view.tagging' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\TagsSubmode',
     'news' => 'TestDriver\\Area\\NewsScreen',
     'news.categories-list' => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
     'news.create-alert' => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
@@ -85,7 +84,6 @@ return array (
     'revisionable.list' => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
     'settings' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
     'tag-tree' => 'Application\\Area\\Tags\\ViewTag\\BaseTagTreeScreen',
-    'tagging' => 'Application\\Admin\\Area\\Media\\View\\BaseMediaTagsScreen',
     'tags' => 'TestDriver\\Area\\TagsScreen',
     'tags.create' => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
     'tags.list' => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
@@ -131,53 +129,6 @@ return array (
   ),
   'flat' => 
   array (
-    'Application\\Admin\\Area\\BaseMediaLibraryScreen' => 
-    array (
-      'id' => 'BaseMediaLibraryScreen',
-      'urlName' => 'media',
-      'urlPath' => 'media',
-      'title' => 'Media library',
-      'navigationTitle' => 'Media',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'Application\\Admin\\Area\\BaseMediaLibraryScreen',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'Application\\Admin\\Area\\Media\\BaseImageGalleryScreen' => 
-    array (
-      'id' => 'BaseImageGalleryScreen',
-      'urlName' => 'image-gallery',
-      'urlPath' => 'image-gallery',
-      'title' => 'Image gallery',
-      'navigationTitle' => 'Image gallery',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'Application\\Admin\\Area\\Media\\BaseImageGalleryScreen',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Media',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'Application\\Admin\\Area\\Media\\View\\BaseMediaTagsScreen' => 
-    array (
-      'id' => 'BaseMediaTagsScreen',
-      'urlName' => 'tagging',
-      'urlPath' => 'tagging',
-      'title' => 'Tags',
-      'navigationTitle' => 'Tags',
-      'requiredRight' => 'EditMedia',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'Application\\Admin\\Area\\Media\\View\\BaseMediaTagsScreen',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Media/View',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
     'Application\\Admin\\Index\\Screens\\SitemapMode' => 
     array (
       'id' => 'SitemapMode',
@@ -190,7 +141,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Admin\\Index\\Screens\\SitemapMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Index/Screens',
+      'path' => 'framework-classes:Application/Admin/Index/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -207,7 +158,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+      'path' => 'framework-classes:Application/Admin/Welcome/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -224,7 +175,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+      'path' => 'framework-classes:Application/Admin/Welcome/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -241,7 +192,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Admin\\Welcome\\Screens\\WelcomeArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+      'path' => 'framework-classes:Application/Admin/Welcome/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
@@ -260,7 +211,7 @@ return array (
       array (
       ),
       'class' => 'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/AppSettings/Admin/Screens',
+      'path' => 'framework-classes:Application/AppSettings/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -277,7 +228,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Area\\Tags\\ViewTag\\BaseTagTreeScreen',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area/Tags/ViewTag',
+      'path' => 'framework-classes:Application/Admin/Area/Tags/ViewTag',
       'subscreenClasses' => 
       array (
       ),
@@ -294,7 +245,7 @@ return array (
       array (
       ),
       'class' => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/CacheControl/Admin/Screens',
+      'path' => 'framework-classes:Application/CacheControl/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -311,7 +262,7 @@ return array (
       array (
       ),
       'class' => 'Application\\DeploymentRegistry\\Admin\\Screens\\DeploymentHistoryMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/DeploymentRegistry/Admin/Screens',
+      'path' => 'framework-classes:Application/DeploymentRegistry/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -328,7 +279,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
+      'path' => 'framework-classes:Application/Development/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -345,7 +296,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Development\\Admin\\Screens\\DevelArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
+      'path' => 'framework-classes:Application/Development/Admin/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\Admin\\Index\\Screens\\SitemapMode',
@@ -379,7 +330,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
+      'path' => 'framework-classes:Application/Development/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -396,7 +347,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Environments/Admin/Screens',
+      'path' => 'framework-classes:Application/Environments/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -413,7 +364,7 @@ return array (
       array (
       ),
       'class' => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/ErrorLog/Admin/Screens',
+      'path' => 'framework-classes:Application/ErrorLog/Admin/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\ErrorLog\\Admin\\Screens\\ListSubmode',
@@ -432,7 +383,7 @@ return array (
       array (
       ),
       'class' => 'Application\\ErrorLog\\Admin\\Screens\\ListSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/ErrorLog/Admin/Screens',
+      'path' => 'framework-classes:Application/ErrorLog/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -449,7 +400,7 @@ return array (
       array (
       ),
       'class' => 'Application\\ErrorLog\\Admin\\Screens\\ViewSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/ErrorLog/Admin/Screens',
+      'path' => 'framework-classes:Application/ErrorLog/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -466,7 +417,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Maintenance\\Admin\\Screens\\CreateSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Maintenance/Admin/Screens',
+      'path' => 'framework-classes:Application/Maintenance/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -483,7 +434,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Maintenance\\Admin\\Screens\\ListSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Maintenance/Admin/Screens',
+      'path' => 'framework-classes:Application/Maintenance/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -500,11 +451,173 @@ return array (
       array (
       ),
       'class' => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Maintenance/Admin/Screens',
+      'path' => 'framework-classes:Application/Maintenance/Admin/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\Maintenance\\Admin\\Screens\\CreateSubmode',
         1 => 'Application\\Maintenance\\Admin\\Screens\\ListSubmode',
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\MediaLibraryArea' => 
+    array (
+      'id' => 'MediaLibraryArea',
+      'urlName' => 'media',
+      'urlPath' => 'media',
+      'title' => 'Media library',
+      'navigationTitle' => 'Media',
+      'requiredRight' => 'ViewMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\MediaLibraryArea',
+      'path' => 'framework-classes:Application/Media/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Media\\Admin\\Screens\\Mode\\CreateMode',
+        1 => 'Application\\Media\\Admin\\Screens\\Mode\\GlobalSettingsMode',
+        2 => 'Application\\Media\\Admin\\Screens\\Mode\\ImageGalleryMode',
+        3 => 'Application\\Media\\Admin\\Screens\\Mode\\ListMode',
+        4 => 'Application\\Media\\Admin\\Screens\\Mode\\ViewMode',
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\CreateMode' => 
+    array (
+      'id' => 'CreateMode',
+      'urlName' => 'create',
+      'urlPath' => 'media.create',
+      'title' => 'Add a media file',
+      'navigationTitle' => 'Add media',
+      'requiredRight' => 'CreateMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\CreateMode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\GlobalSettingsMode' => 
+    array (
+      'id' => 'GlobalSettingsMode',
+      'urlName' => 'settings',
+      'urlPath' => 'media.settings',
+      'title' => 'Media settings',
+      'navigationTitle' => 'Media settings',
+      'requiredRight' => 'AdminMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\GlobalSettingsMode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\ImageGalleryMode' => 
+    array (
+      'id' => 'ImageGalleryMode',
+      'urlName' => 'image-gallery',
+      'urlPath' => 'media.image-gallery',
+      'title' => 'Image gallery',
+      'navigationTitle' => 'Image gallery',
+      'requiredRight' => 'ViewMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\ImageGalleryMode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\ListMode' => 
+    array (
+      'id' => 'ListMode',
+      'urlName' => 'list',
+      'urlPath' => 'media.list',
+      'title' => 'Available media files',
+      'navigationTitle' => 'Overview',
+      'requiredRight' => 'ViewMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\ListMode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\ViewMode' => 
+    array (
+      'id' => 'ViewMode',
+      'urlName' => 'view',
+      'urlPath' => 'media.view',
+      'title' => 'Media file',
+      'navigationTitle' => 'Media file',
+      'requiredRight' => 'ViewMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\ViewMode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Media\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+        1 => 'Application\\Media\\Admin\\Screens\\Mode\\View\\StatusSubmode',
+        2 => 'Application\\Media\\Admin\\Screens\\Mode\\View\\TagsSubmode',
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\View\\SettingsSubmode' => 
+    array (
+      'id' => 'SettingsSubmode',
+      'urlName' => 'settings',
+      'urlPath' => 'media.view.settings',
+      'title' => 'Settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewMedia',
+      'featureRights' => 
+      array (
+        'Edit the settings' => 'EditMedia',
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\View\\StatusSubmode' => 
+    array (
+      'id' => 'StatusSubmode',
+      'urlName' => 'status',
+      'urlPath' => 'media.view.status',
+      'title' => 'Status',
+      'navigationTitle' => 'Status',
+      'requiredRight' => 'ViewMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\StatusSubmode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Media\\Admin\\Screens\\Mode\\View\\TagsSubmode' => 
+    array (
+      'id' => 'TagsSubmode',
+      'urlName' => 'tagging',
+      'urlPath' => 'media.view.tagging',
+      'title' => 'Tags',
+      'navigationTitle' => 'Tags',
+      'requiredRight' => 'EditMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\TagsSubmode',
+      'path' => 'framework-classes:Application/Media/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
       ),
     ),
     'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode' => 
@@ -519,7 +632,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Messagelogs/Admin/Screens',
+      'path' => 'framework-classes:Application/Messagelogs/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -536,7 +649,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Mode',
+      'path' => 'framework-classes:Application/Renamer/Admin/Screens/Mode',
       'subscreenClasses' => 
       array (
         0 => 'Application\\Renamer\\Admin\\Screens\\Submode\\ConfigurationSubmode',
@@ -558,7 +671,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ConfigurationSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+      'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
       'subscreenClasses' => 
       array (
       ),
@@ -575,7 +688,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ExportSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+      'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
       'subscreenClasses' => 
       array (
       ),
@@ -592,7 +705,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ReplaceSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+      'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
       'subscreenClasses' => 
       array (
       ),
@@ -609,7 +722,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ResultsSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+      'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
       'subscreenClasses' => 
       array (
       ),
@@ -626,7 +739,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\SearchSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+      'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
       'subscreenClasses' => 
       array (
       ),
@@ -643,7 +756,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+      'path' => 'framework-classes:Application/Sets/Admin/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
@@ -664,7 +777,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+      'path' => 'framework-classes:Application/Sets/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -681,7 +794,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+      'path' => 'framework-classes:Application/Sets/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -698,7 +811,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Sets\\Admin\\Screens\\EditSetSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+      'path' => 'framework-classes:Application/Sets/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -715,7 +828,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Sets\\Admin\\Screens\\SetsListSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+      'path' => 'framework-classes:Application/Sets/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -732,7 +845,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Users/Admin/Screens/Mode',
+      'path' => 'framework-classes:Application/Users/Admin/Screens/Mode',
       'subscreenClasses' => 
       array (
       ),
@@ -749,7 +862,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Users/Admin/Screens',
+      'path' => 'framework-classes:Application/Users/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -766,7 +879,7 @@ return array (
       array (
       ),
       'class' => 'Application\\WhatsNew\\Admin\\Screens\\CreateSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+      'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -783,7 +896,7 @@ return array (
       array (
       ),
       'class' => 'Application\\WhatsNew\\Admin\\Screens\\EditSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+      'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -800,7 +913,7 @@ return array (
       array (
       ),
       'class' => 'Application\\WhatsNew\\Admin\\Screens\\ListSubmode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+      'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -817,7 +930,7 @@ return array (
       array (
       ),
       'class' => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+      'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\WhatsNew\\Admin\\Screens\\CreateSubmode',
@@ -837,7 +950,7 @@ return array (
       array (
       ),
       'class' => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/DeeplHelper/Admin/Screens',
+      'path' => 'framework-classes:DeeplHelper/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -854,7 +967,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
@@ -875,7 +988,7 @@ return array (
         'Multi-delete API Clients' => 'DeleteAPIClients',
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
-      'path' => 'Area/APIClientsArea',
+      'path' => 'driver-classes:Area/APIClientsArea',
       'subscreenClasses' => 
       array (
       ),
@@ -892,7 +1005,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode',
-      'path' => 'Area/APIClientsArea',
+      'path' => 'driver-classes:Area/APIClientsArea',
       'subscreenClasses' => 
       array (
       ),
@@ -909,7 +1022,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode',
-      'path' => 'Area/APIClientsArea',
+      'path' => 'driver-classes:Area/APIClientsArea',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
@@ -929,7 +1042,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
-      'path' => 'Area/APIClientsArea/ViewAPIClientMode',
+      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
       'subscreenClasses' => 
       array (
       ),
@@ -946,7 +1059,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode',
-      'path' => 'Area/APIClientsArea/ViewAPIClientMode',
+      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
       'subscreenClasses' => 
       array (
       ),
@@ -963,7 +1076,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode',
-      'path' => 'Area/APIClientsArea/ViewAPIClientMode',
+      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
@@ -985,7 +1098,7 @@ return array (
         'Edit API Key Settings' => 'EditAPIClients',
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
-      'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
       'subscreenClasses' => 
       array (
       ),
@@ -1002,7 +1115,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction',
-      'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
       'subscreenClasses' => 
       array (
       ),
@@ -1017,7 +1130,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction',
-      'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
       'subscreenClasses' => 
       array (
       ),
@@ -1032,7 +1145,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction',
-      'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
       'subscreenClasses' => 
       array (
       ),
@@ -1049,7 +1162,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\CountriesScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
@@ -1069,7 +1182,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
-      'path' => 'Area/CountriesScreen',
+      'path' => 'driver-classes:Area/CountriesScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1086,7 +1199,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\CountriesScreen\\ListScreen',
-      'path' => 'Area/CountriesScreen',
+      'path' => 'driver-classes:Area/CountriesScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1103,7 +1216,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen',
-      'path' => 'Area/CountriesScreen',
+      'path' => 'driver-classes:Area/CountriesScreen',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
@@ -1122,7 +1235,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
-      'path' => 'Area/CountriesScreen/ViewScreen',
+      'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1139,163 +1252,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen',
-      'path' => 'Area/CountriesScreen/ViewScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen' => 
-    array (
-      'id' => 'MediaLibraryScreen',
-      'urlName' => 'media',
-      'urlPath' => 'media',
-      'title' => 'Media library',
-      'navigationTitle' => 'Media',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen',
-      'path' => 'Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\MediaLibraryScreen\\CreateMediaScreen',
-        1 => 'TestDriver\\Area\\MediaLibraryScreen\\ImageGalleryScreen',
-        2 => 'TestDriver\\Area\\MediaLibraryScreen\\MediaListScreen',
-        3 => 'TestDriver\\Area\\MediaLibraryScreen\\MediaSettingsScreen',
-        4 => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen',
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\CreateMediaScreen' => 
-    array (
-      'id' => 'CreateMediaScreen',
-      'urlName' => 'create',
-      'urlPath' => 'media.create',
-      'title' => 'Add a media file',
-      'navigationTitle' => 'Add media',
-      'requiredRight' => 'CreateMedia',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\CreateMediaScreen',
-      'path' => 'Area/MediaLibraryScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\ImageGalleryScreen' => 
-    array (
-      'id' => 'ImageGalleryScreen',
-      'urlName' => 'image-gallery',
-      'urlPath' => 'media.image-gallery',
-      'title' => 'Image gallery',
-      'navigationTitle' => 'Image gallery',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\ImageGalleryScreen',
-      'path' => 'Area/MediaLibraryScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\MediaListScreen' => 
-    array (
-      'id' => 'MediaListScreen',
-      'urlName' => 'list',
-      'urlPath' => 'media.list',
-      'title' => 'Available media files',
-      'navigationTitle' => 'Overview',
-      'requiredRight' => 'ViewMedia',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\MediaListScreen',
-      'path' => 'Area/MediaLibraryScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\MediaSettingsScreen' => 
-    array (
-      'id' => 'MediaSettingsScreen',
-      'urlName' => 'settings',
-      'urlPath' => 'media.settings',
-      'title' => 'Media settings',
-      'navigationTitle' => 'Media settings',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\MediaSettingsScreen',
-      'path' => 'Area/MediaLibraryScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen' => 
-    array (
-      'id' => 'ViewMediaScreen',
-      'urlName' => 'view',
-      'urlPath' => 'media.view',
-      'title' => 'Media file',
-      'navigationTitle' => 'Media file',
-      'requiredRight' => 'ViewMedia',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen',
-      'path' => 'Area/MediaLibraryScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaSettingsScreen',
-        1 => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaStatusScreen',
-        2 => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaTagsScreen',
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaSettingsScreen' => 
-    array (
-      'id' => 'MediaSettingsScreen',
-      'urlName' => 'settings',
-      'urlPath' => 'media.view.settings',
-      'title' => 'Settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewMedia',
-      'featureRights' => 
-      array (
-        'Edit the settings' => 'EditMedia',
-      ),
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaSettingsScreen',
-      'path' => 'Area/MediaLibraryScreen/ViewMediaScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaStatusScreen' => 
-    array (
-      'id' => 'MediaStatusScreen',
-      'urlName' => 'status',
-      'urlPath' => 'media.view.status',
-      'title' => 'Status',
-      'navigationTitle' => 'Status',
-      'requiredRight' => 'ViewMedia',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaStatusScreen',
-      'path' => 'Area/MediaLibraryScreen/ViewMediaScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaTagsScreen' => 
-    array (
-      'id' => 'MediaTagsScreen',
-      'urlName' => 'tagging',
-      'urlPath' => 'media.view.tagging',
-      'title' => 'Tags',
-      'navigationTitle' => 'Tags',
-      'requiredRight' => 'EditMedia',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\MediaLibraryScreen\\ViewMediaScreen\\MediaTagsScreen',
-      'path' => 'Area/MediaLibraryScreen/ViewMediaScreen',
+      'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1310,7 +1267,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\NewsScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
@@ -1335,7 +1292,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1352,7 +1309,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1369,7 +1326,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\CreateArticleScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1386,7 +1343,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1403,7 +1360,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\NewsListScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1420,7 +1377,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
@@ -1439,7 +1396,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
-      'path' => 'Area/NewsScreen/ReadNewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1456,7 +1413,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen',
-      'path' => 'Area/NewsScreen/ReadNewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1473,7 +1430,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
@@ -1493,7 +1450,7 @@ return array (
         'Modify the settings' => 'EditNews',
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
-      'path' => 'Area/NewsScreen/ViewArticleScreen',
+      'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1510,7 +1467,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen',
-      'path' => 'Area/NewsScreen/ViewArticleScreen',
+      'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1527,7 +1484,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen',
-      'path' => 'Area/NewsScreen',
+      'path' => 'driver-classes:Area/NewsScreen',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
@@ -1546,7 +1503,7 @@ return array (
         'Modify the settings' => 'EditNews',
       ),
       'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
-      'path' => 'Area/NewsScreen/ViewCategoryScreen',
+      'path' => 'driver-classes:Area/NewsScreen/ViewCategoryScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1563,7 +1520,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\QuickNavScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
       ),
@@ -1578,7 +1535,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\RevisionableScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
@@ -1594,7 +1551,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
-      'path' => 'Area/RevisionableScreen',
+      'path' => 'driver-classes:Area/RevisionableScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1609,7 +1566,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TagsScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
@@ -1629,7 +1586,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
-      'path' => 'Area/TagsScreen',
+      'path' => 'driver-classes:Area/TagsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1646,7 +1603,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
-      'path' => 'Area/TagsScreen',
+      'path' => 'driver-classes:Area/TagsScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1663,7 +1620,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen',
-      'path' => 'Area/TagsScreen',
+      'path' => 'driver-classes:Area/TagsScreen',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
@@ -1683,7 +1640,7 @@ return array (
         'Edit the settings' => 'EditTags',
       ),
       'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
-      'path' => 'Area/TagsScreen/ViewTagScreen',
+      'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1700,7 +1657,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen',
-      'path' => 'Area/TagsScreen/ViewTagScreen',
+      'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1715,7 +1672,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TestingScreen\\CancelHandleActionsScreen',
@@ -1739,7 +1696,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen\\CancelHandleActionsScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1756,7 +1713,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateBasicScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1773,7 +1730,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerExtendedScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1790,7 +1747,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerLegacyScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1805,7 +1762,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen\\DBHelperSelectionTieInScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1820,7 +1777,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen\\LogJavaScriptErrorScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1835,7 +1792,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1850,7 +1807,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1865,7 +1822,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen\\TieInAncestryTestScreen',
-      'path' => 'Area/TestingScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1882,7 +1839,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
@@ -1906,7 +1863,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
-      'path' => 'Area/TimeTrackerScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1923,7 +1880,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen',
-      'path' => 'Area/TimeTrackerScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1940,7 +1897,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen',
-      'path' => 'Area/TimeTrackerScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1957,7 +1914,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen',
-      'path' => 'Area/TimeTrackerScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1974,7 +1931,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen',
-      'path' => 'Area/TimeTrackerScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1991,7 +1948,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen',
-      'path' => 'Area/TimeTrackerScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
@@ -2010,7 +1967,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
-      'path' => 'Area/TimeTrackerScreen/ListScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2027,7 +1984,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
-      'path' => 'Area/TimeTrackerScreen/ListScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2044,7 +2001,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen',
-      'path' => 'Area/TimeTrackerScreen/ListScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2061,7 +2018,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen',
-      'path' => 'Area/TimeTrackerScreen/ListScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2078,7 +2035,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen',
-      'path' => 'Area/TimeTrackerScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
@@ -2098,7 +2055,7 @@ return array (
         'Edit settings' => 'EditTimeEntries',
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
-      'path' => 'Area/TimeTrackerScreen/ViewScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2115,7 +2072,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen',
-      'path' => 'Area/TimeTrackerScreen/ViewScreen',
+      'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2130,7 +2087,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TranslationsScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
       ),
@@ -2147,7 +2104,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\UsersArea\\CreateUserMode',
@@ -2167,7 +2124,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea\\CreateUserMode',
-      'path' => 'Area/UsersArea',
+      'path' => 'driver-classes:Area/UsersArea',
       'subscreenClasses' => 
       array (
       ),
@@ -2184,7 +2141,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea\\UserListMode',
-      'path' => 'Area/UsersArea',
+      'path' => 'driver-classes:Area/UsersArea',
       'subscreenClasses' => 
       array (
       ),
@@ -2201,7 +2158,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea\\ViewUserMode',
-      'path' => 'Area/UsersArea',
+      'path' => 'driver-classes:Area/UsersArea',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserSettingsSubmode',
@@ -2220,7 +2177,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserSettingsSubmode',
-      'path' => 'Area/UsersArea/ViewUserMode',
+      'path' => 'driver-classes:Area/UsersArea/ViewUserMode',
       'subscreenClasses' => 
       array (
       ),
@@ -2237,7 +2194,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserStatusSubmode',
-      'path' => 'Area/UsersArea/ViewUserMode',
+      'path' => 'driver-classes:Area/UsersArea/ViewUserMode',
       'subscreenClasses' => 
       array (
       ),
@@ -2252,7 +2209,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver_Area_WizardTest',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver_Area_WizardTest_Wizard',
@@ -2268,7 +2225,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver_Area_WizardTest_Wizard',
-      'path' => 'Area/WizardTest',
+      'path' => 'driver-classes:Area/WizardTest',
       'subscreenClasses' => 
       array (
       ),
@@ -2285,7 +2242,7 @@ return array (
       array (
       ),
       'class' => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/UI/Admin/Screens',
+      'path' => 'framework-classes:UI/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -2302,7 +2259,7 @@ return array (
       array (
       ),
       'class' => 'UI\\Admin\\Screens\\CSSGenDevelMode',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/UI/Admin/Screens',
+      'path' => 'framework-classes:UI/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -2320,7 +2277,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TranslationsScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
       ),
@@ -2340,7 +2297,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\APIClientsArea',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
@@ -2361,7 +2318,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode',
-          'path' => 'Area/APIClientsArea',
+          'path' => 'driver-classes:Area/APIClientsArea',
           'subscreenClasses' => 
           array (
           ),
@@ -2381,7 +2338,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode',
-          'path' => 'Area/APIClientsArea',
+          'path' => 'driver-classes:Area/APIClientsArea',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
@@ -2402,7 +2359,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode',
-              'path' => 'Area/APIClientsArea/ViewAPIClientMode',
+              'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
               'subscreenClasses' => 
               array (
               ),
@@ -2422,7 +2379,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
-              'path' => 'Area/APIClientsArea/ViewAPIClientMode',
+              'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
               'subscreenClasses' => 
               array (
               ),
@@ -2442,7 +2399,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode',
-              'path' => 'Area/APIClientsArea/ViewAPIClientMode',
+              'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
               'subscreenClasses' => 
               array (
                 0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
@@ -2464,7 +2421,7 @@ return array (
                   array (
                   ),
                   'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction',
-                  'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2482,7 +2439,7 @@ return array (
                   'requiredRight' => NULL,
                   'featureRights' => NULL,
                   'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction',
-                  'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2503,7 +2460,7 @@ return array (
                     'Edit API Key Settings' => 'EditAPIClients',
                   ),
                   'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
-                  'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2521,7 +2478,7 @@ return array (
                   'requiredRight' => NULL,
                   'featureRights' => NULL,
                   'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction',
-                  'path' => 'Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2546,7 +2503,7 @@ return array (
             'Multi-delete API Clients' => 'DeleteAPIClients',
           ),
           'class' => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
-          'path' => 'Area/APIClientsArea',
+          'path' => 'driver-classes:Area/APIClientsArea',
           'subscreenClasses' => 
           array (
           ),
@@ -2554,24 +2511,6 @@ return array (
           array (
           ),
         ),
-      ),
-    ),
-    'media' => 
-    array (
-      'id' => 'BaseMediaLibraryScreen',
-      'urlName' => 'media',
-      'urlPath' => 'media',
-      'title' => 'Media library',
-      'navigationTitle' => 'Media',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'Application\\Admin\\Area\\BaseMediaLibraryScreen',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Area',
-      'subscreenClasses' => 
-      array (
-      ),
-      'subscreens' => 
-      array (
       ),
     ),
     'testing' => 
@@ -2584,7 +2523,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TestingScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TestingScreen\\CancelHandleActionsScreen',
@@ -2609,7 +2548,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2627,7 +2566,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2647,7 +2586,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerExtendedScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2665,7 +2604,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\TestingScreen\\DBHelperSelectionTieInScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2685,7 +2624,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerLegacyScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2705,7 +2644,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateBasicScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2723,7 +2662,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\TestingScreen\\LogJavaScriptErrorScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2741,7 +2680,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\TestingScreen\\CancelHandleActionsScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2759,7 +2698,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\TestingScreen\\TieInAncestryTestScreen',
-          'path' => 'Area/TestingScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2781,7 +2720,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Users/Admin/Screens',
+      'path' => 'framework-classes:Application/Users/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -2799,7 +2738,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver_Area_WizardTest',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver_Area_WizardTest_Wizard',
@@ -2816,7 +2755,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver_Area_WizardTest_Wizard',
-          'path' => 'Area/WizardTest',
+          'path' => 'driver-classes:Area/WizardTest',
           'subscreenClasses' => 
           array (
           ),
@@ -2836,7 +2775,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\RevisionableScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
@@ -2853,7 +2792,7 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
-          'path' => 'Area/RevisionableScreen',
+          'path' => 'driver-classes:Area/RevisionableScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -2875,7 +2814,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Development\\Admin\\Screens\\DevelArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
+      'path' => 'framework-classes:Application/Development/Admin/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\Admin\\Index\\Screens\\SitemapMode',
@@ -2910,7 +2849,7 @@ return array (
           array (
           ),
           'class' => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/CacheControl/Admin/Screens',
+          'path' => 'framework-classes:Application/CacheControl/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -2930,7 +2869,7 @@ return array (
           array (
           ),
           'class' => 'UI\\Admin\\Screens\\CSSGenDevelMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/UI/Admin/Screens',
+          'path' => 'framework-classes:UI/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -2950,7 +2889,7 @@ return array (
           array (
           ),
           'class' => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/ErrorLog/Admin/Screens',
+          'path' => 'framework-classes:Application/ErrorLog/Admin/Screens',
           'subscreenClasses' => 
           array (
             0 => 'Application\\ErrorLog\\Admin\\Screens\\ListSubmode',
@@ -2970,7 +2909,7 @@ return array (
               array (
               ),
               'class' => 'Application\\ErrorLog\\Admin\\Screens\\ListSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/ErrorLog/Admin/Screens',
+              'path' => 'framework-classes:Application/ErrorLog/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -2990,7 +2929,7 @@ return array (
               array (
               ),
               'class' => 'Application\\ErrorLog\\Admin\\Screens\\ViewSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/ErrorLog/Admin/Screens',
+              'path' => 'framework-classes:Application/ErrorLog/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3012,7 +2951,7 @@ return array (
           array (
           ),
           'class' => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+          'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
           'subscreenClasses' => 
           array (
             0 => 'Application\\WhatsNew\\Admin\\Screens\\CreateSubmode',
@@ -3033,7 +2972,7 @@ return array (
               array (
               ),
               'class' => 'Application\\WhatsNew\\Admin\\Screens\\ListSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+              'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3053,7 +2992,7 @@ return array (
               array (
               ),
               'class' => 'Application\\WhatsNew\\Admin\\Screens\\CreateSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+              'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3073,7 +3012,7 @@ return array (
               array (
               ),
               'class' => 'Application\\WhatsNew\\Admin\\Screens\\EditSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/WhatsNew/Admin/Screens',
+              'path' => 'framework-classes:Application/WhatsNew/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3095,7 +3034,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+          'path' => 'framework-classes:Application/Sets/Admin/Screens',
           'subscreenClasses' => 
           array (
             0 => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
@@ -3117,7 +3056,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+              'path' => 'framework-classes:Application/Sets/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3137,7 +3076,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Sets\\Admin\\Screens\\SetsListSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+              'path' => 'framework-classes:Application/Sets/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3157,7 +3096,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+              'path' => 'framework-classes:Application/Sets/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3177,7 +3116,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Sets\\Admin\\Screens\\EditSetSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Sets/Admin/Screens',
+              'path' => 'framework-classes:Application/Sets/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3199,7 +3138,7 @@ return array (
           array (
           ),
           'class' => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/UI/Admin/Screens',
+          'path' => 'framework-classes:UI/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3219,7 +3158,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
+          'path' => 'framework-classes:Application/Development/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3239,7 +3178,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Environments/Admin/Screens',
+          'path' => 'framework-classes:Application/Environments/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3259,7 +3198,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
+          'path' => 'framework-classes:Application/Development/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3279,7 +3218,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Messagelogs/Admin/Screens',
+          'path' => 'framework-classes:Application/Messagelogs/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3299,7 +3238,7 @@ return array (
           array (
           ),
           'class' => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/DeeplHelper/Admin/Screens',
+          'path' => 'framework-classes:DeeplHelper/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3319,7 +3258,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Mode',
+          'path' => 'framework-classes:Application/Renamer/Admin/Screens/Mode',
           'subscreenClasses' => 
           array (
             0 => 'Application\\Renamer\\Admin\\Screens\\Submode\\ConfigurationSubmode',
@@ -3342,7 +3281,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ReplaceSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+              'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
               'subscreenClasses' => 
               array (
               ),
@@ -3362,7 +3301,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\SearchSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+              'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
               'subscreenClasses' => 
               array (
               ),
@@ -3382,7 +3321,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ConfigurationSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+              'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
               'subscreenClasses' => 
               array (
               ),
@@ -3402,7 +3341,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ExportSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+              'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
               'subscreenClasses' => 
               array (
               ),
@@ -3422,7 +3361,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ResultsSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Renamer/Admin/Screens/Submode',
+              'path' => 'framework-classes:Application/Renamer/Admin/Screens/Submode',
               'subscreenClasses' => 
               array (
               ),
@@ -3444,7 +3383,7 @@ return array (
           array (
           ),
           'class' => 'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/AppSettings/Admin/Screens',
+          'path' => 'framework-classes:Application/AppSettings/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3464,7 +3403,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Admin\\Index\\Screens\\SitemapMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Index/Screens',
+          'path' => 'framework-classes:Application/Admin/Index/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3484,7 +3423,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Maintenance/Admin/Screens',
+          'path' => 'framework-classes:Application/Maintenance/Admin/Screens',
           'subscreenClasses' => 
           array (
             0 => 'Application\\Maintenance\\Admin\\Screens\\CreateSubmode',
@@ -3504,7 +3443,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Maintenance\\Admin\\Screens\\ListSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Maintenance/Admin/Screens',
+              'path' => 'framework-classes:Application/Maintenance/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3524,7 +3463,7 @@ return array (
               array (
               ),
               'class' => 'Application\\Maintenance\\Admin\\Screens\\CreateSubmode',
-              'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Maintenance/Admin/Screens',
+              'path' => 'framework-classes:Application/Maintenance/Admin/Screens',
               'subscreenClasses' => 
               array (
               ),
@@ -3546,7 +3485,7 @@ return array (
           array (
           ),
           'class' => 'Application\\DeploymentRegistry\\Admin\\Screens\\DeploymentHistoryMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/DeploymentRegistry/Admin/Screens',
+          'path' => 'framework-classes:Application/DeploymentRegistry/Admin/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3566,7 +3505,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Users/Admin/Screens/Mode',
+          'path' => 'framework-classes:Application/Users/Admin/Screens/Mode',
           'subscreenClasses' => 
           array (
           ),
@@ -3588,7 +3527,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TimeTrackerScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
@@ -3613,7 +3552,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen',
-          'path' => 'Area/TimeTrackerScreen',
+          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
@@ -3635,7 +3574,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen',
-              'path' => 'Area/TimeTrackerScreen/ListScreen',
+              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -3653,7 +3592,7 @@ return array (
               'requiredRight' => NULL,
               'featureRights' => NULL,
               'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
-              'path' => 'Area/TimeTrackerScreen/ListScreen',
+              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -3673,7 +3612,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
-              'path' => 'Area/TimeTrackerScreen/ListScreen',
+              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -3693,7 +3632,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen',
-              'path' => 'Area/TimeTrackerScreen/ListScreen',
+              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -3715,7 +3654,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen',
-          'path' => 'Area/TimeTrackerScreen',
+          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -3735,7 +3674,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen',
-          'path' => 'Area/TimeTrackerScreen',
+          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -3755,7 +3694,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen',
-          'path' => 'Area/TimeTrackerScreen',
+          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
@@ -3775,7 +3714,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen',
-              'path' => 'Area/TimeTrackerScreen/ViewScreen',
+              'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -3796,7 +3735,7 @@ return array (
                 'Edit settings' => 'EditTimeEntries',
               ),
               'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
-              'path' => 'Area/TimeTrackerScreen/ViewScreen',
+              'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -3818,7 +3757,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen',
-          'path' => 'Area/TimeTrackerScreen',
+          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -3838,7 +3777,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen',
-          'path' => 'Area/TimeTrackerScreen',
+          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -3858,7 +3797,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
-          'path' => 'Area/TimeTrackerScreen',
+          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -3880,7 +3819,7 @@ return array (
       array (
       ),
       'class' => 'Application\\Admin\\Welcome\\Screens\\WelcomeArea',
-      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+      'path' => 'framework-classes:Application/Admin/Welcome/Screens',
       'subscreenClasses' => 
       array (
         0 => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
@@ -3900,7 +3839,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+          'path' => 'framework-classes:Application/Admin/Welcome/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3920,7 +3859,7 @@ return array (
           array (
           ),
           'class' => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
-          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Welcome/Screens',
+          'path' => 'framework-classes:Application/Admin/Welcome/Screens',
           'subscreenClasses' => 
           array (
           ),
@@ -3942,7 +3881,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\UsersArea',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\UsersArea\\CreateUserMode',
@@ -3963,7 +3902,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\UsersArea\\ViewUserMode',
-          'path' => 'Area/UsersArea',
+          'path' => 'driver-classes:Area/UsersArea',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserSettingsSubmode',
@@ -3983,7 +3922,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserStatusSubmode',
-              'path' => 'Area/UsersArea/ViewUserMode',
+              'path' => 'driver-classes:Area/UsersArea/ViewUserMode',
               'subscreenClasses' => 
               array (
               ),
@@ -4003,7 +3942,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\UsersArea\\ViewUserMode\\UserSettingsSubmode',
-              'path' => 'Area/UsersArea/ViewUserMode',
+              'path' => 'driver-classes:Area/UsersArea/ViewUserMode',
               'subscreenClasses' => 
               array (
               ),
@@ -4025,7 +3964,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\UsersArea\\CreateUserMode',
-          'path' => 'Area/UsersArea',
+          'path' => 'driver-classes:Area/UsersArea',
           'subscreenClasses' => 
           array (
           ),
@@ -4045,7 +3984,196 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\UsersArea\\UserListMode',
-          'path' => 'Area/UsersArea',
+          'path' => 'driver-classes:Area/UsersArea',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+      ),
+    ),
+    'media' => 
+    array (
+      'id' => 'MediaLibraryArea',
+      'urlName' => 'media',
+      'urlPath' => 'media',
+      'title' => 'Media library',
+      'navigationTitle' => 'Media',
+      'requiredRight' => 'ViewMedia',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Media\\Admin\\Screens\\MediaLibraryArea',
+      'path' => 'framework-classes:Application/Media/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Media\\Admin\\Screens\\Mode\\CreateMode',
+        1 => 'Application\\Media\\Admin\\Screens\\Mode\\GlobalSettingsMode',
+        2 => 'Application\\Media\\Admin\\Screens\\Mode\\ImageGalleryMode',
+        3 => 'Application\\Media\\Admin\\Screens\\Mode\\ListMode',
+        4 => 'Application\\Media\\Admin\\Screens\\Mode\\ViewMode',
+      ),
+      'subscreens' => 
+      array (
+        'list' => 
+        array (
+          'id' => 'ListMode',
+          'urlName' => 'list',
+          'urlPath' => 'media.list',
+          'title' => 'Available media files',
+          'navigationTitle' => 'Overview',
+          'requiredRight' => 'ViewMedia',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Media\\Admin\\Screens\\Mode\\ListMode',
+          'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'image-gallery' => 
+        array (
+          'id' => 'ImageGalleryMode',
+          'urlName' => 'image-gallery',
+          'urlPath' => 'media.image-gallery',
+          'title' => 'Image gallery',
+          'navigationTitle' => 'Image gallery',
+          'requiredRight' => 'ViewMedia',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Media\\Admin\\Screens\\Mode\\ImageGalleryMode',
+          'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'view' => 
+        array (
+          'id' => 'ViewMode',
+          'urlName' => 'view',
+          'urlPath' => 'media.view',
+          'title' => 'Media file',
+          'navigationTitle' => 'Media file',
+          'requiredRight' => 'ViewMedia',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Media\\Admin\\Screens\\Mode\\ViewMode',
+          'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+            0 => 'Application\\Media\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+            1 => 'Application\\Media\\Admin\\Screens\\Mode\\View\\StatusSubmode',
+            2 => 'Application\\Media\\Admin\\Screens\\Mode\\View\\TagsSubmode',
+          ),
+          'subscreens' => 
+          array (
+            'tagging' => 
+            array (
+              'id' => 'TagsSubmode',
+              'urlName' => 'tagging',
+              'urlPath' => 'media.view.tagging',
+              'title' => 'Tags',
+              'navigationTitle' => 'Tags',
+              'requiredRight' => 'EditMedia',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\TagsSubmode',
+              'path' => 'framework-classes:Application/Media/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'status' => 
+            array (
+              'id' => 'StatusSubmode',
+              'urlName' => 'status',
+              'urlPath' => 'media.view.status',
+              'title' => 'Status',
+              'navigationTitle' => 'Status',
+              'requiredRight' => 'ViewMedia',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\StatusSubmode',
+              'path' => 'framework-classes:Application/Media/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'settings' => 
+            array (
+              'id' => 'SettingsSubmode',
+              'urlName' => 'settings',
+              'urlPath' => 'media.view.settings',
+              'title' => 'Settings',
+              'navigationTitle' => 'Settings',
+              'requiredRight' => 'ViewMedia',
+              'featureRights' => 
+              array (
+                'Edit the settings' => 'EditMedia',
+              ),
+              'class' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+              'path' => 'framework-classes:Application/Media/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+          ),
+        ),
+        'create' => 
+        array (
+          'id' => 'CreateMode',
+          'urlName' => 'create',
+          'urlPath' => 'media.create',
+          'title' => 'Add a media file',
+          'navigationTitle' => 'Add media',
+          'requiredRight' => 'CreateMedia',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Media\\Admin\\Screens\\Mode\\CreateMode',
+          'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'settings' => 
+        array (
+          'id' => 'GlobalSettingsMode',
+          'urlName' => 'settings',
+          'urlPath' => 'media.settings',
+          'title' => 'Media settings',
+          'navigationTitle' => 'Media settings',
+          'requiredRight' => 'AdminMedia',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Media\\Admin\\Screens\\Mode\\GlobalSettingsMode',
+          'path' => 'framework-classes:Application/Media/Admin/Screens/Mode',
           'subscreenClasses' => 
           array (
           ),
@@ -4065,7 +4193,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\NewsScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
@@ -4091,7 +4219,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\NewsListScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4111,7 +4239,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\CreateArticleScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4131,7 +4259,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4151,7 +4279,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4171,7 +4299,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4191,7 +4319,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
@@ -4212,7 +4340,7 @@ return array (
                 'Modify the settings' => 'EditNews',
               ),
               'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
-              'path' => 'Area/NewsScreen/ViewArticleScreen',
+              'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4232,7 +4360,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen',
-              'path' => 'Area/NewsScreen/ViewArticleScreen',
+              'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4254,7 +4382,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
@@ -4274,7 +4402,7 @@ return array (
                 'Modify the settings' => 'EditNews',
               ),
               'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
-              'path' => 'Area/NewsScreen/ViewCategoryScreen',
+              'path' => 'driver-classes:Area/NewsScreen/ViewCategoryScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4296,7 +4424,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen',
-          'path' => 'Area/NewsScreen',
+          'path' => 'driver-classes:Area/NewsScreen',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
@@ -4316,7 +4444,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
-              'path' => 'Area/NewsScreen/ReadNewsScreen',
+              'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4336,7 +4464,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen',
-              'path' => 'Area/NewsScreen/ReadNewsScreen',
+              'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4360,7 +4488,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\CountriesScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
@@ -4381,7 +4509,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
-          'path' => 'Area/CountriesScreen',
+          'path' => 'driver-classes:Area/CountriesScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4401,7 +4529,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\CountriesScreen\\ListScreen',
-          'path' => 'Area/CountriesScreen',
+          'path' => 'driver-classes:Area/CountriesScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4421,7 +4549,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen',
-          'path' => 'Area/CountriesScreen',
+          'path' => 'driver-classes:Area/CountriesScreen',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
@@ -4441,7 +4569,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen',
-              'path' => 'Area/CountriesScreen/ViewScreen',
+              'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4461,7 +4589,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
-              'path' => 'Area/CountriesScreen/ViewScreen',
+              'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4485,7 +4613,7 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\QuickNavScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
       ),
@@ -4503,7 +4631,7 @@ return array (
       'requiredRight' => NULL,
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\TagsScreen',
-      'path' => 'Area',
+      'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
         0 => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
@@ -4524,7 +4652,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen',
-          'path' => 'Area/TagsScreen',
+          'path' => 'driver-classes:Area/TagsScreen',
           'subscreenClasses' => 
           array (
             0 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
@@ -4544,7 +4672,7 @@ return array (
               array (
               ),
               'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen',
-              'path' => 'Area/TagsScreen/ViewTagScreen',
+              'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4565,7 +4693,7 @@ return array (
                 'Edit the settings' => 'EditTags',
               ),
               'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
-              'path' => 'Area/TagsScreen/ViewTagScreen',
+              'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
               'subscreenClasses' => 
               array (
               ),
@@ -4587,7 +4715,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
-          'path' => 'Area/TagsScreen',
+          'path' => 'driver-classes:Area/TagsScreen',
           'subscreenClasses' => 
           array (
           ),
@@ -4607,7 +4735,7 @@ return array (
           array (
           ),
           'class' => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
-          'path' => 'Area/TagsScreen',
+          'path' => 'driver-classes:Area/TagsScreen',
           'subscreenClasses' => 
           array (
           ),
