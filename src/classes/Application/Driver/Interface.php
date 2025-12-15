@@ -7,6 +7,7 @@
  * @see Application_Driver_Interface
  */
 
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -42,11 +43,16 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function getTheme() : UI_Themes_Theme;
 
+    public function getRootFolder() : string;
     public function getClassesFolder() : string;
 
     public function getConfigFolder() : string;
 
-    public function getActiveArea() : Application_Admin_Area;
+    /**
+     * Retrieves the instance of the currently active administration area.
+     * @return AdminAreaInterface
+     */
+    public function getActiveArea() : AdminAreaInterface;
 
     /**
      * Gets the active admin screen, if any.
