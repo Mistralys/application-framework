@@ -14,7 +14,7 @@ use UI\DataGrid\ListBuilder\ListBuilderScreenInterface;
 use UI\DataGrid\ListBuilder\ListBuilderScreenTrait;
 use UI\Interfaces\ListBuilderInterface;
 
-class BaseGlobalListScreen extends BaseSubmode implements ListBuilderScreenInterface
+abstract class BaseGlobalListScreen extends BaseSubmode implements ListBuilderScreenInterface
 {
     use ListBuilderScreenTrait;
 

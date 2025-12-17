@@ -25,7 +25,7 @@ use UI_Renderable_Interface;
 /**
  * @method TimeListBuilder getBuilder()
  */
-class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements ListBuilderScreenInterface
+abstract class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements ListBuilderScreenInterface
 {
     use ListBuilderScreenTrait;
 

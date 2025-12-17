@@ -8,7 +8,7 @@ use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Traits\APIClientRecordScreenTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 
-class BaseAPIKeysSubmode extends BaseRecordSubmode
+abstract class BaseAPIKeysSubmode extends BaseRecordSubmode
 {
     use APIClientRecordScreenTrait;
 

@@ -15,7 +15,7 @@ use UI_PropertiesGrid;
 /**
  * @property Application_Countries_Country $record
  */
-class BaseStatusScreen extends BaseRecordSubmode
+abstract class BaseStatusScreen extends BaseRecordSubmode
 {
     public const string URL_NAME = 'status';
 

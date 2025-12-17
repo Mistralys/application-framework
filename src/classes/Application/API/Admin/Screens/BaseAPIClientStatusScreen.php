@@ -12,7 +12,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
-class BaseAPIClientStatusScreen extends BaseRecordStatusSubmode
+abstract class BaseAPIClientStatusScreen extends BaseRecordStatusSubmode
 {
     use APIClientRecordScreenTrait;
 

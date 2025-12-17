@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Countries\Admin\Screens\Create;
 
-use Application\Countries\CountryException;
 use AppLocalize\Localization;
 use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Countries\CountryInterface;
@@ -12,9 +11,9 @@ use UI;
 
 class SourceCountrySelectionStep extends BaseCreateStep
 {
-    public const STEP_NAME = 'SourceCountrySelection';
-    public const REQUEST_PARAM_ISO = 'iso';
-    public const DATA_KEY_ISO = 'iso';
+    public const string STEP_NAME = 'SourceCountrySelection';
+    public const string REQUEST_PARAM_ISO = 'iso';
+    public const string DATA_KEY_ISO = 'iso';
 
     public function getID(): string
     {

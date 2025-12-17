@@ -13,7 +13,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 
-class BaseCreateAPIKeyAction extends BaseRecordCreateAction implements APIClientRequestInterface
+abstract class BaseCreateAPIKeyAction extends BaseRecordCreateAction implements APIClientRequestInterface
 {
     use APIClientRequestTrait;
 

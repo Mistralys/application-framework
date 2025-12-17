@@ -18,7 +18,7 @@ use DBHelper_BaseFilterCriteria_Record;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 
-class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientRequestInterface
+abstract class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientRequestInterface
 {
     use APIClientRequestTrait;
 

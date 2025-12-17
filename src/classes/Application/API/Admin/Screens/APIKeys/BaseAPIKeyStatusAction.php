@@ -13,7 +13,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
-class BaseAPIKeyStatusAction extends BaseRecordStatusAction implements APIKeyActionInterface
+abstract class BaseAPIKeyStatusAction extends BaseRecordStatusAction implements APIKeyActionInterface
 {
     use APIClientRequestTrait;
     use APIKeyActionTrait;

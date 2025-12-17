@@ -8,5 +8,5 @@ use Application\Countries\CountryException;
 
 class CreateWizardException extends CountryException
 {
-    public const ERROR_NO_COUNTRY_SELECTED = 177501;
+    public const int ERROR_NO_COUNTRY_SELECTED = 177501;
 }

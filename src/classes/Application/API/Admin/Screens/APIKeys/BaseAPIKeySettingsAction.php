@@ -11,7 +11,7 @@ use DBHelper\Admin\Screens\Action\BaseRecordSettingsAction;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 
-class BaseAPIKeySettingsAction extends BaseRecordSettingsAction implements APIKeyActionInterface
+abstract class BaseAPIKeySettingsAction extends BaseRecordSettingsAction implements APIKeyActionInterface
 {
     use APIClientRequestTrait;
     use APIKeyActionTrait;

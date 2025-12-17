@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Admin\AdminScreenStubInterface;
+
 /**
  * Stub for wizards that have a country selection step.
  *
@@ -21,7 +23,9 @@ declare(strict_types=1);
  */
 class Application_Traits_Stubs_Admin_Wizard_WithConfirmationStepStub
     extends Application_Admin_Wizard
-    implements Application_Interfaces_Admin_Wizard_WithConfirmationStep
+    implements
+    Application_Interfaces_Admin_Wizard_WithConfirmationStep,
+    AdminScreenStubInterface
 {
     use Application_Traits_Admin_Wizard_WithConfirmationStep;
 

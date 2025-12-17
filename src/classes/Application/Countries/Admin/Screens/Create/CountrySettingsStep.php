@@ -14,7 +14,7 @@ class CountrySettingsStep extends BaseCreateStep implements Application_Interfac
 {
     use Application_Traits_Admin_Wizard_SettingsManagerStep;
 
-    public const STEP_NAME = 'CountrySettings';
+    public const string STEP_NAME = 'CountrySettings';
 
     public function getID(): string
     {

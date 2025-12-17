@@ -19,7 +19,7 @@ use UI_DataGrid_Entry;
 /**
  * @property Application_Countries_FilterCriteria $filters
  */
-class BaseListScreen extends BaseRecordListMode
+abstract class BaseListScreen extends BaseRecordListMode
 {
     public const string URL_NAME = 'list';
     public const string COL_LABEL = 'label';

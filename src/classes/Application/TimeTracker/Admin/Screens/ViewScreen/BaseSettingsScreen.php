@@ -17,7 +17,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 /**
  * @property TimeEntry $record
  */
-class BaseSettingsScreen extends BaseRecordSettingsSubmode
+abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
 {
     public const string URL_NAME = 'settings';
 
