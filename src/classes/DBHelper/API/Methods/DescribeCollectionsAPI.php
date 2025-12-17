@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Application\API\Method;
+namespace DBHelper\API\Methods;
 
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\Groups\APIGroupInterface;

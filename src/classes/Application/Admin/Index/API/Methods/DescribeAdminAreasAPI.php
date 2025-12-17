@@ -6,8 +6,10 @@
 
 declare(strict_types=1);
 
-namespace Application\API\Method;
+namespace Application\Admin\Index\API\Methods;
 
+use Application\Admin\Index\AdminScreenIndex;
+use Application\Admin\Index\API\DescribeAdminAreasAPIInterface;
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\Groups\APIGroupInterface;
 use Application\API\Groups\FrameworkAPIGroup;
@@ -26,7 +28,12 @@ use AppUtils\ArrayDataCollection;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @see BaseAPIMethod
  */
-class DescribeAdminAreasAPI extends BaseAPIMethod implements JSONResponseInterface, RequestRequestInterface
+class DescribeAdminAreasAPI
+    extends BaseAPIMethod
+    implements
+    JSONResponseInterface,
+    RequestRequestInterface,
+    DescribeAdminAreasAPIInterface
 {
     use JSONResponseTrait;
     use RequestRequestTrait;
@@ -73,13 +80,7 @@ class DescribeAdminAreasAPI extends BaseAPIMethod implements JSONResponseInterfa
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
-        $checkSyntax = $this->request->getBool('check-syntax');
-
-        $info = $this->driver->describeAdminAreas();
-        $info->enableSyntaxCheck($checkSyntax);
-        $info->analyzeFiles();
-
-        $response->setKeys($info->toArray());
+        $response->setKey(DescribeAdminAreasAPIInterface::KEY_ROOT_SCREENS, AdminScreenIndex::getInstance()->getTree());
     }
 
     // endregion
@@ -90,7 +91,7 @@ class DescribeAdminAreasAPI extends BaseAPIMethod implements JSONResponseInterfa
     {
         return <<<'MARKDOWN'
 Compiles information about all administration areas available in the application,
-and returns it as a JSON object.
+in the form of a tree with root areas and subscreen structure.
 MARKDOWN;
     }
 

@@ -5,12 +5,10 @@
  */
 
 use Application\ConfigSettings\AppConfig;
-use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Highlighter;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
@@ -69,27 +67,27 @@ class DBHelper
         'admin' => null
     );
 
-    public const ERROR_EXECUTING_QUERY = 33871001;
-    public const ERROR_PREPARING_QUERY = 33871002;
-    public const ERROR_INSERTING = 33871003;
-    public const ERROR_FETCHING = 33871004;
-    public const ERROR_CONNECTING = 33871005;
-    public const ERROR_CANNOT_ROLL_BACK_TRANSACTION = 33871008;
-    public const ERROR_CANNOT_COMMIT_TRANSACTION = 33871009;
-    public const ERROR_CANNOT_START_TRANSACTION = 33871010;
-    public const ERROR_NO_ACTIVE_STATEMENT = 33871011;
-    public const ERROR_TRANSACTION_REQUIRED_FOR_OPERATION = 33871012;
-    public const ERROR_CONNECTING_NO_DRIVER = 33871013;
-    public const ERROR_NOT_A_DBHELPER_COLLECTION = 33871014;
-    public const ERROR_NO_PARENT_RECORD_SPECIFIED = 33871015;
-    public const ERROR_INVALID_PARENT_RECORD = 33871016;
-    public const ERROR_INVALID_TABLE_NAME = 338701017;
-    public const ERROR_INVALID_COLUMN_NAME = 338701018;
-    public const ERROR_DB_NOT_REGISTERED = 338701019;
-    public const ERROR_CANNOT_CONVERT_OBJECT = 338701021;
-    public const ERROR_CANNOT_CONVERT_ARRAY = 338701022;
-    public const ERROR_CANNOT_CONVERT_RESOURCE = 338701023;
-    public const ERROR_EMPTY_WHERE = 338701024;
+    public const int ERROR_EXECUTING_QUERY = 33871001;
+    public const int ERROR_PREPARING_QUERY = 33871002;
+    public const int ERROR_INSERTING = 33871003;
+    public const int ERROR_FETCHING = 33871004;
+    public const int ERROR_CONNECTING = 33871005;
+    public const int ERROR_CANNOT_ROLL_BACK_TRANSACTION = 33871008;
+    public const int ERROR_CANNOT_COMMIT_TRANSACTION = 33871009;
+    public const int ERROR_CANNOT_START_TRANSACTION = 33871010;
+    public const int ERROR_NO_ACTIVE_STATEMENT = 33871011;
+    public const int ERROR_TRANSACTION_REQUIRED_FOR_OPERATION = 33871012;
+    public const int ERROR_CONNECTING_NO_DRIVER = 33871013;
+    public const int ERROR_NOT_A_DBHELPER_COLLECTION = 33871014;
+    public const int ERROR_NO_PARENT_RECORD_SPECIFIED = 33871015;
+    public const int ERROR_INVALID_PARENT_RECORD = 33871016;
+    public const int ERROR_INVALID_TABLE_NAME = 338701017;
+    public const int ERROR_INVALID_COLUMN_NAME = 338701018;
+    public const int ERROR_DB_NOT_REGISTERED = 338701019;
+    public const int ERROR_CANNOT_CONVERT_OBJECT = 338701021;
+    public const int ERROR_CANNOT_CONVERT_ARRAY = 338701022;
+    public const int ERROR_CANNOT_CONVERT_RESOURCE = 338701023;
+    public const int ERROR_EMPTY_WHERE = 338701024;
     
     protected static float $startTime;
 
@@ -2179,5 +2177,10 @@ SQL;
             [$escapeChar . $escapeChar, $escapeChar . '%', $escapeChar . '_', "''"],
             $term
         );
+    }
+
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/API/Methods')->requireExists();
     }
 }
