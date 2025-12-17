@@ -104,12 +104,12 @@ class AppFramework
 
     public function getChangelogPath() : string
     {
-        return __DIR__.'/../../changelog.md';
+        return $this->getInstallFolder().'/changelog.md';
     }
 
     public function getVersionPath() : string
     {
-        return __DIR__.'/../../VERSION';
+        return $this->getInstallFolder().'/VERSION';
     }
 
     public static function getInstance() : AppFramework
