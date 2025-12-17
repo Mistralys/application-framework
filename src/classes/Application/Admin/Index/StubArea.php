@@ -34,6 +34,11 @@ class StubArea extends BaseArea implements AdminScreenStubInterface
         return '';
     }
 
+    public function getDefaultSubscreenClass(): null
+    {
+        return null;
+    }
+
     public function getNavigationGroup(): string
     {
         return '';

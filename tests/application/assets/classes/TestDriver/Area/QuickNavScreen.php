@@ -12,9 +12,9 @@ namespace TestDriver\Area;
 use Application\Development\Admin\Screens\DevelArea;
 use Application_Admin_Area;
 use AppUtils\OutputBuffering;
-use HTML\QuickForm2\Traits\RenderableElementTrait;
 use tests\TestDriver\Admin\BaseArea;
 use UI\Admin\Screens\AppInterfaceDevelMode;
+use UI_Themes_Theme_ContentRenderer;
 
 /**
  * Abstract base class for navigation items in the quick navigation.
@@ -34,6 +34,11 @@ class QuickNavScreen extends BaseArea
     public function getDefaultMode() : string
     {
         return '';
+    }
+
+    public function getDefaultSubscreenClass(): null
+    {
+        return null;
     }
 
     public function getNavigationGroup() : string
@@ -79,7 +84,7 @@ class QuickNavScreen extends BaseArea
             ->makeNewTab();
     }
 
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         return $this->renderer
             ->setTitle($this->getTitle())
@@ -104,7 +109,7 @@ class QuickNavScreen extends BaseArea
         </p>
         <p>
             <?php
-            $callback = array(Application_Admin_Area::class, '_handleQuickNavigation');
+            $callback = array(BaseArea::class, '_handleQuickNavigation');
             pts(
                 'The area class must implement the method %1$s, and add the relevant links there.',
                 $callback[1]

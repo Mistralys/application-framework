@@ -39,6 +39,11 @@ abstract class BaseUsersArea extends BaseArea
         return BaseUserListMode::URL_NAME;
     }
 
+    public function getDefaultSubscreenClass(): string
+    {
+        return BaseUserListMode::class;
+    }
+
     public function getNavigationGroup(): string
     {
         return t('Manage');

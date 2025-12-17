@@ -28,7 +28,7 @@ abstract class BaseNewsScreen extends Application_Admin_Area
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'news';
+    public const string URL_NAME = 'news';
 
     public function getURLName(): string
     {

@@ -8,18 +8,17 @@ declare(strict_types=1);
 
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Welcome\Screens\WelcomeArea;
-use Application\Area\BaseTagsScreen;
+use Application\API\Admin\Screens\APIClientsArea;
 use Application\ConfigSettings\BaseConfigRegistry;
+use Application\Countries\Admin\Screens\CountriesArea;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\Media\Admin\Screens\MediaLibraryArea;
+use Application\Tags\Admin\Screens\Area\TagsArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\UserSettingsArea;
-use TestDriver\Area\APIClientsArea;
-use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
-use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver\Area\TimeTrackerScreen;
 use TestDriver\Area\TranslationsScreen;
@@ -59,10 +58,10 @@ class TestDriver extends Application_Driver
             TestingScreen::URL_NAME => TestingScreen::class,
             RevisionableScreen::URL_NAME => RevisionableScreen::class,
             BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
-            CountriesScreen::URL_NAME => CountriesScreen::class,
+            CountriesArea::URL_NAME => CountriesArea::class,
             UsersArea::URL_NAME => UsersArea::class,
             APIClientsArea::URL_NAME => APIClientsArea::class,
-            BaseTagsScreen::URL_NAME => TagsScreen::class
+            TagsArea::URL_NAME => TagsArea::class
         );
     }
 

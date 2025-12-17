@@ -14,7 +14,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 trait RecordDeleteScreenTrait
 {
     protected DBHelperCollectionInterface $collection;
-    protected ?DBHelperRecordInterface $record = null;
+    protected DBHelperRecordInterface $record;
 
     abstract protected function createCollection(): DBHelperCollectionInterface;
 
@@ -35,13 +35,16 @@ trait RecordDeleteScreenTrait
 
     protected function _handleActions(): bool
     {
-        $this->record = $this->collection->getByRequest();
-        if (!$this->record) {
+        $record = $this->collection->getByRequest();
+
+        if ($record === null) {
             $this->redirectWithInfoMessage(
                 t('No such record found.'),
                 $this->getBackOrCancelURL()
             );
         }
+
+        $this->record = $record;
 
         $this->startTransaction();
 

@@ -49,7 +49,7 @@ class QuickNavigation implements Application_Interfaces_Loggable
             ->createNavigation(self::NAV_AREA_QUICK_NAVIGATION);
 
         Application_EventHandler::addListener(
-            Application_Admin_Area::EVENT_UI_HANDLING_COMPLETE,
+            UIHandlingCompleteEvent::EVENT_NAME,
             NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'event_areaUIHandlingComplete')),
                 array($this, 'event_areaUIHandlingComplete')

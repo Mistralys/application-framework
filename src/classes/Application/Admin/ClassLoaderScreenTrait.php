@@ -6,8 +6,4 @@ namespace Application\Admin;
 
 trait ClassLoaderScreenTrait
 {
-    public function getDefaultSubscreenID() : string
-    {
-        return '';
-    }
 }

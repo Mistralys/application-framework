@@ -36,6 +36,11 @@ class UserSettingsArea extends BaseArea
         return '';
     }
 
+    public function getDefaultSubscreenClass(): null
+    {
+        return null;
+    }
+
     public function getRequiredRight(): string
     {
         return Application_User::RIGHT_LOGIN;

@@ -11,7 +11,7 @@ use UI_DataGrid;
 trait RecordScreenTrait
 {
     protected DBHelperCollectionInterface $collection;
-    protected ?DBHelperRecordInterface $record = null;
+    protected DBHelperRecordInterface $record;
 
     abstract protected function createCollection() : DBHelperCollectionInterface;
 

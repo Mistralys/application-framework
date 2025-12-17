@@ -9,10 +9,9 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use Application\AppFactory;
-use Application\Area\Tags\ViewTag\BaseTagSettingsScreen;
-use Application\Area\Tags\ViewTag\BaseTagTreeScreen;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\Area\Tags\BaseViewTagScreen;
+use Application\Tags\Admin\Screens\Mode\View\SettingsSubmode;
+use Application\Tags\Admin\Screens\Mode\View\TagTreeSubmode;
 use DBHelper_BaseRecord;
 use UI;
 use UI\Tree\TreeNode;
@@ -236,7 +235,7 @@ class TagRecord extends DBHelper_BaseRecord
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseViewTagScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Admin\Screens\Mode\ViewMode::URL_NAME;
         $params[TagCollection::PRIMARY_NAME] = $this->getID();
 
         return $this->collection->getAdminURL($params);
@@ -244,14 +243,14 @@ class TagRecord extends DBHelper_BaseRecord
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagSettingsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = SettingsSubmode::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminTagTreeURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagTreeScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = TagTreeSubmode::URL_NAME;
 
         return $this->getAdminURL($params);
     }
@@ -272,7 +271,7 @@ class TagRecord extends DBHelper_BaseRecord
             return $this->getRootTag()->getAdminDeleteURL($tagID, $params);
         }
 
-        $params[BaseTagTreeScreen::REQUEST_PARAM_DELETE_TAG] = $tagID;
+        $params[TagTreeSubmode::REQUEST_PARAM_DELETE_TAG] = $tagID;
 
         return $this->getAdminTagTreeURL($params);
     }

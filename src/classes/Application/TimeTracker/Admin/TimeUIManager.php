@@ -88,7 +88,7 @@ class TimeUIManager
     public static function getBaseTicketURL() : string
     {
         if(!isset(self::$baseTicketURL)) {
-            self::$baseTicketURL = AppFactory::createDriver()->getSettings()->get(self::SETTING_BASE_TICKET_URL);
+            self::$baseTicketURL = (string)AppFactory::createDriver()->getSettings()->get(self::SETTING_BASE_TICKET_URL);
         }
 
         return self::$baseTicketURL;

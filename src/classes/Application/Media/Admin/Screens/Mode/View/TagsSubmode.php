@@ -8,14 +8,12 @@ declare(strict_types=1);
 
 namespace Application\Media\Admin\Screens\Mode\View;
 
-use Application\AppFactory;
 use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Admin\Traits\MediaViewInterface;
 use Application\Media\Admin\Traits\MediaViewTrait;
-use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
-use Application\Tags\AdminScreens\RecordTaggingScreenInterface;
-use Application\Tags\AdminScreens\RecordTaggingScreenTrait;
+use Application\Tags\Admin\Traits\RecordTaggingScreenInterface;
+use Application\Tags\Admin\Traits\RecordTaggingScreenTrait;
 use Application\Tags\Taggables\TaggableInterface;
 use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 use UI\AdminURLs\AdminURLInterface;

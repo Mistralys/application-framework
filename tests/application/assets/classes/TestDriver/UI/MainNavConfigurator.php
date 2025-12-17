@@ -10,15 +10,15 @@ namespace TestDriver\UI;
 
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Welcome\Screens\WelcomeArea;
-use Application\API\Admin\Screens\BaseAPIClientsArea;
-use Application\Area\BaseTagsScreen;
+use Application\API\Admin\Screens\APIClientsArea;
+use Application\Countries\Admin\Screens\CountriesArea;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\Media\Admin\Screens\MediaLibraryArea;
+use Application\Tags\Admin\Screens\Area\TagsArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\BaseUsersArea;
 use Application\Users\Admin\Screens\UserSettingsArea;
 use Application_Admin_TranslationsArea;
-use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TestingScreen;
@@ -46,13 +46,13 @@ class MainNavConfigurator extends NavConfigurator
         $menu
             ->addAreaChained(UserSettingsArea::URL_NAME)
             ->addSeparator()
-            ->addAreaChained(CountriesScreen::URL_NAME)
+            ->addAreaChained(CountriesArea::URL_NAME)
             ->addAreaChained(BaseNewsScreen::URL_NAME)
             ->addAreaChained(MediaLibraryArea::URL_NAME)
             ->addAreaChained(RevisionableScreen::URL_NAME)
-            ->addAreaChained(BaseTagsScreen::URL_NAME)
+            ->addAreaChained(TagsArea::URL_NAME)
             ->addAreaChained(BaseTimeTrackerArea::URL_NAME)
-            ->addAreaChained(BaseAPIClientsArea::URL_NAME)
+            ->addAreaChained(APIClientsArea::URL_NAME)
             ->addAreaChained(BaseUsersArea::URL_NAME)
             ->addSeparator()
             ->addAreaChained(DevelArea::URL_NAME)

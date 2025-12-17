@@ -33,6 +33,11 @@ abstract class BaseTimeTrackerArea extends BaseArea
         return BaseListScreen::URL_NAME;
     }
 
+    public function getDefaultSubscreenClass(): string
+    {
+        return BaseListScreen::class;
+    }
+
     public function getNavigationGroup(): string
     {
         return t('Manage');

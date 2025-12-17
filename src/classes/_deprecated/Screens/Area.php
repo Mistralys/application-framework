@@ -24,8 +24,6 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton impleme
 {
     use Application_Traits_Admin_Screen;
 
-    public const string EVENT_UI_HANDLING_COMPLETE = 'UIHandlingComplete';
-
     public function __construct(Application_Driver $driver, bool $adminMode = false)
     {
         // we do as if the UI had already been started to avoid loading it yet,
@@ -131,10 +129,8 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton impleme
         $this->handleQuickNavigation($this->createQuickNav());
 
         Application_EventHandler::trigger(
-            self::EVENT_UI_HANDLING_COMPLETE,
-            array(
-                $this
-            ),
+            UIHandlingCompleteEvent::EVENT_NAME,
+            array($this),
             UIHandlingCompleteEvent::class
         );
 

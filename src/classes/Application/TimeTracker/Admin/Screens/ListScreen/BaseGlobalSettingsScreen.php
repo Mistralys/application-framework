@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens\ListScreen;
 
 use Application\Admin\Area\Mode\BaseSubmode;
+use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeEntry;
@@ -96,5 +97,13 @@ abstract class BaseGlobalSettingsScreen extends BaseSubmode
     private function handleSaveSettings(ArrayDataCollection $formValues) : void
     {
         TimeUIManager::setBaseTicketURL($formValues->getString(self::SETTING_BASE_TICKET_URL));
+
+        $this->redirectWithSuccessMessage(
+            t(
+                'The global settings have been saved successfully at %1$s.',
+                sb()->time()
+            ),
+            AppFactory::createTimeTracker()->adminURL()->globalSettings()
+        );
     }
 }
