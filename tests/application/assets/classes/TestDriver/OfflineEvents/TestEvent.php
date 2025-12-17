@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents;
 
-use Application_EventHandler_Event;
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 
-class TestEvent extends Application_EventHandler_Event
+class TestEvent extends BaseOfflineEvent
 {
-    public const EVENT_NAME = 'Test';
+    public const string EVENT_NAME = 'Test';
+
+    protected function _getEventName(): string
+    {
+        return self::EVENT_NAME;
+    }
 }

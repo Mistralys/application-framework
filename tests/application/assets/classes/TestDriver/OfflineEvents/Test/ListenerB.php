@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents\Test;
 
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use TestDriver\OfflineEvents\TestEvent;
 
-class ListenerB extends Application_EventHandler_OfflineEvents_OfflineListener
+class ListenerB extends BaseOfflineListener
 {
     public const string CONSTANT_NAME = 'OFFLINE_EVENTS_LISTENER_B_ARGUMENT';
+
+    public function getEventName(): string
+    {
+        return TestEvent::EVENT_NAME;
+    }
 
     /**
      * @param TestEvent $event

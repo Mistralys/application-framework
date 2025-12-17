@@ -11,6 +11,7 @@ namespace AppFrameworkTests\EventHandling;
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
 use application\assets\classes\TestDriver\OfflineEvents\PriorityTest\PriorityListenerC;
+use Application\EventHandler\OfflineEvents\OfflineEventContainer;
 use TestDriver\OfflineEvents\PriorityTest\PriorityListenerA;
 use TestDriver\OfflineEvents\PriorityTest\PriorityListenerB;
 use TestDriver\OfflineEvents\PriorityTestEvent;
@@ -33,36 +34,25 @@ use TestDriver\OfflineEvents\TestEvent;
  */
 final class OfflineEventTest extends ApplicationTestCase
 {
-    public function test_createEventWithoutClassName(): void
+    public function test_createEvent(): void
     {
-        AppFactory::createOfflineEvents()
-            ->createEvent(
-                TestEvent::EVENT_NAME,
-                array('argument')
-            );
+        $container = new OfflineEventContainer(
+            TestEvent::EVENT_NAME,
+            array('argument')
+        );
 
-        $this->addToAssertionCount(1);
-    }
-
-    public function test_createEventWithClassName(): void
-    {
-        AppFactory::createOfflineEvents()
-            ->createEvent(
-                TestEvent::EVENT_NAME,
-                array('argument'),
-                TestEvent::class
-            );
-
-        $this->addToAssertionCount(1);
+        $this->assertSame(TEstEvent::EVENT_NAME, $container->getEventName());
     }
 
     public function test_eventHasExpectedListeners(): void
     {
-        $event = AppFactory::createOfflineEvents()->createEvent(TestEvent::EVENT_NAME, array('argument'));
+        $container = new OfflineEventContainer(
+            TestEvent::EVENT_NAME,
+            array('argument')
+        );
 
-        $this->assertNotNull($event->getEventClass());
-        $this->assertNotEmpty($event->getListenerFolders());
-        $this->assertNotEmpty($event->getListeners());
+        $this->assertNotEmpty($container->getListenerClasses());
+        $this->assertNotEmpty($container->getListeners());
     }
 
     public function test_triggerEvent(): void
@@ -83,8 +73,10 @@ final class OfflineEventTest extends ApplicationTestCase
      */
     public function test_defaultOrderingWithoutPriority() : void
     {
-        $listeners = AppFactory::createOfflineEvents()
-            ->createEvent(TestEvent::EVENT_NAME, array('priority-argument'))
+        $listeners = new OfflineEventContainer(
+            TestEvent::EVENT_NAME,
+            array('priority-argument')
+        )
             ->getListeners();
 
         $this->assertCount(2, $listeners);
@@ -93,7 +85,7 @@ final class OfflineEventTest extends ApplicationTestCase
     }
 
     /**
-     * The method {@see \Application_EventHandler_OfflineEvents_OfflineListener::getPriority()}
+     * The method {@see \Application\EventHandler\OfflineEvents\BaseOfflineListener::getPriority()}
      * is used to adjust the priority in which the listeners are executed.
      * In the test event below, the listeners are all ordered by priority.
      */
