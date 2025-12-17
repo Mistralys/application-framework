@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Mistralys\AppFramework;
 
+use Application\AppFactory;
 use Application\ApplicationException;
 use AppUtils\BaseException;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 use Mistralys\ChangelogParser\ChangelogParser;
 use Mistralys\VersionParser\VersionParser;
@@ -39,6 +41,20 @@ class AppFramework
     public function getClassesFolder() : string
     {
         return rtrim($this->getInstallFolder(), '/').'/src/classes';
+    }
+
+    /**
+     * Gets all folders from which classes can be loaded:
+     * From the Framework itself, and from the application.
+     *
+     * @return FolderInfo[]
+     */
+    public function getClassFolders(): array
+    {
+        return array(
+            FolderInfo::factory($this->getClassesFolder())->requireExists(),
+            FolderInfo::factory(AppFactory::createDriver()->getClassesFolder())->requireExists()
+        );
     }
 
     public function getNameLinked() : string
