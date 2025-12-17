@@ -75,8 +75,7 @@ class AppSettingsRegistry extends BaseStringPrimaryCollection
         // Allow the application to register any custom settings
         AppFactory::createOfflineEvents()->triggerEvent(
                 RegisterAppSettingsEvent::EVENT_NAME,
-                array($this),
-                RegisterAppSettingsEvent::class
+                array($this)
             );
     }
 

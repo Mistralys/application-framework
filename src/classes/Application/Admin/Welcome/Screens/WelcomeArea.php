@@ -69,8 +69,7 @@ class WelcomeArea extends BaseArea implements ClassLoaderScreenInterface
     {
         AppFactory::createOfflineEvents()->triggerEvent(
             WelcomeQuickNavEvent::EVENT_NAME,
-            array($this, $this->quickNav),
-            WelcomeQuickNavEvent::class
+            array($this, $this->quickNav)
         );
     }
 }

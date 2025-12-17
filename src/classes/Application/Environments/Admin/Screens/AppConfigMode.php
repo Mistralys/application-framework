@@ -114,8 +114,7 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
         // Let the application add its own settings as needed
         AppFactory::createOfflineEvents()->triggerEvent(
             DisplayAppConfigEvent::EVENT_NAME,
-            array($this),
-            DisplayAppConfigEvent::class
+            array($this)
         );
 
         return (string)$this->grid;
