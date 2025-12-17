@@ -83,7 +83,13 @@ class CacheManager extends BaseStringPrimaryCollection implements \Application_I
 
     protected function registerItems(): void
     {
-        foreach($this->triggerRegisterEvent()->getLocations() as $location) {
+        $event = $this->triggerRegisterEvent();
+
+        if($event === null) {
+            return;
+        }
+
+        foreach($event->getLocations() as $location) {
             $this->registerItem($location);
         }
     }
@@ -110,17 +116,20 @@ class CacheManager extends BaseStringPrimaryCollection implements \Application_I
         return $this;
     }
 
-    private function triggerRegisterEvent() : RegisterCacheLocationsEvent
+    private function triggerRegisterEvent() : ?RegisterCacheLocationsEvent
     {
         $event = Application_EventHandler::createOfflineEvents()->triggerEvent(
-            RegisterCacheLocationsEvent::EVENT_NAME,
-            array(),
-            RegisterCacheLocationsEvent::class
-        );
+            RegisterCacheLocationsEvent::EVENT_NAME
+        )
+            ->getTriggeredEvent();
+
+        if($event === null) {
+            return null;
+        }
 
         return ClassHelper::requireObjectInstanceOf(
             RegisterCacheLocationsEvent::class,
-            $event->getTriggeredEvent()
+            $event
         );
     }
 }
