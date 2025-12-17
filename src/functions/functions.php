@@ -791,7 +791,7 @@ function sb() : UI_StringBuilder
  * Ensures that the subject is scalar or a renderable,
  * and converts it to a string.
  *
- * @param mixed|StringableInterface $subject
+ * @param mixed|string|int|float|bool|StringableInterface $subject
  * @return string
  * @throws UI_Exception
  *
