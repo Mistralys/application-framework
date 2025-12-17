@@ -56,13 +56,13 @@ class AppSettingsRegistry extends BaseStringPrimaryCollection
     {
         $this->registerItem(new AppSettingDef(
             UI_MarkupEditorInfo::SETTING_NAME_MARKUP_EDITOR_ID,
-            AppSettingsDevelMode::SETTING_TYPE_STRING,
+            AppSettingDef::SETTING_TYPE_STRING,
             t('The ID of the markup editor to use.')
         ));
 
         $this->registerItem(new AppSettingDef(
             Application_Driver::APP_SETTING_KEEP_ALIVE_INTERVAL,
-            AppSettingsDevelMode::SETTING_TYPE_STRING,
+            AppSettingDef::SETTING_TYPE_STRING,
             (string)sb()
                 ->t('The interval in which the authentication keep-alive process is run.')
                 ->t(
@@ -87,5 +87,25 @@ class AppSettingsRegistry extends BaseStringPrimaryCollection
             $type,
             $description
         ));
+    }
+
+    public function addSettingBool(string $name, string $description): void
+    {
+        $this->addSetting($name, AppSettingDef::SETTING_TYPE_BOOLEAN, $description);
+    }
+
+    public function addSettingString(string $name, string $description): void
+    {
+        $this->addSetting($name, AppSettingDef::SETTING_TYPE_STRING, $description);
+    }
+
+    public function addSettingInt(string $name, string $description): void
+    {
+        $this->addSetting($name, AppSettingDef::SETTING_TYPE_INTEGER, $description);
+    }
+
+    public function addSettingFloat(string $name, string $description): void
+    {
+        $this->addSetting($name, AppSettingDef::SETTING_TYPE_FLOAT, $description);
     }
 }
