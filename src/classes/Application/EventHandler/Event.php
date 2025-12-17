@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
+use Application\EventHandler\EventInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
-use AppUtils\ConvertHelper_Exception;
 
 /**
  * Event class for individual events: an instance of this is
@@ -21,7 +21,7 @@ use AppUtils\ConvertHelper_Exception;
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_EventHandler_Event
+class Application_EventHandler_Event implements EventInterface
 {
     protected ?Application_EventHandler_Listener $selectedListener = null;
     protected bool $cancel = false;
@@ -42,21 +42,18 @@ class Application_EventHandler_Event
         $this->name = $name;
         $this->args = $args;
     }
-    
+
+    public function getID(): string
+    {
+        return $this->getName();
+    }
+
     public function getName() : string
     {
         return $this->name;
     }
 
-   /**
-    * Specifies that the event should be cancelled. This is only
-    * possible if the event is callable.
-    *
-    * @param string $reason The reason for which the event was cancelled
-    * @return Application_EventHandler_Event
-    *@throws Application_EventHandler_Exception {@see Application_EventHandler_Exception::ERROR_EVENT_NOT_CANCELLABLE}
-    */
-    public function cancel(string $reason) : Application_EventHandler_Event
+    public function cancel(string $reason) : self
     {
         if(!$this->isCancellable()) 
         {
@@ -76,47 +73,22 @@ class Application_EventHandler_Event
         return $this;
     }
 
-   /**
-    * Retrieves all arguments of the event as an array.
-    * 
-    * @return array<int,mixed>
-    */
-    public function getArguments() : array
+    final public function getArguments() : array
     {
         return $this->args;
     }
 
-   /**
-    * Retrieves the argument at the specified index, or null
-    * if it does not exist.
-    *
-    * @param int $index Zero-based index of the argument.
-    * @return NULL|mixed
-    */
-    public function getArgument(int $index) : mixed
+    final public function getArgument(int $index) : mixed
     {
-        if(isset($this->args[$index])) 
-        {
-            return $this->args[$index];
-        }
-
-        return null;
+        return $this->args[$index] ?? null;
     }
 
-    /**
-     * @param int $index Zero-based index of the argument.
-     * @return string
-     */
-    public function getArgumentString(int $index) : string
+    final public function getArgumentString(int $index) : string
     {
         return (string)$this->getArgument($index);
     }
 
-    /**
-     * @param int $index Zero-based index of the argument.
-     * @return array<int|string,mixed>
-     */
-    public function getArgumentArray(int $index) : array
+    final public function getArgumentArray(int $index) : array
     {
         $arg = $this->getArgument($index);
 
@@ -127,21 +99,12 @@ class Application_EventHandler_Event
         return array();
     }
 
-    /**
-     * @param int $index Zero-based index of the argument.
-     * @return int
-     */
-    public function getArgumentInt(int $index) : int
+    final public function getArgumentInt(int $index) : int
     {
         return (int)$this->getArgument($index);
     }
 
-    /**
-     * @param int $index Zero-based index of the argument.
-     * @return bool
-     * @throws ConvertHelper_Exception
-     */
-    public function getArgumentBool(int $index) : bool
+    final public function getArgumentBool(int $index) : bool
     {
         return ConvertHelper::string2bool($this->getArgument($index));
     }
@@ -162,18 +125,11 @@ class Application_EventHandler_Event
         return ClassHelper::requireObjectInstanceOf($class, $this->getArgument($int));
     }
 
-   /**
-    * Checks whether the event should be cancelled.
-    * @return boolean
-    */
     public function isCancelled() : bool
     {
         return $this->cancel;
     }
 
-   /**
-    * @return string
-    */
     public function getCancelReason() : string
     {
         return $this->cancelReason;
@@ -188,26 +144,12 @@ class Application_EventHandler_Event
         return true;
     }
 
-   /**
-    * Called automatically when a listener for this event is called,
-    * to provide information about the listener.
-    *
-    * @param Application_EventHandler_Listener $listener
-    * @return Application_EventHandler_Event
-    */
-    public function selectListener(Application_EventHandler_Listener $listener) : Application_EventHandler_Event
+    public function selectListener(Application_EventHandler_Listener $listener) : self
     {
         $this->selectedListener = $listener;
         return $this;
     }
 
-   /**
-    * Retrieves the source of the listener that handled this event.
-    * This is an optional string that can be specified when adding
-    * an event listener. It can be empty.
-    *
-    * @return string
-    */
     public function getSource() : string
     {
         if(isset($this->selectedListener)) 

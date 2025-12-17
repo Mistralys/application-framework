@@ -7,6 +7,8 @@
  * @see Application_EventHandler
  */
 
+use Application\EventHandler\EventInterface;
+use Application\EventHandler\OfflineEvents\OfflineEventsManager;
 use AppUtils\ClassHelper;
 
 /**
@@ -35,7 +37,7 @@ class Application_EventHandler
     protected static array $events = array();
 
     protected static int $listenerIDCounter = 0;
-    private static ?Application_EventHandler_OfflineEvents $offlineEvents = null;
+    private static ?OfflineEventsManager $offlineEvents = null;
 
     /**
     * Adds a callback to the specified event.
@@ -86,13 +88,13 @@ class Application_EventHandler
      * @param string $eventName
      * @param mixed|array<int,mixed>|NULL $args Indexed array of arguments or a single argument to pass to the event.
      * @param string $class The name of the event class to use. Allows specifying a custom class for this event, which must extend the base event class.
-     * @return Application_EventHandler_Event
+     * @return EventInterface
      * @throws Application_EventHandler_Exception
      *
      * @see Application_EventHandler::ERROR_MISSING_EVENT_CLASS
      * @see Application_EventHandler::ERROR_INVALID_EVENT_CLASS
      */
-    public static function trigger(string $eventName, $args=null, string $class=Application_EventHandler_Event::class): Application_EventHandler_Event
+    public static function trigger(string $eventName, mixed $args=null, string $class=Application_EventHandler_Event::class): EventInterface
     {
         if(!empty($args)) {
             if (!is_array($args)) {
@@ -190,22 +192,22 @@ class Application_EventHandler
         );
     }
 
-    public static function createOfflineEvents() : Application_EventHandler_OfflineEvents
+    public static function createOfflineEvents() : OfflineEventsManager
     {
         if(!isset(self::$offlineEvents))
         {
-            self::$offlineEvents = new Application_EventHandler_OfflineEvents();
+            self::$offlineEvents = new OfflineEventsManager();
         }
 
         return self::$offlineEvents;
     }
 
-    private static function createEvent(string $eventName, string $class, array $args) : Application_EventHandler_Event
+    private static function createEvent(string $eventName, string $class, array $args) : EventInterface
     {
         $actualClass = ClassHelper::requireResolvedClass($class);
 
         return ClassHelper::requireObjectInstanceOf(
-            Application_EventHandler_Event::class,
+            EventInterface::class,
             new $actualClass($eventName, $args),
             self::ERROR_INVALID_EVENT_CLASS
         );
