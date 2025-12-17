@@ -82,6 +82,8 @@ class AppSettingsDevelMode extends BaseMode implements DevelModeInterface
         $this->filterSettings = new AppSettingsFilterSettings(self::URL_NAME);
         $this->filterCriteria = new AppSettingsFilterCriteria();
 
+        $this->filterSettings->addHiddenScreenVars();
+
         $this->createEditForm();
 
         $this->createDatagrid();
