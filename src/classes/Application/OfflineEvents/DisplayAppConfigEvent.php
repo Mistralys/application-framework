@@ -10,6 +10,7 @@ namespace Application\OfflineEvents;
 
 use Application\Environments\Admin\Screens\AppConfigMode;
 use Application\Environments\Events\BaseDisplayAppConfigListener;
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use Application_EventHandler_Event;
 
 /**
@@ -27,9 +28,14 @@ use Application_EventHandler_Event;
  *
  * @see BaseRegisterAppSettingsListener
  */
-class DisplayAppConfigEvent extends Application_EventHandler_Event
+class DisplayAppConfigEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'DisplayAppConfig';
+
+    protected function _getEventName(): string
+    {
+        return self::EVENT_NAME;
+    }
 
     public function getScreen() : AppConfigMode
     {

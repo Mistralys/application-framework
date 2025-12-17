@@ -11,7 +11,7 @@ namespace Application\Admin\Welcome\Events;
 use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\OfflineEvents\WelcomeQuickNavEvent;
 use Application_EventHandler_Event;
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use AppUtils\ClassHelper;
 use UI\Page\Navigation\QuickNavigation;
 
@@ -22,8 +22,13 @@ use UI\Page\Navigation\QuickNavigation;
  * @package Admin
  * @subpackage Welcome
  */
-abstract class BaseWelcomeQuickNavListener extends Application_EventHandler_OfflineEvents_OfflineListener
+abstract class BaseWelcomeQuickNavListener extends BaseOfflineListener
 {
+    public function getEventName(): string
+    {
+        return WelcomeQuickNavEvent::EVENT_NAME;
+    }
+
     protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
     {
         $welcome = ClassHelper::requireObjectInstanceOf(

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\OfflineEvents;
 
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use Application\Tags\Events\BaseRegisterTagCollectionsListener;
 use Application\Tags\TagCollectionRegistry;
 use Application\Tags\Taggables\TagCollectionInterface;
@@ -25,9 +26,14 @@ use Application_EventHandler_Event;
  * @package Tagging
  * @subpackage Events
  */
-class RegisterTagCollectionsEvent extends Application_EventHandler_Event
+class RegisterTagCollectionsEvent extends BaseOfflineEvent
 {
-    public const EVENT_NAME = 'RegisterTagCollections';
+    public const string EVENT_NAME = 'RegisterTagCollections';
+
+    protected function _getEventName(): string
+    {
+        return self::EVENT_NAME;
+    }
 
     public function registerTagCollection(TagCollectionInterface $collection) : void
     {

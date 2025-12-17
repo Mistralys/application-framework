@@ -11,7 +11,7 @@ namespace Application\Tags\Events;
 use Application\OfflineEvents\RegisterTagCollectionsEvent;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application_EventHandler_Event;
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use AppUtils\ClassHelper;
 
 /**
@@ -21,8 +21,13 @@ use AppUtils\ClassHelper;
  * @subpackage Events
  * @see RegisterTagCollectionsEvent
  */
-abstract class BaseRegisterTagCollectionsListener extends Application_EventHandler_OfflineEvents_OfflineListener
+abstract class BaseRegisterTagCollectionsListener extends BaseOfflineListener
 {
+    public function getEventName(): string
+    {
+        return RegisterTagCollectionsEvent::EVENT_NAME;
+    }
+
     protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
     {
         $this->handleTagRegistration(

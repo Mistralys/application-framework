@@ -6,11 +6,16 @@ namespace Application\AppSettings;
 
 use Application\OfflineEvents\RegisterAppSettingsEvent;
 use Application_EventHandler_Event;
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use AppUtils\ClassHelper;
 
-abstract class BaseRegisterAppSettingsListener extends Application_EventHandler_OfflineEvents_OfflineListener
+abstract class BaseRegisterAppSettingsListener extends BaseOfflineListener
 {
+    public function getEventName(): string
+    {
+        return RegisterAppSettingsEvent::EVENT_NAME;
+    }
+
     protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
     {
         $this->registerSettings(

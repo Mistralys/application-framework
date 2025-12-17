@@ -10,7 +10,7 @@ namespace Application\CacheControl;
 
 use Application\OfflineEvents\RegisterCacheLocationsEvent;
 use Application_EventHandler_Event;
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use AppUtils\ClassHelper;
 
 /**
@@ -19,8 +19,13 @@ use AppUtils\ClassHelper;
  * @package Application
  * @subpackage CacheControl
  */
-abstract class BaseRegisterCacheLocationsListener extends Application_EventHandler_OfflineEvents_OfflineListener
+abstract class BaseRegisterCacheLocationsListener extends BaseOfflineListener
 {
+    public function getEventName(): string
+    {
+        return RegisterCacheLocationsEvent::EVENT_NAME;
+    }
+
     protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
     {
         $this->handleTagRegistration(

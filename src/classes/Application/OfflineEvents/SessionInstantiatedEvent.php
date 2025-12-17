@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\OfflineEvents;
 
-use Application_EventHandler_Event;
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use Application_Session;
 
 /**
@@ -29,9 +29,14 @@ use Application_Session;
  * @package Application
  * @subpackage Session
  */
-class SessionInstantiatedEvent extends Application_EventHandler_Event
+class SessionInstantiatedEvent extends BaseOfflineEvent
 {
-    public const EVENT_NAME = 'SessionInstantiated';
+    public const string EVENT_NAME = 'SessionInstantiated';
+
+    protected function _getEventName(): string
+    {
+        return self::EVENT_NAME;
+    }
 
     public function getSession() : Application_Session
     {

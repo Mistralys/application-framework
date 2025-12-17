@@ -11,6 +11,7 @@ namespace Application\OfflineEvents;
 use Application\CacheControl\BaseRegisterCacheLocationsListener;
 use Application\CacheControl\CacheLocationInterface;
 use Application\CacheControl\CacheManager;
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use Application_EventHandler_Event;
 
 /**
@@ -26,14 +27,19 @@ use Application_EventHandler_Event;
  * @subpackage CacheControl
  * @see BaseRegisterCacheLocationsListener
  */
-class RegisterCacheLocationsEvent extends Application_EventHandler_Event
+class RegisterCacheLocationsEvent extends BaseOfflineEvent
 {
-    public const EVENT_NAME = 'RegisterCacheLocations';
+    public const string EVENT_NAME = 'RegisterCacheLocations';
 
     /**
      * @var CacheLocationInterface[]
      */
     private array $locations = array();
+
+    protected function _getEventName(): string
+    {
+        return self::EVENT_NAME;
+    }
 
     public function registerLocation(CacheLocationInterface $location): void
     {

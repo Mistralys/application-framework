@@ -10,7 +10,7 @@ namespace Application\Session;
 
 use Application\OfflineEvents\SessionInstantiatedEvent;
 use Application_EventHandler_Event;
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use AppUtils\ClassHelper;
 
 /**
@@ -19,8 +19,13 @@ use AppUtils\ClassHelper;
  * @package Application
  * @subpackage Session
  */
-abstract class BaseSessionInstantiatedListener extends Application_EventHandler_OfflineEvents_OfflineListener
+abstract class BaseSessionInstantiatedListener extends BaseOfflineListener
 {
+    public function getEventName(): string
+    {
+        return SessionInstantiatedEvent::EVENT_NAME;
+    }
+
     protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
     {
         $this->handleSessionInstantiated(

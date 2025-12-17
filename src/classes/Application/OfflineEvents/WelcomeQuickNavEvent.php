@@ -10,7 +10,7 @@ namespace Application\OfflineEvents;
 
 use Application\Admin\Welcome\Events\BaseWelcomeQuickNavListener;
 use Application\Admin\Welcome\Screens\WelcomeArea;
-use Application_EventHandler_Event;
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use UI\Page\Navigation\QuickNavigation;
 
 /**
@@ -22,11 +22,11 @@ use UI\Page\Navigation\QuickNavigation;
  *
  * @see BaseWelcomeQuickNavListener
  */
-class WelcomeQuickNavEvent extends Application_EventHandler_Event
+class WelcomeQuickNavEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'WelcomeQuickNav';
 
-    public function getName(): string
+    protected function _getEventName(): string
     {
         return self::EVENT_NAME;
     }

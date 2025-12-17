@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\OfflineEvents;
 
 use Application\AppSettings\AppSettingsRegistry;
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use Application_EventHandler_Event;
 
 /**
@@ -26,9 +27,14 @@ use Application_EventHandler_Event;
  *
  * @see BaseRegisterAppSettingsListener
  */
-class RegisterAppSettingsEvent extends Application_EventHandler_Event
+class RegisterAppSettingsEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'RegisterAppSettings';
+
+    protected function _getEventName(): string
+    {
+        return self::EVENT_NAME;
+    }
 
     public function addSetting(string $name, string $type, string $description): void
     {
