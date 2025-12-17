@@ -219,8 +219,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         AppFactory::createOfflineEvents()->triggerEvent(
             SessionInstantiatedEvent::EVENT_NAME,
-            array($session),
-            SessionInstantiatedEvent::class
+            array($session)
         );
     }
 
