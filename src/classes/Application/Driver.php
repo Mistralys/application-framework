@@ -1768,21 +1768,6 @@ abstract class Application_Driver implements Application_Driver_Interface
     }
 
     /**
-     * Retrieves information on all available administration
-     * area classes, including all submodes, actions, etc.
-     *
-     * NOTE: Instantiates each of the admin classes, so this
-     * is a memory hungry operation. It can be used in unit
-     * tests to ensure all admin areas can be created.
-     *
-     * @return Application_Driver_AdminInfo
-     */
-    public function describeAdminAreas() : Application_Driver_AdminInfo
-    {
-        return new Application_Driver_AdminInfo();
-    }
-
-    /**
      * Creates/returns the driver's OAuth instance, which is
      * used to handle OAuth authentication.
      *

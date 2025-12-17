@@ -129,8 +129,6 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function configureAdminUIFramework() : void;
 
-    public function describeAdminAreas() : Application_Driver_AdminInfo;
-
     public function createOAuth() : Application_OAuth;
 
     public function createArea(string $id) : Application_Admin_Area;
