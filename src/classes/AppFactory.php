@@ -32,7 +32,7 @@ use Application_DBDumps;
 use Application_Driver;
 use Application_ErrorLog;
 use Application_EventHandler;
-use Application_EventHandler_OfflineEvents;
+use Application\EventHandler\OfflineEvents\OfflineEventsManager;
 use Application_Logger;
 use Application_LookupItems;
 use Application_Maintenance;
@@ -257,7 +257,7 @@ class AppFactory
         return self::createClassInstance(Application_LookupItems::class, Application_Driver::getInstance());
     }
 
-    public static function createOfflineEvents() : Application_EventHandler_OfflineEvents
+    public static function createOfflineEvents() : OfflineEventsManager
     {
         return Application_EventHandler::createOfflineEvents();
     }
