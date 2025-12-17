@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\CacheControl;
 
 use Application\AppFactory;
-use Application\OfflineEvents\RegisterCacheLocationsEvent;
+use Application\CacheControl\Events\RegisterCacheLocationsEvent;
 use Application_EventHandler;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;

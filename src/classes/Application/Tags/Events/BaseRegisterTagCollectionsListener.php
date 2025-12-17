@@ -8,10 +8,9 @@ declare(strict_types=1);
 
 namespace Application\Tags\Events;
 
-use Application\OfflineEvents\RegisterTagCollectionsEvent;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application_EventHandler_Event;
-use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use AppUtils\ClassHelper;
 
 /**

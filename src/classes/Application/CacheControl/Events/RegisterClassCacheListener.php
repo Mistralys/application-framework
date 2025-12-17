@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\OfflineEvents\RegisterCacheLocationsEvent;
 
 use Application\AppFactory\ClassCacheHandler;
-use Application\CacheControl\BaseRegisterCacheLocationsListener;
+use Application\CacheControl\Events\BaseRegisterCacheLocationsListener;
 
 /**
  * @package Application

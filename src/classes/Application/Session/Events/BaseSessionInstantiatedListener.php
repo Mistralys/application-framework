@@ -6,11 +6,10 @@
 
 declare(strict_types=1);
 
-namespace Application\Session;
+namespace Application\Session\Events;
 
-use Application\OfflineEvents\SessionInstantiatedEvent;
-use Application_EventHandler_Event;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
+use Application_EventHandler_Event;
 use AppUtils\ClassHelper;
 
 /**

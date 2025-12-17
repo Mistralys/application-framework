@@ -14,7 +14,7 @@ use Application\Admin\Traits\DevelModeTrait;
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Development\Admin\DevScreenRights;
-use Application\OfflineEvents\DisplayAppConfigEvent;
+use Application\Development\Events\DisplayAppConfigEvent;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\StringableInterface;
 use UI_PropertiesGrid;

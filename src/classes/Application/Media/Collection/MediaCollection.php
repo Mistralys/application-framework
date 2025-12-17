@@ -10,7 +10,7 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\Admin\MediaAdminURLs;
 use Application\Media\Admin\Screens\MediaLibraryArea;
 use Application\Media\MediaTagConnector;
-use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
+use Application\Media\Events\RegisterMediaTagsListener;
 use Application\Tags\TagCollection;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;

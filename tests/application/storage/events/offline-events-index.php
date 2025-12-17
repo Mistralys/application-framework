@@ -5,14 +5,14 @@ declare(strict_types=1);
 return array (
   'events' => 
   array (
-    'DisplayAppConfig' => 'Application\\OfflineEvents\\DisplayAppConfigEvent',
+    'DisplayAppConfig' => 'Application\\Development\\Events\\DisplayAppConfigEvent',
     'PriorityTest' => 'TestDriver\\OfflineEvents\\PriorityTestEvent',
-    'RegisterAppSettings' => 'Application\\OfflineEvents\\RegisterAppSettingsEvent',
-    'RegisterCacheLocations' => 'Application\\OfflineEvents\\RegisterCacheLocationsEvent',
-    'RegisterTagCollections' => 'Application\\OfflineEvents\\RegisterTagCollectionsEvent',
-    'SessionInstantiated' => 'Application\\OfflineEvents\\SessionInstantiatedEvent',
+    'RegisterAppSettings' => 'Application\\AppSettings\\Events\\RegisterAppSettingsEvent',
+    'RegisterCacheLocations' => 'Application\\CacheControl\\Events\\RegisterCacheLocationsEvent',
+    'RegisterTagCollections' => 'Application\\Tags\\Events\\RegisterTagCollectionsEvent',
+    'SessionInstantiated' => 'Application\\Session\\Events\\SessionInstantiatedEvent',
     'Test' => 'TestDriver\\OfflineEvents\\TestEvent',
-    'WelcomeQuickNav' => 'Application\\OfflineEvents\\WelcomeQuickNavEvent',
+    'WelcomeQuickNav' => 'Application\\Admin\\Welcome\\Events\\WelcomeQuickNavEvent',
   ),
   'listeners' => 
   array (
@@ -32,12 +32,12 @@ return array (
     ),
     'RegisterCacheLocations' => 
     array (
-      0 => 'Application\\OfflineEvents\\RegisterCacheLocationsEvent\\RegisterAPIIndexListener',
+      0 => 'Application\\API\\Events\\RegisterAPIIndexCacheListener',
       1 => 'Application\\OfflineEvents\\RegisterCacheLocationsEvent\\RegisterClassCacheListener',
     ),
     'RegisterTagCollections' => 
     array (
-      0 => 'Application\\OfflineEvents\\RegisterTagCollectionsEvent\\RegisterMediaTagsListener',
+      0 => 'Application\\Media\\Events\\RegisterMediaTagsListener',
       1 => 'TestDriver\\OfflineEvents\\RegisterTagCollections\\RegisterTestDBCollection',
     ),
     'SessionInstantiated' => 

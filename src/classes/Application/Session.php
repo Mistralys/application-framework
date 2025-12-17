@@ -13,7 +13,7 @@ declare(strict_types=1);
  * Interface for application session handling classes.
  *
  * NOTE: To add session event handlers, see the offline
- * event class: {@see \Application\OfflineEvents\SessionInstantiatedEvent}.
+ * event class: {@see \Application\Session\Events\SessionInstantiatedEvent}.
  *
  * @package Application
  * @subpackage Sessions

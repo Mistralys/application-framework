@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Application\OfflineEvents\RegisterTagCollectionsEvent;
+namespace Application\Media\Events;
 
 use Application\AppFactory;
 use Application\Tags\Events\BaseRegisterTagCollectionsListener;

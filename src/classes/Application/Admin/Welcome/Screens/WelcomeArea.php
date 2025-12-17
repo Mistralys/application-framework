@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Application\Admin\Welcome\Screens;
 
 use Application\Admin\ClassLoaderScreenInterface;
+use Application\Admin\Welcome\Events\WelcomeQuickNavEvent;
 use Application\AppFactory;
-use Application\OfflineEvents\WelcomeQuickNavEvent;
 use tests\TestDriver\Admin\BaseArea;
 use UI;
 use UI_Icon;

@@ -7,7 +7,7 @@ use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\MediaException;
 use Application\Media\MediaTagConnector;
-use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
+use Application\Media\Events\RegisterMediaTagsListener;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
 use AppUtils\ClassHelper;

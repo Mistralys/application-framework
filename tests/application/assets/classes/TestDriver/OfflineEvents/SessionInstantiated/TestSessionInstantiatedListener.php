@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents\SessionInstantiated;
 
-use Application\OfflineEvents\SessionInstantiatedEvent;
-use Application\Session\BaseSessionInstantiatedListener;
-use Closure;
+use Application\Session\Events\BaseSessionInstantiatedListener;
+use Application\Session\Events\SessionInstantiatedEvent;
 
 class TestSessionInstantiatedListener extends BaseSessionInstantiatedListener
 {

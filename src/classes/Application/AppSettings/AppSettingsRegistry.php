@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Application\AppSettings;
 
 use Application\AppFactory;
-use Application\AppSettings\Admin\Screens\AppSettingsDevelMode;
-use Application\OfflineEvents\RegisterAppSettingsEvent;
+use Application\AppSettings\Events\RegisterAppSettingsEvent;
 use Application_Driver;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;

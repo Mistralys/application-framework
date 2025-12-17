@@ -6,13 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Application\OfflineEvents;
+namespace Application\CacheControl\Events;
 
-use Application\CacheControl\BaseRegisterCacheLocationsListener;
 use Application\CacheControl\CacheLocationInterface;
 use Application\CacheControl\CacheManager;
 use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
-use Application_EventHandler_Event;
 
 /**
  * This offline event is triggered when the {@see CacheManager} is initialized,

@@ -6,12 +6,12 @@
 
 declare(strict_types=1);
 
-namespace Application\OfflineEvents;
+namespace Application\Development\Events;
 
+use Application\AppSettings\Events\BaseRegisterAppSettingsListener;
 use Application\Environments\Admin\Screens\AppConfigMode;
 use Application\Environments\Events\BaseDisplayAppConfigListener;
 use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
-use Application_EventHandler_Event;
 
 /**
  * This offline event is triggered when the application's configuration

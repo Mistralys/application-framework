@@ -6,13 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Application\OfflineEvents;
+namespace Application\Tags\Events;
 
 use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
-use Application\Tags\Events\BaseRegisterTagCollectionsListener;
 use Application\Tags\TagCollectionRegistry;
 use Application\Tags\Taggables\TagCollectionInterface;
-use Application_EventHandler_Event;
 
 /**
  * This event is triggered when the available tag collections

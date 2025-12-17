@@ -6,9 +6,8 @@
 
 declare(strict_types=1);
 
-namespace Application\OfflineEvents;
+namespace Application\Admin\Welcome\Events;
 
-use Application\Admin\Welcome\Events\BaseWelcomeQuickNavListener;
 use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use UI\Page\Navigation\QuickNavigation;

@@ -6,11 +6,10 @@
 
 declare(strict_types=1);
 
-namespace Application\OfflineEvents;
+namespace Application\AppSettings\Events;
 
 use Application\AppSettings\AppSettingsRegistry;
 use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
-use Application_EventHandler_Event;
 
 /**
  * This offline event is triggered to register any custom settings

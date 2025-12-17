@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents\RegisterAppSettings;
 
-use Application\AppSettings\BaseRegisterAppSettingsListener;
-use Application\OfflineEvents\RegisterAppSettingsEvent;
+use Application\AppSettings\Events\BaseRegisterAppSettingsListener;
+use Application\AppSettings\Events\RegisterAppSettingsEvent;
 
 class RegisterSettingsListener extends BaseRegisterAppSettingsListener
 {

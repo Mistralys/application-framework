@@ -9,9 +9,8 @@ declare(strict_types=1);
 namespace Application\Admin\Welcome\Events;
 
 use Application\Admin\Welcome\Screens\WelcomeArea;
-use Application\OfflineEvents\WelcomeQuickNavEvent;
-use Application_EventHandler_Event;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
+use Application_EventHandler_Event;
 use AppUtils\ClassHelper;
 use UI\Page\Navigation\QuickNavigation;
 

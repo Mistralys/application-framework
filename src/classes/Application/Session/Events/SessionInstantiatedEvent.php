@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Application\OfflineEvents;
+namespace Application\Session\Events;
 
 use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 use Application_Session;
@@ -23,8 +23,9 @@ use Application_Session;
  *
  * ## Usage
  *
- * 1. Add listeners in the folder {@see self::EVENT_NAME} in the offline event folder.
- * 2. Extend the base class {@see BaseSessionInstantiatedListener}.
+ * 1. Extend the listener class {@see BaseSessionInstantiatedListener}.
+ *
+ * The listener classes will be auto-discovered on application build.
  *
  * @package Application
  * @subpackage Session

@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Application\AppSettings;
+namespace Application\AppSettings\Events;
 
-use Application\OfflineEvents\RegisterAppSettingsEvent;
-use Application_EventHandler_Event;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
+use Application_EventHandler_Event;
 use AppUtils\ClassHelper;
 
 abstract class BaseRegisterAppSettingsListener extends BaseOfflineListener

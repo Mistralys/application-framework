@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AppFrameworkTests\SessionTests;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application\OfflineEvents\SessionInstantiatedEvent;
+use Application\Session\Events\SessionInstantiatedEvent;
 use TestDriver\OfflineEvents\SessionInstantiated\TestSessionInstantiatedListener;
 
 /**

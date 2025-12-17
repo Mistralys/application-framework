@@ -7,7 +7,7 @@
 use Application\AppFactory;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
-use Application\OfflineEvents\SessionInstantiatedEvent;
+use Application\Session\Events\SessionInstantiatedEvent;
 use Application\Session\Events\UserAuthenticatedEvent;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;

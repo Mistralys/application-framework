@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Application\CacheControl;
+namespace Application\CacheControl\Events;
 
-use Application\OfflineEvents\RegisterCacheLocationsEvent;
-use Application_EventHandler_Event;
+use Application\CacheControl\CacheLocationInterface;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
+use Application_EventHandler_Event;
 use AppUtils\ClassHelper;
 
 /**

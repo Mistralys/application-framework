@@ -22,7 +22,7 @@ use function AppUtils\parseURL;
  * information in the session.
  *
  * NOTE: To add session event handlers, see the offline
- * event class: {@see \Application\OfflineEvents\SessionInstantiatedEvent}.
+ * event class: {@see \Application\Session\Events\SessionInstantiatedEvent}.
  *
  * @package Application
  * @subpackage Sessions

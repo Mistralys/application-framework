@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Environments\Events;
 
+use Application\Development\Events\DisplayAppConfigEvent;
 use Application\Environments\Admin\Screens\AppConfigMode;
-use Application\OfflineEvents\DisplayAppConfigEvent;
-use Application_EventHandler_Event;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
+use Application_EventHandler_Event;
 use AppUtils\ClassHelper;
 
 abstract class BaseDisplayAppConfigListener extends BaseOfflineListener
