@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Installer;
 
+use AppFrameworkTestClasses\ApplicationTestCase;
 use Application;
 use Application\AppFactory;
-use AppFrameworkTestClasses\ApplicationTestCase;
 use Application_Users;
 use DBHelper;
 
