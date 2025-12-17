@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Renamer\Index;
 
+use Application\Renamer\DataColumnInterface;
+use Application\Renamer\RenamingManager;
 use AppUtils\ConvertHelper\JSONConverter;
 use DBHelper;
 use DBHelper_BaseRecord;
-use Application\Renamer\DataColumnInterface;
-use Application\Renamer\RenamingManager;
 
 class RenamerRecord extends DBHelper_BaseRecord
 {

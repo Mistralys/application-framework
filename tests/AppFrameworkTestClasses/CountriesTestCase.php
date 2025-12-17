@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application\Languages;
 use Application_Countries;
 use Application_Countries_Country;
 use DBHelper;

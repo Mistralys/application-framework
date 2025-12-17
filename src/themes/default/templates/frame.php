@@ -6,10 +6,10 @@
 
 declare(strict_types=1);
 
-use Application\Users\Admin\Screens\UserSettingsArea;
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\User\LayoutWidths;
+use Application\Users\Admin\Screens\UserSettingsArea;
 use AppUtils\ClassHelper;
 use AppUtils\OutputBuffering;
 use UI\Event\PageRendered;
@@ -27,10 +27,10 @@ use UI\Page\Navigation\QuickNavigation;
  */
 class template_default_frame extends UI_Page_Template_Custom
 {
-    public const BODY_CLASS_WITH_QUICKNAV = 'with-quicknav';
-    public const BODY_CLASS_LOCKING_LOCKABLE = 'locking-lockable';
-    public const BODY_CLASS_LOCKING_LOCKED = 'locking-locked';
-    public const BODY_CLASS_LOCKING_UNLOCKED = 'locking-unlocked';
+    public const string BODY_CLASS_WITH_QUICKNAV = 'with-quicknav';
+    public const string BODY_CLASS_LOCKING_LOCKABLE = 'locking-lockable';
+    public const string BODY_CLASS_LOCKING_LOCKED = 'locking-locked';
+    public const string BODY_CLASS_LOCKING_UNLOCKED = 'locking-unlocked';
 
     protected function generateOutput() : void
     {

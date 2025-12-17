@@ -10,16 +10,10 @@ use Application\Media\MediaTagConnector;
 use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
-use Application\Tags\Taggables\TagConnector;
-use Application\Tags\Taggables\TaggableInterface;
-use Application\Tags\TagRecord;
-use Application\Tags\TagRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper\FileInfo;
-use UI\Tree\TreeNode;
-use UI\Tree\TreeRenderer;
 
 /**
  * @method MediaTagConnector getTagConnector()

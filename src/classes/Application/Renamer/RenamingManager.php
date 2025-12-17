@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Renamer;
 
-use Application\Renamer\Index\RenamerIndex;
-use Application_Interfaces_Formable;
 use Application\Renamer\Admin\RenamerAdminURLs;
+use Application\Renamer\Index\RenamerIndex;
 use Application\Renamer\Index\RenamerIndexRunner;
+use Application_Interfaces_Formable;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper\FolderInfo;
 use DBHelper;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Renamer;
 
-use DBHelper;
 use Application\Renamer\Index\RenamerIndex;
+use DBHelper;
 use DBHelper_Exception;
 
 abstract class BaseDataColumn implements DataColumnInterface

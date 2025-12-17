@@ -8,7 +8,6 @@ use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
-use DBHelper;
 use TestDriver\TestDBRecords\TestDBCollection;
 
 abstract class TaggingTestCase extends ApplicationTestCase

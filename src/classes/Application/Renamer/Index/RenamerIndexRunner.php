@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Renamer\Index;
 
-use DBHelper;
 use Application\Renamer\DataColumnInterface;
 use Application\Renamer\RenamingManager;
+use DBHelper;
 
 class RenamerIndexRunner
 {

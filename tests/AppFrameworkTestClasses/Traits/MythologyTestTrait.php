@@ -8,14 +8,11 @@ declare(strict_types=1);
 
 namespace AppFrameworkTestClasses\Traits;
 
-use DBHelper;
 use TestDriver\Area\TestingScreen;
 use TestDriver\ClassFactory;
 use TestDriver\Collection\Admin\MythologicalRecordSelectionTieIn;
 use TestDriver\Collection\MythologicalRecord;
 use TestDriver\Collection\MythologyRecordCollection;
-use TestDriver\TestDBRecords\TestDBCollection;
-use TestDriver\TestDBRecords\TestDBRecord;
 
 /**
  * @package Application Tests

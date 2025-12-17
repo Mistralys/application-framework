@@ -7,7 +7,6 @@
 declare(strict_types=1);
 
 use Application\Messaging\MessagingCollection;
-use Application\Messaging\MessagingException;
 use AppUtils\ConvertHelper;
 use AppUtils\Microtime;
 

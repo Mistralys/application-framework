@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\Revisionable\Storage;
 
 use Application;
-use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application_StateHandler_State;

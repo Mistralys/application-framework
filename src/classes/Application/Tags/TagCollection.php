@@ -12,7 +12,6 @@ use Application\AppFactory;
 use Application\Area\BaseTagsScreen;
 use Application\Area\Tags\BaseCreateTagScreen;
 use Application\Area\Tags\BaseTagListScreen;
-use Application\Disposables\DisposableDisposedException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use Application_Formable;
@@ -33,16 +32,16 @@ use UI;
  */
 class TagCollection extends DBHelper_BaseCollection
 {
-    public const ERROR_CANNOT_CREATE_ROOT_WITH_INHERIT_SORTING = 152201;
+    public const int ERROR_CANNOT_CREATE_ROOT_WITH_INHERIT_SORTING = 152201;
 
-    public const TABLE_NAME = 'tags';
-    public const TABLE_REGISTRY = 'tags_registry';
-    public const PRIMARY_NAME = 'tag_id';
-    public const COL_LABEL = 'label';
-    public const COL_PARENT_TAG_ID = 'parent_tag_id';
-    public const COL_SORT_TYPE = 'sort_type';
-    public const COL_SORT_WEIGHT = 'sort_weight';
-    public const COL_WEIGHT = 'weight';
+    public const string TABLE_NAME = 'tags';
+    public const string TABLE_REGISTRY = 'tags_registry';
+    public const string PRIMARY_NAME = 'tag_id';
+    public const string COL_LABEL = 'label';
+    public const string COL_PARENT_TAG_ID = 'parent_tag_id';
+    public const string COL_SORT_TYPE = 'sort_type';
+    public const string COL_SORT_WEIGHT = 'sort_weight';
+    public const string COL_WEIGHT = 'weight';
 
     // region: X - Interface methods
 
