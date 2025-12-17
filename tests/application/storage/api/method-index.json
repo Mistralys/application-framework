@@ -1,6 +1,6 @@
 {
-    "DescribeAdminAreas": "Application\\API\\Method\\DescribeAdminAreasAPI",
-    "DescribeCollections": "Application\\API\\Method\\DescribeCollectionsAPI",
+    "DescribeAdminAreas": "Application\\Admin\\Index\\API\\Methods\\DescribeAdminAreasAPI",
+    "DescribeCollections": "DBHelper\\API\\Methods\\DescribeCollectionsAPI",
     "ExternalLoadedAPI": "TestDriver\\ExternalSources\\API\\ExternalAPIMethod",
     "GetAppCountries": "Application\\Countries\\API\\Methods\\GetAppCountriesAPI",
     "GetAppLocales": "Application\\Locales\\API\\Methods\\GetAppLocalesAPI",
