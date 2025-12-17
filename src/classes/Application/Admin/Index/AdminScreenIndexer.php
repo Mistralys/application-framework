@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace Application\Admin\Index;
 
-use Application\Admin\ScreenException;
-use Application\AppFactory;
-use Application\Framework\AppFolder;
+use Application\Admin\AdminScreenStubInterface;
 use Application\Interfaces\Admin\AdminActionInterface;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminModeInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\Admin\AdminSubmodeInterface;
-use Application\OfflineEvents\RegisterAdminScreenFoldersEvent;
-use Application_Admin_Area;
 use Application_Admin_Wizard_Step;
 use Application_Driver;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseClassLoaderCollectionMulti;
-use AppUtils\FileHelper;
-use AppUtils\FileHelper\FolderInfo;
 use Mistralys\AppFramework\AppFramework;
 use ReflectionClass;
 
@@ -49,26 +43,6 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
     public function __construct(Application_Driver $driver)
     {
         $this->driver = $driver;
-
-        AppFactory::createOfflineEvents()->triggerEvent(
-            RegisterAdminScreenFoldersEvent::EVENT_NAME,
-            array(),
-            RegisterAdminScreenFoldersEvent::class
-        );
-    }
-
-    /**
-     * @var array<string,FolderInfo>
-     */
-    private static array $folders = array();
-
-    public static function registerFolder(FolderInfo $folder) : void
-    {
-        $appFolder = AppFolder::create($folder)->requireValid();
-
-        AppFactory::createLogger()->log(sprintf('ScreenIndexer | Add Folder [%s]', $appFolder));
-
-        self::$folders[$folder->getPath()] = $folder;
     }
 
     public function index() : self
@@ -91,7 +65,7 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
         foreach($this->getAll() as $item) {
             $this->infos[] = $item;
 
-            if($item->getScreen() instanceof Application_Admin_Area) {
+            if($item->getScreen() instanceof AdminAreaInterface) {
                 $this->roots[] = $item;
             }
 
@@ -168,6 +142,9 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
             // Wizard steps are not part of the sitemap
             is_a($class, Application_Admin_Wizard_Step::class, true)
             ||
+            // Stubs used for testing purposes only
+            is_a($class, AdminScreenStubInterface::class, true)
+            ||
             $reflect->isAbstract()
             ||
             $reflect->isInterface()
@@ -213,11 +190,7 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
     public function getClassFolders(): array
     {
-        $folders = array_values(self::$folders);
-        $folders[] = FolderInfo::factory(__DIR__.'/../Area');
-        $folders[] = FolderInfo::factory($this->driver->getClassesFolder().'/Area');
-
-        return $folders;
+        return AppFramework::getInstance()->getClassFolders();
     }
 
     public function isRecursive(): bool

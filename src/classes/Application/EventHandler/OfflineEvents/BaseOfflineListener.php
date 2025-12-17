@@ -6,6 +6,9 @@
 
 declare(strict_types=1);
 
+namespace Application\EventHandler\OfflineEvents;
+
+use Application_EventHandler_Event;
 use AppUtils\NamedClosure;
 
 /**
@@ -14,26 +17,24 @@ use AppUtils\NamedClosure;
  * @package Application
  * @subpackage Events
  */
-abstract class Application_EventHandler_OfflineEvents_OfflineListener
+abstract class BaseOfflineListener implements OfflineEventListenerInterface
 {
     private ?NamedClosure $callable = null;
 
-    /**
-     * Unique identifier for this listener (within the event).
-     *
-     * NOTE: This is derived from the class name.
-     *
-     * @return string
-     */
-    public function getID() : string
+    private ?string $id = null;
+
+    final public function getID(): string
     {
-        return getClassTypeName($this);
+        if (!isset($this->id)) {
+            $this->id = md5(get_class($this));
+        }
+
+        return $this->id;
     }
 
-    public function getCallable() : NamedClosure
+    public function getCallable(): NamedClosure
     {
-        if(!isset($this->callable))
-        {
+        if (!isset($this->callable)) {
             $this->callable = $this->wakeUp();
         }
 
@@ -44,18 +45,10 @@ abstract class Application_EventHandler_OfflineEvents_OfflineListener
     {
         $callback = array($this, 'handleEvent');
 
-        return NamedClosure::fromClosure(Closure::fromCallable($callback), $callback);
+        return NamedClosure::fromClosure($callback(...), $callback);
     }
 
-    /**
-     * Higher priority listeners are called first, giving the
-     * possibility to influence the order in which they are
-     * executed.
-     *
-     * @return int
-     * @overridable
-     */
-    public function getPriority() : int
+    public function getPriority(): int
     {
         return 0;
     }
