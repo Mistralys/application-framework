@@ -40,6 +40,11 @@ class AdminScreenIndex
         return self::$instance;
     }
 
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/API/Methods')->requireExists();
+    }
+
     private function __construct()
     {
         $file = self::getIndexFile();
