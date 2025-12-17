@@ -18,6 +18,7 @@ use Application\OfflineEvents\DisplayAppConfigEvent;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\StringableInterface;
 use UI_PropertiesGrid;
+use UI_PropertiesGrid_Property;
 use UI_PropertiesGrid_Property_Boolean;
 use UI_PropertiesGrid_Property_Regular;
 use UI_Themes_Theme_ContentRenderer;
@@ -207,6 +208,18 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
         $this->addConstant(t('Content locales'), BaseConfigRegistry::CONTENT_LOCALES);
     }
 
+    // region: Add helpers
+
+    public function getGrid() : UI_PropertiesGrid
+    {
+        return $this->grid;
+    }
+
+    public function addValue(string $label, string|int|float|bool|StringableInterface $value) : UI_PropertiesGrid_Property
+    {
+        return $this->grid->add($label, $value);
+    }
+
     public function addConstant(string $label, string $name) : UI_PropertiesGrid_Property_Regular
     {
         return $this->grid->add($label, boot_constant($name));
@@ -236,4 +249,6 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
             $label
         ));
     }
+
+    // endregion
 }
