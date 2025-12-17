@@ -72,12 +72,12 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Adds a new property to the grid, and returns the new property instance.
      *
-     * @param string|number|UI_Renderable_Interface $label
-     * @param string|number|UI_Renderable_Interface $text
+     * @param string|int|float|bool|StringableInterface $label
+     * @param string|int|float|bool|StringableInterface $text
      * @return UI_PropertiesGrid_Property_Regular
      * @throws UI_Exception
      */
-    public function add($label, $text) : UI_PropertiesGrid_Property_Regular
+    public function add(string|int|float|bool|StringableInterface $label, string|int|float|bool|StringableInterface $text) : UI_PropertiesGrid_Property_Regular
     {
         $property = new UI_PropertiesGrid_Property_Regular(
             $this,
