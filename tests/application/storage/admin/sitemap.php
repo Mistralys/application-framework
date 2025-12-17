@@ -5,23 +5,23 @@ declare(strict_types=1);
 return array (
   'urlPaths' => 
   array (
-    'api-clients' => 'TestDriver\\Area\\APIClientsArea',
-    'api-clients.create' => 'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode',
-    'api-clients.list' => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
-    'api-clients.view' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode',
-    'api-clients.view.api_keys' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode',
-    'api-clients.view.api_keys.create' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction',
-    'api-clients.view.api_keys.list' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction',
-    'api-clients.view.api_keys.settings' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
-    'api-clients.view.api_keys.status' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction',
-    'api-clients.view.settings' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
-    'api-clients.view.status' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode',
-    'countries' => 'TestDriver\\Area\\CountriesScreen',
-    'countries.create' => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
-    'countries.list' => 'TestDriver\\Area\\CountriesScreen\\ListScreen',
-    'countries.view' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen',
-    'countries.view.settings' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
-    'countries.view.status' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen',
+    'api-clients' => 'Application\\API\\Admin\\Screens\\APIClientsArea',
+    'api-clients.create' => 'Application\\API\\Admin\\Screens\\Mode\\CreateClientMode',
+    'api-clients.list' => 'Application\\API\\Admin\\Screens\\Mode\\ClientsListMode',
+    'api-clients.view' => 'Application\\API\\Admin\\Screens\\Mode\\ViewClientMode',
+    'api-clients.view.api_keys' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeysSubmode',
+    'api-clients.view.api_keys.create' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
+    'api-clients.view.api_keys.list' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+    'api-clients.view.api_keys.settings' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
+    'api-clients.view.api_keys.status' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
+    'api-clients.view.settings' => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientSettingsSubmode',
+    'api-clients.view.status' => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientStatusSubmode',
+    'countries' => 'Application\\Countries\\Admin\\Screens\\CountriesArea',
+    'countries.create' => 'Application\\Countries\\Admin\\Screens\\Mode\\CreateScreen',
+    'countries.list' => 'Application\\Countries\\Admin\\Screens\\Mode\\ListScreen',
+    'countries.view' => 'Application\\Countries\\Admin\\Screens\\Mode\\ViewScreen',
+    'countries.view.settings' => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\SettingsScreen',
+    'countries.view.status' => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\StatusScreen',
     'devel' => 'Application\\Development\\Admin\\Screens\\DevelArea',
     'devel.appconfig' => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
     'devel.appinterface' => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
@@ -83,13 +83,12 @@ return array (
     'revisionable' => 'TestDriver\\Area\\RevisionableScreen',
     'revisionable.list' => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
     'settings' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
-    'tag-tree' => 'Application\\Area\\Tags\\ViewTag\\BaseTagTreeScreen',
-    'tags' => 'TestDriver\\Area\\TagsScreen',
-    'tags.create' => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
-    'tags.list' => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
-    'tags.view-tag' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen',
-    'tags.view-tag.tag-settings' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
-    'tags.view-tag.tag-tree' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen',
+    'tags' => 'Application\\Tags\\Admin\\Screens\\Area\\TagsArea',
+    'tags.create' => 'Application\\Tags\\Admin\\Screens\\Mode\\CreateMode',
+    'tags.list' => 'Application\\Tags\\Admin\\Screens\\Mode\\ListMode',
+    'tags.view-tag' => 'Application\\Tags\\Admin\\Screens\\Mode\\ViewMode',
+    'tags.view-tag.tag-settings' => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+    'tags.view-tag.tag-tree' => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\TagTreeSubmode',
     'testing' => 'TestDriver\\Area\\TestingScreen',
     'testing.cancel-handle-actions' => 'TestDriver\\Area\\TestingScreen\\CancelHandleActionsScreen',
     'testing.collection-create-basic' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateBasicScreen',
@@ -129,6 +128,201 @@ return array (
   ),
   'flat' => 
   array (
+    'Application\\API\\Admin\\Screens\\APIClientsArea' => 
+    array (
+      'id' => 'APIClientsArea',
+      'urlName' => 'api-clients',
+      'urlPath' => 'api-clients',
+      'title' => 'API Clients',
+      'navigationTitle' => 'API Clients',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\APIClientsArea',
+      'path' => 'framework-classes:Application/API/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\API\\Admin\\Screens\\Mode\\ClientsListMode',
+        1 => 'Application\\API\\Admin\\Screens\\Mode\\CreateClientMode',
+        2 => 'Application\\API\\Admin\\Screens\\Mode\\ViewClientMode',
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\ClientsListMode' => 
+    array (
+      'id' => 'ClientsListMode',
+      'urlName' => 'list',
+      'urlPath' => 'api-clients.list',
+      'title' => 'Overview',
+      'navigationTitle' => 'Overview',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+        'Multi-delete API Clients' => 'DeleteAPIClients',
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\ClientsListMode',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\CreateClientMode' => 
+    array (
+      'id' => 'CreateClientMode',
+      'urlName' => 'create',
+      'urlPath' => 'api-clients.create',
+      'title' => 'Create a new API Client',
+      'navigationTitle' => 'Create new client',
+      'requiredRight' => 'CreateAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\CreateClientMode',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\ViewClientMode' => 
+    array (
+      'id' => 'ViewClientMode',
+      'urlName' => 'view',
+      'urlPath' => 'api-clients.view',
+      'title' => 'View API Client',
+      'navigationTitle' => 'View Client',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\ViewClientMode',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeysSubmode',
+        1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientSettingsSubmode',
+        2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientStatusSubmode',
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeysSubmode' => 
+    array (
+      'id' => 'APIKeysSubmode',
+      'urlName' => 'api_keys',
+      'urlPath' => 'api-clients.view.api_keys',
+      'title' => 'API keys',
+      'navigationTitle' => 'API Keys',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeysSubmode',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
+        1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
+        2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+        3 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction' => 
+    array (
+      'id' => 'APIKeySettingsAction',
+      'urlName' => 'settings',
+      'urlPath' => 'api-clients.view.api_keys.settings',
+      'title' => 'API Key Settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+        'Edit API Key Settings' => 'EditAPIClients',
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction' => 
+    array (
+      'id' => 'APIKeyStatusAction',
+      'urlName' => 'status',
+      'urlPath' => 'api-clients.view.api_keys.status',
+      'title' => 'API Key Status',
+      'navigationTitle' => 'Status',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction' => 
+    array (
+      'id' => 'APIKeysListAction',
+      'urlName' => 'list',
+      'urlPath' => 'api-clients.view.api_keys.list',
+      'title' => 'Overview of API Keys',
+      'navigationTitle' => 'Overview',
+      'requiredRight' => NULL,
+      'featureRights' => NULL,
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction' => 
+    array (
+      'id' => 'CreateAPIKeyAction',
+      'urlName' => 'create',
+      'urlPath' => 'api-clients.view.api_keys.create',
+      'title' => 'Create an API Key',
+      'navigationTitle' => 'Create new key',
+      'requiredRight' => NULL,
+      'featureRights' => NULL,
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\ClientSettingsSubmode' => 
+    array (
+      'id' => 'ClientSettingsSubmode',
+      'urlName' => 'settings',
+      'urlPath' => 'api-clients.view.settings',
+      'title' => 'API Client Settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientSettingsSubmode',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\ClientStatusSubmode' => 
+    array (
+      'id' => 'ClientStatusSubmode',
+      'urlName' => 'status',
+      'urlPath' => 'api-clients.view.status',
+      'title' => 'API Client Status',
+      'navigationTitle' => 'Status',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientStatusSubmode',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
     'Application\\Admin\\Index\\Screens\\SitemapMode' => 
     array (
       'id' => 'SitemapMode',
@@ -216,23 +410,6 @@ return array (
       array (
       ),
     ),
-    'Application\\Area\\Tags\\ViewTag\\BaseTagTreeScreen' => 
-    array (
-      'id' => 'BaseTagTreeScreen',
-      'urlName' => 'tag-tree',
-      'urlPath' => 'tag-tree',
-      'title' => 'Tag tree',
-      'navigationTitle' => 'Tree',
-      'requiredRight' => 'EditTags',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'Application\\Area\\Tags\\ViewTag\\BaseTagTreeScreen',
-      'path' => 'framework-classes:Application/Admin/Area/Tags/ViewTag',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
     'Application\\CacheControl\\Admin\\Screens\\CacheControlMode' => 
     array (
       'id' => 'CacheControlMode',
@@ -246,6 +423,113 @@ return array (
       ),
       'class' => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
       'path' => 'framework-classes:Application/CacheControl/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Countries\\Admin\\Screens\\CountriesArea' => 
+    array (
+      'id' => 'CountriesArea',
+      'urlName' => 'countries',
+      'urlPath' => 'countries',
+      'title' => 'Countries',
+      'navigationTitle' => 'Countries',
+      'requiredRight' => 'ViewCountries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Countries\\Admin\\Screens\\CountriesArea',
+      'path' => 'framework-classes:Application/Countries/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Countries\\Admin\\Screens\\Mode\\CreateScreen',
+        1 => 'Application\\Countries\\Admin\\Screens\\Mode\\ListScreen',
+        2 => 'Application\\Countries\\Admin\\Screens\\Mode\\ViewScreen',
+      ),
+    ),
+    'Application\\Countries\\Admin\\Screens\\Mode\\CreateScreen' => 
+    array (
+      'id' => 'CreateScreen',
+      'urlName' => 'create',
+      'urlPath' => 'countries.create',
+      'title' => 'Create a new country',
+      'navigationTitle' => 'Create a country',
+      'requiredRight' => 'CreateCountries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\CreateScreen',
+      'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Countries\\Admin\\Screens\\Mode\\ListScreen' => 
+    array (
+      'id' => 'ListScreen',
+      'urlName' => 'list',
+      'urlPath' => 'countries.list',
+      'title' => 'Available countries',
+      'navigationTitle' => 'List',
+      'requiredRight' => 'ViewCountries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\ListScreen',
+      'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Countries\\Admin\\Screens\\Mode\\ViewScreen' => 
+    array (
+      'id' => 'ViewScreen',
+      'urlName' => 'view',
+      'urlPath' => 'countries.view',
+      'title' => 'View a country',
+      'navigationTitle' => 'View',
+      'requiredRight' => 'ViewCountries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\ViewScreen',
+      'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\SettingsScreen',
+        1 => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\StatusScreen',
+      ),
+    ),
+    'Application\\Countries\\Admin\\Screens\\Mode\\View\\SettingsScreen' => 
+    array (
+      'id' => 'SettingsScreen',
+      'urlName' => 'settings',
+      'urlPath' => 'countries.view.settings',
+      'title' => 'Country settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'EditCountries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\SettingsScreen',
+      'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Countries\\Admin\\Screens\\Mode\\View\\StatusScreen' => 
+    array (
+      'id' => 'StatusScreen',
+      'urlName' => 'status',
+      'urlPath' => 'countries.view.status',
+      'title' => 'Status',
+      'navigationTitle' => 'Status',
+      'requiredRight' => 'ViewCountries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\StatusScreen',
+      'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode/View',
       'subscreenClasses' => 
       array (
       ),
@@ -833,6 +1117,115 @@ return array (
       array (
       ),
     ),
+    'Application\\Tags\\Admin\\Screens\\Area\\TagsArea' => 
+    array (
+      'id' => 'TagsArea',
+      'urlName' => 'tags',
+      'urlPath' => 'tags',
+      'title' => 'Tags',
+      'navigationTitle' => 'Tags',
+      'requiredRight' => 'ViewTags',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Tags\\Admin\\Screens\\Area\\TagsArea',
+      'path' => 'framework-classes:Application/Tags/Admin/Screens/Area',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Tags\\Admin\\Screens\\Mode\\CreateMode',
+        1 => 'Application\\Tags\\Admin\\Screens\\Mode\\ListMode',
+        2 => 'Application\\Tags\\Admin\\Screens\\Mode\\ViewMode',
+      ),
+    ),
+    'Application\\Tags\\Admin\\Screens\\Mode\\CreateMode' => 
+    array (
+      'id' => 'CreateMode',
+      'urlName' => 'create',
+      'urlPath' => 'tags.create',
+      'title' => 'Create a tag',
+      'navigationTitle' => 'Create tag',
+      'requiredRight' => 'CreateTags',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\CreateMode',
+      'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Tags\\Admin\\Screens\\Mode\\ListMode' => 
+    array (
+      'id' => 'ListMode',
+      'urlName' => 'list',
+      'urlPath' => 'tags.list',
+      'title' => 'Available root tags',
+      'navigationTitle' => 'List',
+      'requiredRight' => 'ViewTags',
+      'featureRights' => 
+      array (
+        'Delete tags' => 'DeleteTags',
+      ),
+      'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\ListMode',
+      'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Tags\\Admin\\Screens\\Mode\\ViewMode' => 
+    array (
+      'id' => 'ViewMode',
+      'urlName' => 'view-tag',
+      'urlPath' => 'tags.view-tag',
+      'title' => 'View a tag',
+      'navigationTitle' => 'View',
+      'requiredRight' => 'ViewTags',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\ViewMode',
+      'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+        1 => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\TagTreeSubmode',
+      ),
+    ),
+    'Application\\Tags\\Admin\\Screens\\Mode\\View\\SettingsSubmode' => 
+    array (
+      'id' => 'SettingsSubmode',
+      'urlName' => 'tag-settings',
+      'urlPath' => 'tags.view-tag.tag-settings',
+      'title' => 'Edit tag settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewTags',
+      'featureRights' => 
+      array (
+        'Edit the settings' => 'EditTags',
+      ),
+      'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+      'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Tags\\Admin\\Screens\\Mode\\View\\TagTreeSubmode' => 
+    array (
+      'id' => 'TagTreeSubmode',
+      'urlName' => 'tag-tree',
+      'urlPath' => 'tags.view-tag.tag-tree',
+      'title' => 'Tag tree',
+      'navigationTitle' => 'Tree',
+      'requiredRight' => 'EditTags',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\TagTreeSubmode',
+      'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
     'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode' => 
     array (
       'id' => 'RightsOverviewDevelMode',
@@ -951,308 +1344,6 @@ return array (
       ),
       'class' => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
       'path' => 'framework-classes:DeeplHelper/Admin/Screens',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea' => 
-    array (
-      'id' => 'APIClientsArea',
-      'urlName' => 'api-clients',
-      'urlPath' => 'api-clients',
-      'title' => 'API Clients',
-      'navigationTitle' => 'API Clients',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
-        1 => 'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode',
-        2 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode',
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ClientsListMode' => 
-    array (
-      'id' => 'ClientsListMode',
-      'urlName' => 'list',
-      'urlPath' => 'api-clients.list',
-      'title' => 'Overview',
-      'navigationTitle' => 'Overview',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-        'Multi-delete API Clients' => 'DeleteAPIClients',
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
-      'path' => 'driver-classes:Area/APIClientsArea',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode' => 
-    array (
-      'id' => 'CreateAPIClientMode',
-      'urlName' => 'create',
-      'urlPath' => 'api-clients.create',
-      'title' => 'Create a new API Client',
-      'navigationTitle' => 'Create new client',
-      'requiredRight' => 'CreateAPIClients',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode',
-      'path' => 'driver-classes:Area/APIClientsArea',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode' => 
-    array (
-      'id' => 'ViewAPIClientMode',
-      'urlName' => 'view',
-      'urlPath' => 'api-clients.view',
-      'title' => 'View API Client',
-      'navigationTitle' => 'View Client',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode',
-      'path' => 'driver-classes:Area/APIClientsArea',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
-        1 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode',
-        2 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode',
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode' => 
-    array (
-      'id' => 'APIClientSettingsSubmode',
-      'urlName' => 'settings',
-      'urlPath' => 'api-clients.view.settings',
-      'title' => 'API Client Settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
-      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode' => 
-    array (
-      'id' => 'APIClientStatusSubmode',
-      'urlName' => 'status',
-      'urlPath' => 'api-clients.view.status',
-      'title' => 'API Client Status',
-      'navigationTitle' => 'Status',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode',
-      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode' => 
-    array (
-      'id' => 'APIKeysSubmode',
-      'urlName' => 'api_keys',
-      'urlPath' => 'api-clients.view.api_keys',
-      'title' => 'API keys',
-      'navigationTitle' => 'API Keys',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode',
-      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
-        1 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction',
-        2 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction',
-        3 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction',
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction' => 
-    array (
-      'id' => 'APIKeySettingsAction',
-      'urlName' => 'settings',
-      'urlPath' => 'api-clients.view.api_keys.settings',
-      'title' => 'API Key Settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-        'Edit API Key Settings' => 'EditAPIClients',
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
-      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction' => 
-    array (
-      'id' => 'APIKeyStatusAction',
-      'urlName' => 'status',
-      'urlPath' => 'api-clients.view.api_keys.status',
-      'title' => 'API Key Status',
-      'navigationTitle' => 'Status',
-      'requiredRight' => 'ViewAPIClients',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction',
-      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction' => 
-    array (
-      'id' => 'APIKeysListAction',
-      'urlName' => 'list',
-      'urlPath' => 'api-clients.view.api_keys.list',
-      'title' => 'Overview of API Keys',
-      'navigationTitle' => 'Overview',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction',
-      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction' => 
-    array (
-      'id' => 'CreateAPIKeyAction',
-      'urlName' => 'create',
-      'urlPath' => 'api-clients.view.api_keys.create',
-      'title' => 'Create an API Key',
-      'navigationTitle' => 'Create new key',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction',
-      'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\CountriesScreen' => 
-    array (
-      'id' => 'CountriesScreen',
-      'urlName' => 'countries',
-      'urlPath' => 'countries',
-      'title' => 'Countries',
-      'navigationTitle' => 'Countries',
-      'requiredRight' => 'ViewCountries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\CountriesScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
-        1 => 'TestDriver\\Area\\CountriesScreen\\ListScreen',
-        2 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen',
-      ),
-    ),
-    'TestDriver\\Area\\CountriesScreen\\CreateScreen' => 
-    array (
-      'id' => 'CreateScreen',
-      'urlName' => 'create',
-      'urlPath' => 'countries.create',
-      'title' => 'Create a new country',
-      'navigationTitle' => 'Create a country',
-      'requiredRight' => 'CreateCountries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
-      'path' => 'driver-classes:Area/CountriesScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\CountriesScreen\\ListScreen' => 
-    array (
-      'id' => 'ListScreen',
-      'urlName' => 'list',
-      'urlPath' => 'countries.list',
-      'title' => 'Available countries',
-      'navigationTitle' => 'List',
-      'requiredRight' => 'ViewCountries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\CountriesScreen\\ListScreen',
-      'path' => 'driver-classes:Area/CountriesScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\CountriesScreen\\ViewScreen' => 
-    array (
-      'id' => 'ViewScreen',
-      'urlName' => 'view',
-      'urlPath' => 'countries.view',
-      'title' => 'View a country',
-      'navigationTitle' => 'View',
-      'requiredRight' => 'ViewCountries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen',
-      'path' => 'driver-classes:Area/CountriesScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
-        1 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen',
-      ),
-    ),
-    'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen' => 
-    array (
-      'id' => 'SettingsScreen',
-      'urlName' => 'settings',
-      'urlPath' => 'countries.view.settings',
-      'title' => 'Country settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'EditCountries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
-      'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen' => 
-    array (
-      'id' => 'StatusScreen',
-      'urlName' => 'status',
-      'urlPath' => 'countries.view.status',
-      'title' => 'Status',
-      'navigationTitle' => 'Status',
-      'requiredRight' => 'ViewCountries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen',
-      'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -1552,112 +1643,6 @@ return array (
       'featureRights' => NULL,
       'class' => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
       'path' => 'driver-classes:Area/RevisionableScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TagsScreen' => 
-    array (
-      'id' => 'TagsScreen',
-      'urlName' => 'tags',
-      'urlPath' => 'tags',
-      'title' => 'Tags',
-      'navigationTitle' => 'Tags',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\TagsScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
-        1 => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
-        2 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen',
-      ),
-    ),
-    'TestDriver\\Area\\TagsScreen\\CreateTagScreen' => 
-    array (
-      'id' => 'CreateTagScreen',
-      'urlName' => 'create',
-      'urlPath' => 'tags.create',
-      'title' => 'Create a tag',
-      'navigationTitle' => 'Create tag',
-      'requiredRight' => 'CreateTags',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
-      'path' => 'driver-classes:Area/TagsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TagsScreen\\TagListScreen' => 
-    array (
-      'id' => 'TagListScreen',
-      'urlName' => 'list',
-      'urlPath' => 'tags.list',
-      'title' => 'Available root tags',
-      'navigationTitle' => 'List',
-      'requiredRight' => 'ViewTags',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
-      'path' => 'driver-classes:Area/TagsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TagsScreen\\ViewTagScreen' => 
-    array (
-      'id' => 'ViewTagScreen',
-      'urlName' => 'view-tag',
-      'urlPath' => 'tags.view-tag',
-      'title' => 'View a tag',
-      'navigationTitle' => 'View',
-      'requiredRight' => 'ViewTags',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen',
-      'path' => 'driver-classes:Area/TagsScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
-        1 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen',
-      ),
-    ),
-    'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen' => 
-    array (
-      'id' => 'TagSettingsScreen',
-      'urlName' => 'tag-settings',
-      'urlPath' => 'tags.view-tag.tag-settings',
-      'title' => 'Edit tag settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewTags',
-      'featureRights' => 
-      array (
-        'Edit the settings' => 'EditTags',
-      ),
-      'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
-      'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen' => 
-    array (
-      'id' => 'TagTreeScreen',
-      'urlName' => 'tag-tree',
-      'urlPath' => 'tags.view-tag.tag-tree',
-      'title' => 'Tag tree',
-      'navigationTitle' => 'Tree',
-      'requiredRight' => 'EditTags',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen',
-      'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -2296,39 +2281,19 @@ return array (
       'featureRights' => 
       array (
       ),
-      'class' => 'TestDriver\\Area\\APIClientsArea',
-      'path' => 'driver-classes:Area',
+      'class' => 'Application\\API\\Admin\\Screens\\APIClientsArea',
+      'path' => 'framework-classes:Application/API/Admin/Screens',
       'subscreenClasses' => 
       array (
-        0 => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
-        1 => 'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode',
-        2 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode',
+        0 => 'Application\\API\\Admin\\Screens\\Mode\\ClientsListMode',
+        1 => 'Application\\API\\Admin\\Screens\\Mode\\CreateClientMode',
+        2 => 'Application\\API\\Admin\\Screens\\Mode\\ViewClientMode',
       ),
       'subscreens' => 
       array (
-        'create' => 
-        array (
-          'id' => 'CreateAPIClientMode',
-          'urlName' => 'create',
-          'urlPath' => 'api-clients.create',
-          'title' => 'Create a new API Client',
-          'navigationTitle' => 'Create new client',
-          'requiredRight' => 'CreateAPIClients',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\APIClientsArea\\CreateAPIClientMode',
-          'path' => 'driver-classes:Area/APIClientsArea',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
         'view' => 
         array (
-          'id' => 'ViewAPIClientMode',
+          'id' => 'ViewClientMode',
           'urlName' => 'view',
           'urlPath' => 'api-clients.view',
           'title' => 'View API Client',
@@ -2337,56 +2302,16 @@ return array (
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode',
-          'path' => 'driver-classes:Area/APIClientsArea',
+          'class' => 'Application\\API\\Admin\\Screens\\Mode\\ViewClientMode',
+          'path' => 'framework-classes:Application/API/Admin/Screens/Mode',
           'subscreenClasses' => 
           array (
-            0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
-            1 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode',
-            2 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode',
+            0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeysSubmode',
+            1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientSettingsSubmode',
+            2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientStatusSubmode',
           ),
           'subscreens' => 
           array (
-            'status' => 
-            array (
-              'id' => 'APIClientStatusSubmode',
-              'urlName' => 'status',
-              'urlPath' => 'api-clients.view.status',
-              'title' => 'API Client Status',
-              'navigationTitle' => 'Status',
-              'requiredRight' => 'ViewAPIClients',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientStatusSubmode',
-              'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'settings' => 
-            array (
-              'id' => 'APIClientSettingsSubmode',
-              'urlName' => 'settings',
-              'urlPath' => 'api-clients.view.settings',
-              'title' => 'API Client Settings',
-              'navigationTitle' => 'Settings',
-              'requiredRight' => 'ViewAPIClients',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIClientSettingsSubmode',
-              'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
             'api_keys' => 
             array (
               'id' => 'APIKeysSubmode',
@@ -2398,30 +2323,28 @@ return array (
               'featureRights' => 
               array (
               ),
-              'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode',
-              'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode',
+              'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeysSubmode',
+              'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
               'subscreenClasses' => 
               array (
-                0 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
-                1 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction',
-                2 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction',
-                3 => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction',
+                0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
+                1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
+                2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+                3 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
               ),
               'subscreens' => 
               array (
-                'status' => 
+                'create' => 
                 array (
-                  'id' => 'APIKeyStatusAction',
-                  'urlName' => 'status',
-                  'urlPath' => 'api-clients.view.api_keys.status',
-                  'title' => 'API Key Status',
-                  'navigationTitle' => 'Status',
-                  'requiredRight' => 'ViewAPIClients',
-                  'featureRights' => 
-                  array (
-                  ),
-                  'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeyStatusAction',
-                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'id' => 'CreateAPIKeyAction',
+                  'urlName' => 'create',
+                  'urlPath' => 'api-clients.view.api_keys.create',
+                  'title' => 'Create an API Key',
+                  'navigationTitle' => 'Create new key',
+                  'requiredRight' => NULL,
+                  'featureRights' => NULL,
+                  'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
+                  'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2438,8 +2361,8 @@ return array (
                   'navigationTitle' => 'Overview',
                   'requiredRight' => NULL,
                   'featureRights' => NULL,
-                  'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeysListAction',
-                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+                  'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2459,8 +2382,8 @@ return array (
                   array (
                     'Edit API Key Settings' => 'EditAPIClients',
                   ),
-                  'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\APIKeySettingsAction',
-                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
+                  'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2468,17 +2391,19 @@ return array (
                   array (
                   ),
                 ),
-                'create' => 
+                'status' => 
                 array (
-                  'id' => 'CreateAPIKeyAction',
-                  'urlName' => 'create',
-                  'urlPath' => 'api-clients.view.api_keys.create',
-                  'title' => 'Create an API Key',
-                  'navigationTitle' => 'Create new key',
-                  'requiredRight' => NULL,
-                  'featureRights' => NULL,
-                  'class' => 'TestDriver\\Area\\APIClientsArea\\ViewAPIClientMode\\APIKeysSubmode\\CreateAPIKeyAction',
-                  'path' => 'driver-classes:Area/APIClientsArea/ViewAPIClientMode/APIKeysSubmode',
+                  'id' => 'APIKeyStatusAction',
+                  'urlName' => 'status',
+                  'urlPath' => 'api-clients.view.api_keys.status',
+                  'title' => 'API Key Status',
+                  'navigationTitle' => 'Status',
+                  'requiredRight' => 'ViewAPIClients',
+                  'featureRights' => 
+                  array (
+                  ),
+                  'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
+                  'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
                   'subscreenClasses' => 
                   array (
                   ),
@@ -2486,6 +2411,46 @@ return array (
                   array (
                   ),
                 ),
+              ),
+            ),
+            'settings' => 
+            array (
+              'id' => 'ClientSettingsSubmode',
+              'urlName' => 'settings',
+              'urlPath' => 'api-clients.view.settings',
+              'title' => 'API Client Settings',
+              'navigationTitle' => 'Settings',
+              'requiredRight' => 'ViewAPIClients',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientSettingsSubmode',
+              'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'status' => 
+            array (
+              'id' => 'ClientStatusSubmode',
+              'urlName' => 'status',
+              'urlPath' => 'api-clients.view.status',
+              'title' => 'API Client Status',
+              'navigationTitle' => 'Status',
+              'requiredRight' => 'ViewAPIClients',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientStatusSubmode',
+              'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
               ),
             ),
           ),
@@ -2502,8 +2467,28 @@ return array (
           array (
             'Multi-delete API Clients' => 'DeleteAPIClients',
           ),
-          'class' => 'TestDriver\\Area\\APIClientsArea\\ClientsListMode',
-          'path' => 'driver-classes:Area/APIClientsArea',
+          'class' => 'Application\\API\\Admin\\Screens\\Mode\\ClientsListMode',
+          'path' => 'framework-classes:Application/API/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'create' => 
+        array (
+          'id' => 'CreateClientMode',
+          'urlName' => 'create',
+          'urlPath' => 'api-clients.create',
+          'title' => 'Create a new API Client',
+          'navigationTitle' => 'Create new client',
+          'requiredRight' => 'CreateAPIClients',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\API\\Admin\\Screens\\Mode\\CreateClientMode',
+          'path' => 'framework-classes:Application/API/Admin/Screens/Mode',
           'subscreenClasses' => 
           array (
           ),
@@ -3515,6 +3500,131 @@ return array (
         ),
       ),
     ),
+    'countries' => 
+    array (
+      'id' => 'CountriesArea',
+      'urlName' => 'countries',
+      'urlPath' => 'countries',
+      'title' => 'Countries',
+      'navigationTitle' => 'Countries',
+      'requiredRight' => 'ViewCountries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Countries\\Admin\\Screens\\CountriesArea',
+      'path' => 'framework-classes:Application/Countries/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\Countries\\Admin\\Screens\\Mode\\CreateScreen',
+        1 => 'Application\\Countries\\Admin\\Screens\\Mode\\ListScreen',
+        2 => 'Application\\Countries\\Admin\\Screens\\Mode\\ViewScreen',
+      ),
+      'subscreens' => 
+      array (
+        'create' => 
+        array (
+          'id' => 'CreateScreen',
+          'urlName' => 'create',
+          'urlPath' => 'countries.create',
+          'title' => 'Create a new country',
+          'navigationTitle' => 'Create a country',
+          'requiredRight' => 'CreateCountries',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\CreateScreen',
+          'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'view' => 
+        array (
+          'id' => 'ViewScreen',
+          'urlName' => 'view',
+          'urlPath' => 'countries.view',
+          'title' => 'View a country',
+          'navigationTitle' => 'View',
+          'requiredRight' => 'ViewCountries',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\ViewScreen',
+          'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+            0 => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\SettingsScreen',
+            1 => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\StatusScreen',
+          ),
+          'subscreens' => 
+          array (
+            'status' => 
+            array (
+              'id' => 'StatusScreen',
+              'urlName' => 'status',
+              'urlPath' => 'countries.view.status',
+              'title' => 'Status',
+              'navigationTitle' => 'Status',
+              'requiredRight' => 'ViewCountries',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\StatusScreen',
+              'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'settings' => 
+            array (
+              'id' => 'SettingsScreen',
+              'urlName' => 'settings',
+              'urlPath' => 'countries.view.settings',
+              'title' => 'Country settings',
+              'navigationTitle' => 'Settings',
+              'requiredRight' => 'EditCountries',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\View\\SettingsScreen',
+              'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+          ),
+        ),
+        'list' => 
+        array (
+          'id' => 'ListScreen',
+          'urlName' => 'list',
+          'urlPath' => 'countries.list',
+          'title' => 'Available countries',
+          'navigationTitle' => 'List',
+          'requiredRight' => 'ViewCountries',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Countries\\Admin\\Screens\\Mode\\ListScreen',
+          'path' => 'framework-classes:Application/Countries/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+      ),
+    ),
     'time-tracker' => 
     array (
       'id' => 'TimeTrackerScreen',
@@ -4476,60 +4586,41 @@ return array (
         ),
       ),
     ),
-    'countries' => 
+    'tags' => 
     array (
-      'id' => 'CountriesScreen',
-      'urlName' => 'countries',
-      'urlPath' => 'countries',
-      'title' => 'Countries',
-      'navigationTitle' => 'Countries',
-      'requiredRight' => 'ViewCountries',
+      'id' => 'TagsArea',
+      'urlName' => 'tags',
+      'urlPath' => 'tags',
+      'title' => 'Tags',
+      'navigationTitle' => 'Tags',
+      'requiredRight' => 'ViewTags',
       'featureRights' => 
       array (
       ),
-      'class' => 'TestDriver\\Area\\CountriesScreen',
-      'path' => 'driver-classes:Area',
+      'class' => 'Application\\Tags\\Admin\\Screens\\Area\\TagsArea',
+      'path' => 'framework-classes:Application/Tags/Admin/Screens/Area',
       'subscreenClasses' => 
       array (
-        0 => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
-        1 => 'TestDriver\\Area\\CountriesScreen\\ListScreen',
-        2 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen',
+        0 => 'Application\\Tags\\Admin\\Screens\\Mode\\CreateMode',
+        1 => 'Application\\Tags\\Admin\\Screens\\Mode\\ListMode',
+        2 => 'Application\\Tags\\Admin\\Screens\\Mode\\ViewMode',
       ),
       'subscreens' => 
       array (
-        'create' => 
-        array (
-          'id' => 'CreateScreen',
-          'urlName' => 'create',
-          'urlPath' => 'countries.create',
-          'title' => 'Create a new country',
-          'navigationTitle' => 'Create a country',
-          'requiredRight' => 'CreateCountries',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\CountriesScreen\\CreateScreen',
-          'path' => 'driver-classes:Area/CountriesScreen',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
         'list' => 
         array (
-          'id' => 'ListScreen',
+          'id' => 'ListMode',
           'urlName' => 'list',
-          'urlPath' => 'countries.list',
-          'title' => 'Available countries',
+          'urlPath' => 'tags.list',
+          'title' => 'Available root tags',
           'navigationTitle' => 'List',
-          'requiredRight' => 'ViewCountries',
+          'requiredRight' => 'ViewTags',
           'featureRights' => 
           array (
+            'Delete tags' => 'DeleteTags',
           ),
-          'class' => 'TestDriver\\Area\\CountriesScreen\\ListScreen',
-          'path' => 'driver-classes:Area/CountriesScreen',
+          'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\ListMode',
+          'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode',
           'subscreenClasses' => 
           array (
           ),
@@ -4537,39 +4628,39 @@ return array (
           array (
           ),
         ),
-        'view' => 
+        'view-tag' => 
         array (
-          'id' => 'ViewScreen',
-          'urlName' => 'view',
-          'urlPath' => 'countries.view',
-          'title' => 'View a country',
+          'id' => 'ViewMode',
+          'urlName' => 'view-tag',
+          'urlPath' => 'tags.view-tag',
+          'title' => 'View a tag',
           'navigationTitle' => 'View',
-          'requiredRight' => 'ViewCountries',
+          'requiredRight' => 'ViewTags',
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen',
-          'path' => 'driver-classes:Area/CountriesScreen',
+          'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\ViewMode',
+          'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode',
           'subscreenClasses' => 
           array (
-            0 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
-            1 => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen',
+            0 => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+            1 => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\TagTreeSubmode',
           ),
           'subscreens' => 
           array (
-            'status' => 
+            'tag-tree' => 
             array (
-              'id' => 'StatusScreen',
-              'urlName' => 'status',
-              'urlPath' => 'countries.view.status',
-              'title' => 'Status',
-              'navigationTitle' => 'Status',
-              'requiredRight' => 'ViewCountries',
+              'id' => 'TagTreeSubmode',
+              'urlName' => 'tag-tree',
+              'urlPath' => 'tags.view-tag.tag-tree',
+              'title' => 'Tag tree',
+              'navigationTitle' => 'Tree',
+              'requiredRight' => 'EditTags',
               'featureRights' => 
               array (
               ),
-              'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\StatusScreen',
-              'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
+              'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\TagTreeSubmode',
+              'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode/View',
               'subscreenClasses' => 
               array (
               ),
@@ -4577,19 +4668,20 @@ return array (
               array (
               ),
             ),
-            'settings' => 
+            'tag-settings' => 
             array (
-              'id' => 'SettingsScreen',
-              'urlName' => 'settings',
-              'urlPath' => 'countries.view.settings',
-              'title' => 'Country settings',
+              'id' => 'SettingsSubmode',
+              'urlName' => 'tag-settings',
+              'urlPath' => 'tags.view-tag.tag-settings',
+              'title' => 'Edit tag settings',
               'navigationTitle' => 'Settings',
-              'requiredRight' => 'EditCountries',
+              'requiredRight' => 'ViewTags',
               'featureRights' => 
               array (
+                'Edit the settings' => 'EditTags',
               ),
-              'class' => 'TestDriver\\Area\\CountriesScreen\\ViewScreen\\SettingsScreen',
-              'path' => 'driver-classes:Area/CountriesScreen/ViewScreen',
+              'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
+              'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode/View',
               'subscreenClasses' => 
               array (
               ),
@@ -4597,6 +4689,26 @@ return array (
               array (
               ),
             ),
+          ),
+        ),
+        'create' => 
+        array (
+          'id' => 'CreateMode',
+          'urlName' => 'create',
+          'urlPath' => 'tags.create',
+          'title' => 'Create a tag',
+          'navigationTitle' => 'Create tag',
+          'requiredRight' => 'CreateTags',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Tags\\Admin\\Screens\\Mode\\CreateMode',
+          'path' => 'framework-classes:Application/Tags/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
           ),
         ),
       ),
@@ -4619,130 +4731,6 @@ return array (
       ),
       'subscreens' => 
       array (
-      ),
-    ),
-    'tags' => 
-    array (
-      'id' => 'TagsScreen',
-      'urlName' => 'tags',
-      'urlPath' => 'tags',
-      'title' => 'Tags',
-      'navigationTitle' => 'Tags',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\TagsScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
-        1 => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
-        2 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen',
-      ),
-      'subscreens' => 
-      array (
-        'view-tag' => 
-        array (
-          'id' => 'ViewTagScreen',
-          'urlName' => 'view-tag',
-          'urlPath' => 'tags.view-tag',
-          'title' => 'View a tag',
-          'navigationTitle' => 'View',
-          'requiredRight' => 'ViewTags',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen',
-          'path' => 'driver-classes:Area/TagsScreen',
-          'subscreenClasses' => 
-          array (
-            0 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
-            1 => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen',
-          ),
-          'subscreens' => 
-          array (
-            'tag-tree' => 
-            array (
-              'id' => 'TagTreeScreen',
-              'urlName' => 'tag-tree',
-              'urlPath' => 'tags.view-tag.tag-tree',
-              'title' => 'Tag tree',
-              'navigationTitle' => 'Tree',
-              'requiredRight' => 'EditTags',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagTreeScreen',
-              'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'tag-settings' => 
-            array (
-              'id' => 'TagSettingsScreen',
-              'urlName' => 'tag-settings',
-              'urlPath' => 'tags.view-tag.tag-settings',
-              'title' => 'Edit tag settings',
-              'navigationTitle' => 'Settings',
-              'requiredRight' => 'ViewTags',
-              'featureRights' => 
-              array (
-                'Edit the settings' => 'EditTags',
-              ),
-              'class' => 'TestDriver\\Area\\TagsScreen\\ViewTagScreen\\TagSettingsScreen',
-              'path' => 'driver-classes:Area/TagsScreen/ViewTagScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-          ),
-        ),
-        'list' => 
-        array (
-          'id' => 'TagListScreen',
-          'urlName' => 'list',
-          'urlPath' => 'tags.list',
-          'title' => 'Available root tags',
-          'navigationTitle' => 'List',
-          'requiredRight' => 'ViewTags',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TagsScreen\\TagListScreen',
-          'path' => 'driver-classes:Area/TagsScreen',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
-        'create' => 
-        array (
-          'id' => 'CreateTagScreen',
-          'urlName' => 'create',
-          'urlPath' => 'tags.create',
-          'title' => 'Create a tag',
-          'navigationTitle' => 'Create tag',
-          'requiredRight' => 'CreateTags',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TagsScreen\\CreateTagScreen',
-          'path' => 'driver-classes:Area/TagsScreen',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
       ),
     ),
   ),
