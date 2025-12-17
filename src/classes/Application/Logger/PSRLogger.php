@@ -25,7 +25,10 @@ use Psr\Log\LogLevel;
  */
 class PSRLogger extends AbstractLogger
 {
-    public const LEVEL_MAPPINGS = array(
+    /** Mapping of PSR-3 log levels to application logger levels.
+     * @var array<string,string>
+     */
+    public const array LEVEL_MAPPINGS = array(
         LogLevel::ALERT => Logger::ERROR,
         LogLevel::CRITICAL => Logger::ERROR,
         LogLevel::EMERGENCY => Logger::ERROR,
