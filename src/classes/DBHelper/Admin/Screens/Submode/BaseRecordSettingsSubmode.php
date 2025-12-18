@@ -20,4 +20,9 @@ abstract class BaseRecordSettingsSubmode
     {
         return '';
     }
+
+    public function getDefaultSubscreenClass() : ?string
+    {
+        return null;
+    }
 }

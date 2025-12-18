@@ -10,4 +10,14 @@ use DBHelper\Admin\Traits\RecordStatusScreenTrait;
 abstract class BaseRecordStatusSubmode extends BaseRecordSubmode implements RecordStatusScreenInterface
 {
     use RecordStatusScreenTrait;
+
+    public function getDefaultAction(): string
+    {
+        return '';
+    }
+
+    public function getDefaultSubscreenClass(): ?string
+    {
+        return null;
+    }
 }
