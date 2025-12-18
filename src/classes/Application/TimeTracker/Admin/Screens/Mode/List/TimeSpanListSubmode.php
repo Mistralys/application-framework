@@ -10,6 +10,7 @@ use Application\TimeTracker\Admin\Traits\ListSubmodeInterface;
 use Application\TimeTracker\Admin\Traits\ListSubmodeTrait;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanRecord;
+use Application\TimeTracker\TimeTrackerCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper\Admin\Screens\Submode\BaseRecordListSubmode;
@@ -30,6 +31,11 @@ class TimeSpanListSubmode extends BaseRecordListSubmode implements ListSubmodeIn
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function createCollection(): TimeSpanCollection
+    {
+        return AppFactory::createTimeTracker()->createTimeSpans();
     }
 
     public function getNavigationTitle(): string
