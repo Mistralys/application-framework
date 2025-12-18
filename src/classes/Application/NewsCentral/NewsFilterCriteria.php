@@ -6,6 +6,7 @@ namespace Application\NewsCentral;
 
 use DBHelper_BaseFilterCriteria;
 use DBHelper_StatementBuilder_ValuesContainer;
+use NewsCentral\Entries\NewsEntry;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
 

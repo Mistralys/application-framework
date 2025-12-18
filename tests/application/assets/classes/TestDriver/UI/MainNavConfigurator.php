@@ -8,12 +8,12 @@ declare(strict_types=1);
 
 namespace TestDriver\UI;
 
-use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\API\Admin\Screens\APIClientsArea;
 use Application\Countries\Admin\Screens\CountriesArea;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\Media\Admin\Screens\MediaLibraryArea;
+use Application\NewsCentral\Admin\Screens\ManageNewsArea;
 use Application\Tags\Admin\Screens\Area\TagsArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\BaseUsersArea;
@@ -47,7 +47,7 @@ class MainNavConfigurator extends NavConfigurator
             ->addAreaChained(UserSettingsArea::URL_NAME)
             ->addSeparator()
             ->addAreaChained(CountriesArea::URL_NAME)
-            ->addAreaChained(BaseNewsScreen::URL_NAME)
+            ->addAreaChained(ManageNewsArea::URL_NAME)
             ->addAreaChained(MediaLibraryArea::URL_NAME)
             ->addAreaChained(RevisionableScreen::URL_NAME)
             ->addAreaChained(TagsArea::URL_NAME)

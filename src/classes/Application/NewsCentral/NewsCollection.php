@@ -10,13 +10,7 @@ declare(strict_types=1);
 namespace Application\NewsCentral;
 
 use Application;
-use Application\Admin\Area\BaseNewsScreen;
-use Application\Admin\Area\News\BaseCreateAlertScreen;
-use Application\Admin\Area\News\BaseCreateArticleScreen;
-use Application\Admin\Area\News\BaseNewsListScreen;
-use Application\Admin\Area\News\BaseReadNewsScreen;
-use Application\AppFactory;
-use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\NewsCentral\Admin\NewsAdminURLs;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application_Formable;
 use Application_User;
@@ -26,11 +20,13 @@ use DBHelper;
 use DBHelper_BaseCollection;
 use DBHelper_StatementBuilder;
 use DBHelper_StatementBuilder_ValuesContainer;
+use NewsCentral\Entries\Criticalities\NewsEntryCriticality;
 use NewsCentral\Entries\NewsAlert;
 use NewsCentral\Entries\NewsArticle;
+use NewsCentral\Entries\NewsEntry;
 
 /**
- * NOTE: Article classes are determined via {@see self::resolveRecordClass()}.
+ * > NOTE: Article classes are determined via {@see self::resolveRecordClass()}.
  *
  * @package Application
  * @subpackage News
@@ -44,26 +40,28 @@ use NewsCentral\Entries\NewsArticle;
  */
 class NewsCollection extends DBHelper_BaseCollection
 {
-    public const RECENT_ITEMS_CATEGORY = 'recent_news';
+    public const string RECENT_ITEMS_CATEGORY = 'recent_news';
 
-    public const PRIMARY_NAME = 'news_id';
-    public const TABLE_NAME = 'app_news';
-    public const TABLE_NAME_ENTRY_CATEGORIES = 'app_news_entry_categories';
+    public const string PRIMARY_NAME = 'news_id';
+    public const string TABLE_NAME = 'app_news';
+    public const string TABLE_NAME_ENTRY_CATEGORIES = 'app_news_entry_categories';
 
-    public const COL_LABEL = 'label';
-    public const COL_ARTICLE = 'article';
-    public const COL_STATUS = 'status';
-    public const COL_AUTHOR = 'author';
-    public const COL_LOCALE = 'locale';
-    public const COL_VIEWS = 'views';
-    public const COL_DATE_CREATED = 'date_created';
-    public const COL_DATE_MODIFIED = 'date_modified';
-    public const COL_SYNOPSIS = 'synopsis';
-    public const COL_CRITICALITY = 'criticality';
-    public const COL_SCHEDULED_FROM_DATE = 'scheduled_from_date';
-    public const COL_SCHEDULED_TO_DATE = 'scheduled_to_date';
-    public const COL_REQUIRES_RECEIPT = 'requires_receipt';
-    public const COL_NEWS_TYPE = 'news_type';
+    public const string COL_LABEL = 'label';
+    public const string COL_ARTICLE = 'article';
+    public const string COL_STATUS = 'status';
+    public const string COL_AUTHOR = 'author';
+    public const string COL_LOCALE = 'locale';
+    public const string COL_VIEWS = 'views';
+    public const string COL_DATE_CREATED = 'date_created';
+    public const string COL_DATE_MODIFIED = 'date_modified';
+    public const string COL_SYNOPSIS = 'synopsis';
+    public const string COL_CRITICALITY = 'criticality';
+    public const string COL_SCHEDULED_FROM_DATE = 'scheduled_from_date';
+    public const string COL_SCHEDULED_TO_DATE = 'scheduled_to_date';
+    public const string COL_REQUIRES_RECEIPT = 'requires_receipt';
+    public const string COL_NEWS_TYPE = 'news_type';
+    public const string REQUEST_PRIMARY_NAME = 'news_id';
+    public const string RECORD_TYPE = 'news-entry';
 
 
     public function getRecordClassName(): string
@@ -105,9 +103,14 @@ class NewsCollection extends DBHelper_BaseCollection
         return self::PRIMARY_NAME;
     }
 
+    public function getRecordRequestPrimaryName(): string
+    {
+        return self::REQUEST_PRIMARY_NAME;
+    }
+
     public function getRecordTypeName(): string
     {
-        return 'news-entry';
+        return self::RECORD_TYPE;
     }
 
     public function getCollectionLabel(): string
@@ -138,7 +141,7 @@ class NewsCollection extends DBHelper_BaseCollection
 
     protected function resolveRecordClass(int $record_id): string
     {
-        $query = <<<'EOT'
+        $query = /** @lang text */<<<'EOT'
 SELECT
     {news_type}
 FROM 
@@ -263,42 +266,8 @@ EOT;
         return new NewsSettingsManager($formable, $this, $newsEntry);
     }
 
-    // region: Admin URLs
-
-    public function getAdminListURL(array $params=array()) : string
+    public function adminURL() : NewsAdminURLs
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseNewsListScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
+        return new NewsAdminURLs();
     }
-
-    public function getAdminCreateArticleURL(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateArticleScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
-    }
-
-    public function getAdminCreateAlertURL(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateAlertScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
-    }
-
-    public function getAdminURL(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
-
-        return AppFactory::createRequest()->buildURL($params);
-    }
-
-    public function getLiveReadURL(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
-    }
-
-    // endregion
 }

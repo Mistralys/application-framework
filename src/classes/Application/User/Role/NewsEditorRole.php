@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\User\Role;
 
-use Application\NewsCentral\NewsRightsInterface;
+use Application\NewsCentral\User\NewsRightsInterface;
 use Application\User\Roles\BaseRole;
 use Application_User;
 

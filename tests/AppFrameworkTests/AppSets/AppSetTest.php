@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AppFrameworkTests\AppSets;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
+use Application\NewsCentral\Admin\Screens\ManageNewsArea;
 use Application_Sets_Set;
-use TestDriver\Area\NewsScreen;
 
 final class AppSetTest extends ApplicationTestCase
 {
@@ -14,16 +14,16 @@ final class AppSetTest extends ApplicationTestCase
     {
         $set = Application_Sets_Set::fromArray(array(
             Application_Sets_Set::KEY_ID => 'test',
-            Application_Sets_Set::KEY_DEFAULT_AREA => NewsScreen::URL_NAME,
+            Application_Sets_Set::KEY_DEFAULT_AREA => ManageNewsArea::URL_NAME,
             Application_Sets_Set::KEY_ENABLED => array()
         ));
 
-        $this->assertSame(NewsScreen::URL_NAME, $set->getDefaultArea()->getURLName());
+        $this->assertSame(ManageNewsArea::URL_NAME, $set->getDefaultArea()->getURLName());
     }
 
     public function test_recognizeByClassName() : void
     {
-        $name = getClassTypeName(NewsScreen::class);
+        $name = getClassTypeName(ManageNewsArea::class);
 
         $set = Application_Sets_Set::fromArray(array(
             Application_Sets_Set::KEY_ID => 'test',
@@ -31,6 +31,6 @@ final class AppSetTest extends ApplicationTestCase
             Application_Sets_Set::KEY_ENABLED => array()
         ));
 
-        $this->assertSame(NewsScreen::class, get_class($set->getDefaultArea()));
+        $this->assertSame(ManageNewsArea::class, get_class($set->getDefaultArea()));
     }
 }

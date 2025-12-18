@@ -7,21 +7,21 @@
  * @see Application_User
  */
 
-use Application\Users\Admin\Screens\UserSettingsArea;
 use Application\Countries\Rights\CountryRightsInterface;
 use Application\Countries\Rights\CountryRightsTrait;
 use Application\Driver\DriverException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\MediaRightsInterface;
 use Application\Media\MediaRightsTrait;
-use Application\NewsCentral\NewsRightsInterface;
-use Application\NewsCentral\NewsRightsTrait;
+use Application\NewsCentral\User\NewsRightsInterface;
+use Application\NewsCentral\User\NewsRightsTrait;
 use Application\Tags\TagsRightsInterface;
 use Application\Tags\TagsRightsTrait;
 use Application\User\LayoutWidth;
 use Application\User\LayoutWidths;
 use Application\User\Roles\RoleCollection;
 use Application\User\UserException;
+use Application\Users\Admin\Screens\UserSettingsArea;
 use Application\Users\Rights\UserAdminRightsInterface;
 use Application\Users\Rights\UserAdminRightsTrait;
 use AppLocalize\Localization;

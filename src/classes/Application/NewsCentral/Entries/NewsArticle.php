@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace NewsCentral\Entries;
 
-use Application\Admin\Area\BaseNewsScreen;
-use Application\Admin\Area\News\BaseReadNewsScreen;
-use Application\Admin\Area\News\ReadNews\BaseReadArticleScreen;
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\MarkdownRenderer;
+use Application\NewsCentral\Admin\Screens\ManageNewsArea;
+use Application\NewsCentral\Admin\Screens\ReadNews\ReadArticleScreen;
+use Application\NewsCentral\Admin\Screens\ReadNewsArea;
 use Application\NewsCentral\NewsCollection;
-use Application\NewsCentral\NewsEntry;
 
 class NewsArticle extends NewsEntry
 {
@@ -47,10 +46,10 @@ class NewsArticle extends NewsEntry
 
     public function getLiveURLRead(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseReadArticleScreen::URL_NAME;
-        $params[BaseReadArticleScreen::REQUEST_PARAM_ARTICLE] = $this->getID();
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = ManageNewsArea::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = ReadNewsArea::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = ReadArticleScreen::URL_NAME;
+        $params[ReadArticleScreen::REQUEST_PARAM_ARTICLE] = $this->getID();
 
         return AppFactory::createRequest()
             ->buildURL($params);

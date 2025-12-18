@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\NewsCentral;
 
 use Application\NewsCentral\Categories\CategorySelector;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Application_Interfaces_Formable;
@@ -21,6 +20,8 @@ use HTML_QuickForm2_Element_InputText;
 use HTML_QuickForm2_Element_Select;
 use HTML_QuickForm2_Element_Switch;
 use HTML_QuickForm2_Element_Textarea;
+use NewsCentral\Entries\Criticalities\NewsEntryCriticalities;
+use NewsCentral\Entries\NewsEntry;
 use UI;
 
 /**

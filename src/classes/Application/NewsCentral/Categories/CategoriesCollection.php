@@ -9,30 +9,34 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral\Categories;
 
-use Application\Admin\Area\News\BaseCategoriesListScreen;
-use Application\Admin\Area\News\BaseCreateCategoryScreen;
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\NewsCentral\Admin\CategoriesAdminURLs;
+use Application\NewsCentral\Admin\Screens\Mode\CategoriesListMode;
+use Application\NewsCentral\Admin\Screens\Mode\CreateCategoryMode;
 use Application_Formable;
+use AppUtils\ClassHelper;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseCollection;
+use testsuites\DBHelper\RecordTest;
 
 /**
  * @package Application
  * @subpackage News
  *
- * @method Category getByID(int $record_id)
  * @method Category[] getAll()
  * @method Category|NULL getByRequest()
  * @method CategoriesFilterCriteria getFilterCriteria()
  * @method CategoriesFilterSettings getFilterSettings()
- * @method Category createNewRecord(array $data = array(), bool $silent = false, array $options = array())
  */
 class CategoriesCollection extends DBHelper_BaseCollection
 {
-    public const TABLE_NAME = 'app_news_categories';
-    public const PRIMARY_NAME = 'news_category_id';
+    public const string TABLE_NAME = 'app_news_categories';
+    public const string PRIMARY_NAME = 'news_category_id';
 
-    public const COL_LABEL = 'label';
+    public const string COL_LABEL = 'label';
+    public const string REQUEST_PRIMARY_NAME = 'news_category_id';
+    public const string RECORD_TYPE = 'news_category';
 
     public function getRecordClassName(): string
     {
@@ -71,9 +75,14 @@ class CategoriesCollection extends DBHelper_BaseCollection
         return self::PRIMARY_NAME;
     }
 
+    public function getRecordRequestPrimaryName(): string
+    {
+        return self::REQUEST_PRIMARY_NAME;
+    }
+
     public function getRecordTypeName(): string
     {
-        return 'news_category';
+        return self::RECORD_TYPE;
     }
 
     public function getCollectionLabel(): string
@@ -86,9 +95,13 @@ class CategoriesCollection extends DBHelper_BaseCollection
         return t('News category');
     }
 
-    public function getRecordProperties(): array
+
+    public function getByID(int $record_id): Category
     {
-        return array();
+        return ClassHelper::requireObjectInstanceOf(
+            Category::class,
+            parent::getByID($record_id)
+        );
     }
 
     public function createNewCategory(string $string) : Category
@@ -98,27 +111,21 @@ class CategoriesCollection extends DBHelper_BaseCollection
         ));
     }
 
+    public function createNewRecord(array $data = array(), bool $silent = false, array $options = array()): Category
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            Category::class,
+            parent::createNewRecord($data, $silent, $options)
+        );
+    }
+
     public function createSettingsManager(Application_Formable $formable, ?Category $record=null) : CategorySettingsManager
     {
         return new CategorySettingsManager($formable, $record);
     }
 
-    public function getAdminListURL(array $params=array()): string
+    public function adminURL() : CategoriesAdminURLs
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCategoriesListScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
-    }
-
-    public function getAdminURL(array $params=array()) : string
-    {
-        return AppFactory::createNews()->getAdminURL($params);
-    }
-
-    public function getAdminCreateURL(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateCategoryScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
+        return new CategoriesAdminURLs();
     }
 }

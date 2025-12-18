@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Application\NewsCentral\NewsEntry;
 use AppUtils\ConvertHelper;
 use NewsCentral\Entries\NewsArticle;
 

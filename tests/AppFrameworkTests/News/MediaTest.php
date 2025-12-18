@@ -8,7 +8,6 @@ use AppFrameworkTestClasses\NewsTestCase;
 use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
 use AppFrameworkTestClasses\Traits\ImageMediaTestTrait;
 use Application\AppFactory;
-use Application\NewsCentral\NewsEntryCriticalities;
 use AppLocalize\Locale\en_UK;
 
 final class MediaTest extends NewsTestCase implements ImageMediaTestInterface

@@ -8,7 +8,6 @@ use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\NewsCollection;
-use Application\NewsCentral\NewsEntry;
 use AppUtils\BaseException;
 use DBHelper;
 use function AppUtils\valBoolTrue;
@@ -108,7 +107,7 @@ class EntryCategoriesManager
             return $this->categoryIDs;
         }
 
-        $query = <<<'EOT'
+        $query = /** @lang text */<<<'EOT'
 SELECT
     {categories_primary}
 FROM

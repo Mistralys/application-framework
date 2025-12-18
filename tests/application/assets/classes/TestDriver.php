@@ -6,17 +6,16 @@
 
 declare(strict_types=1);
 
-use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\API\Admin\Screens\APIClientsArea;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Countries\Admin\Screens\CountriesArea;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\Media\Admin\Screens\MediaLibraryArea;
+use Application\NewsCentral\Admin\Screens\ManageNewsArea;
 use Application\Tags\Admin\Screens\Area\TagsArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Users\Admin\Screens\UserSettingsArea;
-use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TestingScreen;
@@ -39,8 +38,8 @@ class TestDriver extends Application_Driver
     }
 
     /**
-     * NOTE: Uses the custom navigation generation,
-     * see {@see \TestDriver\UI\MainNavConfigurator}.
+     * > NOTE: Uses the custom navigation generation,
+     * > see {@see \TestDriver\UI\MainNavConfigurator}.
      *
      * @return array<string,string>
      */
@@ -53,7 +52,7 @@ class TestDriver extends Application_Driver
             Application_Admin_TranslationsArea::URL_NAME => TranslationsScreen::class,
             TestDriver_Area_WizardTest::URL_NAME => TestDriver_Area_WizardTest::class,
             QuickNavScreen::URL_NAME => QuickNavScreen::class,
-            BaseNewsScreen::URL_NAME => NewsScreen::class,
+            ManageNewsArea::URL_NAME => ManageNewsArea::class,
             MediaLibraryArea::URL_NAME => MediaLibraryArea::class,
             TestingScreen::URL_NAME => TestingScreen::class,
             RevisionableScreen::URL_NAME => RevisionableScreen::class,
