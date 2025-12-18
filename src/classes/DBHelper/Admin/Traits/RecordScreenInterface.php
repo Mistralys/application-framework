@@ -10,7 +10,7 @@ use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
- * @see RecordCreateScreenTrait
+ * @see RecordScreenTrait
  */
 interface RecordScreenInterface extends AdminScreenInterface, MissingRecordInterface
 {
