@@ -9,6 +9,7 @@
 - Admin: The developer screens now use the new screen loading system.
 - Admin: The "Welcome" screen is now loaded via the new system.
 - Admin: The "User Settings" screen is now loaded via the new system.
+- Admin: All admin areas are now enabled by default. Use the AppSets feature to disable any as needed.
 - OfflineEvents: All event and listener classes are now auto-discovered.
 - OfflineEvents: Classes can now be freely stored, the special `OfflineEvents` folder is no longer required.
 - OfflineEvents: Events must now extend the `BaseOfflineEvent` base class.
