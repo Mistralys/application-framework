@@ -116,20 +116,12 @@ class Application_Media_Document_Image extends Application_Media_Document
             return $this->dimensions;
         }
 
-        $path = $this->getPath();
-        if (!file_exists($path)) {
-            throw new MediaException(
-                'Image file does not exist',
-                sprintf(
-                    'Retrieving size of image [%1$s] from document [%2$s] failed, file not found.',
-                    $path,
-                    $this->id
-                ),
-                self::ERROR_FILE_NOT_FOUND
-            );
-        }
+        $this->dimensions = new ImageHelper_Size(array(0, 0));
 
-        $this->dimensions = ImageHelper::getImageSize($path);
+        $path = $this->getPath();
+        if(file_exists($path)) {
+            $this->dimensions = ImageHelper::getImageSize($path);
+        }
         
         return $this->dimensions;
     }
