@@ -11,10 +11,10 @@ namespace Application\CacheControl;
 use Application\AppFactory;
 use Application\CacheControl\Events\RegisterCacheLocationsEvent;
 use Application_EventHandler;
+use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
-use AppUtils\FileHelper\FolderInfo;
 use Mistralys\AppFrameworkDocs\DocumentationPages;
 
 /**
@@ -43,7 +43,7 @@ use Mistralys\AppFrameworkDocs\DocumentationPages;
  *
  * @see self::DOCUMENTATION_URL
  */
-class CacheManager extends BaseStringPrimaryCollection implements \Application_Interfaces_Loggable
+class CacheManager extends BaseStringPrimaryCollection implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
@@ -55,11 +55,6 @@ class CacheManager extends BaseStringPrimaryCollection implements \Application_I
     private function __construct()
     {
         $this->logIdentifier = 'CacheManager';
-    }
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__ . '/Admin/Screens')->requireExists();
     }
 
     public function getLogIdentifier(): string

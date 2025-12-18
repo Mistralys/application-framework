@@ -1,15 +1,12 @@
 <?php
 /**
- * File containing the {@see Application_Sets} class.
- *
  * @package Application
  * @subpackage Sets
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 
-use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminAreaInterface;
+use Application\Sets\AppSetsException;
 use AppUtils\FileHelper;
-use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\JSONFile;
 use AppUtils\FileHelper_Exception;
 
@@ -24,12 +21,7 @@ use AppUtils\FileHelper_Exception;
  */
 class Application_Sets
 {
-    public const ERROR_SET_ID_ALREADY_EXISTS = 12701;
-    public const ERROR_UNKNOWN_SET = 12702;
-    public const ERROR_CANNOT_SAVE_CONFIGURATION = 12703;
-    public const ERROR_CANNOT_RENAME_INEXISTANT_SET = 12704;
-    public const ERROR_CANNOT_RENAME_TO_EXISTING_NAME = 12705;
-    const DEFAULT_ID = '__default';
+    public const string DEFAULT_ID = '__default';
 
     protected static ?Application_Sets $instance = null;
     
@@ -61,11 +53,6 @@ class Application_Sets
         $this->load();
     }
 
-    public static function getAdminScreensFolder(): FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
-    }
-
     /**
     * @return Application_Sets_Set[]
     */
@@ -77,7 +64,7 @@ class Application_Sets
     /**
      * @return void
      *
-     * @throws Application_Exception
+     * @throws AppSetsException
      * @throws JsonException
      * @throws FileHelper_Exception
      */
@@ -96,45 +83,44 @@ class Application_Sets
         }
     }
     
-    public function getAdminListURL($params=array())
+    public function getAdminListURL(array $params=array()) : string
     {
         $params['submode'] = 'list';
         return $this->getAdminURL($params);
     }
     
-    public function getAdminCreateURL($params=array())
+    public function getAdminCreateURL(array $params=array()) : string
     {
         $params['submode'] = 'create';
         return $this->getAdminURL($params);
     }
     
-    protected function getAdminURL($params=array())
+    protected function getAdminURL(array $params=array()) : string
     {
         $params['page'] = 'devel';
         $params['mode'] = 'appsets';
-        
-        $request = Application_Driver::getInstance()->getRequest();
-        return $request->buildURL($params);
+
+        return Application_Driver::getInstance()->getRequest()->buildURL($params);
     }
     
    /**
     * Creates a new application set and returns the instance.
     * 
     * @param string $id
-    * @param Application_Admin_Area $defaultArea
-    * @param Application_Admin_Area[] $enabledAreas
+    * @param AdminAreaInterface $defaultArea
+    * @param AdminAreaInterface[] $enabledAreas
     * @return Application_Sets_Set
     */
-    public function createNew(string $id, Application_Admin_Area $defaultArea, array $enabledAreas=array()) : Application_Sets_Set
+    public function createNew(string $id, AdminAreaInterface $defaultArea, array $enabledAreas=array()) : Application_Sets_Set
     {
         if($this->idExists($id)) {
-            throw new Application_Exception(
+            throw new AppSetsException(
                 'Application set ID already exists',
                 sprintf(
                     'Cannot create a new set with ID [%s], this ID is already in use by an existing application set.',
                     $id
                 ),
-                self::ERROR_SET_ID_ALREADY_EXISTS
+                AppSetsException::ERROR_SET_ID_ALREADY_EXISTS
             );
         }
         
@@ -170,10 +156,7 @@ class Application_Sets
      * @param string $id
      * @return Application_Sets_Set
      *
-     * @throws Application_Exception
-     * @throws FileHelper_Exception
-     * @throws JsonException
-     * @throws DriverException
+     * @throws AppSetsException
      */
     public function getByID(string $id) : Application_Sets_Set
     {
@@ -186,13 +169,13 @@ class Application_Sets
             return $this->getDefault();
         }
         
-        throw new Application_Exception(
+        throw new AppSetsException(
            'Unknown application set',
            sprintf(
                'The application set [%s] does not exist. Always check beforehand with idExists to avoid this exception.',
                $id
            ),
-           self::ERROR_UNKNOWN_SET
+            AppSetsException::ERROR_UNKNOWN_SET
         );
     }
 
@@ -210,9 +193,7 @@ class Application_Sets
     /**
      * Saves all application sets to the configuration file.
      *
-     * @throws Application_Exception
-     * @throws FileHelper_Exception
-     * @throws JsonException
+     * @throws AppSetsException
      */
     public function save() : void
     {
@@ -227,13 +208,13 @@ class Application_Sets
         }
         catch (Throwable $e)
         {
-            throw new Application_Exception(
+            throw new AppSetsException(
                 'Cannot save the application sets configuration',
                 sprintf(
                     'Tried saving to the file [%s].',
                     $this->configPath
                 ),
-                self::ERROR_CANNOT_SAVE_CONFIGURATION,
+                AppSetsException::ERROR_CANNOT_SAVE_CONFIGURATION,
                 $e
             );
         }
@@ -255,33 +236,33 @@ class Application_Sets
     * 
     * @param Application_Sets_Set $set
     * @param string $newID
-    * @throws Application_Exception
+    * @throws AppSetsException
     */
-    public function handle_renameSet(Application_Sets_Set $set, $newID)   
+    public function handle_renameSet(Application_Sets_Set $set, string $newID) : void
     {
         $oldID = $set->getID();
         
         if(!isset($this->sets[$oldID])) {
-            throw new Application_Exception(
+            throw new AppSetsException(
                 'Cannot rename set that does not exist',
                 sprintf(
                     'The set [%s] does not exist, and cannot be renamed to [%s].',
                     $oldID,
                     $newID
                 ),
-                self::ERROR_CANNOT_RENAME_INEXISTANT_SET
+                AppSetsException::ERROR_CANNOT_RENAME_INEXISTANT_SET
             );
         }
         
         if(isset($this->sets[$newID])) {
-            throw new Application_Exception(
+            throw new AppSetsException(
                 'Cannot rename set, same name already exists',
                 sprintf(
                     'Cannot rename set [%s] to [%s], that set already exists.',
                     $oldID,
                     $newID
                 ),
-                self::ERROR_CANNOT_RENAME_TO_EXISTING_NAME
+                AppSetsException::ERROR_CANNOT_RENAME_TO_EXISTING_NAME
             );
         }
         

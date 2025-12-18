@@ -13,7 +13,6 @@ use Application\ErrorLog\Admin\Screens\ErrorLogMode;
 use Application\ErrorLog\Admin\Screens\ListSubmode;
 use Application\ErrorLog\ErrorLogException;
 use AppUtils\FileHelper;
-use AppUtils\FileHelper\FolderInfo;
 use AppUtils\ThrowableInfo;
 
 /**
@@ -71,11 +70,6 @@ class Application_ErrorLog
         );
     }
 
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
-    }
-    
    /**
     * Retrieves the full path to the error logs folder. If no
     * year is specified, the current year is used.

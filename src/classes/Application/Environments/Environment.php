@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Environment} class.
- *
  * @package Application
  * @subpackage Environments
- * @see Environment
  */
 
 declare(strict_types=1);
@@ -12,7 +9,6 @@ declare(strict_types=1);
 namespace Application\Environments;
 
 use Application\Environments;
-use Application\Environments\EnvironmentException;
 use Application\Environments\Events\EnvironmentActivated;
 use Application\Environments\Events\EnvironmentDetected;
 use Application\Environments\Events\IncludesLoaded;
@@ -27,8 +23,6 @@ use Application_Interfaces_Eventable;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 use AppUtils\FileHelper;
-use AppUtils\FileHelper\FolderInfo;
-use AppUtils\FileHelper_Exception;
 
 /**
  * Container for a single application environment definition.
@@ -48,14 +42,8 @@ class Environment implements Application_Interfaces_Eventable
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 
-    public const ERROR_INCLUDE_FILE_NOT_FOUND = 143901;
-    public const ERROR_INCLUDE_FILE_NOT_PHP_FILE = 143902;
-
-    public const REQUIRE_CLI = 'cli';
-
-    public const REQUIRE_WIN = 'win';
-
-    public const REQUIRE_HOSTNAME_CONTAINS = 'hostname-contains';
+    public const int ERROR_INCLUDE_FILE_NOT_FOUND = 143901;
+    public const int ERROR_INCLUDE_FILE_NOT_PHP_FILE = 143902;
 
     /**
      * @var array<string,string|int|float|bool|array>
@@ -103,11 +91,6 @@ class Environment implements Application_Interfaces_Eventable
                 $this->activate();
             }
         });
-    }
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__ . '/Admin/Screens')->requireExists();
     }
 
     public function isDev(): bool
@@ -198,10 +181,10 @@ class Environment implements Application_Interfaces_Eventable
      * is activated.
      *
      * @param string $name
-     * @param string|int|float|bool|array $value
+     * @param string|int|float|bool|array<int|string,mixed> $value
      * @return $this
      */
-    public function setGlobal(string $name, $value): self
+    public function setGlobal(string $name, string|int|float|bool|array $value): self
     {
         $this->globals[$name] = $value;
         return $this;
@@ -212,10 +195,10 @@ class Environment implements Application_Interfaces_Eventable
      * if this environment is activated.
      *
      * @param string $name
-     * @param string|int|float|bool|array $value
+     * @param string|int|float|bool|array<int|string,mixed> $value
      * @return $this
      */
-    public function setBootDefine(string $name, $value): self
+    public function setBootDefine(string $name, string|int|float|bool|array $value): self
     {
         $this->bootDefines[$name] = $value;
         return $this;
@@ -223,10 +206,10 @@ class Environment implements Application_Interfaces_Eventable
 
     /**
      * @param string $name
-     * @param string|int|float|bool|array $value
+     * @param string|int|float|bool|array<int|string,mixed> $value
      * @return $this
      */
-    public function setDefine(string $name, $value): self
+    public function setDefine(string $name, string|int|float|bool|array $value): self
     {
         $this->defines[$name] = $value;
         return $this;
@@ -236,10 +219,10 @@ class Environment implements Application_Interfaces_Eventable
      * Adds a PHP file to include if this environment is activated.
      *
      * @param string $path
+     * @param bool $optional
      * @return $this
      *
      * @throws EnvironmentException
-     * @throws FileHelper_Exception
      */
     public function includeFile(string $path, bool $optional = false): self
     {

@@ -7,6 +7,8 @@
  * @see Application_Sets_Set
  */
 
+use Application\Interfaces\Admin\AdminAreaInterface;
+use Application\Sets\AppSetsException;
 use AppUtils\ConvertHelper;
 
 /**
@@ -21,30 +23,20 @@ use AppUtils\ConvertHelper;
  */
 class Application_Sets_Set
 {
-    public const ERROR_FORMABLE_NOT_VALID = 12801;
-    
-    public const ERROR_INVALID_DEFAULT_AREA = 12802;
     public const KEY_DEFAULT_AREA = 'defaultArea';
     public const KEY_ID = 'id';
 
     public const SETTING_ID = 'id';
     public const KEY_ENABLED = 'enabled';
 
-    /**
-    * @var string
-    */
-    protected $id;
-    
-   /**
-    * @var Application_Admin_Area
-    */
-    protected $defaultArea;
+    protected string $id;
+    protected AdminAreaInterface $defaultArea;
     
    /**
     * @param string $id
-    * @param Application_Admin_Area $defaultArea
+    * @param AdminAreaInterface $defaultArea
     */
-    public function __construct($id, Application_Admin_Area $defaultArea)
+    public function __construct(string $id, AdminAreaInterface $defaultArea)
     {
         $this->id = $id;
         $this->defaultArea = $defaultArea;
@@ -54,16 +46,16 @@ class Application_Sets_Set
     * The ID (alias) of the set.
     * @return string
     */
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
     
    /**
     * The default area that should be opened when this set is active.
-    * @return Application_Admin_Area
+    * @return AdminAreaInterface
     */
-    public function getDefaultArea()
+    public function getDefaultArea() : AdminAreaInterface
     {
         return $this->defaultArea;
     }
@@ -201,12 +193,12 @@ class Application_Sets_Set
         }
         
         $el = self::getAreaElement($area, $formable);
-        
-        if($el === null || !$el->isChecked()) 
+
+        if($el === null || !$el->isChecked())
         {
             return false;
         }
-        
+
         return true;
     }
     
@@ -224,7 +216,7 @@ class Application_Sets_Set
             throw new Application_Exception(
                 'Formable must be valid',
                 'The specified formable was not valid. Please validate it before you call createFromFormable.',
-                self::ERROR_FORMABLE_NOT_VALID
+                AppSetsException::ERROR_FORMABLE_NOT_VALID
             );
         }
         
@@ -241,28 +233,27 @@ class Application_Sets_Set
                 $enabled[] = $area;
             }
         }
-        
-        $sets = Application_Sets::getInstance();
-        
-        return $sets->createNew(
-            $values[self::SETTING_ID],
-            $driver->createArea($values['default_area']), 
-            $enabled
-        );
+
+        return Application_Sets::getInstance()
+            ->createNew(
+                $values[self::SETTING_ID],
+                $driver->createArea($values['default_area']),
+                $enabled
+            );
     }
  
    /**
-    * @var Application_Admin_Area[]
+    * @var AdminAreaInterface[]
     */
-    protected $enabled = array();
+    protected array $enabled = array();
     
    /**
     * Enables the specified area for the set.
     * 
-    * @param Application_Admin_Area $area
-    * @return Application_Sets_Set
+    * @param AdminAreaInterface $area
+    * @return $this
     */
-    public function enableArea(Application_Admin_Area $area)
+    public function enableArea(AdminAreaInterface $area) : self
     {
         $id = $area->getID();
         
@@ -306,7 +297,7 @@ class Application_Sets_Set
                     $data[self::KEY_ID],
                     implode(', ', array_keys($driver->getAdminAreas()))
                 ),
-                self::ERROR_INVALID_DEFAULT_AREA
+                AppSetsException::ERROR_INVALID_DEFAULT_AREA
             );
         }
         
@@ -399,14 +390,15 @@ class Application_Sets_Set
         return $this->getAdminURL($params);
     }
     
-    protected function getAdminURL($params=array())
+    protected function getAdminURL(array $params=array()) : string
     {
         $params['page'] = 'devel';
         $params['mode'] = 'appsets';
         $params['set_id'] = $this->getID();
-        
-        $request = Application_Driver::getInstance()->getRequest();
-        return $request->buildURL($params);
+
+        return Application_Driver::getInstance()
+            ->getRequest()
+            ->buildURL($params);
     }
     
    /**

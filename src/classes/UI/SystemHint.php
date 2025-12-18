@@ -75,12 +75,12 @@ class SystemHint extends UI_Renderable
     }
 
     /**
-     * @param string|number|StringableInterface|NULL $content
+     * @param string|int|float|StringableInterface|NULL $content
      * @return $this
      */
-    public function setContent($content) : self
+    public function setContent(string|int|float|StringableInterface|NULL $content) : self
     {
-        return $this->setOption(self::OPTION_CONTENT, $content);
+        return $this->setOption(self::OPTION_CONTENT, (string)$content);
     }
 
     public function getDefaultOptions(): array

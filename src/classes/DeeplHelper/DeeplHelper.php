@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
-use AppUtils\FileHelper\FolderInfo;
 use DeeplHelper\Admin\DeeplAdminURLs;
 use DeeplHelper\DeeplHelperException;
 use DeeplXML\Translator;
@@ -26,11 +25,6 @@ use DeeplXML\Translator;
  */
 class DeeplHelper
 {
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
-    }
-
     /**
      * @param Application_Countries_Country $fromCountry
      * @param Application_Countries_Country $toCountry

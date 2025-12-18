@@ -17,7 +17,6 @@ use Application\WhatsNew\Admin\Screens\ListSubmode;
 use Application\WhatsNew\Admin\Screens\WhatsNewEditorMode;
 use Application_Driver;
 use AppUtils\FileHelper;
-use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 
 /**
@@ -59,11 +58,6 @@ class WhatsNew
     public static function getDeveloperLangID() : string
     {
         return getClassTypeName(AppVersion\VersionLanguage\DEV::class);
-    }
-
-    public static function getAdminScreensFolder(): FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
     }
 
     public function getPath() : string
@@ -189,17 +183,17 @@ class WhatsNew
 
     public function writeToDisk() : void
     {
-        (new XMLFileWriter($this))->write($this->getPath());
+        new XMLFileWriter($this)->write($this->getPath());
     }
 
     public function toPlainText(string $langID) : string
     {
-        return (new PlainTextRenderer($this))->render($langID);
+        return new PlainTextRenderer($this)->render($langID);
     }
 
     public function toXML() : string
     {
-        return (new XMLRenderer($this))->render();
+        return new XMLRenderer($this)->render();
     }
 
     public function getByRequest() : ?AppVersion
@@ -241,17 +235,10 @@ class WhatsNew
 
     public function numberExists(string $number) : bool
     {
-        $versions = $this->getVersions();
-
-        foreach($versions as $version)
-        {
-            if($version->getNumber() === $number)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(
+            $this->getVersions(),
+            fn($version) => $version->getNumber() === $number
+        );
     }
 
     /**
@@ -270,7 +257,7 @@ class WhatsNew
         $files = FileHelper::createFileFinder($path)
             ->includeExtensions(array('png', 'jpg'))
             ->setPathmodeAbsolute()
-            ->getAll();
+            ->getMatches();
 
         usort($files, static function(string $a, string $b) : int {
             return filemtime($a) - filemtime($b);

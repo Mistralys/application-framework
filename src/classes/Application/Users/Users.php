@@ -6,8 +6,6 @@
 
 declare(strict_types=1);
 
-use Application\Development\Admin\Screens\DevelArea;
-use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Users\Admin\UsersAdminURLs;
 use Application\Users\UserSelector;
 use Application\Users\UsersException;
@@ -17,7 +15,6 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper\JSONConverter;
-use AppUtils\FileHelper\FolderInfo;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 /**
@@ -52,11 +49,6 @@ class Application_Users extends DBHelper_BaseCollection
     public const int COL_FOREIGN_ID_MAX_LENGTH = 250;
     public const int COL_FOREIGN_NICKNAME_MAX_LENGTH = 180;
     public const int COL_NICKNAME_MAX_LENGTH = 180;
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
-    }
 
     public function getRecordClassName() : string
     {

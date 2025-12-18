@@ -17,7 +17,6 @@ use Application\Tags\Taggables\TagCollectionTrait;
 use Application\Tags\TagRecord;
 use Application_Formable;
 use Application_Media;
-use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Microtime;
 use DBHelper;
 use DBHelper_BaseCollection;
@@ -46,11 +45,6 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     public const string COL_SIZE = 'file_size';
     public const string COL_KEYWORDS = 'keywords';
     public const string COL_DESCRIPTION = 'description';
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/../Admin/Screens')->requireExists();
-    }
 
     public function getCollectionID(): string
     {

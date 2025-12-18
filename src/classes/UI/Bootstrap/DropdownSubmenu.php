@@ -1,5 +1,6 @@
 <?php
 
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 
 class UI_Bootstrap_DropdownSubmenu
@@ -8,7 +9,7 @@ class UI_Bootstrap_DropdownSubmenu
         Application_Interfaces_Iconizable,
         UI_Interfaces_Bootstrap_DropdownItem
 {
-    public const ERROR_MENU_INSTANCE_NOT_SET = 101101;
+    public const int ERROR_MENU_INSTANCE_NOT_SET = 101101;
 
     use Application_Traits_Iconizable;
 
@@ -23,11 +24,11 @@ class UI_Bootstrap_DropdownSubmenu
     protected ?UI_Bootstrap_DropdownMenu $menu = null;
 
     /**
-     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @param string|int|float|StringableInterface|NULL $title
      * @return $this
      * @throws UI_Exception
      */
-    public function setTitle($title) : self
+    public function setTitle(string|int|float|StringableInterface|NULL $title) : self
     {
         $this->title = toString($title);
         return $this;

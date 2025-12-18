@@ -9,7 +9,6 @@ use Application\AppSettings\Events\RegisterAppSettingsEvent;
 use Application_Driver;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
-use AppUtils\FileHelper\FolderInfo;
 use UI_MarkupEditorInfo;
 
 /**
@@ -31,11 +30,6 @@ class AppSettingsRegistry extends BaseStringPrimaryCollection
         }
 
         return self::$instance;
-    }
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__ . '/Admin/Screens')->requireExists();
     }
 
     public function getDefaultID(): string

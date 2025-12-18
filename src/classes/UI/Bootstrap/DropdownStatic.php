@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interfaces\StringableInterface;
+
 /**
  * Bootstrap dropdown static HTML element.
  *
@@ -23,11 +25,11 @@ class UI_Bootstrap_DropdownStatic
     protected string $content;
 
     /**
-     * @param string|number|UI_Renderable_Interface|NULL $content
+     * @param string|int|float|StringableInterface|NULL $content
      * @return $this
      * @throws UI_Exception
      */
-    public function setContent($content) : self
+    public function setContent(string|int|float|StringableInterface|NULL $content) : self
     {
         $this->content = toString($content);
         return $this;

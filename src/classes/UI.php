@@ -14,7 +14,6 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
-use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\PaginationHelper;
@@ -40,21 +39,21 @@ use function AppUtils\parseVariable;
  */
 class UI
 {
-    public const ERROR_CANNOT_SELECT_INSTANCE_BEFORE_MAIN = 39747001;
-    public const ERROR_NO_UI_INSTANCE_AVAILABLE_YET = 39747002;
-    public const ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE = 39747003;
-    public const ERROR_NOT_A_RENDERABLE = 39747005;
-    public const ERROR_CANNOT_SET_PAGE_INSTANCE_AGAIN = 39747007;
+    public const int ERROR_CANNOT_SELECT_INSTANCE_BEFORE_MAIN = 39747001;
+    public const int ERROR_NO_UI_INSTANCE_AVAILABLE_YET = 39747002;
+    public const int ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE = 39747003;
+    public const int ERROR_NOT_A_RENDERABLE = 39747005;
+    public const int ERROR_CANNOT_SET_PAGE_INSTANCE_AGAIN = 39747007;
 
-    public const MESSAGE_TYPE_SUCCESS = 'success';
-    public const MESSAGE_TYPE_ERROR= 'error';
-    public const MESSAGE_TYPE_WARNING ='warning';
-    public const MESSAGE_TYPE_WARNING_XL ='warning-xl';
-    public const MESSAGE_TYPE_INFO = 'info';
+    public const string MESSAGE_TYPE_SUCCESS = 'success';
+    public const string MESSAGE_TYPE_ERROR= 'error';
+    public const string MESSAGE_TYPE_WARNING ='warning';
+    public const string MESSAGE_TYPE_WARNING_XL ='warning-xl';
+    public const string MESSAGE_TYPE_INFO = 'info';
 
-    private const SESSION_VAR_APP_MESSAGES = 'application_messages';
-    public const EVENT_PAGE_RENDERED = 'pageRendered';
-    public const APP_INSTANCE_PREFIX = 'app-';
+    private const string SESSION_VAR_APP_MESSAGES = 'application_messages';
+    public const string EVENT_PAGE_RENDERED = 'pageRendered';
+    public const string APP_INSTANCE_PREFIX = 'app-';
 
     private Application $app;
     private Application_Session $session;
@@ -106,11 +105,6 @@ class UI
         $this->session = Application::getSession();
         $this->themes = new UI_Themes($this);
         $this->resourceManager = new UI_ResourceManager($this);
-    }
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/UI/Admin/Screens')->requireExists();
     }
 
    /**
@@ -194,7 +188,7 @@ class UI
     public static function selectInstance(string $instanceName) : UI
     {
         if(empty(self::$instances)) {
-            throw new Application_Exception(
+            throw new UI_Exception(
                 'No main UI instance created yet',
                 'Tried selecting a UI instance before the main instance has been created.',
                 self::ERROR_CANNOT_SELECT_INSTANCE_BEFORE_MAIN
@@ -242,7 +236,7 @@ class UI
             return;
         }
 
-        throw new Application_Exception(
+        throw new UI_Exception(
             'No previous UI instance available',
             'Tried selecting a previous instance, but no instance was switched yet.',
             self::ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE
@@ -406,19 +400,19 @@ class UI
     }
 
     /**
-     * @param string|number|StringableInterface|NULL $comment
+     * @param string|int|float|StringableInterface|NULL $comment
      * @return $this
      */
-    public function addJavascriptHeadComment($comment=null) : self
+    public function addJavascriptHeadComment(string|int|float|StringableInterface|NULL $comment=null) : self
     {
         return $this->addJavascriptHead('// '.$comment, false);
     }
 
     /**
-     * @param string|number|StringableInterface|NULL $heading
+     * @param string|int|float|StringableInterface|NULL $heading
      * @return $this
      */
-    public function addJavascriptHeadHeading($heading) : self
+    public function addJavascriptHeadHeading(string|int|float|StringableInterface|NULL $heading) : self
     {
         $this->addJavascriptHeadComment(str_repeat('-', 65));
         $this->addJavascriptHeadComment($heading);
@@ -435,7 +429,7 @@ class UI
      * @param mixed $varValue
      * @return $this
      */
-    public function addJavascriptHeadVariable(string $varName, $varValue) : self
+    public function addJavascriptHeadVariable(string $varName, mixed $varValue) : self
     {
         $this->headJS[] = JSHelper::buildVariable($varName, $varValue);
         return $this;
@@ -486,13 +480,14 @@ class UI
      * it cannot be shown during the current request (like after
      * saving a record followed by a redirect).
      *
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|int|float|StringableInterface $message
+     * @param string $type
      * @throws UI_Exception
      * @see getMessages()
      * @see clearMessages()
      * @see hasMessages()
      */
-    public function addMessage($message, string $type = UI::MESSAGE_TYPE_INFO) : void
+    public function addMessage(string|int|float|StringableInterface $message, string $type = UI::MESSAGE_TYPE_INFO) : void
     {
         $messages = $this->getMessages();
         $messages[] = array(
@@ -504,37 +499,37 @@ class UI
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|int|float|StringableInterface $message
      * @throws UI_Exception
      */
-    public function addSuccessMessage($message) : void
+    public function addSuccessMessage(string|int|float|StringableInterface $message) : void
     {
         $this->addMessage($message, self::MESSAGE_TYPE_SUCCESS);
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|int|float|StringableInterface $message
      * @throws UI_Exception
      */
-    public function addErrorMessage($message) : void
+    public function addErrorMessage(string|int|float|StringableInterface $message) : void
     {
         $this->addMessage($message, self::MESSAGE_TYPE_ERROR);
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|int|float|StringableInterface $message
      * @throws UI_Exception
      */
-    public function addInfoMessage($message) : void
+    public function addInfoMessage(string|int|float|StringableInterface $message) : void
     {
         $this->addMessage($message);
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|int|float|StringableInterface $message
      * @throws UI_Exception
      */
-    public function addWarningMessage($message) : void
+    public function addWarningMessage(string|int|float|StringableInterface $message) : void
     {
         $this->addMessage($message, self::MESSAGE_TYPE_WARNING);
     }
@@ -752,13 +747,13 @@ class UI
     }
 
     /**
-     * @param string|number|StringableInterface|NULL $hint
+     * @param string|int|float|StringableInterface|NULL $hint
      * @return SystemHint
      * @throws UI_Exception
      */
-    public static function systemHint($hint=null) : SystemHint
+    public static function systemHint(string|int|float|StringableInterface|NULL $hint=null) : SystemHint
     {
-        return (new SystemHint(UI::getInstance()->getPage()))->setContent($hint);
+        return new SystemHint(self::getInstance()->getPage())->setContent($hint);
     }
 
     /**
@@ -772,7 +767,7 @@ class UI
      */
     public static function popover(string $attachToID) : UI_Bootstrap_Popover
     {
-        return (new UI_Bootstrap_Popover(self::getInstance()))->setAttachToID($attachToID);
+        return new UI_Bootstrap_Popover(self::getInstance())->setAttachToID($attachToID);
     }
 
     /**
@@ -793,7 +788,7 @@ class UI
      * @return TooltipInfo
      * @throws UI_Exception
      */
-    public static function tooltip($content) : TooltipInfo
+    public static function tooltip(string|int|float|StringableInterface|TooltipInfo|NULL $content) : TooltipInfo
     {
         return TooltipInfo::create($content);
     }
@@ -1044,11 +1039,11 @@ class UI
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string|int|float|StringableInterface|NULL $label
      * @return UI_Bootstrap_DropdownAnchor
      * @throws UI_Exception
      */
-    public function createDropdownAnchor($label) : UI_Bootstrap_DropdownAnchor
+    public function createDropdownAnchor(string|int|float|StringableInterface|NULL $label) : UI_Bootstrap_DropdownAnchor
     {
         $dropdown = new UI_Bootstrap_DropdownAnchor($this);
         $dropdown->setLabel($label);
@@ -1077,24 +1072,24 @@ class UI
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface|NULL $content
+     * @param string|int|float|StringableInterface|NULL $content
      * @return UI_Bootstrap_DropdownStatic
      * @throws UI_Exception
      */
-    public function createDropdownStatic($content) : UI_Bootstrap_DropdownStatic
+    public function createDropdownStatic(string|int|float|StringableInterface|NULL $content) : UI_Bootstrap_DropdownStatic
     {
-        return (new UI_Bootstrap_DropdownStatic($this))
+        return new UI_Bootstrap_DropdownStatic($this)
             ->setContent($content);
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @param string|int|float|StringableInterface|NULL $title
      * @return UI_Bootstrap_DropdownSubmenu
      * @throws UI_Exception
      */
-    public function createDropdownSubmenu($title='') : UI_Bootstrap_DropdownSubmenu
+    public function createDropdownSubmenu(string|int|float|StringableInterface|NULL $title=null) : UI_Bootstrap_DropdownSubmenu
     {
-        return (new UI_Bootstrap_DropdownSubmenu($this))
+        return new UI_Bootstrap_DropdownSubmenu($this)
             ->setTitle($title);
     }
 

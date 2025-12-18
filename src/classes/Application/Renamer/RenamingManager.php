@@ -9,7 +9,6 @@ use Application\Renamer\Index\RenamerIndex;
 use Application\Renamer\Index\RenamerIndexRunner;
 use Application_Interfaces_Formable;
 use AppUtils\ClassHelper;
-use AppUtils\FileHelper\FolderInfo;
 use DBHelper;
 use Maileditor\Renamer\RenamerConfig;
 
@@ -26,11 +25,6 @@ class RenamingManager
         }
 
         return self::$instance;
-    }
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
     }
 
     public function __construct()

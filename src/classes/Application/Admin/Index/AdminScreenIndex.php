@@ -172,11 +172,6 @@ class AdminScreenIndex
         return $subject;
     }
 
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Screens')->requireExists();
-    }
-
     public function getTree() : array
     {
         return $this->tree;
