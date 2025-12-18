@@ -88,14 +88,9 @@ class AppInterfaceDevelMode extends BaseMode implements DevelModeInterface
         return t('Documentation');
     }
 
-    public function getDefaultSubmode(): string
-    {
-        return '';
-    }
-
     protected function _handleActions(): bool
     {
-        $this->categories = (new InterfaceExamples())->getAll();
+        $this->categories = new InterfaceExamples()->getAll();
 
         foreach ($this->categories as $category) {
             $examples = $category->getAll();
