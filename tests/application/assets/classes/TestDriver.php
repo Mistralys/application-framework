@@ -6,22 +6,7 @@
 
 declare(strict_types=1);
 
-use Application\Admin\Welcome\Screens\WelcomeArea;
-use Application\API\Admin\Screens\APIClientsArea;
 use Application\ConfigSettings\BaseConfigRegistry;
-use Application\Countries\Admin\Screens\CountriesArea;
-use Application\Development\Admin\Screens\DevelArea;
-use Application\Media\Admin\Screens\MediaLibraryArea;
-use Application\NewsCentral\Admin\Screens\ManageNewsArea;
-use Application\Tags\Admin\Screens\Area\TagsArea;
-use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
-use Application\Users\Admin\Screens\UserSettingsArea;
-use TestDriver\Area\QuickNavScreen;
-use TestDriver\Area\RevisionableScreen;
-use TestDriver\Area\TestingScreen;
-use TestDriver\Area\TimeTrackerScreen;
-use TestDriver\Area\TranslationsScreen;
-use TestDriver\Area\UsersArea;
 use TestDriver\CustomIcon;
 use TestDriver\UnitTestRedirectException;
 use UI\AdminURLs\AdminURLInterface;

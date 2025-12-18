@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\Users\Admin\Screens\Mode;
+namespace Application\Users\Admin\Screens\Manage\Mode;
 
 use Application\AppFactory;
+use Application\Users\Admin\Traits\ManageModeInterface;
+use Application\Users\Admin\Traits\ManageModeTrait;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application_Users;
 use Application_Users_User;
@@ -15,8 +17,10 @@ use DBHelper_BaseFilterCriteria_Record;
 use UI;
 use UI_DataGrid_Entry;
 
-abstract class BaseUserListMode extends BaseRecordListMode
+class ListMode extends BaseRecordListMode implements ManageModeInterface
 {
+    use ManageModeTrait;
+
     public const string URL_NAME = 'list';
     public const string COL_NAME = 'name';
     public const string COL_EMAIL = 'email';
@@ -44,11 +48,6 @@ abstract class BaseUserListMode extends BaseRecordListMode
     public function getRequiredRight(): string
     {
         return UserAdminScreenRights::SCREEN_LIST;
-    }
-
-    protected function createCollection(): Application_Users
-    {
-        return AppFactory::createUsers();
     }
 
     protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry

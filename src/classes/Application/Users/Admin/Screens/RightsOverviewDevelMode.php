@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Users\Admin\Screens\Mode;
+namespace Application\Users\Admin\Screens;
 
 use Application;
 use Application\Admin\Area\BaseMode;

@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Application\Users\Admin\Screens\Mode;
+namespace Application\Users\Admin\Screens\Manage\Mode;
 
 use Application\AppFactory;
+use Application\Users\Admin\Traits\ManageModeInterface;
+use Application\Users\Admin\Traits\ManageModeTrait;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application\Users\UsersSettingsManager;
 use Application_Users;
@@ -13,8 +15,10 @@ use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
-abstract class BaseCreateUserMode extends BaseRecordCreateMode
+class CreateMode extends BaseRecordCreateMode implements ManageModeInterface
 {
+    use ManageModeTrait;
+
     public const string URL_NAME = 'create';
 
     public function getURLName(): string
@@ -30,11 +34,6 @@ abstract class BaseCreateUserMode extends BaseRecordCreateMode
     public function getRequiredRight(): string
     {
         return UserAdminScreenRights::SCREEN_CREATE;
-    }
-
-    public function createCollection() : Application_Users
-    {
-        return AppFactory::createUsers();
     }
 
     public function getSettingsManager() : UsersSettingsManager

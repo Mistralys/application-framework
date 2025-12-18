@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Application\Users\Admin\Screens;
+namespace Application\Users\Admin\Screens\Manage;
 
 use Application\Admin\BaseArea;
-use Application\Users\Admin\Screens\Mode\BaseUserListMode;
+use Application\Users\Admin\Screens\Manage\Mode\ListMode;
 use Application\Users\Admin\UserAdminScreenRights;
 use UI;
 use UI_Icon;
 
-abstract class BaseUsersArea extends BaseArea
+class ManageUsersArea extends BaseArea
 {
     public const string URL_NAME = 'users';
 
@@ -36,12 +36,12 @@ abstract class BaseUsersArea extends BaseArea
 
     public function getDefaultMode(): string
     {
-        return BaseUserListMode::URL_NAME;
+        return ListMode::URL_NAME;
     }
 
     public function getDefaultSubscreenClass(): string
     {
-        return BaseUserListMode::class;
+        return ListMode::class;
     }
 
     public function getNavigationGroup(): string

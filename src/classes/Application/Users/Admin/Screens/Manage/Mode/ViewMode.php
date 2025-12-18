@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Application\Users\Admin\Screens\Mode;
+namespace Application\Users\Admin\Screens\Manage\Mode;
 
 use Application\AppFactory;
-use Application\Users\Admin\Screens\Submode\BaseUserStatusSubmode;
+use Application\Users\Admin\Screens\Manage\Mode\View\StatusSubmode;
+use Application\Users\Admin\Traits\ManageModeInterface;
+use Application\Users\Admin\Traits\ManageModeTrait;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application_Users;
 use Application_Users_User;
@@ -15,9 +17,12 @@ use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @method Application_Users_User getRecord()
+ * @property Application_Users_User $record
  */
-abstract class BaseViewUserMode extends BaseRecordMode
+class ViewMode extends BaseRecordMode implements ManageModeInterface
 {
+    use ManageModeTrait;
+
     public const string URL_NAME = 'view';
 
     public function getURLName(): string
@@ -40,42 +45,33 @@ abstract class BaseViewUserMode extends BaseRecordMode
         return UserAdminScreenRights::SCREEN_VIEW;
     }
 
-    protected function createCollection() : Application_Users
-    {
-        return AppFactory::createUsers();
-    }
-
-    public function getRecordMissingURL(): AdminURLInterface
-    {
-        return $this->createCollection()->adminURL()->list();
-    }
-
     public function getDefaultSubmode(): string
     {
-        return BaseUserStatusSubmode::URL_NAME;
+        return StatusSubmode::URL_NAME;
+    }
+
+    public function getDefaultSubscreenClass(): string
+    {
+        return StatusSubmode::class;
     }
 
     protected function _handleSubnavigation(): void
     {
-        $user = $this->getRecord();
-
-        $this->subnav->addURL(t('Status'), $user->adminURL()->status())
+        $this->subnav->addURL(t('Status'), $this->record->adminURL()->status())
             ->setIcon(UI::icon()->status());
 
-        $this->subnav->addURL(t('Settings'), $user->adminURL()->settings())
+        $this->subnav->addURL(t('Settings'), $this->record->adminURL()->settings())
             ->setIcon(UI::icon()->settings());
     }
 
     protected function _handleHelp(): void
     {
-        $this->renderer->setTitle($this->getRecord()->getLabel());
+        $this->renderer->setTitle($this->record->getLabel());
     }
 
     protected function _handleBreadcrumb(): void
     {
-        $user = $this->getRecord();
-
-        $this->breadcrumb->appendItem($user->getLabel())
-            ->makeLinked($this->getRecord()->adminURL()->base());
+        $this->breadcrumb->appendItem($this->record->getLabel())
+            ->makeLinked($this->record->adminURL()->base());
     }
 }

@@ -102,7 +102,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->initRequest();
         $this->initStorage();
         $this->initSettings();
-        $this->initAppSets();
 
         $this->registerEventHandlers();
         $this->registerRequestParameters();
@@ -191,8 +190,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Retrieves the current application set of the application.
      * @return Application_Sets_Set
      */
-    public function getAppSet()
+    public function getAppSet() : Application_Sets_Set
     {
+        $this->initAppSets();
+
         return $this->appset;
     }
 
@@ -723,7 +724,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         {
             $area = $this->createArea($areaID);
 
-            if ($this->appset->isAreaEnabled($area)) {
+            if ($this->getAppSet()->isAreaEnabled($area)) {
                 $this->log('Prepare | Area [%s] | Setting as enabled.', $areaID);
                 $this->enabledAreas[$areaID] = $area;
             } else {
@@ -890,7 +891,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             );
         }
 
-        $default = $this->user->getSetting('startup_tab', $this->appset->getDefaultArea()->getURLName());
+        $default = $this->user->getSetting('startup_tab', $this->getAppSet()->getDefaultArea()->getURLName());
 
         $areaID = (string)$this->request->getParam('page');
 

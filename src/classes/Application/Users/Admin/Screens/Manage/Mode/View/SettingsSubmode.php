@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Application\Users\Admin\Screens\Submode;
+namespace Application\Users\Admin\Screens\Manage\Mode\View;
 
-use Application\AppFactory;
+use Application\Users\Admin\Traits\ViewSubmodeInterface;
+use Application\Users\Admin\Traits\ViewSubmodeTrait;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application\Users\UsersSettingsManager;
-use Application_Users;
 use Application_Users_User;
 use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
@@ -16,8 +16,10 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 /**
  * @property Application_Users_User $record
  */
-abstract class BaseUserSettingsSubmode extends BaseRecordSettingsSubmode
+class SettingsSubmode extends BaseRecordSettingsSubmode implements ViewSubmodeInterface
 {
+    use ViewSubmodeTrait;
+
     public const string URL_NAME = 'settings';
 
     public function getURLName(): string
@@ -50,11 +52,6 @@ abstract class BaseUserSettingsSubmode extends BaseRecordSettingsSubmode
         return true;
     }
 
-    public function createCollection() : Application_Users
-    {
-        return AppFactory::createUsers();
-    }
-
     public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
@@ -70,10 +67,5 @@ abstract class BaseUserSettingsSubmode extends BaseRecordSettingsSubmode
             Application_Users_User::class,
             $record
         );
-    }
-
-    public function getBackOrCancelURL(): string
-    {
-        return (string)$this->createCollection()->adminURL()->list();
     }
 }

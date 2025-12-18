@@ -16,9 +16,9 @@ use Application\Media\Admin\Screens\MediaLibraryArea;
 use Application\NewsCentral\Admin\Screens\ManageNewsArea;
 use Application\Tags\Admin\Screens\Area\TagsArea;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
-use Application\Users\Admin\Screens\BaseUsersArea;
+use Application\Users\Admin\Screens\Manage\ManageUsersArea;
 use Application\Users\Admin\Screens\UserSettingsArea;
-use Application_Admin_TranslationsArea;
+use UITranslationDevMode;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TestingScreen;
@@ -53,11 +53,11 @@ class MainNavConfigurator extends NavConfigurator
             ->addAreaChained(TagsArea::URL_NAME)
             ->addAreaChained(BaseTimeTrackerArea::URL_NAME)
             ->addAreaChained(APIClientsArea::URL_NAME)
-            ->addAreaChained(BaseUsersArea::URL_NAME)
+            ->addAreaChained(ManageUsersArea::URL_NAME)
             ->addSeparator()
             ->addAreaChained(DevelArea::URL_NAME)
             ->addAreaChained(TestingScreen::URL_NAME)
-            ->addAreaChained(Application_Admin_TranslationsArea::URL_NAME);
+            ->addAreaChained(UITranslationDevMode::URL_NAME);
     }
 
     private function configureReferencesMenu(MenuConfigurator $menu) : void

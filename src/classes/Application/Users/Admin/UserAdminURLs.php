@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Application\Users\Admin;
 
 use Application\AppFactory;
-use Application\Users\Admin\Screens\Mode\BaseViewUserMode;
-use Application\Users\Admin\Screens\Submode\BaseUserSettingsSubmode;
-use Application\Users\Admin\Screens\Submode\BaseUserStatusSubmode;
+use Application\Users\Admin\Screens\Manage\Mode\ViewMode;
+use Application\Users\Admin\Screens\Manage\Mode\View\SettingsSubmode;
+use Application\Users\Admin\Screens\Manage\Mode\View\StatusSubmode;
 use Application_Users_User;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -24,7 +24,7 @@ class UserAdminURLs
     {
         return $this
             ->base()
-            ->submode(BaseUserStatusSubmode::URL_NAME);
+            ->submode(StatusSubmode::URL_NAME);
     }
 
     public function base() : AdminURLInterface
@@ -32,7 +32,7 @@ class UserAdminURLs
         return AppFactory::createUsers()
             ->adminURL()
             ->base()
-            ->mode(BaseViewUserMode::URL_NAME)
+            ->mode(ViewMode::URL_NAME)
             ->int($this->user->getCollection()->getRecordRequestPrimaryName(), $this->user->getID());
     }
 
@@ -40,6 +40,6 @@ class UserAdminURLs
     {
         return $this
             ->base()
-            ->submode(BaseUserSettingsSubmode::URL_NAME);
+            ->submode(SettingsSubmode::URL_NAME);
     }
 }
