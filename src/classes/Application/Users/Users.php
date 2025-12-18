@@ -226,20 +226,6 @@ class Application_Users extends DBHelper_BaseCollection
         }
     }
 
-    /**
-     * @param array<string,string|number> $params
-     * @return string
-     */
-    public function getAdminURL(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = DevelArea::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Mode_Users::URL_NAME;
-
-        return Application_Driver::getInstance()
-            ->getRequest()
-            ->buildURL($params);
-    }
-
     private ?UsersAdminURLs $usersAdminURLs = null;
 
     public function adminURL() : UsersAdminURLs
