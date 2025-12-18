@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 
+use Application\Admin\Area\BaseMode;
+use Application\Admin\Traits\DevelModeInterface;
+use Application\Admin\Traits\DevelModeTrait;
+use Application\Development\Admin\DevScreenRights;
 use AppLocalize\Localization;
 use function AppLocalize\tex;
 
-abstract class Application_Admin_TranslationsArea extends Application_Admin_Area
+class UITranslationDevMode extends BaseMode implements DevelModeInterface
 {
-    public const URL_NAME = 'translations';
+    use DevelModeTrait;
+
+    public const string URL_NAME = 'translations';
 
     public function getURLName() : string
     {
@@ -53,5 +59,15 @@ abstract class Application_Admin_TranslationsArea extends Application_Admin_Area
         $editor->display();
 
         Application::exit('Translation editor finished');
+    }
+
+    public function getRequiredRight(): string
+    {
+        return DevScreenRights::SCREEN_TRANSLATIONS;
+    }
+
+    public function getDevCategory(): string
+    {
+        return t('Tools');
     }
 }
