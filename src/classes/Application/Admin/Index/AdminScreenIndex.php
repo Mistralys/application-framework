@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Admin\Index;
 
 use Application;
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AdminException;
 use AppUtils\ArrayDataCollection;
@@ -187,5 +188,18 @@ class AdminScreenIndex
     public function countScreens() : int
     {
         return count($this->flat);
+    }
+
+    /**
+     * @return array<string,class-string<AdminAreaInterface>>
+     */
+    public function getAdminAreas() : array
+    {
+        $areas = array();
+        foreach($this->tree as $area) {
+            $areas[$area[ScreenDataInterface::KEY_SCREEN_URL_NAME]] = $area[ScreenDataInterface::KEY_SCREEN_CLASS];
+        }
+
+        return $areas;
     }
 }
