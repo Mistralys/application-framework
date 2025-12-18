@@ -2,21 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens\ListScreen;
+namespace Application\TimeTracker\Admin\Screens\Mode\ListScreen;
 
 use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeListBuilder;
-use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
+use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\Admin\Traits\ListSubmodeInterface;
+use Application\TimeTracker\Admin\Traits\ListSubmodeTrait;
 use UI;
 use UI\DataGrid\ListBuilder\ListBuilderScreenInterface;
 use UI\DataGrid\ListBuilder\ListBuilderScreenTrait;
 use UI\Interfaces\ListBuilderInterface;
 
-abstract class BaseGlobalListScreen extends BaseSubmode implements ListBuilderScreenInterface
+class GlobalListSubmode extends BaseSubmode implements ListBuilderScreenInterface, ListSubmodeInterface
 {
     use ListBuilderScreenTrait;
+    use ListSubmodeTrait;
 
     public const string URL_NAME = 'global';
     public const string LIST_ID = 'time-entries-global';
@@ -34,11 +37,6 @@ abstract class BaseGlobalListScreen extends BaseSubmode implements ListBuilderSc
     public function getTitle(): string
     {
         return t('Available time entries');
-    }
-
-    public function getDefaultAction(): string
-    {
-        return '';
     }
 
     public function getRequiredRight(): string

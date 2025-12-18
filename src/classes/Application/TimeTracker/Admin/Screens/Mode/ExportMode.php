@@ -2,18 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens;
+namespace Application\TimeTracker\Admin\Screens\Mode;
 
 use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
+use Application\TimeTracker\Admin\TimeTrackerScreenRights;
+use Application\TimeTracker\Admin\Traits\ModeInterface;
+use Application\TimeTracker\Admin\Traits\ModeTrait;
 use Application\TimeTracker\Export\TimeExporter;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseExportScreen extends BaseMode
+class ExportMode extends BaseMode implements ModeInterface
 {
+    use ModeTrait;
+
     public const string URL_NAME = 'export';
     public const string REQUEST_PARAM_CONFIRM = 'confirm';
 
@@ -32,11 +36,6 @@ abstract class BaseExportScreen extends BaseMode
     public function getTitle(): string
     {
         return t('Export time entries');
-    }
-
-    public function getDefaultSubmode(): string
-    {
-        return '';
     }
 
     public function getRequiredRight(): string

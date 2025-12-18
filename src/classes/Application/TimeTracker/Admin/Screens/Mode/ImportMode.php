@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens;
+namespace Application\TimeTracker\Admin\Screens\Mode;
 
 use Application;
 use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
+use Application\TimeTracker\Admin\Traits\ModeInterface;
+use Application\TimeTracker\Admin\Traits\ModeTrait;
 use Application\TimeTracker\Export\TimeExporter;
 use Application\TimeTracker\Export\TimeImporter;
 use Application\TimeTracker\TimeTrackerCollection;
@@ -18,8 +20,10 @@ use HTML_QuickForm2_Element_InputFile;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseImportScreen extends BaseMode
+class ImportMode extends BaseMode implements ModeInterface
 {
+    use ModeTrait;
+
     public const string URL_NAME = 'import';
 
     private TimeTrackerCollection $timeTracker;
@@ -38,11 +42,6 @@ abstract class BaseImportScreen extends BaseMode
     public function getTitle(): string
     {
         return t('Import time entries');
-    }
-
-    public function getDefaultSubmode(): string
-    {
-        return '';
     }
 
     public function getRequiredRight(): string

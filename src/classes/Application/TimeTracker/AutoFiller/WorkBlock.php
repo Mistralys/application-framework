@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens\AutoFillScreen;
+namespace Application\TimeTracker\AutoFiller;
 
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;

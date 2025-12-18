@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens\ListScreen;
+namespace Application\TimeTracker\Admin\Screens\Mode\ListScreen;
 
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
+use Application\TimeTracker\Admin\Traits\ListSubmodeInterface;
+use Application\TimeTracker\Admin\Traits\ListSubmodeTrait;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanRecord;
 use AppUtils\ClassHelper;
@@ -15,8 +17,10 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
 use UI;
 
-abstract class BaseTimeSpansListScreen extends BaseRecordListSubmode
+class TimeSpanListSubmode extends BaseRecordListSubmode implements ListSubmodeInterface
 {
+    use ListSubmodeTrait;
+
     public const string URL_NAME = 'time-spans-list';
     public const string COL_TYPE = 'label';
     public const string COL_DATE_START = 'dateStart';
@@ -36,11 +40,6 @@ abstract class BaseTimeSpansListScreen extends BaseRecordListSubmode
     public function getTitle(): string
     {
         return t('Time Spans');
-    }
-
-    protected function createCollection(): TimeSpanCollection
-    {
-        return AppFactory::createTimeTracker()->createTimeSpans();
     }
 
     protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array

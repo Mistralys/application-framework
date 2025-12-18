@@ -2,29 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens;
+namespace Application\TimeTracker\Admin\Screens\Mode;
 
-use Application\AppFactory;
+use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\Admin\Traits\ModeInterface;
+use Application\TimeTracker\Admin\Traits\ModeTrait;
+use Application\TimeTracker\TimeSettingsManager;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use Application\TimeTracker\Admin\TimeTrackerScreenRights;
-use Application\TimeTracker\TimeSettingsManager;
-use Application\TimeTracker\TimeTrackerCollection;
 use UI\AdminURLs\AdminURLInterface;
 
-abstract class BaseCreateScreen extends BaseRecordCreateMode
+class CreateEntryMode extends BaseRecordCreateMode implements ModeInterface
 {
+    use ModeTrait;
+
     public const string URL_NAME = 'create';
 
     public function getTitle(): string
     {
         return t('Create a time entry');
-    }
-
-    public function createCollection() : TimeTrackerCollection
-    {
-        return AppFactory::createTimeTracker();
     }
 
     public function getSettingsManager() : TimeSettingsManager

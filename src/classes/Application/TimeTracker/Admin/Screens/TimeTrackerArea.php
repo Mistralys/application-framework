@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens;
 
 use Application\Admin\BaseArea;
+use Application\TimeTracker\Admin\Screens\Mode\ListMode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use UI;
 use UI_Icon;
 
-abstract class BaseTimeTrackerArea extends BaseArea
+class TimeTrackerArea extends BaseArea
 {
     public const string URL_NAME = 'time-tracker';
 
@@ -30,12 +31,12 @@ abstract class BaseTimeTrackerArea extends BaseArea
 
     public function getDefaultMode(): string
     {
-        return BaseListScreen::URL_NAME;
+        return ListMode::URL_NAME;
     }
 
     public function getDefaultSubscreenClass(): string
     {
-        return BaseListScreen::class;
+        return ListMode::class;
     }
 
     public function getNavigationGroup(): string

@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens;
+namespace Application\TimeTracker\Admin\Screens\Mode;
 
 use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
-use Application\TimeTracker\Admin\Screens\AutoFillScreen\WorkBlock;
+use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\Admin\Traits\ModeInterface;
+use Application\TimeTracker\Admin\Traits\ModeTrait;
+use Application\TimeTracker\AutoFiller\WorkBlock;
 use Application\TimeTracker\Types\TimeEntryTypes;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
@@ -15,14 +18,15 @@ use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\DateTimeHelper\DaytimeStringInfo;
 use AppUtils\Microtime;
 use DateInterval;
-use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use UI;
 use UI\CSSClasses;
 use UI_Page_Section;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseAutoFillScreen extends BaseMode
+class AutoFillMode extends BaseMode implements ModeInterface
 {
+    use ModeTrait;
+
     public const string URL_NAME = 'auto-fill';
     public const string FORM_NAME = 'auto-fill-times';
 
@@ -58,11 +62,6 @@ abstract class BaseAutoFillScreen extends BaseMode
     public function getNavigationTitle(): string
     {
         return t('Auto-fill');
-    }
-
-    public function getDefaultSubmode(): string
-    {
-        return '';
     }
 
     protected function _handleActions(): bool

@@ -2,16 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens;
+namespace Application\TimeTracker\Admin\Screens\Mode;
 
 use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
-use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalListScreen;
+use Application\TimeTracker\Admin\Screens\Mode\ListScreen\GlobalListSubmode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
+use Application\TimeTracker\Admin\Traits\ModeInterface;
+use Application\TimeTracker\Admin\Traits\ModeTrait;
 use UI;
 
-abstract class BaseListScreen extends BaseMode
+class ListMode extends BaseMode implements ModeInterface
 {
+    use ModeTrait;
+
     public const string URL_NAME = 'list';
 
     public function getURLName(): string
@@ -31,7 +35,7 @@ abstract class BaseListScreen extends BaseMode
 
     public function getDefaultSubmode(): string
     {
-        return BaseGlobalListScreen::URL_NAME;
+        return GlobalListSubmode::URL_NAME;
     }
 
     public function getRequiredRight(): string

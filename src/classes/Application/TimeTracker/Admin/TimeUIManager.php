@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin;
 
 use Application\AppFactory;
-use Application\TimeTracker\Admin\Screens\BaseAutoFillScreen;
+use Application\TimeTracker\Admin\Screens\Mode\AutoFillMode;
 use AppUtils\ArrayDataCollection;
 use AppUtils\Microtime;
 use UI\AdminURLs\AdminURLInterface;
@@ -53,7 +53,7 @@ class TimeUIManager
     public static function getAutoFillPreferences() : ArrayDataCollection
     {
         $prefs = AppFactory::createDriver()->getSettings()->getArray(self::SETTING_AUTOFILL_PREFERENCES);
-        $defaults = BaseAutoFillScreen::getDefaultPreferences();
+        $defaults = AutoFillMode::getDefaultPreferences();
 
         foreach($defaults as $key => $value) {
             if(!array_key_exists($key, $prefs)) {

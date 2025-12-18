@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens\ListScreen;
+namespace Application\TimeTracker\Admin\Screens\Mode\ListScreen;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeListBuilder;
+use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\Admin\Traits\ListSubmodeInterface;
+use Application\TimeTracker\Admin\Traits\ListSubmodeTrait;
 use Application\TimeTracker\TimeSpans\SidebarSpans;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application_Admin_Area_Mode_Submode;
 use AppUtils\ConvertHelper;
 use AppUtils\HTMLTag;
 use AppUtils\Microtime;
@@ -25,9 +28,10 @@ use UI_Renderable_Interface;
 /**
  * @method TimeListBuilder getBuilder()
  */
-abstract class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements ListBuilderScreenInterface
+class DayListSubmode extends BaseSubmode implements ListBuilderScreenInterface, ListSubmodeInterface
 {
     use ListBuilderScreenTrait;
+    use ListSubmodeTrait;
 
     public const string URL_NAME = 'day';
     public const string LIST_ID = 'time-entries-day';
@@ -41,6 +45,11 @@ abstract class BaseDayListScreen extends Application_Admin_Area_Mode_Submode imp
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return TimeTrackerScreenRights::SCREEN_LIST_DAY;
     }
 
     public function getNavigationTitle(): string

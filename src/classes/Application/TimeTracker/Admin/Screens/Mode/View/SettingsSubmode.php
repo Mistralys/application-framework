@@ -2,23 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Application\TimeTracker\Admin\Screens\ViewScreen;
+namespace Application\TimeTracker\Admin\Screens\Mode\ViewScreen;
 
-use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\Admin\Traits\ViewSubmodeInterface;
+use Application\TimeTracker\Admin\Traits\ViewSubmodeTrait;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeSpans\SidebarSpans;
-use Application\TimeTracker\TimeTrackerCollection;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @property TimeEntry $record
  */
-abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
+class SettingsSubmode extends BaseRecordSettingsSubmode implements ViewSubmodeInterface
 {
+    use ViewSubmodeTrait;
+
     public const string URL_NAME = 'settings';
 
     public function getURLName(): string
@@ -58,11 +61,6 @@ abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
         return new TimeSettingsManager($this, $this->record);
     }
 
-    public function createCollection() : TimeTrackerCollection
-    {
-        return AppFactory::createTimeTracker();
-    }
-
     public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
@@ -71,9 +69,9 @@ abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
         );
     }
 
-    public function getBackOrCancelURL(): string
+    public function getBackOrCancelURL(): AdminURLInterface
     {
-        return (string)TimeUIManager::getBackToListURL();
+        return TimeUIManager::getBackToListURL();
     }
 
     protected function _handleBeforeSidebar() : void
