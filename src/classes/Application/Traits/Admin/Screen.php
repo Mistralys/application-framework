@@ -16,6 +16,7 @@ use Application\Admin\Screens\Events\BeforeSidebarHandledEvent;
 use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
 use Application\Admin\Screens\Events\ContentRenderedEvent;
 use Application\Admin\Screens\Events\SidebarHandledEvent;
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -683,12 +684,12 @@ trait Application_Traits_Admin_Screen
 
     /**
      * Retrieves the screen's admin area instance, if any.
-     * @return Application_Admin_Area
+     * @return AdminAreaInterface
      * @throws AdminException
      */
-    public function getArea() : Application_Admin_Area
+    public function getArea() : AdminAreaInterface
     {
-        if($this instanceof Application_Admin_Area) 
+        if($this instanceof AdminAreaInterface)
         {
             return $this;
         }
@@ -989,7 +990,11 @@ trait Application_Traits_Admin_Screen
             $this->adminMode = false;
         }
 
-        if(class_exists($idOrClass)) {
+        // Using class_exists here caused an issue: In one specific case,
+        // the ID was "Deprecated", which matched a class name in the system.
+        // This caused the system to try and instantiate that class instead
+        // of the intended subscreen.
+        if(is_a($idOrClass, AdminScreenInterface::class, true)) {
             $class = $idOrClass;
         } else {
             $class = AdminScreenIndex::getInstance()->getSubscreenClass($this, $idOrClass);
