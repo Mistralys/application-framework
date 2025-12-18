@@ -38,33 +38,6 @@ class TestDriver extends Application_Driver
     }
 
     /**
-     * > NOTE: Uses the custom navigation generation,
-     * > see {@see \TestDriver\UI\MainNavConfigurator}.
-     *
-     * @return array<string,string>
-     */
-    public function getAdminAreas() : array
-    {
-        return array(
-            DevelArea::URL_NAME => DevelArea::class,
-            WelcomeArea::URL_NAME => WelcomeArea::class,
-            UserSettingsArea::URL_NAME => UserSettingsArea::class,
-            Application_Admin_TranslationsArea::URL_NAME => TranslationsScreen::class,
-            TestDriver_Area_WizardTest::URL_NAME => TestDriver_Area_WizardTest::class,
-            QuickNavScreen::URL_NAME => QuickNavScreen::class,
-            ManageNewsArea::URL_NAME => ManageNewsArea::class,
-            MediaLibraryArea::URL_NAME => MediaLibraryArea::class,
-            TestingScreen::URL_NAME => TestingScreen::class,
-            RevisionableScreen::URL_NAME => RevisionableScreen::class,
-            BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
-            CountriesArea::URL_NAME => CountriesArea::class,
-            UsersArea::URL_NAME => UsersArea::class,
-            APIClientsArea::URL_NAME => APIClientsArea::class,
-            TagsArea::URL_NAME => TagsArea::class
-        );
-    }
-
-    /**
      * Overridden to check if the test driver is running
      * in unit test mode: In this case, the redirect is
      * ignored to support testing admin screen classes.
