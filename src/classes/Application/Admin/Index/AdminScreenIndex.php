@@ -50,15 +50,12 @@ class AdminScreenIndex
     {
         $file = self::getIndexFile();
 
+        $this->paths = array();
+        $this->flat = array();
+        $this->tree = array();
+
         if(!$file->exists()) {
-            throw new AdminException(
-                'Admin screen index file not found.',
-                sprintf(
-                    'The admin screen index file was not found at expected location [%s].',
-                    $file->getPath()
-                ),
-                AdminException::ERROR_SCREEN_INDEX_NOT_FOUND
-            );
+            return;
         }
 
         $info = include $file->getPath();
