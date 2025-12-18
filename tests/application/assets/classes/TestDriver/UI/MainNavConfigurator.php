@@ -15,10 +15,10 @@ use Application\Development\Admin\Screens\DevelArea;
 use Application\Media\Admin\Screens\MediaLibraryArea;
 use Application\NewsCentral\Admin\Screens\ManageNewsArea;
 use Application\Tags\Admin\Screens\Area\TagsArea;
-use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
+use Application\TimeTracker\Admin\Screens\TimeTrackerArea;
 use Application\Users\Admin\Screens\Manage\ManageUsersArea;
 use Application\Users\Admin\Screens\UserSettingsArea;
-use UITranslationDevMode;
+use Application\Languages\Admin\Screens\UITranslationDevMode;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TestingScreen;
@@ -51,7 +51,7 @@ class MainNavConfigurator extends NavConfigurator
             ->addAreaChained(MediaLibraryArea::URL_NAME)
             ->addAreaChained(RevisionableScreen::URL_NAME)
             ->addAreaChained(TagsArea::URL_NAME)
-            ->addAreaChained(BaseTimeTrackerArea::URL_NAME)
+            ->addAreaChained(TimeTrackerArea::URL_NAME)
             ->addAreaChained(APIClientsArea::URL_NAME)
             ->addAreaChained(ManageUsersArea::URL_NAME)
             ->addSeparator()
