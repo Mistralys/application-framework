@@ -13,8 +13,6 @@ trait RecordScreenTrait
     protected DBHelperCollectionInterface $collection;
     protected DBHelperRecordInterface $record;
 
-    abstract protected function createCollection() : DBHelperCollectionInterface;
-
     protected function init() : void
     {
         $this->collection = $this->createCollection();
