@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory\ClassCacheHandler;
+use Application\ApplicationException;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
@@ -368,7 +369,7 @@ class Application_Bootstrap
         // details if present.
         if($e instanceof BaseException)
         {
-            return new Application_Exception(
+            return new BootException(
                 $e->getMessage(),
                 $e->getDetails(),
                 $e->getCode(),
