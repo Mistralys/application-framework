@@ -43,16 +43,6 @@ class SitemapMode extends BaseMode implements DevelModeInterface
         return DevScreenRights::SCREEN_SITEMAP;
     }
 
-    public function getDefaultSubmode(): string
-    {
-        return '';
-    }
-
-    public function getDefaultSubscreenClass(): null
-    {
-        return null;
-    }
-
     protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         return $this->renderer
