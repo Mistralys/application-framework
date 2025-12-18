@@ -18,7 +18,7 @@ use UI_PropertiesGrid;
 /**
  * @property NewsEntry $record
  */
-class BaseArticleStatusScreen extends BaseRecordStatusSubmode implements ViewArticleSubmodeInterface
+class ArticleStatusSubmode extends BaseRecordStatusSubmode implements ViewArticleSubmodeInterface
 {
     use ViewArticleSubmodeTrait;
 
@@ -66,6 +66,10 @@ class BaseArticleStatusScreen extends BaseRecordStatusSubmode implements ViewArt
             ->makeSuccess()
             ->makeLinked($this->record->adminURL()->publish())
             ->requireFalse($this->record->isPublished());
+
+        $this->sidebar->addButton('read', t('Read Article'))
+            ->setIcon(UI::icon()->view())
+            ->makeLinked($this->record->adminURL()->read());
     }
 
     private function handlePublishEntry() : void
@@ -91,6 +95,7 @@ class BaseArticleStatusScreen extends BaseRecordStatusSubmode implements ViewArt
             $record
         );
 
+        $grid->add(t('ID'), sb()->codeCopy($entry->getID()));
         $grid->add(t('Language'), $entry->getLocale()->getLabel());
         $grid->addDate(t('Created on'), $entry->getDateCreated())->withTime()->withDiff();
         $grid->addDate(t('Last modified'), $entry->getDateModified())->withTime()->withDiff();

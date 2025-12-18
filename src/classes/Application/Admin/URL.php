@@ -1,14 +1,13 @@
 <?php
 /**
- * File containing the {@link Application_URL} class.
- * 
  * @package Application
  * @subpackage Core
- * @see Application_URL 
  */
 
 declare(strict_types=1);
 
+use Application\ApplicationException;
+use AppUtils\Interfaces\StringableInterface;
 use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseURL;
 use AppUtils\URLInfo;
@@ -25,7 +24,7 @@ use AppUtils\URLInfo;
  */
 class Application_URL
 {
-    public const ERROR_INCOMPLETE_URL = 29801;
+    public const int ERROR_INCOMPLETE_URL = 29801;
 
     /**
      * @var string
@@ -48,22 +47,26 @@ class Application_URL
     protected URLInfo $info;
 
     /**
-     * @param string|AdminURLInterface $url
-     * @throws Application_Exception
+     * @param string|AdminURLInterface|StringableInterface $url
+     * @throws ApplicationException
      */
-    public function __construct($url)
+    public function __construct(string|AdminURLInterface|StringableInterface $url)
     {
         $this->rawURL = (string)$url;
         $this->info = parseURL($this->rawURL);
 
         $this->parse();
     }
-    
+
+    /**
+     * @return void
+     * @throws ApplicationException
+     */
     protected function parse() : void
     {
         if(!$this->info->hasScheme())
         {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 'Scheme missing: Only full URLs are allowed',
                 sprintf('Tried parsing the URL [%s].', $this->rawURL),
                 self::ERROR_INCOMPLETE_URL

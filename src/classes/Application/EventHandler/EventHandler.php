@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_EventHandler} class.
- * 
  * @package Application
  * @subpackeage EventHandler
- * @see Application_EventHandler
  */
 
 use Application\EventHandler\EventInterface;
@@ -22,9 +19,9 @@ use AppUtils\ClassHelper;
  */
 class Application_EventHandler
 {
-    public const ERROR_INVALID_EVENT_CLASS = 13801;
-    public const ERROR_MISSING_EVENT_CLASS = 13802;
-    public const ERROR_UNKNOWN_LISTENER = 13804;
+    public const int ERROR_INVALID_EVENT_CLASS = 13801;
+    public const int ERROR_MISSING_EVENT_CLASS = 13802;
+    public const int ERROR_UNKNOWN_LISTENER = 13804;
 
    /**
     * @var array<int,Application_EventHandler_Listener>

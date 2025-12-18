@@ -12,12 +12,13 @@ use Application\NewsCentral\NewsSettingsManager;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use NewsCentral\Entries\NewsEntry;
+use UI;
 
 /**
  * @property NewsEntry $record
  * @property NewsCollection $collection
  */
-class BaseArticleSettingsScreen extends BaseRecordSettingsSubmode implements ViewArticleSubmodeInterface
+class ArticleSettingsSubmode extends BaseRecordSettingsSubmode implements ViewArticleSubmodeInterface
 {
     use ViewArticleSubmodeTrait;
 
@@ -71,5 +72,14 @@ class BaseArticleSettingsScreen extends BaseRecordSettingsSubmode implements Vie
     public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t('The settings have been saved successfully at %1$s.', sb()->time());
+    }
+
+    protected function _handleAfterSidebar() : void
+    {
+        $this->sidebar->addSeparator();
+
+        $this->sidebar->addButton('preview-read', t('Preview'))
+            ->setIcon(UI::icon()->preview())
+            ->makeLinked($this->record->adminURL()->read(), true);
     }
 }

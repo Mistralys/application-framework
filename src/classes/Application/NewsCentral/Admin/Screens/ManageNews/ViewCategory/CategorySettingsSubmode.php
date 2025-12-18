@@ -20,7 +20,7 @@ use UI\AdminURLs\AdminURLInterface;
  * @property Category $record
  * @property CategoriesCollection $collection
  */
-class SettingsSubmode extends BaseRecordSettingsSubmode implements ClassLoaderScreenInterface
+class CategorySettingsSubmode extends BaseRecordSettingsSubmode implements ClassLoaderScreenInterface
 {
     public const string URL_NAME = 'settings';
 
