@@ -4,6 +4,7 @@
  * @subpackage Driver
  */
 
+use Application\Admin\Index\AdminScreenIndex;
 use Application\Admin\ScreenException;
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
@@ -19,6 +20,7 @@ use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\Interfaces\StringableInterface;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\NavConfigurator;
@@ -1759,10 +1761,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Parses the specified application request URL to access
      * information about it.
      *
-     * @param string|AdminURLInterface $url
+     * @param string|AdminURLInterface|StringableInterface $url
      * @return Application_URL
      */
-    public function parseURL($url) : Application_URL
+    public function parseURL(string|AdminURLInterface|StringableInterface $url) : Application_URL
     {
         return new Application_URL($url);
     }
@@ -1826,8 +1828,8 @@ abstract class Application_Driver implements Application_Driver_Interface
         return self::getGlobalDevelModeFile()->exists();
     }
 
-    public const APP_SETTING_KEEP_ALIVE_INTERVAL = 'KeepAliveInterval';
-    public const DEFAULT_KEEP_ALIVE_INTERVAL = 120;
+    public const string APP_SETTING_KEEP_ALIVE_INTERVAL = 'KeepAliveInterval';
+    public const int DEFAULT_KEEP_ALIVE_INTERVAL = 120;
 
     /**
      * @return int The interval in seconds.
@@ -1844,5 +1846,10 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
 
         return self::DEFAULT_KEEP_ALIVE_INTERVAL;
+    }
+
+    final public function getAdminAreas(): array
+    {
+        return AdminScreenIndex::getInstance()->getAdminAreas();
     }
 }
