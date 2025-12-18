@@ -122,6 +122,9 @@ class Application_ErrorDetails
         return $content;
     }
 
+    /**
+     * @return Throwable[]
+     */
     public function getExceptionStack() : array
     {
         return $this->getExceptionStackRecursive($this->getException());
