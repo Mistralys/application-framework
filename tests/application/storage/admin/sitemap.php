@@ -52,6 +52,7 @@ return array (
     'devel.renamer.search' => 'Application\\Renamer\\Admin\\Screens\\Submode\\SearchSubmode',
     'devel.rightsoverview' => 'Application\\Users\\Admin\\Screens\\RightsOverviewDevelMode',
     'devel.sitemap' => 'Application\\Admin\\Index\\Screens\\SitemapMode',
+    'devel.translations' => 'Application\\Languages\\Admin\\Screens\\UITranslationDevMode',
     'devel.whatsneweditor' => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
     'devel.whatsneweditor.create' => 'Application\\WhatsNew\\Admin\\Screens\\CreateSubmode',
     'devel.whatsneweditor.edit' => 'Application\\WhatsNew\\Admin\\Screens\\EditSubmode',
@@ -99,21 +100,20 @@ return array (
     'testing.overview' => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
     'testing.replace-content' => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
     'testing.tiein-ancestry-test' => 'TestDriver\\Area\\TestingScreen\\TieInAncestryTestScreen',
-    'time-tracker' => 'TestDriver\\Area\\TimeTrackerScreen',
-    'time-tracker.auto-fill' => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
-    'time-tracker.create' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen',
-    'time-tracker.create-time-span' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen',
-    'time-tracker.export' => 'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen',
-    'time-tracker.import' => 'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen',
-    'time-tracker.list' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen',
-    'time-tracker.list.day' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
-    'time-tracker.list.global' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
-    'time-tracker.list.time-settings' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen',
-    'time-tracker.list.time-spans-list' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen',
-    'time-tracker.view' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen',
-    'time-tracker.view.settings' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
-    'time-tracker.view.status' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen',
-    'translations' => 'TestDriver\\Area\\TranslationsScreen',
+    'time-tracker' => 'Application\\TimeTracker\\Admin\\Screens\\TimeTrackerArea',
+    'time-tracker.auto-fill' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\AutoFillMode',
+    'time-tracker.create' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateEntryMode',
+    'time-tracker.create-time-span' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateTimeSpanMode',
+    'time-tracker.export' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ExportMode',
+    'time-tracker.import' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ImportMode',
+    'time-tracker.list' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListMode',
+    'time-tracker.list.day' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\DayListSubmode',
+    'time-tracker.list.global' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalListSubmode',
+    'time-tracker.list.time-settings' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalSettingsSubmode',
+    'time-tracker.list.time-spans-list' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\TimeSpanListSubmode',
+    'time-tracker.view' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewMode',
+    'time-tracker.view.settings' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\SettingsSubmode',
+    'time-tracker.view.status' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\StatusSubmode',
     'users' => 'Application\\Users\\Admin\\Screens\\Manage\\ManageUsersArea',
     'users.create' => 'Application\\Users\\Admin\\Screens\\Manage\\Mode\\CreateMode',
     'users.list' => 'Application\\Users\\Admin\\Screens\\Manage\\Mode\\ListMode',
@@ -591,15 +591,16 @@ return array (
         5 => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
         6 => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
         7 => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
-        8 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
-        9 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
-        10 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-        11 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-        12 => 'Application\\Users\\Admin\\Screens\\RightsOverviewDevelMode',
-        13 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-        14 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
-        15 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-        16 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
+        8 => 'Application\\Languages\\Admin\\Screens\\UITranslationDevMode',
+        9 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
+        10 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
+        11 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
+        12 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
+        13 => 'Application\\Users\\Admin\\Screens\\RightsOverviewDevelMode',
+        14 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
+        15 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
+        16 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
+        17 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
       ),
     ),
     'Application\\Development\\Admin\\Screens\\DevelOverviewMode' => 
@@ -685,6 +686,23 @@ return array (
       ),
       'class' => 'Application\\ErrorLog\\Admin\\Screens\\ViewSubmode',
       'path' => 'framework-classes:Application/ErrorLog/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\Languages\\Admin\\Screens\\UITranslationDevMode' => 
+    array (
+      'id' => 'UITranslationDevMode',
+      'urlName' => 'translations',
+      'urlPath' => 'devel.translations',
+      'title' => 'UI Translation tools',
+      'navigationTitle' => 'Translation',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Languages\\Admin\\Screens\\UITranslationDevMode',
+      'path' => 'framework-classes:Application/Languages/Admin/Screens',
       'subscreenClasses' => 
       array (
       ),
@@ -1478,6 +1496,258 @@ return array (
       array (
       ),
     ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\AutoFillMode' => 
+    array (
+      'id' => 'AutoFillMode',
+      'urlName' => 'auto-fill',
+      'urlPath' => 'time-tracker.auto-fill',
+      'title' => 'Auto-fill time entries',
+      'navigationTitle' => 'Auto-fill',
+      'requiredRight' => 'ViewTimeFilters',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\AutoFillMode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateEntryMode' => 
+    array (
+      'id' => 'CreateEntryMode',
+      'urlName' => 'create',
+      'urlPath' => 'time-tracker.create',
+      'title' => 'Create a time entry',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewTimeFilters',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateEntryMode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateTimeSpanMode' => 
+    array (
+      'id' => 'CreateTimeSpanMode',
+      'urlName' => 'create-time-span',
+      'urlPath' => 'time-tracker.create-time-span',
+      'title' => 'Create a time span',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewTimeFilters',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateTimeSpanMode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ExportMode' => 
+    array (
+      'id' => 'ExportMode',
+      'urlName' => 'export',
+      'urlPath' => 'time-tracker.export',
+      'title' => 'Export time entries',
+      'navigationTitle' => 'Export',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ExportMode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ImportMode' => 
+    array (
+      'id' => 'ImportMode',
+      'urlName' => 'import',
+      'urlPath' => 'time-tracker.import',
+      'title' => 'Import time entries',
+      'navigationTitle' => 'Import',
+      'requiredRight' => 'EditTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ImportMode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListMode' => 
+    array (
+      'id' => 'ListMode',
+      'urlName' => 'list',
+      'urlPath' => 'time-tracker.list',
+      'title' => 'Available time entries',
+      'navigationTitle' => 'Overview',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListMode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\DayListSubmode',
+        1 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalListSubmode',
+        2 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalSettingsSubmode',
+        3 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\TimeSpanListSubmode',
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\DayListSubmode' => 
+    array (
+      'id' => 'DayListSubmode',
+      'urlName' => 'day',
+      'urlPath' => 'time-tracker.list.day',
+      'title' => 'Day view',
+      'navigationTitle' => 'Day view',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\DayListSubmode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalListSubmode' => 
+    array (
+      'id' => 'GlobalListSubmode',
+      'urlName' => 'global',
+      'urlPath' => 'time-tracker.list.global',
+      'title' => 'Available time entries',
+      'navigationTitle' => 'Overview',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalListSubmode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalSettingsSubmode' => 
+    array (
+      'id' => 'GlobalSettingsSubmode',
+      'urlName' => 'time-settings',
+      'urlPath' => 'time-tracker.list.time-settings',
+      'title' => 'Global Settings',
+      'navigationTitle' => 'Global Settings',
+      'requiredRight' => 'EditTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalSettingsSubmode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\TimeSpanListSubmode' => 
+    array (
+      'id' => 'TimeSpanListSubmode',
+      'urlName' => 'time-spans-list',
+      'urlPath' => 'time-tracker.list.time-spans-list',
+      'title' => 'Time Spans',
+      'navigationTitle' => 'Time Spans',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\TimeSpanListSubmode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewMode' => 
+    array (
+      'id' => 'ViewMode',
+      'urlName' => 'view',
+      'urlPath' => 'time-tracker.view',
+      'title' => 'View a time entry',
+      'navigationTitle' => 'View',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewMode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\SettingsSubmode',
+        1 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\StatusSubmode',
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\SettingsSubmode' => 
+    array (
+      'id' => 'SettingsSubmode',
+      'urlName' => 'settings',
+      'urlPath' => 'time-tracker.view.settings',
+      'title' => 'Settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+        'Edit settings' => 'EditTimeEntries',
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\SettingsSubmode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\StatusSubmode' => 
+    array (
+      'id' => 'StatusSubmode',
+      'urlName' => 'status',
+      'urlPath' => 'time-tracker.view.status',
+      'title' => 'Status',
+      'navigationTitle' => 'Status',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\StatusSubmode',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\TimeTracker\\Admin\\Screens\\TimeTrackerArea' => 
+    array (
+      'id' => 'TimeTrackerArea',
+      'urlName' => 'time-tracker',
+      'urlPath' => 'time-tracker',
+      'title' => 'Time Tracker',
+      'navigationTitle' => 'Time Tracker',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\TimeTrackerArea',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\AutoFillMode',
+        1 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateEntryMode',
+        2 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateTimeSpanMode',
+        3 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ExportMode',
+        4 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ImportMode',
+        5 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListMode',
+        6 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewMode',
+      ),
+    ),
     'Application\\Users\\Admin\\Screens\\Manage\\ManageUsersArea' => 
     array (
       'id' => 'ManageUsersArea',
@@ -1920,271 +2190,6 @@ return array (
       array (
       ),
     ),
-    'TestDriver\\Area\\TimeTrackerScreen' => 
-    array (
-      'id' => 'TimeTrackerScreen',
-      'urlName' => 'time-tracker',
-      'urlPath' => 'time-tracker',
-      'title' => 'Time Tracker',
-      'navigationTitle' => 'Time Tracker',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
-        1 => 'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen',
-        2 => 'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen',
-        3 => 'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen',
-        4 => 'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen',
-        5 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen',
-        6 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen',
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen' => 
-    array (
-      'id' => 'AutoFillScreen',
-      'urlName' => 'auto-fill',
-      'urlPath' => 'time-tracker.auto-fill',
-      'title' => 'Auto-fill time entries',
-      'navigationTitle' => 'Auto-fill',
-      'requiredRight' => 'ViewTimeFilters',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen' => 
-    array (
-      'id' => 'CreateScreen',
-      'urlName' => 'create',
-      'urlPath' => 'time-tracker.create',
-      'title' => 'Create a time entry',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewTimeFilters',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen' => 
-    array (
-      'id' => 'CreateTimeSpanScreen',
-      'urlName' => 'create-time-span',
-      'urlPath' => 'time-tracker.create-time-span',
-      'title' => 'Create a time span',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewTimeFilters',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen' => 
-    array (
-      'id' => 'ExportScreen',
-      'urlName' => 'export',
-      'urlPath' => 'time-tracker.export',
-      'title' => 'Export time entries',
-      'navigationTitle' => 'Export',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen' => 
-    array (
-      'id' => 'ImportScreen',
-      'urlName' => 'import',
-      'urlPath' => 'time-tracker.import',
-      'title' => 'Import time entries',
-      'navigationTitle' => 'Import',
-      'requiredRight' => 'EditTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ListScreen' => 
-    array (
-      'id' => 'ListScreen',
-      'urlName' => 'list',
-      'urlPath' => 'time-tracker.list',
-      'title' => 'Available time entries',
-      'navigationTitle' => 'Overview',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
-        1 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
-        2 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen',
-        3 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen',
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen' => 
-    array (
-      'id' => 'DayListScreen',
-      'urlName' => 'day',
-      'urlPath' => 'time-tracker.list.day',
-      'title' => 'Day view',
-      'navigationTitle' => 'Day view',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen' => 
-    array (
-      'id' => 'GlobalListScreen',
-      'urlName' => 'global',
-      'urlPath' => 'time-tracker.list.global',
-      'title' => 'Available time entries',
-      'navigationTitle' => 'Overview',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen' => 
-    array (
-      'id' => 'GlobalSettingsScreen',
-      'urlName' => 'time-settings',
-      'urlPath' => 'time-tracker.list.time-settings',
-      'title' => 'Global Settings',
-      'navigationTitle' => 'Global Settings',
-      'requiredRight' => 'EditTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen' => 
-    array (
-      'id' => 'TimeSpansListScreen',
-      'urlName' => 'time-spans-list',
-      'urlPath' => 'time-tracker.list.time-spans-list',
-      'title' => 'Time Spans',
-      'navigationTitle' => 'Time Spans',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen' => 
-    array (
-      'id' => 'ViewScreen',
-      'urlName' => 'view',
-      'urlPath' => 'time-tracker.view',
-      'title' => 'View a time entry',
-      'navigationTitle' => 'View',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
-        1 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen',
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen' => 
-    array (
-      'id' => 'SettingsScreen',
-      'urlName' => 'settings',
-      'urlPath' => 'time-tracker.view.settings',
-      'title' => 'Settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-        'Edit settings' => 'EditTimeEntries',
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen' => 
-    array (
-      'id' => 'StatusScreen',
-      'urlName' => 'status',
-      'urlPath' => 'time-tracker.view.status',
-      'title' => 'Status',
-      'navigationTitle' => 'Status',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen',
-      'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\TranslationsScreen' => 
-    array (
-      'id' => 'TranslationsScreen',
-      'urlName' => 'translations',
-      'urlPath' => 'translations',
-      'title' => 'UI Translation tools',
-      'navigationTitle' => 'Translation',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\TranslationsScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
     'TestDriver_Area_WizardTest' => 
     array (
       'id' => 'WizardTest',
@@ -2253,24 +2258,6 @@ return array (
   ),
   'tree' => 
   array (
-    'translations' => 
-    array (
-      'id' => 'TranslationsScreen',
-      'urlName' => 'translations',
-      'urlPath' => 'translations',
-      'title' => 'UI Translation tools',
-      'navigationTitle' => 'Translation',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\TranslationsScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-      ),
-      'subscreens' => 
-      array (
-      ),
-    ),
     'api-clients' => 
     array (
       'id' => 'APIClientsArea',
@@ -2876,6 +2863,300 @@ return array (
         ),
       ),
     ),
+    'time-tracker' => 
+    array (
+      'id' => 'TimeTrackerArea',
+      'urlName' => 'time-tracker',
+      'urlPath' => 'time-tracker',
+      'title' => 'Time Tracker',
+      'navigationTitle' => 'Time Tracker',
+      'requiredRight' => 'ViewTimeEntries',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\TimeTracker\\Admin\\Screens\\TimeTrackerArea',
+      'path' => 'framework-classes:Application/TimeTracker/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\AutoFillMode',
+        1 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateEntryMode',
+        2 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateTimeSpanMode',
+        3 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ExportMode',
+        4 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ImportMode',
+        5 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListMode',
+        6 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewMode',
+      ),
+      'subscreens' => 
+      array (
+        'create' => 
+        array (
+          'id' => 'CreateEntryMode',
+          'urlName' => 'create',
+          'urlPath' => 'time-tracker.create',
+          'title' => 'Create a time entry',
+          'navigationTitle' => 'Settings',
+          'requiredRight' => 'ViewTimeFilters',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateEntryMode',
+          'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'import' => 
+        array (
+          'id' => 'ImportMode',
+          'urlName' => 'import',
+          'urlPath' => 'time-tracker.import',
+          'title' => 'Import time entries',
+          'navigationTitle' => 'Import',
+          'requiredRight' => 'EditTimeEntries',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ImportMode',
+          'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'list' => 
+        array (
+          'id' => 'ListMode',
+          'urlName' => 'list',
+          'urlPath' => 'time-tracker.list',
+          'title' => 'Available time entries',
+          'navigationTitle' => 'Overview',
+          'requiredRight' => 'ViewTimeEntries',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListMode',
+          'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+            0 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\DayListSubmode',
+            1 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalListSubmode',
+            2 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalSettingsSubmode',
+            3 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\TimeSpanListSubmode',
+          ),
+          'subscreens' => 
+          array (
+            'day' => 
+            array (
+              'id' => 'DayListSubmode',
+              'urlName' => 'day',
+              'urlPath' => 'time-tracker.list.day',
+              'title' => 'Day view',
+              'navigationTitle' => 'Day view',
+              'requiredRight' => 'ViewTimeEntries',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\DayListSubmode',
+              'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'time-settings' => 
+            array (
+              'id' => 'GlobalSettingsSubmode',
+              'urlName' => 'time-settings',
+              'urlPath' => 'time-tracker.list.time-settings',
+              'title' => 'Global Settings',
+              'navigationTitle' => 'Global Settings',
+              'requiredRight' => 'EditTimeEntries',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalSettingsSubmode',
+              'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'time-spans-list' => 
+            array (
+              'id' => 'TimeSpanListSubmode',
+              'urlName' => 'time-spans-list',
+              'urlPath' => 'time-tracker.list.time-spans-list',
+              'title' => 'Time Spans',
+              'navigationTitle' => 'Time Spans',
+              'requiredRight' => 'ViewTimeEntries',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\TimeSpanListSubmode',
+              'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'global' => 
+            array (
+              'id' => 'GlobalListSubmode',
+              'urlName' => 'global',
+              'urlPath' => 'time-tracker.list.global',
+              'title' => 'Available time entries',
+              'navigationTitle' => 'Overview',
+              'requiredRight' => 'ViewTimeEntries',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ListScreen\\GlobalListSubmode',
+              'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/List',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+          ),
+        ),
+        'view' => 
+        array (
+          'id' => 'ViewMode',
+          'urlName' => 'view',
+          'urlPath' => 'time-tracker.view',
+          'title' => 'View a time entry',
+          'navigationTitle' => 'View',
+          'requiredRight' => 'ViewTimeEntries',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewMode',
+          'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+            0 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\SettingsSubmode',
+            1 => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\StatusSubmode',
+          ),
+          'subscreens' => 
+          array (
+            'status' => 
+            array (
+              'id' => 'StatusSubmode',
+              'urlName' => 'status',
+              'urlPath' => 'time-tracker.view.status',
+              'title' => 'Status',
+              'navigationTitle' => 'Status',
+              'requiredRight' => 'ViewTimeEntries',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\StatusSubmode',
+              'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'settings' => 
+            array (
+              'id' => 'SettingsSubmode',
+              'urlName' => 'settings',
+              'urlPath' => 'time-tracker.view.settings',
+              'title' => 'Settings',
+              'navigationTitle' => 'Settings',
+              'requiredRight' => 'ViewTimeEntries',
+              'featureRights' => 
+              array (
+                'Edit settings' => 'EditTimeEntries',
+              ),
+              'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ViewScreen\\SettingsSubmode',
+              'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode/View',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+          ),
+        ),
+        'create-time-span' => 
+        array (
+          'id' => 'CreateTimeSpanMode',
+          'urlName' => 'create-time-span',
+          'urlPath' => 'time-tracker.create-time-span',
+          'title' => 'Create a time span',
+          'navigationTitle' => 'Settings',
+          'requiredRight' => 'ViewTimeFilters',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\CreateTimeSpanMode',
+          'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'auto-fill' => 
+        array (
+          'id' => 'AutoFillMode',
+          'urlName' => 'auto-fill',
+          'urlPath' => 'time-tracker.auto-fill',
+          'title' => 'Auto-fill time entries',
+          'navigationTitle' => 'Auto-fill',
+          'requiredRight' => 'ViewTimeFilters',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\AutoFillMode',
+          'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'export' => 
+        array (
+          'id' => 'ExportMode',
+          'urlName' => 'export',
+          'urlPath' => 'time-tracker.export',
+          'title' => 'Export time entries',
+          'navigationTitle' => 'Export',
+          'requiredRight' => 'ViewTimeEntries',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\TimeTracker\\Admin\\Screens\\Mode\\ExportMode',
+          'path' => 'framework-classes:Application/TimeTracker/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+      ),
+    ),
     'revisionable' => 
     array (
       'id' => 'RevisionableScreen',
@@ -2936,15 +3217,16 @@ return array (
         5 => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
         6 => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
         7 => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
-        8 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
-        9 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
-        10 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-        11 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-        12 => 'Application\\Users\\Admin\\Screens\\RightsOverviewDevelMode',
-        13 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-        14 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
-        15 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-        16 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
+        8 => 'Application\\Languages\\Admin\\Screens\\UITranslationDevMode',
+        9 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
+        10 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
+        11 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
+        12 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
+        13 => 'Application\\Users\\Admin\\Screens\\RightsOverviewDevelMode',
+        14 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
+        15 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
+        16 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
+        17 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
       ),
       'subscreens' => 
       array (
@@ -3502,6 +3784,26 @@ return array (
             ),
           ),
         ),
+        'translations' => 
+        array (
+          'id' => 'UITranslationDevMode',
+          'urlName' => 'translations',
+          'urlPath' => 'devel.translations',
+          'title' => 'UI Translation tools',
+          'navigationTitle' => 'Translation',
+          'requiredRight' => 'Developer',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Languages\\Admin\\Screens\\UITranslationDevMode',
+          'path' => 'framework-classes:Application/Languages/Admin/Screens',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
         'appsettings' => 
         array (
           'id' => 'AppSettingsDevelMode',
@@ -3804,298 +4106,6 @@ return array (
           ),
           'class' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ArticlesListMode',
           'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ReadNews',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
-      ),
-    ),
-    'time-tracker' => 
-    array (
-      'id' => 'TimeTrackerScreen',
-      'urlName' => 'time-tracker',
-      'urlPath' => 'time-tracker',
-      'title' => 'Time Tracker',
-      'navigationTitle' => 'Time Tracker',
-      'requiredRight' => 'ViewTimeEntries',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\TimeTrackerScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
-        1 => 'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen',
-        2 => 'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen',
-        3 => 'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen',
-        4 => 'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen',
-        5 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen',
-        6 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen',
-      ),
-      'subscreens' => 
-      array (
-        'list' => 
-        array (
-          'id' => 'ListScreen',
-          'urlName' => 'list',
-          'urlPath' => 'time-tracker.list',
-          'title' => 'Available time entries',
-          'navigationTitle' => 'Overview',
-          'requiredRight' => 'ViewTimeEntries',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen',
-          'path' => 'driver-classes:Area/TimeTrackerScreen',
-          'subscreenClasses' => 
-          array (
-            0 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
-            1 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
-            2 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen',
-            3 => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen',
-          ),
-          'subscreens' => 
-          array (
-            'time-spans-list' => 
-            array (
-              'id' => 'TimeSpansListScreen',
-              'urlName' => 'time-spans-list',
-              'urlPath' => 'time-tracker.list.time-spans-list',
-              'title' => 'Time Spans',
-              'navigationTitle' => 'Time Spans',
-              'requiredRight' => 'ViewTimeEntries',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\TimeSpansListScreen',
-              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'day' => 
-            array (
-              'id' => 'DayListScreen',
-              'urlName' => 'day',
-              'urlPath' => 'time-tracker.list.day',
-              'title' => 'Day view',
-              'navigationTitle' => 'Day view',
-              'requiredRight' => NULL,
-              'featureRights' => NULL,
-              'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\DayListScreen',
-              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'global' => 
-            array (
-              'id' => 'GlobalListScreen',
-              'urlName' => 'global',
-              'urlPath' => 'time-tracker.list.global',
-              'title' => 'Available time entries',
-              'navigationTitle' => 'Overview',
-              'requiredRight' => 'ViewTimeEntries',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
-              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'time-settings' => 
-            array (
-              'id' => 'GlobalSettingsScreen',
-              'urlName' => 'time-settings',
-              'urlPath' => 'time-tracker.list.time-settings',
-              'title' => 'Global Settings',
-              'navigationTitle' => 'Global Settings',
-              'requiredRight' => 'EditTimeEntries',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalSettingsScreen',
-              'path' => 'driver-classes:Area/TimeTrackerScreen/ListScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-          ),
-        ),
-        'import' => 
-        array (
-          'id' => 'ImportScreen',
-          'urlName' => 'import',
-          'urlPath' => 'time-tracker.import',
-          'title' => 'Import time entries',
-          'navigationTitle' => 'Import',
-          'requiredRight' => 'EditTimeEntries',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ImportScreen',
-          'path' => 'driver-classes:Area/TimeTrackerScreen',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
-        'create' => 
-        array (
-          'id' => 'CreateScreen',
-          'urlName' => 'create',
-          'urlPath' => 'time-tracker.create',
-          'title' => 'Create a time entry',
-          'navigationTitle' => 'Settings',
-          'requiredRight' => 'ViewTimeFilters',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateScreen',
-          'path' => 'driver-classes:Area/TimeTrackerScreen',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
-        'view' => 
-        array (
-          'id' => 'ViewScreen',
-          'urlName' => 'view',
-          'urlPath' => 'time-tracker.view',
-          'title' => 'View a time entry',
-          'navigationTitle' => 'View',
-          'requiredRight' => 'ViewTimeEntries',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen',
-          'path' => 'driver-classes:Area/TimeTrackerScreen',
-          'subscreenClasses' => 
-          array (
-            0 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
-            1 => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen',
-          ),
-          'subscreens' => 
-          array (
-            'status' => 
-            array (
-              'id' => 'StatusScreen',
-              'urlName' => 'status',
-              'urlPath' => 'time-tracker.view.status',
-              'title' => 'Status',
-              'navigationTitle' => 'Status',
-              'requiredRight' => 'ViewTimeEntries',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\StatusScreen',
-              'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'settings' => 
-            array (
-              'id' => 'SettingsScreen',
-              'urlName' => 'settings',
-              'urlPath' => 'time-tracker.view.settings',
-              'title' => 'Settings',
-              'navigationTitle' => 'Settings',
-              'requiredRight' => 'ViewTimeEntries',
-              'featureRights' => 
-              array (
-                'Edit settings' => 'EditTimeEntries',
-              ),
-              'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ViewScreen\\SettingsScreen',
-              'path' => 'driver-classes:Area/TimeTrackerScreen/ViewScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-          ),
-        ),
-        'export' => 
-        array (
-          'id' => 'ExportScreen',
-          'urlName' => 'export',
-          'urlPath' => 'time-tracker.export',
-          'title' => 'Export time entries',
-          'navigationTitle' => 'Export',
-          'requiredRight' => 'ViewTimeEntries',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TimeTrackerScreen\\ExportScreen',
-          'path' => 'driver-classes:Area/TimeTrackerScreen',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
-        'create-time-span' => 
-        array (
-          'id' => 'CreateTimeSpanScreen',
-          'urlName' => 'create-time-span',
-          'urlPath' => 'time-tracker.create-time-span',
-          'title' => 'Create a time span',
-          'navigationTitle' => 'Settings',
-          'requiredRight' => 'ViewTimeFilters',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TimeTrackerScreen\\CreateTimeSpanScreen',
-          'path' => 'driver-classes:Area/TimeTrackerScreen',
-          'subscreenClasses' => 
-          array (
-          ),
-          'subscreens' => 
-          array (
-          ),
-        ),
-        'auto-fill' => 
-        array (
-          'id' => 'AutoFillScreen',
-          'urlName' => 'auto-fill',
-          'urlPath' => 'time-tracker.auto-fill',
-          'title' => 'Auto-fill time entries',
-          'navigationTitle' => 'Auto-fill',
-          'requiredRight' => 'ViewTimeFilters',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\TimeTrackerScreen\\AutoFillScreen',
-          'path' => 'driver-classes:Area/TimeTrackerScreen',
           'subscreenClasses' => 
           array (
           ),
