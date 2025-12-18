@@ -4,26 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Media\Admin\Screens\Mode\View;
 
-use Application\AppFactory;
 use Application\MarkdownRenderer;
 use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Admin\Traits\MediaViewInterface;
 use Application\Media\Admin\Traits\MediaViewTrait;
-use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Media_Document;
 use AppUtils\FileHelper;
-use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
+use DBHelper\Admin\Screens\Submode\BaseRecordStatusSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
-use UI_Themes_Theme_ContentRenderer;
 
 /**
  * @property MediaRecord $record
  */
-class StatusSubmode extends BaseRecordSubmode implements MediaViewInterface
+class StatusSubmode extends BaseRecordStatusSubmode implements MediaViewInterface
 {
     use MediaViewTrait;
 
@@ -76,10 +73,13 @@ class StatusSubmode extends BaseRecordSubmode implements MediaViewInterface
             ->setTooltip(t('Downloads the original media file.'));
     }
 
-    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
+    public function getRecordStatusURL(): AdminURLInterface
     {
-        $grid = $this->ui->createPropertiesGrid();
+        return $this->record->adminURL()->status();
+    }
 
+    protected function _populateGrid(UI_PropertiesGrid $grid, DBHelperRecordInterface $record): void
+    {
         $grid->add(t('ID'), sb()->codeCopy($this->record->getID()));
         $grid->add(t('Type'), sb()->icon($this->document->getTypeIcon())->add($this->document->getTypeLabel()));
         $grid->add(t('Label'), $this->record->getLabel());
@@ -100,10 +100,6 @@ class StatusSubmode extends BaseRecordSubmode implements MediaViewInterface
             $grid->addHeader(t('Developer info'));
             $grid->add(t('Path on disk'), sb()->code(FileHelper::relativizePath($this->document->getPath(), APP_ROOT)));
         }
-
-        return $this->renderer
-            ->makeWithSidebar()
-            ->appendContent($grid);
     }
 
     private function injectDescription(UI_PropertiesGrid $grid) : void

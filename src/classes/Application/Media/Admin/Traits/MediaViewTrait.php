@@ -10,16 +10,6 @@ use Application\Media\Collection\MediaCollection;
 
 trait MediaViewTrait
 {
-    public function getDefaultAction(): string
-    {
-        return '';
-    }
-
-    public function getDefaultSubscreenClass(): null
-    {
-        return null;
-    }
-
     public function createCollection() : MediaCollection
     {
         return AppFactory::createMediaCollection();

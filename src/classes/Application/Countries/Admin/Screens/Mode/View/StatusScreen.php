@@ -10,14 +10,16 @@ use Application\Countries\Admin\Traits\CountryViewTrait;
 use Application\Countries\Rights\CountryScreenRights;
 use Application_Countries;
 use Application_Countries_Country;
+use DBHelper\Admin\Screens\Submode\BaseRecordStatusSubmode;
 use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
 /**
  * @property Application_Countries_Country $record
  */
-class StatusScreen extends BaseRecordSubmode implements CountryViewInterface
+class StatusScreen extends BaseRecordStatusSubmode implements CountryViewInterface
 {
     use CountryViewTrait;
 
@@ -38,11 +40,6 @@ class StatusScreen extends BaseRecordSubmode implements CountryViewInterface
         return t('Status');
     }
 
-    public function getDefaultAction(): string
-    {
-        return '';
-    }
-
     public function getRequiredRight(): string
     {
         return CountryScreenRights::SCREEN_STATUS;
@@ -58,35 +55,18 @@ class StatusScreen extends BaseRecordSubmode implements CountryViewInterface
         return $this->createCollection()->adminURL()->list();
     }
 
-    protected function _handleHelp(): void
+    public function getRecordStatusURL(): AdminURLInterface
     {
-
+        return $this->record->adminURL()->status();
     }
 
-    protected function _handleBreadcrumb(): void
+    protected function _populateGrid(UI_PropertiesGrid $grid, DBHelperRecordInterface $record): void
     {
-        $this->breadcrumb->appendItem($this->getNavigationTitle())
-            ->makeLinked($this->record->adminURL()->status());
-    }
-
-    protected function _renderContent()
-    {
-        return $this->renderer
-            ->appendContent($this->createPropertiesGrid())
-            ->makeWithoutSidebar();
-    }
-
-    protected function createPropertiesGrid() : UI_PropertiesGrid
-    {
-        $grid = $this->ui->createPropertiesGrid();
-
         $currency = $this->record->getCurrency();
         $locale = $this->record->getLocale();
 
         $grid->add(t('ISO Code'), $this->record->getISO());
         $grid->add(t('Currency'), $currency->getPlural())->setComment(sb()->mono($currency->getSymbol()));
         $grid->add(t('Locale'), $locale->getLabel())->setComment(sb()->mono($locale->getCode()));
-
-        return $grid;
     }
 }

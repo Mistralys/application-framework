@@ -12,9 +12,4 @@ trait CountryViewTrait
     {
         return ViewScreen::class;
     }
-
-    public function getDefaultSubscreenClass() : null
-    {
-        return null;
-    }
 }

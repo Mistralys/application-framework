@@ -47,6 +47,11 @@ class TagTreeSubmode extends BaseRecordSubmode implements ViewSubmodeInterface
         return '';
     }
 
+    public function getDefaultSubscreenClass(): ?string
+    {
+        return null;
+    }
+
     protected function _handleActions(): bool
     {
         if(parent::_handleActions() === false) {

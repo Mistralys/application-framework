@@ -19,9 +19,4 @@ trait ViewSubmodeTrait
     {
         return ViewMode::class;
     }
-
-    public function getDefaultSubscreenClass(): ?string
-    {
-        return null;
-    }
 }

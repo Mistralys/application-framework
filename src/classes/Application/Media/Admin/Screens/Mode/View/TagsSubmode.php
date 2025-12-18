@@ -86,4 +86,14 @@ class TagsSubmode
     {
         return (string)$this->createCollection()->adminURL()->list();
     }
+
+    public function getDefaultAction(): string
+    {
+        return '';
+    }
+
+    public function getDefaultSubscreenClass(): null
+    {
+        return null;
+    }
 }

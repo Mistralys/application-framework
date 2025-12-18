@@ -21,16 +21,6 @@ trait ClientSubmodeTrait
         return ViewClientMode::class;
     }
 
-    public function getDefaultAction(): string
-    {
-        return '';
-    }
-
-    public function getDefaultSubscreenClass(): ?string
-    {
-        return null;
-    }
-
     public function getRecordMissingURL() : AdminURLInterface
     {
         return $this->createCollection()->adminURL()->list();
