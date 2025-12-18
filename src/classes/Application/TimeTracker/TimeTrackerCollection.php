@@ -28,25 +28,26 @@ use Application\TimeTracker\Admin\TrackerAdminURLs;
  */
 class TimeTrackerCollection extends DBHelper_BaseCollection
 {
-    public const TABLE_NAME = 'time_tracker_entries';
-    public const PRIMARY_NAME = 'time_entry_id';
-    public const COL_LABEL = 'label';
-    public const COL_DATE = 'date';
-    public const COL_TIME_START = 'time_start';
-    public const COL_TIME_END = 'time_end';
-    public const COL_DURATION = 'duration';
-    public const COL_TYPE = 'type';
-    public const COL_TICKET = 'ticket';
-    public const COL_TICKET_URL = 'ticket_url';
-    public const COL_PROCESSED = 'processed';
-    public const COL_COMMENTS = 'comments';
-    public const COL_USER_ID = 'user_id';
-    public const REQUEST_PARAM_ENTRY = 'time-entry';
-    public const DATE_FORMAT = 'Y-m-d';
+    public const string TABLE_NAME = 'time_tracker_entries';
+    public const string PRIMARY_NAME = 'time_entry_id';
+    public const string COL_LABEL = 'label';
+    public const string COL_DATE = 'date';
+    public const string COL_TIME_START = 'time_start';
+    public const string COL_TIME_END = 'time_end';
+    public const string COL_DURATION = 'duration';
+    public const string COL_TYPE = 'type';
+    public const string COL_TICKET = 'ticket';
+    public const string COL_TICKET_URL = 'ticket_url';
+    public const string COL_PROCESSED = 'processed';
+    public const string COL_COMMENTS = 'comments';
+    public const string COL_USER_ID = 'user_id';
+    public const string REQUEST_PARAM_ENTRY = 'time-entry';
+    public const string DATE_FORMAT = 'Y-m-d';
+    public const string RECORD_TYPE = 'time_entry';
 
     public function getRecordTypeName(): string
     {
-        return 'time_entry';
+        return self::RECORD_TYPE;
     }
 
     public function getRecordRequestPrimaryName(): string
