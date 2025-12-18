@@ -6,7 +6,7 @@ namespace Application\NewsCentral\Admin\Screens\Mode;
 
 use Application\AppFactory;
 use Application\NewsCentral\Admin\NewsScreenRights;
-use Application\NewsCentral\Admin\Screens\Mode\ViewCategory\SettingsSubmode;
+use Application\NewsCentral\Admin\Screens\Mode\ViewCategory\CategorySettingsSubmode;
 use Application\NewsCentral\Admin\Traits\ManageNewsModeInterface;
 use Application\NewsCentral\Admin\Traits\ManageNewsModeTrait;
 use Application\NewsCentral\Categories\CategoriesCollection;
@@ -36,12 +36,12 @@ class ViewCategoryMode extends BaseRecordMode implements ManageNewsModeInterface
 
     public function getDefaultSubmode(): string
     {
-        return SettingsSubmode::URL_NAME;
+        return CategorySettingsSubmode::URL_NAME;
     }
 
     public function getDefaultSubscreenClass(): string
     {
-        return SettingsSubmode::URL_NAME;
+        return CategorySettingsSubmode::URL_NAME;
     }
 
     protected function createCollection() : CategoriesCollection

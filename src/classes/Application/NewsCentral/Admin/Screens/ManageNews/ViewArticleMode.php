@@ -6,7 +6,7 @@ namespace Application\NewsCentral\Admin\Screens\Mode;
 
 use Application\AppFactory;
 use Application\NewsCentral\Admin\NewsScreenRights;
-use Application\NewsCentral\Admin\Screens\Mode\ViewArticle\BaseArticleStatusScreen;
+use Application\NewsCentral\Admin\Screens\Mode\ViewArticle\ArticleStatusSubmode;
 use Application\NewsCentral\Admin\Traits\ManageNewsModeInterface;
 use Application\NewsCentral\Admin\Traits\ManageNewsModeTrait;
 use Application\NewsCentral\NewsCollection;
@@ -36,12 +36,12 @@ class ViewArticleMode extends BaseRecordMode implements ManageNewsModeInterface
 
     public function getDefaultSubmode(): string
     {
-        return BaseArticleStatusScreen::URL_NAME;
+        return ArticleStatusSubmode::URL_NAME;
     }
 
     public function getDefaultSubscreenClass(): string
     {
-        return BaseArticleStatusScreen::class;
+        return ArticleStatusSubmode::class;
     }
 
     protected function createCollection() : NewsCollection

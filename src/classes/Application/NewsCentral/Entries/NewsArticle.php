@@ -43,15 +43,4 @@ class NewsArticle extends NewsEntry
     {
         return MarkdownRenderer::create()->render($this->getSynopsis());
     }
-
-    public function getLiveURLRead(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = ManageNewsArea::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = ReadNewsArea::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = ReadArticleScreen::URL_NAME;
-        $params[ReadArticleScreen::REQUEST_PARAM_ARTICLE] = $this->getID();
-
-        return AppFactory::createRequest()
-            ->buildURL($params);
-    }
 }

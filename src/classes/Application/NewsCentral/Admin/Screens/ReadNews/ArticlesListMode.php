@@ -14,8 +14,10 @@ use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsFilterCriteria;
 use AppUtils\PaginationHelper;
 use NewsCentral\Entries\NewsEntry;
+use template_default_news_entry_article;
 use UI;
 use UI\PaginationRenderer;
+use UI_Themes_Theme_ContentRenderer;
 
 class ArticlesListMode extends BaseMode implements ReadNewsModeInterface
 {
@@ -69,7 +71,7 @@ class ArticlesListMode extends BaseMode implements ReadNewsModeInterface
         return true;
     }
 
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         $pagination = null;
 
@@ -112,8 +114,8 @@ class ArticlesListMode extends BaseMode implements ReadNewsModeInterface
      */
     private function renderItem(NewsEntry $entry) : string
     {
-        return $this->ui->createTemplate('news/entry-article')
-            ->setVar('article', $entry)
+        return $this->ui->createTemplate(template_default_news_entry_article::class)
+            ->setVar(template_default_news_entry_article::VAR_ARTICLE, $entry)
             ->render();
     }
 

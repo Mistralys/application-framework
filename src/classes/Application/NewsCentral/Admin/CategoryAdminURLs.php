@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\NewsCentral\Admin;
 
 use Application\NewsCentral\Admin\Screens\ManageNewsArea;
-use Application\NewsCentral\Admin\Screens\Mode\ViewCategory\SettingsSubmode;
+use Application\NewsCentral\Admin\Screens\Mode\ViewCategory\CategorySettingsSubmode;
 use Application\NewsCentral\Admin\Screens\Mode\ViewCategoryMode;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
@@ -25,7 +25,7 @@ class CategoryAdminURLs
     {
         return $this
             ->base()
-            ->submode(SettingsSubmode::URL_NAME);
+            ->submode(CategorySettingsSubmode::URL_NAME);
     }
 
     public function base() : AdminURLInterface

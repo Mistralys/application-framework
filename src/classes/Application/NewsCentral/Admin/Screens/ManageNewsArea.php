@@ -12,6 +12,9 @@ namespace Application\NewsCentral\Admin\Screens;
 use Application\Admin\BaseArea;
 use Application\AppFactory;
 use Application\NewsCentral\Admin\NewsScreenRights;
+use Application\NewsCentral\Admin\Screens\Mode\CreateAlertScreen;
+use Application\NewsCentral\Admin\Screens\Mode\CreateArticleScreen;
+use Application\NewsCentral\Admin\Screens\Mode\CreateCategoryMode;
 use Application\NewsCentral\Admin\Screens\Mode\NewsListMode;
 use Application\Traits\AllowableMigrationTrait;
 use UI;
@@ -95,9 +98,20 @@ class ManageNewsArea extends BaseArea
     protected function _handleSubnavigation(): void
     {
         $this->subnav->addURL(t('News entries'), AppFactory::createNews()->adminURL()->manage()->list())
+            ->setAlias('news-entries')
             ->setIcon(UI::icon()->news());
 
         $this->subnav->addURL(t('News categories'), AppFactory::createNews()->createCategories()->adminURL()->list())
+            ->setAlias('categories')
             ->setIcon(UI::icon()->category());
+
+        $screen = $this->getActiveScreen();
+        if($screen instanceof CreateCategoryMode) {
+            $this->subnav->getItemByAlias('categories')?->setActive();
+        }
+
+        if($screen instanceof CreateArticleScreen) {
+            $this->subnav->getItemByAlias('news-entries')?->setActive();
+        }
     }
 }

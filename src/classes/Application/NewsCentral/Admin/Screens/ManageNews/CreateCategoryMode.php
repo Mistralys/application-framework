@@ -62,6 +62,11 @@ class CreateCategoryMode extends BaseRecordCreateMode implements ManageNewsModeI
         return $this->createCollection()->adminURL()->list();
     }
 
+    public function getNavigationTitle(): string
+    {
+        return t('Create Category');
+    }
+
     public function getTitle(): string
     {
         return t('Create a news category');
@@ -71,5 +76,14 @@ class CreateCategoryMode extends BaseRecordCreateMode implements ManageNewsModeI
     {
         return (string)sb()
             ->t('This lets you add a news category, which can be used to categorize news articles and alerts.');
+    }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendItem(t('Categories'))
+            ->makeLinked($this->createCollection()->adminURL()->list());
+
+        $this->breadcrumb->appendItem($this->getNavigationTitle())
+            ->makeLinked($this->createCollection()->adminURL()->create());
     }
 }

@@ -7,12 +7,16 @@ namespace Application\NewsCentral\Admin\Screens\ReadNews;
 use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
 use Application\NewsCentral\Admin\NewsScreenRights;
+use Application\NewsCentral\Admin\Traits\ReadNewsModeInterface;
+use Application\NewsCentral\Admin\Traits\ReadNewsModeTrait;
 use NewsCentral\Entries\NewsArticle;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
-class ReadArticleScreen extends BaseMode
+class ReadArticleScreen extends BaseMode implements ReadNewsModeInterface
 {
+    use ReadNewsModeTrait;
+
     public const string URL_NAME = 'article';
     public const string REQUEST_PARAM_ARTICLE = 'id';
     private NewsArticle $article;
@@ -50,7 +54,7 @@ class ReadArticleScreen extends BaseMode
     protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendItem($this->article->getLabel())
-            ->makeLinked($this->article->getLiveURLRead());
+            ->makeLinked($this->article->adminURL()->read());
     }
 
     protected function _handleHelp(): void

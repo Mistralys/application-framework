@@ -7,7 +7,7 @@ namespace Application\NewsCentral\Categories;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\NewsCentral\Admin\CategoryAdminURLs;
 use Application\NewsCentral\Admin\Screens\Mode\ViewCategoryMode;
-use Application\NewsCentral\Admin\Screens\Mode\ViewCategory\SettingsSubmode;
+use Application\NewsCentral\Admin\Screens\Mode\ViewCategory\CategorySettingsSubmode;
 use DBHelper_BaseRecord;
 
 /**
