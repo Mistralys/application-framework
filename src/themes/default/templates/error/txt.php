@@ -34,4 +34,20 @@ Content sent before the error
     } else {
         echo '(empty string)';
     }
+
+    $previous = $error->getExceptionStack();
+
+    if(!empty($previous))
+    {
+        echo PHP_EOL.PHP_EOL;
+        echo '-----------------------------------------------'.PHP_EOL;
+        echo 'Previous exceptions'.PHP_EOL;
+        echo '-----------------------------------------------'.PHP_EOL.PHP_EOL;
+
+        foreach($previous as $ex) {
+            echo renderExceptionInfo($ex).PHP_EOL;
+            echo renderTrace($ex).PHP_EOL;
+            echo '-----------------------------------------------'.PHP_EOL.PHP_EOL;
+        }
+    }
 ?>
