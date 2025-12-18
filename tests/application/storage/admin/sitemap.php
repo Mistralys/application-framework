@@ -65,21 +65,21 @@ return array (
     'media.view.settings' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\SettingsSubmode',
     'media.view.status' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\StatusSubmode',
     'media.view.tagging' => 'Application\\Media\\Admin\\Screens\\Mode\\View\\TagsSubmode',
-    'news' => 'TestDriver\\Area\\NewsScreen',
-    'news.categories-list' => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
-    'news.create-alert' => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
-    'news.create-article' => 'TestDriver\\Area\\NewsScreen\\CreateArticleScreen',
-    'news.create-category' => 'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen',
-    'news.list' => 'TestDriver\\Area\\NewsScreen\\NewsListScreen',
-    'news.read' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen',
-    'news.read.article' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
-    'news.read.articles' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen',
-    'news.view' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen',
-    'news.view-category' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen',
-    'news.view-category.settings' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
-    'news.view.settings' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
-    'news.view.status' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen',
+    'news' => 'Application\\NewsCentral\\Admin\\Screens\\ManageNewsArea',
+    'news.categories-list' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CategoriesListMode',
+    'news.create-alert' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateAlertScreen',
+    'news.create-article' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateArticleScreen',
+    'news.create-category' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateCategoryMode',
+    'news.list' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\NewsListMode',
+    'news.view' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticleMode',
+    'news.view-category' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategoryMode',
+    'news.view-category.settings' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategory\\CategorySettingsSubmode',
+    'news.view.settings' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleSettingsSubmode',
+    'news.view.status' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleStatusSubmode',
     'quicknav' => 'TestDriver\\Area\\QuickNavScreen',
+    'read-news' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNewsArea',
+    'read-news.article' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ReadArticleScreen',
+    'read-news.list' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ArticlesListMode',
     'revisionable' => 'TestDriver\\Area\\RevisionableScreen',
     'revisionable.list' => 'TestDriver\\Area\\RevisionableScreen\\RevisionableListScreen',
     'settings' => 'Application\\Users\\Admin\\Screens\\UserSettingsArea',
@@ -921,6 +921,258 @@ return array (
       array (
       ),
     ),
+    'Application\\NewsCentral\\Admin\\Screens\\ManageNewsArea' => 
+    array (
+      'id' => 'ManageNewsArea',
+      'urlName' => 'news',
+      'urlPath' => 'news',
+      'title' => 'Application news central',
+      'navigationTitle' => 'News central',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\ManageNewsArea',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CategoriesListMode',
+        1 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateAlertScreen',
+        2 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateArticleScreen',
+        3 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateCategoryMode',
+        4 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\NewsListMode',
+        5 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticleMode',
+        6 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategoryMode',
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\CategoriesListMode' => 
+    array (
+      'id' => 'CategoriesListMode',
+      'urlName' => 'categories-list',
+      'urlPath' => 'news.categories-list',
+      'title' => 'Available categories',
+      'navigationTitle' => 'Overview',
+      'requiredRight' => 'ViewNews',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CategoriesListMode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateAlertScreen' => 
+    array (
+      'id' => 'CreateAlertScreen',
+      'urlName' => 'create-alert',
+      'urlPath' => 'news.create-alert',
+      'title' => 'Create a news alert',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'CreateAlerts',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateAlertScreen',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateArticleScreen' => 
+    array (
+      'id' => 'CreateArticleScreen',
+      'urlName' => 'create-article',
+      'urlPath' => 'news.create-article',
+      'title' => 'Create a news article',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'CreateNews',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateArticleScreen',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateCategoryMode' => 
+    array (
+      'id' => 'CreateCategoryMode',
+      'urlName' => 'create-category',
+      'urlPath' => 'news.create-category',
+      'title' => 'Create a news category',
+      'navigationTitle' => 'Create Category',
+      'requiredRight' => 'EditNews',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateCategoryMode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\NewsListMode' => 
+    array (
+      'id' => 'NewsListMode',
+      'urlName' => 'list',
+      'urlPath' => 'news.list',
+      'title' => 'Available news articles',
+      'navigationTitle' => 'Overview',
+      'requiredRight' => 'ViewNews',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\NewsListMode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticleMode' => 
+    array (
+      'id' => 'ViewArticleMode',
+      'urlName' => 'view',
+      'urlPath' => 'news.view',
+      'title' => 'View news entry',
+      'navigationTitle' => 'View',
+      'requiredRight' => 'ViewNews',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticleMode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleSettingsSubmode',
+        1 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleStatusSubmode',
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleSettingsSubmode' => 
+    array (
+      'id' => 'ArticleSettingsSubmode',
+      'urlName' => 'settings',
+      'urlPath' => 'news.view.settings',
+      'title' => 'Settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewNews',
+      'featureRights' => 
+      array (
+        'Modify the settings' => 'EditNews',
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleSettingsSubmode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews/ViewArticle',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleStatusSubmode' => 
+    array (
+      'id' => 'ArticleStatusSubmode',
+      'urlName' => 'status',
+      'urlPath' => 'news.view.status',
+      'title' => 'Status',
+      'navigationTitle' => 'Status',
+      'requiredRight' => 'ViewNews',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleStatusSubmode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews/ViewArticle',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategoryMode' => 
+    array (
+      'id' => 'ViewCategoryMode',
+      'urlName' => 'view-category',
+      'urlPath' => 'news.view-category',
+      'title' => 'View news category',
+      'navigationTitle' => 'View',
+      'requiredRight' => 'ViewNews',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategoryMode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategory\\CategorySettingsSubmode',
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategory\\CategorySettingsSubmode' => 
+    array (
+      'id' => 'CategorySettingsSubmode',
+      'urlName' => 'settings',
+      'urlPath' => 'news.view-category.settings',
+      'title' => 'Settings',
+      'navigationTitle' => 'Settings',
+      'requiredRight' => 'ViewNews',
+      'featureRights' => 
+      array (
+        'Modify the settings' => 'EditNews',
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategory\\CategorySettingsSubmode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews/ViewCategory',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\ReadNewsArea' => 
+    array (
+      'id' => 'ReadNewsArea',
+      'urlName' => 'read-news',
+      'urlPath' => 'read-news',
+      'title' => 'AppTestSuite news',
+      'navigationTitle' => 'News',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNewsArea',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ArticlesListMode',
+        1 => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ReadArticleScreen',
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ArticlesListMode' => 
+    array (
+      'id' => 'ArticlesListMode',
+      'urlName' => 'list',
+      'urlPath' => 'read-news.list',
+      'title' => 'AppTestSuite news',
+      'navigationTitle' => 'News',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ArticlesListMode',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ReadNews',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ReadArticleScreen' => 
+    array (
+      'id' => 'ReadArticleScreen',
+      'urlName' => 'article',
+      'urlPath' => 'read-news.article',
+      'title' => 'News Article',
+      'navigationTitle' => 'Article',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ReadArticleScreen',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ReadNews',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
     'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode' => 
     array (
       'id' => 'RenamerMode',
@@ -1344,257 +1596,6 @@ return array (
       ),
       'class' => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
       'path' => 'framework-classes:DeeplHelper/Admin/Screens',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen' => 
-    array (
-      'id' => 'NewsScreen',
-      'urlName' => 'news',
-      'urlPath' => 'news',
-      'title' => 'Application news central',
-      'navigationTitle' => 'News central',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\NewsScreen',
-      'path' => 'driver-classes:Area',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
-        1 => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
-        2 => 'TestDriver\\Area\\NewsScreen\\CreateArticleScreen',
-        3 => 'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen',
-        4 => 'TestDriver\\Area\\NewsScreen\\NewsListScreen',
-        5 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen',
-        6 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen',
-        7 => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen',
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\CategoriesListScreen' => 
-    array (
-      'id' => 'CategoriesListScreen',
-      'urlName' => 'categories-list',
-      'urlPath' => 'news.categories-list',
-      'title' => 'Available categories',
-      'navigationTitle' => 'Overview',
-      'requiredRight' => 'ViewNews',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\CreateAlertScreen' => 
-    array (
-      'id' => 'CreateAlertScreen',
-      'urlName' => 'create-alert',
-      'urlPath' => 'news.create-alert',
-      'title' => 'Create a news alert',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'CreateAlerts',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\CreateArticleScreen' => 
-    array (
-      'id' => 'CreateArticleScreen',
-      'urlName' => 'create-article',
-      'urlPath' => 'news.create-article',
-      'title' => 'Create a news article',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'CreateNews',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\CreateArticleScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen' => 
-    array (
-      'id' => 'CreateCategoryScreen',
-      'urlName' => 'create-category',
-      'urlPath' => 'news.create-category',
-      'title' => 'Create a news category',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'EditNews',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\NewsListScreen' => 
-    array (
-      'id' => 'NewsListScreen',
-      'urlName' => 'list',
-      'urlPath' => 'news.list',
-      'title' => 'Available news articles',
-      'navigationTitle' => 'Overview',
-      'requiredRight' => 'ViewNews',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\NewsListScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ReadNewsScreen' => 
-    array (
-      'id' => 'ReadNewsScreen',
-      'urlName' => 'read',
-      'urlPath' => 'news.read',
-      'title' => 'AppTestSuite news',
-      'navigationTitle' => 'News',
-      'requiredRight' => 'Login',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
-        1 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen',
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen' => 
-    array (
-      'id' => 'ReadArticleScreen',
-      'urlName' => 'article',
-      'urlPath' => 'news.read.article',
-      'title' => 'News Article',
-      'navigationTitle' => 'Article',
-      'requiredRight' => 'Login',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
-      'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen' => 
-    array (
-      'id' => 'ReadArticlesScreen',
-      'urlName' => 'articles',
-      'urlPath' => 'news.read.articles',
-      'title' => 'AppTestSuite news',
-      'navigationTitle' => 'News',
-      'requiredRight' => 'Login',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen',
-      'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ViewArticleScreen' => 
-    array (
-      'id' => 'ViewArticleScreen',
-      'urlName' => 'view',
-      'urlPath' => 'news.view',
-      'title' => 'View news entry',
-      'navigationTitle' => 'View',
-      'requiredRight' => 'ViewNews',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
-        1 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen',
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen' => 
-    array (
-      'id' => 'ArticleSettingsScreen',
-      'urlName' => 'settings',
-      'urlPath' => 'news.view.settings',
-      'title' => 'Settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewNews',
-      'featureRights' => 
-      array (
-        'Modify the settings' => 'EditNews',
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
-      'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen' => 
-    array (
-      'id' => 'ArticleStatusScreen',
-      'urlName' => 'status',
-      'urlPath' => 'news.view.status',
-      'title' => 'Status',
-      'navigationTitle' => 'Status',
-      'requiredRight' => 'ViewNews',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen',
-      'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen' => 
-    array (
-      'id' => 'ViewCategoryScreen',
-      'urlName' => 'view-category',
-      'urlPath' => 'news.view-category',
-      'title' => 'View news category',
-      'navigationTitle' => 'View',
-      'requiredRight' => 'ViewNews',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen',
-      'path' => 'driver-classes:Area/NewsScreen',
-      'subscreenClasses' => 
-      array (
-        0 => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
-      ),
-    ),
-    'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen' => 
-    array (
-      'id' => 'CategorySettingsScreen',
-      'urlName' => 'settings',
-      'urlPath' => 'news.view-category.settings',
-      'title' => 'Settings',
-      'navigationTitle' => 'Settings',
-      'requiredRight' => 'ViewNews',
-      'featureRights' => 
-      array (
-        'Modify the settings' => 'EditNews',
-      ),
-      'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
-      'path' => 'driver-classes:Area/NewsScreen/ViewCategoryScreen',
       'subscreenClasses' => 
       array (
       ),
@@ -3625,6 +3626,68 @@ return array (
         ),
       ),
     ),
+    'read-news' => 
+    array (
+      'id' => 'ReadNewsArea',
+      'urlName' => 'read-news',
+      'urlPath' => 'read-news',
+      'title' => 'AppTestSuite news',
+      'navigationTitle' => 'News',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNewsArea',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ArticlesListMode',
+        1 => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ReadArticleScreen',
+      ),
+      'subscreens' => 
+      array (
+        'article' => 
+        array (
+          'id' => 'ReadArticleScreen',
+          'urlName' => 'article',
+          'urlPath' => 'read-news.article',
+          'title' => 'News Article',
+          'navigationTitle' => 'Article',
+          'requiredRight' => 'Login',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ReadArticleScreen',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ReadNews',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'list' => 
+        array (
+          'id' => 'ArticlesListMode',
+          'urlName' => 'list',
+          'urlPath' => 'read-news.list',
+          'title' => 'AppTestSuite news',
+          'navigationTitle' => 'News',
+          'requiredRight' => 'Login',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\ReadNews\\ArticlesListMode',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ReadNews',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+      ),
+    ),
     'time-tracker' => 
     array (
       'id' => 'TimeTrackerScreen',
@@ -4295,41 +4358,105 @@ return array (
     ),
     'news' => 
     array (
-      'id' => 'NewsScreen',
+      'id' => 'ManageNewsArea',
       'urlName' => 'news',
       'urlPath' => 'news',
       'title' => 'Application news central',
       'navigationTitle' => 'News central',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
-      'class' => 'TestDriver\\Area\\NewsScreen',
-      'path' => 'driver-classes:Area',
+      'requiredRight' => 'Login',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\NewsCentral\\Admin\\Screens\\ManageNewsArea',
+      'path' => 'framework-classes:Application/NewsCentral/Admin/Screens',
       'subscreenClasses' => 
       array (
-        0 => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
-        1 => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
-        2 => 'TestDriver\\Area\\NewsScreen\\CreateArticleScreen',
-        3 => 'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen',
-        4 => 'TestDriver\\Area\\NewsScreen\\NewsListScreen',
-        5 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen',
-        6 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen',
-        7 => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen',
+        0 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CategoriesListMode',
+        1 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateAlertScreen',
+        2 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateArticleScreen',
+        3 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateCategoryMode',
+        4 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\NewsListMode',
+        5 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticleMode',
+        6 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategoryMode',
       ),
       'subscreens' => 
       array (
-        'list' => 
+        'view' => 
         array (
-          'id' => 'NewsListScreen',
-          'urlName' => 'list',
-          'urlPath' => 'news.list',
-          'title' => 'Available news articles',
-          'navigationTitle' => 'Overview',
+          'id' => 'ViewArticleMode',
+          'urlName' => 'view',
+          'urlPath' => 'news.view',
+          'title' => 'View news entry',
+          'navigationTitle' => 'View',
           'requiredRight' => 'ViewNews',
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\NewsListScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticleMode',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
+          'subscreenClasses' => 
+          array (
+            0 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleSettingsSubmode',
+            1 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleStatusSubmode',
+          ),
+          'subscreens' => 
+          array (
+            'status' => 
+            array (
+              'id' => 'ArticleStatusSubmode',
+              'urlName' => 'status',
+              'urlPath' => 'news.view.status',
+              'title' => 'Status',
+              'navigationTitle' => 'Status',
+              'requiredRight' => 'ViewNews',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleStatusSubmode',
+              'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews/ViewArticle',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'settings' => 
+            array (
+              'id' => 'ArticleSettingsSubmode',
+              'urlName' => 'settings',
+              'urlPath' => 'news.view.settings',
+              'title' => 'Settings',
+              'navigationTitle' => 'Settings',
+              'requiredRight' => 'ViewNews',
+              'featureRights' => 
+              array (
+                'Modify the settings' => 'EditNews',
+              ),
+              'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewArticle\\ArticleSettingsSubmode',
+              'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews/ViewArticle',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+          ),
+        ),
+        'create-category' => 
+        array (
+          'id' => 'CreateCategoryMode',
+          'urlName' => 'create-category',
+          'urlPath' => 'news.create-category',
+          'title' => 'Create a news category',
+          'navigationTitle' => 'Create Category',
+          'requiredRight' => 'EditNews',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateCategoryMode',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
           'subscreenClasses' => 
           array (
           ),
@@ -4348,8 +4475,8 @@ return array (
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\CreateArticleScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateArticleScreen',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
           'subscreenClasses' => 
           array (
           ),
@@ -4357,19 +4484,19 @@ return array (
           array (
           ),
         ),
-        'create-category' => 
+        'list' => 
         array (
-          'id' => 'CreateCategoryScreen',
-          'urlName' => 'create-category',
-          'urlPath' => 'news.create-category',
-          'title' => 'Create a news category',
-          'navigationTitle' => 'Settings',
-          'requiredRight' => 'EditNews',
+          'id' => 'NewsListMode',
+          'urlName' => 'list',
+          'urlPath' => 'news.list',
+          'title' => 'Available news articles',
+          'navigationTitle' => 'Overview',
+          'requiredRight' => 'ViewNews',
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\CreateCategoryScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\NewsListMode',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
           'subscreenClasses' => 
           array (
           ),
@@ -4379,7 +4506,7 @@ return array (
         ),
         'categories-list' => 
         array (
-          'id' => 'CategoriesListScreen',
+          'id' => 'CategoriesListMode',
           'urlName' => 'categories-list',
           'urlPath' => 'news.categories-list',
           'title' => 'Available categories',
@@ -4388,8 +4515,8 @@ return array (
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\CategoriesListScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CategoriesListMode',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
           'subscreenClasses' => 
           array (
           ),
@@ -4408,81 +4535,18 @@ return array (
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\CreateAlertScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\CreateAlertScreen',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
           'subscreenClasses' => 
           array (
           ),
           'subscreens' => 
           array (
-          ),
-        ),
-        'view' => 
-        array (
-          'id' => 'ViewArticleScreen',
-          'urlName' => 'view',
-          'urlPath' => 'news.view',
-          'title' => 'View news entry',
-          'navigationTitle' => 'View',
-          'requiredRight' => 'ViewNews',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
-          'subscreenClasses' => 
-          array (
-            0 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
-            1 => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen',
-          ),
-          'subscreens' => 
-          array (
-            'settings' => 
-            array (
-              'id' => 'ArticleSettingsScreen',
-              'urlName' => 'settings',
-              'urlPath' => 'news.view.settings',
-              'title' => 'Settings',
-              'navigationTitle' => 'Settings',
-              'requiredRight' => 'ViewNews',
-              'featureRights' => 
-              array (
-                'Modify the settings' => 'EditNews',
-              ),
-              'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleSettingsScreen',
-              'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'status' => 
-            array (
-              'id' => 'ArticleStatusScreen',
-              'urlName' => 'status',
-              'urlPath' => 'news.view.status',
-              'title' => 'Status',
-              'navigationTitle' => 'Status',
-              'requiredRight' => 'ViewNews',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\NewsScreen\\ViewArticleScreen\\ArticleStatusScreen',
-              'path' => 'driver-classes:Area/NewsScreen/ViewArticleScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
           ),
         ),
         'view-category' => 
         array (
-          'id' => 'ViewCategoryScreen',
+          'id' => 'ViewCategoryMode',
           'urlName' => 'view-category',
           'urlPath' => 'news.view-category',
           'title' => 'View news category',
@@ -4491,17 +4555,17 @@ return array (
           'featureRights' => 
           array (
           ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
+          'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategoryMode',
+          'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews',
           'subscreenClasses' => 
           array (
-            0 => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
+            0 => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategory\\CategorySettingsSubmode',
           ),
           'subscreens' => 
           array (
             'settings' => 
             array (
-              'id' => 'CategorySettingsScreen',
+              'id' => 'CategorySettingsSubmode',
               'urlName' => 'settings',
               'urlPath' => 'news.view-category.settings',
               'title' => 'Settings',
@@ -4511,70 +4575,8 @@ return array (
               array (
                 'Modify the settings' => 'EditNews',
               ),
-              'class' => 'TestDriver\\Area\\NewsScreen\\ViewCategoryScreen\\CategorySettingsScreen',
-              'path' => 'driver-classes:Area/NewsScreen/ViewCategoryScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-          ),
-        ),
-        'read' => 
-        array (
-          'id' => 'ReadNewsScreen',
-          'urlName' => 'read',
-          'urlPath' => 'news.read',
-          'title' => 'AppTestSuite news',
-          'navigationTitle' => 'News',
-          'requiredRight' => 'Login',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen',
-          'path' => 'driver-classes:Area/NewsScreen',
-          'subscreenClasses' => 
-          array (
-            0 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
-            1 => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen',
-          ),
-          'subscreens' => 
-          array (
-            'article' => 
-            array (
-              'id' => 'ReadArticleScreen',
-              'urlName' => 'article',
-              'urlPath' => 'news.read.article',
-              'title' => 'News Article',
-              'navigationTitle' => 'Article',
-              'requiredRight' => 'Login',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticleScreen',
-              'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'articles' => 
-            array (
-              'id' => 'ReadArticlesScreen',
-              'urlName' => 'articles',
-              'urlPath' => 'news.read.articles',
-              'title' => 'AppTestSuite news',
-              'navigationTitle' => 'News',
-              'requiredRight' => 'Login',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'TestDriver\\Area\\NewsScreen\\ReadNewsScreen\\ReadArticlesScreen',
-              'path' => 'driver-classes:Area/NewsScreen/ReadNewsScreen',
+              'class' => 'Application\\NewsCentral\\Admin\\Screens\\Mode\\ViewCategory\\CategorySettingsSubmode',
+              'path' => 'framework-classes:Application/NewsCentral/Admin/Screens/ManageNews/ViewCategory',
               'subscreenClasses' => 
               array (
               ),
