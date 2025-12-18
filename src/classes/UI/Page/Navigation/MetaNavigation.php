@@ -63,7 +63,7 @@ class MetaNavigation implements UI_Renderable_Interface
             ->setIcon(UI::icon()->search())
             ->setTooltip(UI::tooltip(t('Look up an item'))->makeBottom());
 
-        $this->metaNav->addURL('', AppFactory::createNews()->getLiveReadURL())
+        $this->metaNav->addURL('', AppFactory::createNews()->adminURL()->read()->list())
             ->setAlias(self::META_NEWS)
             ->setIcon(UI::icon()->news())
             ->setTooltip(UI::tooltip(t('Latest %1$s news', Application_Driver::getInstance()->getAppNameShort()))->makeBottom());
