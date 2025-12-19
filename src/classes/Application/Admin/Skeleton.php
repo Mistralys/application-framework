@@ -8,10 +8,12 @@
  */
 
 use Application\AppFactory;
+use Application\Framework\AppFolder;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ArrayDataCollection;
+use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\StringableInterface;
@@ -946,5 +948,10 @@ abstract class Application_Admin_Skeleton
     public function getActiveScreen() : AdminScreenInterface
     {
         return $this->driver->requireActiveScreen();
+    }
+
+    public function isLocatedInApp(): bool
+    {
+        return AppFolder::create(ClassHelper::getClassSourceFile($this))->isDriver();
     }
 }

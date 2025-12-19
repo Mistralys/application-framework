@@ -206,6 +206,14 @@ interface AdminScreenInterface
     public function getTitle() : string;
 
     /**
+     * Whether this area is provided by the application
+     * instead of the framework itself.
+     *
+     * @return bool
+     */
+    public function isLocatedInApp() : bool;
+
+    /**
      * Whether this class is an administration area class.
      * @return boolean
      * @see Application_Admin_Area
