@@ -394,7 +394,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
      */
     private array $idLookup = array();
 
-    final public function idExists(int $record_id) : bool
+    public function idExists(int $record_id) : bool
     {
         $this->requireNotDisposed('Check if record ID exists.');
 
