@@ -25,11 +25,14 @@ return array (
     'devel' => 'Application\\Development\\Admin\\Screens\\DevelArea',
     'devel.appconfig' => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
     'devel.appinterface' => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-    'devel.appsets' => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-    'devel.appsets.create' => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
-    'devel.appsets.delete' => 'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode',
-    'devel.appsets.edit' => 'Application\\Sets\\Admin\\Screens\\EditSetSubmode',
-    'devel.appsets.list' => 'Application\\Sets\\Admin\\Screens\\SetsListSubmode',
+    'devel.appsets' => 'Application\\Sets\\Admin\\Screens\\AppSetsDevelMode',
+    'devel.appsets.create' => 'Application\\Sets\\Admin\\Screens\\Submode\\CreateSetSubmode',
+    'devel.appsets.list' => 'Application\\Sets\\Admin\\Screens\\Submode\\SetsListSubmode',
+    'devel.appsets.view' => 'Application\\Sets\\Admin\\Screens\\Submode\\ViewSubmode',
+    'devel.appsets.view.delete' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DeleteAction',
+    'devel.appsets.view.documentation' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DocumentationAction',
+    'devel.appsets.view.settings' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\SettingsAction',
+    'devel.appsets.view.status' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\StatusAction',
     'devel.appsettings' => 'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode',
     'devel.cache-control' => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
     'devel.css-gen' => 'UI\\Admin\\Screens\\CSSGenDevelMode',
@@ -266,8 +269,10 @@ return array (
       'urlPath' => 'api-clients.view.api_keys.list',
       'title' => 'Overview of API Keys',
       'navigationTitle' => 'Overview',
-      'requiredRight' => NULL,
-      'featureRights' => NULL,
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
       'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
       'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
       'subscreenClasses' => 
@@ -391,6 +396,74 @@ return array (
       array (
         0 => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
         1 => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
+      ),
+    ),
+    'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DeleteAction' => 
+    array (
+      'id' => 'DeleteAction',
+      'urlName' => 'delete',
+      'urlPath' => 'devel.appsets.view.delete',
+      'title' => 'Delete an application set',
+      'navigationTitle' => 'Delete set',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DeleteAction',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DocumentationAction' => 
+    array (
+      'id' => 'DocumentationAction',
+      'urlName' => 'documentation',
+      'urlPath' => 'devel.appsets.view.documentation',
+      'title' => 'Application set documentation',
+      'navigationTitle' => 'Documentation',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DocumentationAction',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\AppSets\\Admin\\Screens\\Submode\\View\\SettingsAction' => 
+    array (
+      'id' => 'SettingsAction',
+      'urlName' => 'settings',
+      'urlPath' => 'devel.appsets.view.settings',
+      'title' => 'Edit application set',
+      'navigationTitle' => 'Edit',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\SettingsAction',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\AppSets\\Admin\\Screens\\Submode\\View\\StatusAction' => 
+    array (
+      'id' => 'StatusAction',
+      'urlName' => 'status',
+      'urlPath' => 'devel.appsets.view.status',
+      'title' => 'Status',
+      'navigationTitle' => 'Status',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\StatusAction',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+      'subscreenClasses' => 
+      array (
       ),
     ),
     'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode' => 
@@ -595,7 +668,7 @@ return array (
         9 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
         10 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
         11 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-        12 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
+        12 => 'Application\\Sets\\Admin\\Screens\\AppSetsDevelMode',
         13 => 'Application\\Users\\Admin\\Screens\\RightsOverviewDevelMode',
         14 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
         15 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
@@ -1298,9 +1371,9 @@ return array (
       array (
       ),
     ),
-    'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode' => 
+    'Application\\Sets\\Admin\\Screens\\AppSetsDevelMode' => 
     array (
-      'id' => 'ApplicationSetsMode',
+      'id' => 'AppSetsDevelMode',
       'urlName' => 'appsets',
       'urlPath' => 'devel.appsets',
       'title' => 'Application interface sets',
@@ -1309,17 +1382,16 @@ return array (
       'featureRights' => 
       array (
       ),
-      'class' => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-      'path' => 'framework-classes:Application/Sets/Admin/Screens',
+      'class' => 'Application\\Sets\\Admin\\Screens\\AppSetsDevelMode',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens',
       'subscreenClasses' => 
       array (
-        0 => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
-        1 => 'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode',
-        2 => 'Application\\Sets\\Admin\\Screens\\EditSetSubmode',
-        3 => 'Application\\Sets\\Admin\\Screens\\SetsListSubmode',
+        0 => 'Application\\Sets\\Admin\\Screens\\Submode\\CreateSetSubmode',
+        1 => 'Application\\Sets\\Admin\\Screens\\Submode\\SetsListSubmode',
+        2 => 'Application\\Sets\\Admin\\Screens\\Submode\\ViewSubmode',
       ),
     ),
-    'Application\\Sets\\Admin\\Screens\\CreateSetSubmode' => 
+    'Application\\Sets\\Admin\\Screens\\Submode\\CreateSetSubmode' => 
     array (
       'id' => 'CreateSetSubmode',
       'urlName' => 'create',
@@ -1330,47 +1402,13 @@ return array (
       'featureRights' => 
       array (
       ),
-      'class' => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
-      'path' => 'framework-classes:Application/Sets/Admin/Screens',
+      'class' => 'Application\\Sets\\Admin\\Screens\\Submode\\CreateSetSubmode',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode',
       'subscreenClasses' => 
       array (
       ),
     ),
-    'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode' => 
-    array (
-      'id' => 'DeleteSetSubmode',
-      'urlName' => 'delete',
-      'urlPath' => 'devel.appsets.delete',
-      'title' => 'Delete an application set',
-      'navigationTitle' => 'Delete set',
-      'requiredRight' => 'Developer',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode',
-      'path' => 'framework-classes:Application/Sets/Admin/Screens',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'Application\\Sets\\Admin\\Screens\\EditSetSubmode' => 
-    array (
-      'id' => 'EditSetSubmode',
-      'urlName' => 'edit',
-      'urlPath' => 'devel.appsets.edit',
-      'title' => 'Create a new application set',
-      'navigationTitle' => 'Create new set',
-      'requiredRight' => 'Developer',
-      'featureRights' => 
-      array (
-      ),
-      'class' => 'Application\\Sets\\Admin\\Screens\\EditSetSubmode',
-      'path' => 'framework-classes:Application/Sets/Admin/Screens',
-      'subscreenClasses' => 
-      array (
-      ),
-    ),
-    'Application\\Sets\\Admin\\Screens\\SetsListSubmode' => 
+    'Application\\Sets\\Admin\\Screens\\Submode\\SetsListSubmode' => 
     array (
       'id' => 'SetsListSubmode',
       'urlName' => 'list',
@@ -1381,10 +1419,31 @@ return array (
       'featureRights' => 
       array (
       ),
-      'class' => 'Application\\Sets\\Admin\\Screens\\SetsListSubmode',
-      'path' => 'framework-classes:Application/Sets/Admin/Screens',
+      'class' => 'Application\\Sets\\Admin\\Screens\\Submode\\SetsListSubmode',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode',
       'subscreenClasses' => 
       array (
+      ),
+    ),
+    'Application\\Sets\\Admin\\Screens\\Submode\\ViewSubmode' => 
+    array (
+      'id' => 'ViewSubmode',
+      'urlName' => 'view',
+      'urlPath' => 'devel.appsets.view',
+      'title' => 'View application set',
+      'navigationTitle' => 'View',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Sets\\Admin\\Screens\\Submode\\ViewSubmode',
+      'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode',
+      'subscreenClasses' => 
+      array (
+        0 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DeleteAction',
+        1 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DocumentationAction',
+        2 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\SettingsAction',
+        3 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\StatusAction',
       ),
     ),
     'Application\\Tags\\Admin\\Screens\\Area\\TagsArea' => 
@@ -1753,7 +1812,7 @@ return array (
       'id' => 'ManageUsersArea',
       'urlName' => 'users',
       'urlPath' => 'users',
-      'title' => 'Users',
+      'title' => 'Manage users',
       'navigationTitle' => 'Users',
       'requiredRight' => 'ViewUsers',
       'featureRights' => 
@@ -2347,8 +2406,10 @@ return array (
                   'urlPath' => 'api-clients.view.api_keys.list',
                   'title' => 'Overview of API Keys',
                   'navigationTitle' => 'Overview',
-                  'requiredRight' => NULL,
-                  'featureRights' => NULL,
+                  'requiredRight' => 'ViewAPIClients',
+                  'featureRights' => 
+                  array (
+                  ),
                   'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
                   'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
                   'subscreenClasses' => 
@@ -2706,7 +2767,7 @@ return array (
       'id' => 'ManageUsersArea',
       'urlName' => 'users',
       'urlPath' => 'users',
-      'title' => 'Users',
+      'title' => 'Manage users',
       'navigationTitle' => 'Users',
       'requiredRight' => 'ViewUsers',
       'featureRights' => 
@@ -3221,7 +3282,7 @@ return array (
         9 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
         10 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
         11 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-        12 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
+        12 => 'Application\\Sets\\Admin\\Screens\\AppSetsDevelMode',
         13 => 'Application\\Users\\Admin\\Screens\\RightsOverviewDevelMode',
         14 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
         15 => 'DeeplHelper\\Admin\\Screens\\DeepLTestScreen',
@@ -3415,110 +3476,6 @@ return array (
             ),
           ),
         ),
-        'appsets' => 
-        array (
-          'id' => 'ApplicationSetsMode',
-          'urlName' => 'appsets',
-          'urlPath' => 'devel.appsets',
-          'title' => 'Application interface sets',
-          'navigationTitle' => 'Appsets',
-          'requiredRight' => 'Developer',
-          'featureRights' => 
-          array (
-          ),
-          'class' => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-          'path' => 'framework-classes:Application/Sets/Admin/Screens',
-          'subscreenClasses' => 
-          array (
-            0 => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
-            1 => 'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode',
-            2 => 'Application\\Sets\\Admin\\Screens\\EditSetSubmode',
-            3 => 'Application\\Sets\\Admin\\Screens\\SetsListSubmode',
-          ),
-          'subscreens' => 
-          array (
-            'create' => 
-            array (
-              'id' => 'CreateSetSubmode',
-              'urlName' => 'create',
-              'urlPath' => 'devel.appsets.create',
-              'title' => 'Create a new application set',
-              'navigationTitle' => 'Create new set',
-              'requiredRight' => 'Developer',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'Application\\Sets\\Admin\\Screens\\CreateSetSubmode',
-              'path' => 'framework-classes:Application/Sets/Admin/Screens',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'list' => 
-            array (
-              'id' => 'SetsListSubmode',
-              'urlName' => 'list',
-              'urlPath' => 'devel.appsets.list',
-              'title' => 'List of application sets',
-              'navigationTitle' => 'List',
-              'requiredRight' => 'Developer',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'Application\\Sets\\Admin\\Screens\\SetsListSubmode',
-              'path' => 'framework-classes:Application/Sets/Admin/Screens',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'delete' => 
-            array (
-              'id' => 'DeleteSetSubmode',
-              'urlName' => 'delete',
-              'urlPath' => 'devel.appsets.delete',
-              'title' => 'Delete an application set',
-              'navigationTitle' => 'Delete set',
-              'requiredRight' => 'Developer',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'Application\\Sets\\Admin\\Screens\\DeleteSetSubmode',
-              'path' => 'framework-classes:Application/Sets/Admin/Screens',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-            'edit' => 
-            array (
-              'id' => 'EditSetSubmode',
-              'urlName' => 'edit',
-              'urlPath' => 'devel.appsets.edit',
-              'title' => 'Create a new application set',
-              'navigationTitle' => 'Create new set',
-              'requiredRight' => 'Developer',
-              'featureRights' => 
-              array (
-              ),
-              'class' => 'Application\\Sets\\Admin\\Screens\\EditSetSubmode',
-              'path' => 'framework-classes:Application/Sets/Admin/Screens',
-              'subscreenClasses' => 
-              array (
-              ),
-              'subscreens' => 
-              array (
-              ),
-            ),
-          ),
-        ),
         'appinterface' => 
         array (
           'id' => 'AppInterfaceDevelMode',
@@ -3637,6 +3594,173 @@ return array (
           ),
           'subscreens' => 
           array (
+          ),
+        ),
+        'appsets' => 
+        array (
+          'id' => 'AppSetsDevelMode',
+          'urlName' => 'appsets',
+          'urlPath' => 'devel.appsets',
+          'title' => 'Application interface sets',
+          'navigationTitle' => 'Appsets',
+          'requiredRight' => 'Developer',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Sets\\Admin\\Screens\\AppSetsDevelMode',
+          'path' => 'framework-classes:Application/AppSets/Admin/Screens',
+          'subscreenClasses' => 
+          array (
+            0 => 'Application\\Sets\\Admin\\Screens\\Submode\\CreateSetSubmode',
+            1 => 'Application\\Sets\\Admin\\Screens\\Submode\\SetsListSubmode',
+            2 => 'Application\\Sets\\Admin\\Screens\\Submode\\ViewSubmode',
+          ),
+          'subscreens' => 
+          array (
+            'list' => 
+            array (
+              'id' => 'SetsListSubmode',
+              'urlName' => 'list',
+              'urlPath' => 'devel.appsets.list',
+              'title' => 'List of application sets',
+              'navigationTitle' => 'List',
+              'requiredRight' => 'Developer',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\Sets\\Admin\\Screens\\Submode\\SetsListSubmode',
+              'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
+            'view' => 
+            array (
+              'id' => 'ViewSubmode',
+              'urlName' => 'view',
+              'urlPath' => 'devel.appsets.view',
+              'title' => 'View application set',
+              'navigationTitle' => 'View',
+              'requiredRight' => 'Developer',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\Sets\\Admin\\Screens\\Submode\\ViewSubmode',
+              'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode',
+              'subscreenClasses' => 
+              array (
+                0 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DeleteAction',
+                1 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DocumentationAction',
+                2 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\SettingsAction',
+                3 => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\StatusAction',
+              ),
+              'subscreens' => 
+              array (
+                'delete' => 
+                array (
+                  'id' => 'DeleteAction',
+                  'urlName' => 'delete',
+                  'urlPath' => 'devel.appsets.view.delete',
+                  'title' => 'Delete an application set',
+                  'navigationTitle' => 'Delete set',
+                  'requiredRight' => 'Developer',
+                  'featureRights' => 
+                  array (
+                  ),
+                  'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DeleteAction',
+                  'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+                  'subscreenClasses' => 
+                  array (
+                  ),
+                  'subscreens' => 
+                  array (
+                  ),
+                ),
+                'status' => 
+                array (
+                  'id' => 'StatusAction',
+                  'urlName' => 'status',
+                  'urlPath' => 'devel.appsets.view.status',
+                  'title' => 'Status',
+                  'navigationTitle' => 'Status',
+                  'requiredRight' => 'Developer',
+                  'featureRights' => 
+                  array (
+                  ),
+                  'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\StatusAction',
+                  'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+                  'subscreenClasses' => 
+                  array (
+                  ),
+                  'subscreens' => 
+                  array (
+                  ),
+                ),
+                'documentation' => 
+                array (
+                  'id' => 'DocumentationAction',
+                  'urlName' => 'documentation',
+                  'urlPath' => 'devel.appsets.view.documentation',
+                  'title' => 'Application set documentation',
+                  'navigationTitle' => 'Documentation',
+                  'requiredRight' => 'Developer',
+                  'featureRights' => 
+                  array (
+                  ),
+                  'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\DocumentationAction',
+                  'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+                  'subscreenClasses' => 
+                  array (
+                  ),
+                  'subscreens' => 
+                  array (
+                  ),
+                ),
+                'settings' => 
+                array (
+                  'id' => 'SettingsAction',
+                  'urlName' => 'settings',
+                  'urlPath' => 'devel.appsets.view.settings',
+                  'title' => 'Edit application set',
+                  'navigationTitle' => 'Edit',
+                  'requiredRight' => 'Developer',
+                  'featureRights' => 
+                  array (
+                  ),
+                  'class' => 'Application\\AppSets\\Admin\\Screens\\Submode\\View\\SettingsAction',
+                  'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode/View',
+                  'subscreenClasses' => 
+                  array (
+                  ),
+                  'subscreens' => 
+                  array (
+                  ),
+                ),
+              ),
+            ),
+            'create' => 
+            array (
+              'id' => 'CreateSetSubmode',
+              'urlName' => 'create',
+              'urlPath' => 'devel.appsets.create',
+              'title' => 'Create a new application set',
+              'navigationTitle' => 'Create new set',
+              'requiredRight' => 'Developer',
+              'featureRights' => 
+              array (
+              ),
+              'class' => 'Application\\Sets\\Admin\\Screens\\Submode\\CreateSetSubmode',
+              'path' => 'framework-classes:Application/AppSets/Admin/Screens/Submode',
+              'subscreenClasses' => 
+              array (
+              ),
+              'subscreens' => 
+              array (
+              ),
+            ),
           ),
         ),
         'deepl-test' => 
