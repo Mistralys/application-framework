@@ -9,6 +9,7 @@
 use Application\API\APIFoldersManager;
 use Application\API\APIManager;
 use Application\AppFactory;
+use Application\AppSets\AppSetsCollection;
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\DeploymentRegistry\DeploymentRegistry;
@@ -848,12 +849,12 @@ class Application
     }
 
     /**
-     * @return Application_Sets
+     * @return AppSetsCollection
      * @deprecated Use the AppFactory instead.
      */
-    public function getSets() : Application_Sets
+    public function getSets() : AppSetsCollection
     {
-        return Application_Sets::getInstance();
+        return AppSetsCollection::getInstance();
     }
 
     /**

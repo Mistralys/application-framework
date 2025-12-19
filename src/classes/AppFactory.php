@@ -42,7 +42,7 @@ use Application_Ratings;
 use Application_Request;
 use Application_RequestLog;
 use Application_Session;
-use Application_Sets;
+use Application\AppSets\AppSetsCollection;
 use Application_Uploads;
 use Application_User;
 use Application_Users;
@@ -113,9 +113,9 @@ class AppFactory
         return self::createClassInstance(Application_Logger::class);
     }
 
-    public static function createAppSets() : Application_Sets
+    public static function createAppSets() : AppSetsCollection
     {
-        return Application_Sets::getInstance();
+        return AppSetsCollection::getInstance();
     }
 
     public static function createDBDumps() : Application_DBDumps
