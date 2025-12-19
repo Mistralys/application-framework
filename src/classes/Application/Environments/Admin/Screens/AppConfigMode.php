@@ -12,6 +12,7 @@ use Application\Admin\Area\BaseMode;
 use Application\Admin\Traits\DevelModeInterface;
 use Application\Admin\Traits\DevelModeTrait;
 use Application\AppFactory;
+use Application\AppSets\AppSetsCollection;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Development\Admin\DevScreenRights;
 use Application\Development\Events\DisplayAppConfigEvent;
@@ -148,9 +149,11 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
     {
         $this->addHeader(t('Environment'));
 
+        $appSet = AppSetsCollection::getInstance()->getActive();
+
         $this->addConstant(t('Name'), BaseConfigRegistry::ENVIRONMENT);
         $this->addConstant(t('Instance ID'), BaseConfigRegistry::INSTANCE_ID);
-        $this->addConstant(t('Appset'), BaseConfigRegistry::APPSET);
+        $this->addValue(t('Appset'), sb()->code($appSet->getAlias())->add('-')->add($appSet->getLabel()));
         $this->addConstant(t('Install URL'), BaseConfigRegistry::URL);
         $this->addConstant(t('Install folder'), BaseConfigRegistry::ROOT);
         $this->addConstant(t('Framework folder'), BaseConfigRegistry::INSTALL_FOLDER);
