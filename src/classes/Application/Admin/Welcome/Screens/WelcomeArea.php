@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Admin\Welcome\Screens;
 
-use Application\Admin\ClassLoaderScreenInterface;
 use Application\Admin\Welcome\Events\WelcomeQuickNavEvent;
 use Application\AppFactory;
 use tests\TestDriver\Admin\BaseArea;
 use UI;
 use UI_Icon;
 
-class WelcomeArea extends BaseArea implements ClassLoaderScreenInterface
+class WelcomeArea extends BaseArea
 {
     public const string URL_NAME = 'welcome';
 
