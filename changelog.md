@@ -10,17 +10,26 @@
 - Admin: The "Welcome" screen is now loaded via the new system.
 - Admin: The "User Settings" screen is now loaded via the new system.
 - Admin: All admin areas are now enabled by default. Use the AppSets feature to disable any as needed.
-- Upgraded to the new admin screen loading system:
-  - Users management
-  - News central
-  - Media library
-  - Countries management
-  - Tags management
-  - UI translation screen
+- Attributes: Added the `UncachedQuery` attribute to mark methods that run uncached queries.
+- AppSets: Refactored to use database storage.
+- AppSets: Improved administration screens.
+- AppSets: Converted to use a DBHelper collection structure.
 - OfflineEvents: All event and listener classes are now auto-discovered.
 - OfflineEvents: Classes can now be freely stored, the special `OfflineEvents` folder is no longer required.
 - OfflineEvents: Events must now extend the `BaseOfflineEvent` base class.
 - OfflineEvents: Listeners must now provide the name of the event they listen to.
+- Upgraded to the new admin screen loading system:
+    - Users management
+    - News central
+    - Media library
+    - Countries management
+    - Tags management
+    - UI translation screen
+
+### Database update
+
+- The SQL file [2025-12-19-app-sets.sql](/docs/sql/2025-12-19-app-sets.sql) must be imported 
+  to create the necessary tables for the updated application sets feature.
 
 ## v6.2.0 - API improvements
 - API: Added support for optional rules in API method parameters.
