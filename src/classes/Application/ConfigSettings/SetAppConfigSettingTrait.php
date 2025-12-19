@@ -172,15 +172,6 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param string $appSetID
-     * @return $this
-     */
-    public function setAppSet(string $appSetID) : self
-    {
-        return $this->setBootDefine(BaseConfigRegistry::APPSET, $appSetID);
-    }
-
-    /**
      * @param bool $enabled
      * @return $this
      */

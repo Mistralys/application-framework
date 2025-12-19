@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Application\ConfigSettings;
 
+use Application\AppSets\AppSet;
 use Application\Environments\BaseEnvironmentsConfig;
 
 // Pre-Autoloading requires.
@@ -128,11 +129,6 @@ abstract class BaseConfigRegistry implements SetConfigSettingInterface
      * @see APP_INSTALL_URL
      */
     public const INSTALL_URL = 'APP_INSTALL_URL';
-
-    /**
-     * @see APP_APPSET
-     */
-    public const APPSET = 'APP_APPSET';
 
     /**
      * @see APP_LOGGING_ENABLED

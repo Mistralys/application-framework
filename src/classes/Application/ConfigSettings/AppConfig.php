@@ -124,11 +124,6 @@ class AppConfig
         return boot_constant(BaseConfigRegistry::DB_ENABLED) === true;
     }
 
-    public static function getAppsetID() : string
-    {
-        return boot_constant(BaseConfigRegistry::APPSET);
-    }
-
     public static function getEnvironmentID() : string
     {
         return boot_constant(BaseConfigRegistry::ENVIRONMENT);
