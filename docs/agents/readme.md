@@ -13,7 +13,7 @@ should follow these rules when implementing interfaces, traits, and classes.
 - Avoid long functions: break down complex logic into smaller private methods.
 - Consistent naming: snake_case for DB fields; camelCase for PHP properties/methods.
 - Short acronyms like "ID": Always keep uppercase, e.g., `getID()`,  `getUserID()`.
-- Always use `array()` syntax for arrays, not `[]`.
+- Always define arrays with the verbose `array()` syntax.
 
 ### Exception arguments
 
