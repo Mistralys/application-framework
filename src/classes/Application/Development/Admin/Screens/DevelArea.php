@@ -22,7 +22,7 @@ use UI_Page_Navigation;
  *
  * @package
  */
-class DevelArea extends BaseArea implements ClassLoaderScreenInterface
+class DevelArea extends BaseArea
 {
     public const string URL_NAME = 'devel';
 
@@ -158,5 +158,10 @@ class DevelArea extends BaseArea implements ClassLoaderScreenInterface
 
             $subnav->addURL($title, $this->getURL(array(AdminScreenInterface::REQUEST_PARAM_MODE => $mode)));
         }
+    }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendArea($this);
     }
 }
