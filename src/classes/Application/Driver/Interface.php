@@ -117,6 +117,11 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * @return array<string|class-string<AdminAreaInterface>>
      */
     public function getAdminAreas() : array;
+
+    /**
+     * @param string|class-string<AdminAreaInterface> $name Screen ID, URL name or class name.
+     * @return bool
+     */
     public function areaExists(string $name) : bool;
 
     public function getAllowedAreas() : array;
@@ -131,7 +136,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function createOAuth() : Application_OAuth;
 
-    public function createArea(string $id) : Application_Admin_Area;
+    public function createArea(string $idOrClass) : AdminAreaInterface;
 
     /**
      * @param array<string,string|number> $params
