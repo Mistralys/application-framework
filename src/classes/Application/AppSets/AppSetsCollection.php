@@ -149,7 +149,7 @@ class AppSetsCollection extends DBHelper_BaseCollection
                     'Cannot create a new set with alias [%s], this alias is already in use by an existing application set.',
                     $alias
                 ),
-                AppSetsException::ERROR_SET_ID_ALREADY_EXISTS
+                AppSetsException::ERROR_ALIAS_ALREADY_EXISTS
             );
         }
 
@@ -161,6 +161,7 @@ class AppSetsCollection extends DBHelper_BaseCollection
         return $this->createNewRecord(array(
             self::COL_ALIAS => $alias,
             self::COL_LABEL => $label,
+            self::COL_DEFAULT_URL_NAME => $defaultArea->getURLName(),
             self::COL_URL_NAMES => implode(',', $enabledNames)
         ));
     }

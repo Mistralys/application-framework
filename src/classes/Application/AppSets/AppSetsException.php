@@ -9,7 +9,7 @@ use Application\ApplicationException;
 class AppSetsException extends ApplicationException
 {
 
-    public const int ERROR_SET_ID_ALREADY_EXISTS = 12701;
+    public const int ERROR_ALIAS_ALREADY_EXISTS = 12701;
     public const int ERROR_CANNOT_RENAME_TO_EXISTING_NAME = 12705;
     public const int ERROR_CANNOT_RENAME_INEXISTANT_SET = 12704;
     public const int ERROR_UNKNOWN_SET = 12702;
