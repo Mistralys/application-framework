@@ -1310,17 +1310,22 @@ class DBHelper
             unset($set[$fieldName]);
         }
 
+        $whereString = self::buildWhereFieldsStatement($where);
+
+        if(!empty($whereString)) {
+            $whereString = ' WHERE '.$whereString;
+        }
+
         return self::update(
             sprintf(
-                "UPDATE
+                /** @lang text */"UPDATE
                     `%s`
                 SET
                     %s
-                WHERE
                     %s",
                 $table,
                 self::buildSetStatement($set),
-                self::buildWhereFieldsStatement($where)
+                $whereString
             ),
             $data
         );
