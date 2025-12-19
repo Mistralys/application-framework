@@ -13,4 +13,9 @@ abstract class BaseRecordCreateAction extends Application_Admin_Area_Mode_Submod
 {
     use RecordSettingsScreenTrait;
     use RecordCreateScreenTrait;
+
+    public function getDefaultSubscreenClass() : null
+    {
+        return null;
+    }
 }

@@ -20,11 +20,6 @@ trait APIKeyActionTrait
         return $this->getAPIClientRequest()->getRecordOrRedirect()->createAPIKeys();
     }
 
-    public function getDefaultSubscreenClass() : null
-    {
-        return null;
-    }
-
     public function getRecordMissingURL(): AdminURLInterface
     {
         return $this->createCollection()->adminURLs()->list();

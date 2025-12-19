@@ -13,4 +13,9 @@ abstract class BaseAction
     implements AllowableMigrationInterface
 {
     use AllowableMigrationTrait;
+
+    public function getDefaultSubscreenClass() : null
+    {
+        return null;
+    }
 }

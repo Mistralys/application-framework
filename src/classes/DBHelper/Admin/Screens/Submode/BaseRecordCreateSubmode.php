@@ -16,7 +16,7 @@ abstract class BaseRecordCreateSubmode
     use RecordSettingsScreenTrait;
     use RecordCreateScreenTrait;
 
-    final public function getDefaultAction(): string
+    public function getDefaultAction(): string
     {
         return '';
     }
