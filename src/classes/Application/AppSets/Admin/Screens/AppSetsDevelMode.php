@@ -8,8 +8,10 @@ use Application\Admin\Area\BaseMode;
 use Application\Admin\Traits\DevelModeInterface;
 use Application\Admin\Traits\DevelModeTrait;
 use Application\Sets\Admin\AppSetScreenRights;
+use Application\Sets\Admin\Screens\Submode\SetsListSubmode;
+use UI;
 
-class ApplicationSetsMode extends BaseMode implements DevelModeInterface
+class AppSetsDevelMode extends BaseMode implements DevelModeInterface
 {
     use DevelModeTrait;
 
@@ -51,5 +53,18 @@ class ApplicationSetsMode extends BaseMode implements DevelModeInterface
     public function getDefaultSubscreenClass(): string
     {
         return SetsListSubmode::class;
+    }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendItem($this->getNavigationTitle())
+            ->makeLinked($this->getURL());
+    }
+
+    protected function _handleHelp(): void
+    {
+        $this->renderer
+            ->getTitle()
+            ->setIcon(UI::icon()->list());
     }
 }
