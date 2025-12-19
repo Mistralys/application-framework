@@ -7,6 +7,9 @@
 use Application\Admin\Index\AdminScreenIndex;
 use Application\Admin\ScreenException;
 use Application\AppFactory;
+use Application\AppSets\AppSet;
+use Application\AppSets\AppSetsCollection;
+use Application\AppSets\DefaultAppSet;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
@@ -17,6 +20,7 @@ use Application\Revisionable\RevisionableInterface;
 use Application\WhatsNew\WhatsNew;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FileInfo;
@@ -151,31 +155,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->settings = new DriverSettings($this->storage);
     }
 
-    private function initAppSets() : void
-    {
-        if (!defined('APP_APPSET'))
-        {
-            define('APP_APPSET', '__default');
-        }
-
-        $sets = AppFactory::createAppSets();
-
-        if ($sets->idExists(APP_APPSET))
-        {
-            $this->appset = $sets->getByID(APP_APPSET);
-            return;
-        }
-
-        throw new DriverException(
-            'The selected application set does not exist.',
-            sprintf(
-                'The application set [%s] set using the [APP_APPSET] configuration setting does not exist.',
-                APP_APPSET
-            ),
-            self::ERROR_APPLICATION_SET_DOES_NOT_EXIST
-        );
-    }
-
     public static function getStorageType() : string
     {
         if (Application::isDatabaseEnabled())
@@ -188,13 +167,11 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * Retrieves the current application set of the application.
-     * @return Application_Sets_Set
+     * @return AppSet|DefaultAppSet
      */
-    public function getAppSet() : Application_Sets_Set
+    public function getAppSet() : AppSet|DefaultAppSet
     {
-        $this->initAppSets();
-
-        return $this->appset;
+        return AppFactory::createAppSets()->getActive();
     }
 
     /**
@@ -388,25 +365,20 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Indexed array with administration area objects.
      * @see createArea()
-     * @var array
+     * @var array<string,AdminAreaInterface>
      */
-    protected $areas = array();
-
-    /**
-     * @var array<string,class-string<Application_Admin_Area>>|NULL
-     */
-    protected ?array $areaIndex = null;
+    protected array $areas = array();
 
     /**
      * Creates an area instance. This area will not be in admin mode,
      * so no actions will be handled.
      *
-     * @param string $id
-     * @return Application_Admin_Area
+     * @param string|class-string<AdminAreaInterface> $idOrClass
+     * @return AdminAreaInterface
      */
-    public function createArea(string $id) : Application_Admin_Area
+    public function createArea(string $idOrClass) : AdminAreaInterface
     {
-        return $this->_createArea($id);
+        return $this->_createArea($idOrClass);
     }
 
     /**
@@ -414,9 +386,9 @@ abstract class Application_Driver implements Application_Driver_Interface
      * actions and rendering content.
      *
      * @param string $id
-     * @return Application_Admin_Area
+     * @return AdminAreaInterface
      */
-    protected function createAdminArea(string $id) : Application_Admin_Area
+    protected function createAdminArea(string $id) : AdminAreaInterface
     {
         return $this->_createArea($id, true);
     }
@@ -425,37 +397,23 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Creates an administration area and returns the created instance.
      * If an instance already exists, it will return that.
      *
-     * @param string $id
+     * @param string|class-string<AdminAreaInterface> $idOrClass
      * @param boolean $adminMode Whether to run the screen as the active administration screen. Set this to false to just retrieve information about the screen.
-     * @return Application_Admin_Area
+     * @return AdminAreaInterface
      *
-     * @throws ClassHelper\ClassNotExistsException
-     * @throws ClassHelper\ClassNotImplementsException
+     * @throws BaseClassHelperException
      * @throws ConvertHelper_Exception
      * @throws DriverException
      */
-    protected function _createArea(string $id, bool $adminMode = false) : Application_Admin_Area
+    protected function _createArea(string $idOrClass, bool $adminMode = false) : AdminAreaInterface
     {
-        $this->buildAreasIndex();
-
-        $lcID = strtolower($id);
-
-        if (!isset($this->areaIndex[$lcID]))
-        {
-            throw new DriverException(
-                'Unknown administration area',
-                sprintf(
-                    'The administration area [%s] does not exist. Available areas are: [%s].',
-                    $id,
-                    implode(', ', array_values($this->areaIndex))
-                ),
-                self::ERROR_UNKNOWN_ADMINISTRATION_AREA
-            );
+        if(!is_a($idOrClass, AdminAreaInterface::class, true)) {
+            $class = AdminScreenIndex::getInstance()->requireAreaByName($idOrClass);
+        } else {
+            $class = $idOrClass;
         }
 
-        $areaClass = $this->areaIndex[$lcID];
-
-        $key = $areaClass . ConvertHelper::bool2string($adminMode);
+        $key = $class . ConvertHelper::bool2string($adminMode);
 
         if (isset($this->areas[$key]))
         {
@@ -463,8 +421,8 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
 
         $this->areas[$key] = ClassHelper::requireObjectInstanceOf(
-            Application_Admin_Area::class,
-            new $areaClass($this, $adminMode)
+            AdminAreaInterface::class,
+            new $class($this, $adminMode)
         );
 
         return $this->areas[$key];
@@ -472,52 +430,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     public function areaExists(string $name): bool
     {
-        $this->buildAreasIndex();
-
-        return isset($this->areaIndex[$name]) || in_array($name, $this->areaIndex, true);
-    }
-
-    protected function buildAreasIndex() : void
-    {
-        if (isset($this->areaIndex))
-        {
-            return;
-        }
-
-        // create the lookup index for areas if it does not
-        // exist yet: this allows us to specify an area in
-        // a case-insensitive way, as well as by its URL name
-        // or actual name.
-        $this->areaIndex = array();
-        $areas = $this->getAdminAreas();
-
-        foreach ($areas as $aid => $className)
-        {
-            if(!is_a($className, AdminAreaInterface::class, true))
-            {
-                throw new AdminException(
-                    'Invalid admin area type',
-                    sprintf(
-                        'The administration area class [%s] for area ID [%s] is not an instance of [%s].',
-                        $className,
-                        $aid,
-                        AdminAreaInterface::class
-                    ),
-                    self::ERROR_UNHANDLED_SCREEN_TYPE
-                );
-            }
-
-            if (!isset($this->areaIndex[$aid]))
-            {
-                $this->areaIndex[$aid] = $className;
-            }
-
-            $lcName = strtolower(getClassTypeName($className));
-            if (!isset($this->areaIndex[$lcName]))
-            {
-                $this->areaIndex[$lcName] = $className;
-            }
-        }
+        return AdminScreenIndex::getInstance()->areaExists($name);
     }
 
     /**
@@ -683,11 +596,6 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @var UI_Page_Sidebar
      */
     protected $sidebar;
-
-    /**
-     * @var Application_Sets_Set
-     */
-    protected $appset;
 
     /**
      * Keys in the array are the area URL names.
@@ -981,16 +889,6 @@ abstract class Application_Driver implements Application_Driver_Interface
     public function getAreas() : array
     {
         return $this->enabledAreas;
-    }
-
-    /**
-     * Retrieves the application sets manager.
-     * @return Application_Sets
-     * @deprecated Use the AppFactory instead.
-     */
-    public function getApplicationSets() : Application_Sets
-    {
-        return AppFactory::createAppSets();
     }
 
     abstract protected function setUpUI() : void;
@@ -1852,5 +1750,26 @@ abstract class Application_Driver implements Application_Driver_Interface
     final public function getAdminAreas(): array
     {
         return AdminScreenIndex::getInstance()->getAdminAreas();
+    }
+
+    public function getAreaByClass(string $class) : AdminAreaInterface
+    {
+        foreach ($this->getAdminAreaObjects() as $area)
+        {
+            if (get_class($area) === $class)
+            {
+                return $area;
+            }
+        }
+
+        throw new DriverException(
+            'Unknown admin area class',
+            sprintf(
+                'The admin area class [%s] is not registered in the driver [%s].',
+                $class,
+                get_class($this)
+            ),
+            DriverException::ERROR_UNKNOWN_ADMIN_AREA_CLASS
+        );
     }
 }
