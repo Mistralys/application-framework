@@ -31,7 +31,7 @@ class ManageUsersArea extends BaseArea
 
     public function getTitle(): string
     {
-        return t('Users');
+        return t('Manage users');
     }
 
     public function getDefaultMode(): string
