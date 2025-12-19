@@ -108,23 +108,9 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     }
 
     #[DisposedAware]
-    public function refreshData() : void
+    final public function refreshData() : void
     {
         $this->requireNotDisposed('Refreshing the record\'s data from DB.');
-
-        $where = $this->collection->getForeignKeys();
-        $where[$this->recordPrimaryName] = $this->recordID;
-
-        $query = sprintf(
-            "SELECT
-                *
-            FROM
-                `%s`
-            WHERE
-                %s",
-            $this->recordTable,
-            DBHelper::buildWhereFieldsStatement($where)
-        );
 
         $initial = !isset($this->recordData);
 
@@ -132,10 +118,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
             $this->log('Refreshing the internal data.');
         }
 
-        $this->recordData = DBHelper::fetch(
-            $query,
-            $where
-        );
+        $this->recordData = $this->loadData();
 
         if(empty($this->recordData)) {
             throw new BaseRecordException(
@@ -154,6 +137,28 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
         {
             $this->_onDataRefreshed();
         }
+    }
+
+    protected function loadData() : array
+    {
+        $where = $this->collection->getForeignKeys();
+        $where[$this->recordPrimaryName] = $this->recordID;
+
+        $query = sprintf(
+            "SELECT
+                *
+            FROM
+                `%s`
+            WHERE
+                %s",
+            $this->recordTable,
+            DBHelper::buildWhereFieldsStatement($where)
+        );
+
+        return DBHelper::fetch(
+            $query,
+            $where
+        );
     }
 
     protected function init() : void
