@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Application\API\Admin\Screens\Mode\View\APIKeys;
 
 use Application\API\Admin\APIScreenRights;
-use Application\API\Admin\RequestTypes\APIClientRequestInterface;
 use Application\API\Admin\RequestTypes\APIClientRequestTrait;
 use Application\API\Admin\Traits\APIKeyActionInterface;
 use Application\API\Admin\Traits\APIKeyActionTrait;
 use Application\API\Clients\Keys\APIKeyRecord;
-use Application\API\Clients\Keys\APIKeysCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\Microtime;
@@ -37,6 +35,11 @@ class APIKeysListAction extends BaseRecordListAction implements APIKeyActionInte
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return APIScreenRights::SCREEN_API_KEYS_LIST;
     }
 
     public function getNavigationTitle(): string
