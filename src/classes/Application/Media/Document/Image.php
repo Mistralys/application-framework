@@ -8,9 +8,9 @@ use Application\Media\ImageDocumentTrait;
 use Application\Media\MediaException;
 use AppUtils\BaseException;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\ImageHelper;
 use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
 use AppUtils\ImageHelper_Size;
-use AppUtils\ImageHelper;
 
 class Application_Media_Document_Image extends Application_Media_Document
     implements ImageDocumentInterface

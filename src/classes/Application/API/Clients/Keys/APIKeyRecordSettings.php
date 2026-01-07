@@ -11,7 +11,6 @@ namespace Application\API\Clients\Keys;
 use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\APIClientRecord;
 use Application\AppFactory;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;

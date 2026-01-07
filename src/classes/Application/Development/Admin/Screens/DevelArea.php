@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\Development\Admin\Screens;
 
 use Application\Admin\BaseArea;
-use Application\Admin\ClassLoaderScreenInterface;
 use Application\Admin\Traits\DevelModeInterface;
 use Application\Development\Admin\DevScreenRights;
 use Application\Interfaces\Admin\AdminScreenInterface;

@@ -12,7 +12,6 @@ namespace Application\NewsCentral\Admin\Screens;
 use Application\Admin\BaseArea;
 use Application\AppFactory;
 use Application\NewsCentral\Admin\NewsScreenRights;
-use Application\NewsCentral\Admin\Screens\Mode\CreateAlertScreen;
 use Application\NewsCentral\Admin\Screens\Mode\CreateArticleScreen;
 use Application\NewsCentral\Admin\Screens\Mode\CreateCategoryMode;
 use Application\NewsCentral\Admin\Screens\Mode\NewsListMode;

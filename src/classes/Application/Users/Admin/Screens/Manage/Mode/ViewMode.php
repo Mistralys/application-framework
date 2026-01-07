@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Users\Admin\Screens\Manage\Mode;
 
-use Application\AppFactory;
 use Application\Users\Admin\Screens\Manage\Mode\View\StatusSubmode;
 use Application\Users\Admin\Traits\ManageModeInterface;
 use Application\Users\Admin\Traits\ManageModeTrait;
 use Application\Users\Admin\UserAdminScreenRights;
-use Application_Users;
 use Application_Users_User;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
-use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @method Application_Users_User getRecord()

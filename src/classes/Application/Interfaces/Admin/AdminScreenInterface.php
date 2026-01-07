@@ -6,14 +6,8 @@
 
 namespace Application\Interfaces\Admin;
 
-use Application\Admin\Screens\Events\ActionsHandledEvent;
-use Application\Admin\Screens\Events\BeforeActionsHandledEvent;
-use Application\Admin\Screens\Events\BeforeBreadcrumbHandledEvent;
 use Application\Admin\Screens\Events\BeforeContentRenderedEvent;
-use Application\Admin\Screens\Events\BeforeSidebarHandledEvent;
-use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
 use Application\Admin\Screens\Events\ContentRenderedEvent;
-use Application\Admin\Screens\Events\SidebarHandledEvent;
 use Application\Interfaces\AllowableInterface;
 use Application_Admin_Area;
 use Application_EventHandler_EventableListener;

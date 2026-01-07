@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
-use function PHPUnit\Framework\callback;
 
 class Application_User_Rights_Right
 {

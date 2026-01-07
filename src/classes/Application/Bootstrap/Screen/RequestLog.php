@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use AppUtils\FileHelper;
 
 /**
  * @see Application_RequestLog

@@ -7,7 +7,6 @@ namespace Application\Media\Collection;
 use Application;
 use Application\AppFactory;
 use Application\Media\MediaException;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Application_Interfaces_Formable;

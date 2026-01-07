@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\API\Clients;
 
 use Application\AppFactory;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;

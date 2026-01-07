@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace NewsCentral\Entries;
 
 use Application\AppFactory;
-use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\NewsCentral\Admin\NewsEntryAdminURLs;
-use Application\NewsCentral\Admin\Screens\Mode\ViewArticle\ArticleSettingsSubmode;
-use Application\NewsCentral\Admin\Screens\Mode\ViewArticle\ArticleStatusSubmode;
-use Application\NewsCentral\Admin\Screens\Mode\ViewArticleMode;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntryStatuses;
 use Application\NewsCentral\NewsEntryTypes;

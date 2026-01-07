@@ -8,12 +8,12 @@
  */
 
 use Application\Media\Collection\MediaCollection;
-use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper;
-use AppUtils\OutputBuffering;
-use function AppUtils\parseNumber;
+use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper_Size;
 use AppUtils\NumberInfo;
+use AppUtils\OutputBuffering;
+use function AppUtils\parseNumber;
 
 /**
  * Element that is used to handle SPIN image uploads: handles an image upload

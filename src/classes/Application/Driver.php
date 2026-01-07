@@ -5,10 +5,8 @@
  */
 
 use Application\Admin\Index\AdminScreenIndex;
-use Application\Admin\ScreenException;
 use Application\AppFactory;
 use Application\AppSets\AppSet;
-use Application\AppSets\AppSetsCollection;
 use Application\AppSets\DefaultAppSet;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;

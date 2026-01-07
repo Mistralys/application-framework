@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Sets\Admin\Screens\Submode;
 
-use Application\AppSets\Admin\Screens\Submode\View\SettingsAction;
 use Application\AppSets\Admin\Screens\Submode\View\StatusAction;
 use Application\AppSets\AppSet;
+use Application\AppSets\AppSetsCollection;
 use Application\Sets\Admin\AppSetScreenRights;
 use Application\Sets\Admin\Traits\SubmodeInterface;
 use Application\Sets\Admin\Traits\SubmodeTrait;
-use Application\AppSets\AppSetsCollection;
 use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 use UI;
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use Application\AppFactory;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Application_Interfaces_Formable;

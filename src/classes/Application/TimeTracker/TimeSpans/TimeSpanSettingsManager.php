@@ -7,7 +7,6 @@ namespace Application\TimeTracker\TimeSpans;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSpans\SpanTypes\TimeSpanTypes;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;

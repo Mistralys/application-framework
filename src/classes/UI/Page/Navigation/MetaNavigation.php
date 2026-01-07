@@ -7,7 +7,6 @@ namespace UI\Page\Navigation;
 use Application;
 use Application\AppFactory;
 use Application_Driver;
-use Application_Session_Base;
 use Application_User_Notepad;
 use UI;
 use UI\Page\Navigation\MetaNavigation\DeveloperMenu;

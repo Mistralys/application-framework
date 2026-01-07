@@ -13,7 +13,6 @@ use Application_User_Notepad;
 use UI;
 use UI_Bootstrap_DropdownMenu;
 use UI_Page_Navigation_Item_DropdownMenu;
-use UI_Themes;
 
 class UserMenu
 {

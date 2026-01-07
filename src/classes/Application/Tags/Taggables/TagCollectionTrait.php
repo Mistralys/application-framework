@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Tags\Taggables;
 
-use Application\AppFactory;
 use Application\Tags\TaggingException;
 use Application\Tags\TagRecord;
 use Application\Tags\TagRegistry;

@@ -13,7 +13,6 @@ use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURLInterface;
 use UI\Bootstrap\ButtonGroup\ButtonGroupItemInterface;
 use UI\Interfaces\ButtonLayoutInterface;
-use UI\Interfaces\ButtonSizeInterface;
 use UI\Traits\ActivatableTrait;
 use UI\Traits\ButtonLayoutTrait;
 use UI\Traits\ButtonSizeTrait;

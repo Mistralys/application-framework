@@ -6,7 +6,6 @@ namespace UI\Page\Navigation;
 
 use Application\Admin\Area\Events\UIHandlingCompleteEvent;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_Admin_Area;
 use Application_Driver;
 use Application_EventHandler;
 use Application_Interfaces_Loggable;

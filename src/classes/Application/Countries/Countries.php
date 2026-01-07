@@ -15,7 +15,6 @@ use Application\Languages\Language;
 use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Countries\CountryInterface;
 use AppLocalize\Localization\Country\CountryGB;
-use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
 /**

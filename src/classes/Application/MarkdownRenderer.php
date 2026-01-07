@@ -12,7 +12,6 @@ use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\StringBuilder;
 use AppUtils\Traits\OptionableTrait;
-use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;

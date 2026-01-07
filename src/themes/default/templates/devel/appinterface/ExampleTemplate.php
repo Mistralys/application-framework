@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Application\Themes\DefaultTemplate\devel\appinterface;
 
 use Application\MarkdownRenderer;
-use UI\Admin\Screens\AppInterfaceDevelMode;
 use AppUtils\Highlighter;
 use Mistralys\Examples\UserInterface\ExampleFile;
 use Mistralys\Examples\UserInterface\ExamplesCategory;
 use UI;
+use UI\Admin\Screens\AppInterfaceDevelMode;
 use UI_Page_Template_Custom;
 
 class ExampleTemplate extends UI_Page_Template_Custom
