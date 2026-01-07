@@ -5,6 +5,8 @@
  * @see UI
  */
 
+declare(strict_types=1);
+
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Exception\UnexpectedInstanceException;
@@ -260,7 +262,7 @@ class UI
 
     /**
      * Retrieves the resource manager instance, which is used
-     * to keep track of all clientside resources, like javascript
+     * to keep track of all clientside resources, like JavaScript
      * and stylesheet includes.
      *
      * @return UI_ResourceManager
@@ -276,7 +278,7 @@ class UI
     }
 
     /**
-     * Adds a javascript or stylesheet to include clientside.
+     * Adds a JavaScript or stylesheet to include clientside.
      *
      * @param string $fileOrURL
      * @throws Application_Exception
@@ -291,7 +293,7 @@ class UI
     }
 
     /**
-     * Adds a javascript file to include. This can be either
+     * Adds a JavaScript file to include. This can be either
      * the filename of a file from the js/ subfolder, or a
      * full URL to an external file.
      *
@@ -334,7 +336,7 @@ class UI
     
    /**
     * Retrieves the build-specific load key that is appended
-    * to all javascript and stylesheet includes to force a 
+    * to all JavaScript and stylesheet includes to force a
     * refresh in browsers when deploying a new application
     * version.
     * 
@@ -351,7 +353,7 @@ class UI
     }
     
     /**
-     * Adds a javascript statement to run on when the page
+     * Adds a JavaScript statement to run on when the page
      * has loaded using the jquery.ready() function.
      *
      * Example:
@@ -376,7 +378,7 @@ class UI
     }
 
     /**
-     * Adds a javascript statement to add to the head script tag.
+     * Adds a JavaScript statement to add to the head script tag.
      * The semicolon is added automatically, so you do not have to
      * include it.
      *
@@ -422,8 +424,8 @@ class UI
     }
 
     /**
-     * Adds a javascript variable to the head script tag. The variable
-     * is automatically converted to the javascript equivalent.
+     * Adds a JavaScript variable to the head script tag. The variable
+     * is automatically converted to the JavaScript equivalent.
      *
      * @param string $varName
      * @param mixed $varValue
@@ -436,11 +438,11 @@ class UI
     }
 
     /**
-     * Builds and adds a javascript statement to the head script tag.
-     * The first parameter is the javascript function to call, any
-     * additional parameters are used as arguments for the javascript
+     * Builds and adds a JavaScript statement to the head script tag.
+     * The first parameter is the JavaScript function to call, any
+     * additional parameters are used as arguments for the JavaScript
      * function call. Variable types are automagically converted to
-     * javascript types.
+     * JavaScript types.
      *
      * Examples:
      *
@@ -798,11 +800,11 @@ class UI
      * be converted to string, so they can be inserted directly
      * into any content strings.
      *
-     * @param string|number|UI_Renderable_Interface $label
+     * @param string|int|float|StringableInterface $label
      * @return UI_Badge
      * @throws UI_Exception
      */
-    public static function badge($label) : UI_Badge
+    public static function badge(string|int|float|StringableInterface $label) : UI_Badge
     {
         return new UI_Badge($label);
     }
@@ -812,11 +814,11 @@ class UI
      * be converted to string, so they can be inserted directly
      * into any content strings.
      *
-     * @param string|number|UI_Renderable_Interface $label
+     * @param string|int|float|StringableInterface $label
      * @return UI_Label
      * @throws UI_Exception
      */
-    public static function label($label) : UI_Label
+    public static function label(string|int|float|StringableInterface $label) : UI_Label
     {
         return new UI_Label($label);
     }
@@ -860,12 +862,12 @@ class UI
     /**
      * Creates a new UI message instance and returns it.
      *
-     * @param string|number|UI_Renderable_Interface|NULL $message
+     * @param string|int|float|StringableInterface|NULL $message
      * @param string $type
      * @param array<string,mixed> $options
      * @return UI_Message
      */
-    public function createMessage($message=null, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
+    public function createMessage(string|int|float|StringableInterface|NULL $message=null, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
     {
         return new UI_Message($this, $message, $type, $options);
     }
@@ -895,7 +897,7 @@ class UI
      * @return UI_Form
      * @see createGetForm()
      */
-    public function createForm(string $id, $defaultData = array()) : UI_Form
+    public function createForm(string $id, array|ArrayDataCollection $defaultData = array()) : UI_Form
     {
         self::initForms();
 
@@ -958,7 +960,7 @@ class UI
      * @param string|int|float|StringableInterface|NULL $label
      * @return UI_Bootstrap_ButtonDropdown
      */
-    public function createButtonDropdown($label=null) : UI_Bootstrap_ButtonDropdown
+    public function createButtonDropdown(string|int|float|StringableInterface|NULL $label=null) : UI_Bootstrap_ButtonDropdown
     {
         $dropDown = new UI_Bootstrap_ButtonDropdown($this);
         $dropDown->setLabel($label);
@@ -983,7 +985,7 @@ class UI
     * @param string|AdminURLInterface $url
     * @return UI_Bootstrap_Anchor
     */
-    public function createAnchor(string $label='', $url='') : UI_Bootstrap_Anchor
+    public function createAnchor(string $label='', string|AdminURLInterface $url='') : UI_Bootstrap_Anchor
     {
         $anchor = new UI_Bootstrap_Anchor($this);
         $anchor->setLabel($label);
@@ -1103,11 +1105,11 @@ class UI
     }
 
     /**
-     * @param string|bool $boolValue
+     * @param string|bool|int $boolValue
      * @return UI_PrettyBool
      * @throws ConvertHelper_Exception
      */
-    public static function prettyBool($boolValue) : UI_PrettyBool
+    public static function prettyBool(string|bool|int $boolValue) : UI_PrettyBool
     {
         return new UI_PrettyBool($boolValue);
     }
@@ -1117,10 +1119,10 @@ class UI
     * Use the button's API to configure its looks 
     * and functions. It supports string conversion.
     * 
-    * @param string|number|StringableInterface|NULL $label
+    * @param string|int|float|StringableInterface|NULL $label
     * @return UI_Button
     */
-    public static function button($label=null) : UI_Button
+    public static function button(string|int|float|StringableInterface|NULL $label=null) : UI_Button
     {
     	return new UI_Button($label);
     }
@@ -1130,7 +1132,7 @@ class UI
      * @return UI_Bootstrap_ButtonDropdown
      * @throws UI_Exception
      */
-    public static function buttonDropdown($label=null) : UI_Bootstrap_ButtonDropdown
+    public static function buttonDropdown(string|int|float|StringableInterface|NULL $label=null) : UI_Bootstrap_ButtonDropdown
     {
         return self::getInstance()->createButtonDropdown($label);
     }
