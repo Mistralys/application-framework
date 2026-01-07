@@ -11,7 +11,6 @@ use Connectors;
 use Connectors\Headers\HTTPHeadersBasket;
 use Connectors_Connector;
 use Connectors_Exception;
-use Throwable;
 
 class AppAPIConnector extends Connectors_Connector
 {

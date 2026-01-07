@@ -6,8 +6,8 @@ namespace AppFrameworkTests\Ajax;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use AppFrameworkTestClasses\Traits\ConnectorTestInterface;
-use Connectors;
 use AppFrameworkTestClasses\Traits\ConnectorTestTrait;
+use Connectors;
 use TestDriver\AjaxMethods\AjaxGetTestJSON;
 use TestDriver\Connectors\InternalAjax\GetTestJSONMethod;
 use TestDriver\Connectors\InternalAjaxConnector;

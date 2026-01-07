@@ -12,16 +12,13 @@ use Application\AppFactory;
 use Application\Exception\UnexpectedInstanceException;
 use Application_Exception;
 use AppUtils\ArrayDataCollection;
-use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use Connectors;
-use Connectors_Connector;
 use Connectors_Exception;
 use Connectors_Request;
 use Connectors_Request_Method;
 use Connectors_Request_URL;
-use Connectors_Response;
 use Mistralys\AppFramework\Helpers\JSONUnserializer;
 
 /**
