@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Application\Admin\Welcome\Screens\OverviewMode;
 use AppUtils\ConvertHelper;
+use Utilities\TimeOfDay;
 
 /**
  * Renders the content of the welcome screen, with the user's
