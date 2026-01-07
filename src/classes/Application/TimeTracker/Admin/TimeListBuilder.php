@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin;
 
 use Application\AppFactory;
-use Application\FilterSettingsInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\TimeTracker\Admin\ListBuilder\TicketSummaryRenderer;
 use Application\TimeTracker\TimeEntry;
@@ -16,6 +15,7 @@ use AppUtils\ConvertHelper;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\Microtime;
 use DBHelper\Admin\BaseCollectionListBuilder;
+use FilterSettingsInterface;
 use TestDriver\Area\TimeTrackerScreen\ListScreen\DayListScreen;
 use UI;
 use UI\AdminURLs\AdminURLInterface;

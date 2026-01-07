@@ -7,7 +7,6 @@
  * @see UI_Page_Sidebar
  */
 
-use Application\FilterSettingsInterface;
 use Application\Revisionable\RevisionableInterface;
 use AppUtils\Interfaces\StringableInterface;
 

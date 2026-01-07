@@ -10,7 +10,6 @@ use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\FilterSettings\FilterSettingsException;
 use Application\FilterSettings\SettingDef;
-use Application\FilterSettingsInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Traits\HiddenVariablesTrait;

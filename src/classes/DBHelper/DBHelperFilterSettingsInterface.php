@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DBHelper;
 
-use Application\FilterSettingsInterface;
+use FilterSettingsInterface;
 
 interface DBHelperFilterSettingsInterface extends FilterSettingsInterface
 {

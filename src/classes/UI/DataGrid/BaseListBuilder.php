@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace UI\DataGrid;
 
 use Application\ApplicationException;
-use Application\FilterSettingsInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application_Driver;
@@ -20,6 +19,7 @@ use AppUtils\Microtime;
 use AppUtils\Traits\OptionableTrait;
 use DateTime;
 use DBHelper\Interfaces\DBHelperRecordInterface;
+use FilterSettingsInterface;
 use UI;
 use UI\Interfaces\ListBuilderInterface;
 use UI_DataGrid;
