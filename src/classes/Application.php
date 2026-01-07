@@ -9,6 +9,7 @@
 use Application\API\APIFoldersManager;
 use Application\API\APIManager;
 use Application\AppFactory;
+use Application\ApplicationException;
 use Application\AppSets\AppSetsCollection;
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
@@ -217,7 +218,7 @@ class Application
             $pageID = $driver->getPageID();
             if (empty($pageID))
             {
-                throw new Application_Exception(
+                throw new ApplicationException(
                     'Empty page ID',
                     'The driver [getPageID] method returned an empty page ID.',
                     self::ERROR_EMPTY_PAGE_ID
@@ -232,7 +233,7 @@ class Application
         }
         else if ($runMode !== self::RUN_MODE_SCRIPT)
         {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 'Invalid application run mode',
                 sprintf(
                     'The run mode [%s] is not a valid application run mode.',
@@ -421,7 +422,7 @@ class Application
 
         if (empty($content))
         {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 'No content to display',
                 'The driver did not generate any contents to display.',
                 self::ERROR_DRIVER_DID_NOT_GENERATE_CONTENT
@@ -470,9 +471,9 @@ class Application
         throw $this->createNotStartedException();
     }
 
-    private function createNotStartedException() : Application_Exception
+    private function createNotStartedException() : ApplicationException
     {
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Application has not been started yet',
             '',
             self::ERROR_APPLICATION_NOT_STARTED
@@ -651,7 +652,7 @@ class Application
         }
         catch (Exception $e)
         {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 'Storage folder does not exist and cannot be created.',
                 sprintf(
                     'Tried creating folder [%s].',
@@ -701,7 +702,7 @@ class Application
         }
         catch (FileHelper_Exception $e)
         {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 sprintf(
                     'Storage subfolder [%s] does not exist and cannot be created.',
                     $subfolderName
@@ -937,7 +938,7 @@ class Application
 
         if (ini_set('memory_limit', $value) === false)
         {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 'Cannot change the memory limit.',
                 sprintf(
                     'Tried changing the memory limit to [%s] for operation [%s].',
@@ -1015,7 +1016,7 @@ class Application
             $errorCode = self::ERROR_CALLBACK_NOT_CALLABLE;
         }
 
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Invalid callback',
             sprintf(
                 'The callback is not callable: [%s].',
@@ -1106,9 +1107,9 @@ class Application
                 array($url)
             );
         }
-        catch (Application_Exception $e)
+        catch (ApplicationException $e)
         {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 'Error while running redirect event handling.',
             'Tried running the Redirect event, but an exception occurred.',
                 self::ERROR_REDIRECT_EVENTS_FAILED,
@@ -1173,7 +1174,7 @@ class Application
             return $userClass;
         }
 
-        throw new Application_Exception(
+        throw new ApplicationException(
             'User class does not exist.',
             sprintf(
                 'The expected class [%s] could not be found.',
@@ -1215,7 +1216,7 @@ class Application
             return $user;
         }
 
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Invalid user class',
             sprintf(
                 'The user class [%s] does not extend the [%s] class.',
@@ -1242,7 +1243,7 @@ class Application
             return self::createUser($userID);
         }
 
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Cannot find user data',
             sprintf(
                 'Tried loading data for user foreign id [%s], but it does not exist in the database.',
@@ -1371,7 +1372,7 @@ class Application
             $exception = $e;
         }
 
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Cannot find user data',
             sprintf(
                 'Tried loading data for user [%s], but it does not exist in the database.',
