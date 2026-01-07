@@ -13,7 +13,7 @@ use Application\Admin\Welcome\Screens\WelcomeArea;
 use Application\AppFactory;
 use Application\AppSets\Admin\AppSetAdminURLs;
 use Application\Interfaces\Admin\AdminAreaInterface;
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application\Sets\Admin\AppSetScreenRights;
 use Application_Driver;
 use Application_Formable;

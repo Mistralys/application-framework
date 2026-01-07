@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\TimeTracker;
 
 use Application;
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application\TimeTracker\Admin\EntryAdminURLs;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\Types\TimeEntryType;

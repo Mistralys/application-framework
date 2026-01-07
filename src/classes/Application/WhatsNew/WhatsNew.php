@@ -11,7 +11,7 @@ namespace Application\WhatsNew;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\Driver\DriverException;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application\WhatsNew\Admin\Screens\CreateSubmode;
 use Application\WhatsNew\Admin\Screens\ListSubmode;
 use Application\WhatsNew\Admin\Screens\WhatsNewEditorMode;
@@ -66,7 +66,7 @@ class WhatsNew
     }
 
     /**
-     * @return MarkdownRenderer
+     * @return \Application\MarkdownRenderer\MarkdownRenderer
      */
     public function getMarkdownRenderer() : MarkdownRenderer
     {

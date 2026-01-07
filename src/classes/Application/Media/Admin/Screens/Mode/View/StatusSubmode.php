@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Media\Admin\Screens\Mode\View;
 
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Admin\Traits\MediaViewInterface;
 use Application\Media\Admin\Traits\MediaViewTrait;

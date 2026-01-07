@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\API\Utilities;
 
 use Application\API\APIManager;
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 
 /**
  * Utility class used to describe an API response key with its path and a description.

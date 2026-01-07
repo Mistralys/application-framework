@@ -18,7 +18,7 @@ use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Utilities\KeyDescription;
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application_Bootstrap;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;

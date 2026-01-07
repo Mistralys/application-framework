@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Themes\DefaultTemplate\devel\appinterface;
 
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use AppUtils\Highlighter;
 use Mistralys\Examples\UserInterface\ExampleFile;
 use Mistralys\Examples\UserInterface\ExamplesCategory;

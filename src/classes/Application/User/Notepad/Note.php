@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Microtime;
 

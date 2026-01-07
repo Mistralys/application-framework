@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace NewsCentral\Entries;
 
-use Application\AppFactory;
-use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\MarkdownRenderer;
-use Application\NewsCentral\Admin\Screens\ManageNewsArea;
-use Application\NewsCentral\Admin\Screens\ReadNews\ReadArticleScreen;
-use Application\NewsCentral\Admin\Screens\ReadNewsArea;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application\NewsCentral\NewsCollection;
 
 class NewsArticle extends NewsEntry

@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Application\MarkdownRenderer\CustomTags;
 
 use Application\AppFactory;
-use Application\MarkdownRenderer;
 use Application\MarkdownRenderer\BaseCustomTag;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application_Media_Document;
 use Application_Media_Document_Image;
-use AppUtils\ArrayDataCollection;
 use AppUtils\AttributeCollection;
-use AppUtils\ConvertHelper;
 use AppUtils\HTMLTag;
-use Dom\Attr;
 
 /**
  * Detects media tags:
