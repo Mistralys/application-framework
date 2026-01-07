@@ -1,25 +1,23 @@
 <?php
 /**
- * File containing the {@link Environments} class.
- *
  * @package Application
  * @subpackage Environments
- * @see Environments
  */
 
 declare(strict_types=1);
 
 namespace Application;
 
-use Application;use Application\ConfigSettings\BaseConfigRegistry;
-use Application\Environments\Events\EnvironmentDetected;
+use Application;
+use Application\ConfigSettings\BaseConfigRegistry;
+use Application\Environments\Environment;
+use Application\Environments\EnvironmentException;use Application\Environments\Events\EnvironmentDetected;
 use Application_EventHandler_EventableListener;
-use Application_Exception;
 use Application_Interfaces_Eventable;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
-use Application\Environments\Environment;
-use AppUtils\BaseException;use Throwable;
+use AppUtils\BaseException;
+use Throwable;
 
 /**
  * Application\Environments\Environment manager: handles detecting the environment
@@ -36,15 +34,15 @@ class Environments implements Application_Interfaces_Eventable
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 
-    public const ERROR_NO_ENVIRONMENTS_REGISTERED = 47601;
-    public const ERROR_ENVIRONMENT_ALREADY_REGISTERED = 47602;
-    public const ERROR_UNREGISTERED_ENVIRONMENT = 47603;
+    public const int ERROR_NO_ENVIRONMENTS_REGISTERED = 47601;
+    public const int ERROR_ENVIRONMENT_ALREADY_REGISTERED = 47602;
+    public const int ERROR_UNREGISTERED_ENVIRONMENT = 47603;
 
-    public const TYPE_DEV = 'dev';
-    public const TYPE_PROD = 'prod';
-    public const EVENT_ENVIRONMENT_ACTIVATED = 'Activated';
-    public const EVENT_ENVIRONMENT_DETECTED = 'EnvironmentDetected';
-    public const EVENT_INCLUDES_LOADED = 'IncludesLoaded';
+    public const string TYPE_DEV = 'dev';
+    public const string TYPE_PROD = 'prod';
+    public const string EVENT_ENVIRONMENT_ACTIVATED = 'Activated';
+    public const string EVENT_ENVIRONMENT_DETECTED = 'EnvironmentDetected';
+    public const string EVENT_INCLUDES_LOADED = 'IncludesLoaded';
 
     /**
      * @var array<string,Environment>
@@ -70,7 +68,7 @@ class Environments implements Application_Interfaces_Eventable
     public function register(string $id, string $type, ?callable $configCallback=null): Environment
     {
         if (isset($this->environments[$id])) {
-            throw new Application_Exception(
+            throw new EnvironmentException(
                 'Cannot register the same environment twice',
                 sprintf(
                     'Tried registering the environment [%s] although it has already been registered.',
@@ -145,7 +143,7 @@ class Environments implements Application_Interfaces_Eventable
         $this->log('Detecting current environment.');
 
         if (empty($this->environments)) {
-            throw new Application_Exception(
+            throw new EnvironmentException(
                 'No environments registered',
                 '',
                 self::ERROR_NO_ENVIRONMENTS_REGISTERED
@@ -171,7 +169,7 @@ class Environments implements Application_Interfaces_Eventable
             return $this->environments[$id];
         }
 
-        throw new Application_Exception(
+        throw new EnvironmentException(
             'No such environment registered.',
             sprintf(
                 'The environment [%s] has not been registered.',
