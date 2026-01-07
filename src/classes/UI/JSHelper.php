@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 class JSHelper extends \AppUtils\JSHelper
 {
-    public const TOOLTIP_TOP = 'top';
-    public const TOOLTIP_BOTTOM = 'bottom';
-    public const TOOLTIP_LEFT = 'left';
-    public const TOOLTIP_RIGHT = 'right';
+    public const string TOOLTIP_TOP = 'top';
+    public const string TOOLTIP_BOTTOM = 'bottom';
+    public const string TOOLTIP_LEFT = 'left';
+    public const string TOOLTIP_RIGHT = 'right';
 
     /**
      * @var string[]

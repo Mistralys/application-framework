@@ -2,24 +2,26 @@
 
 declare(strict_types=1);
 
+namespace Utilities;
+
 class TimeOfDay
 {
-    const TIME_EARLY_MORNING = 'early_morning';
-    const TIME_MORNING = 'morning';
-    const TIME_LATE_MORNING = 'late_morning';
-    const TIME_NOON = 'noon';
-    const TIME_EARLY_AFTERNOON = 'early_afternoon';
-    const TIME_AFTERNOON = 'afternoon';
-    const TIME_LATE_AFTERNOON = 'late_afternoon';
-    const TIME_EARLY_EVENING = 'early_evening';
-    const TIME_EVENING = 'evening';
-    const TIME_NIGHT = 'night';
+    public const string TIME_EARLY_MORNING = 'early_morning';
+    public const string TIME_MORNING = 'morning';
+    public const string TIME_LATE_MORNING = 'late_morning';
+    public const string TIME_NOON = 'noon';
+    public const string TIME_EARLY_AFTERNOON = 'early_afternoon';
+    public const string TIME_AFTERNOON = 'afternoon';
+    public const string TIME_LATE_AFTERNOON = 'late_afternoon';
+    public const string TIME_EARLY_EVENING = 'early_evening';
+    public const string TIME_EVENING = 'evening';
+    public const string TIME_NIGHT = 'night';
 
     /**
      * Specifies the hour until
      * @var string[]
      */
-    protected static $times = array(
+    protected static array $times = array(
         0 => self::TIME_NIGHT,
         5 => self::TIME_EARLY_MORNING,
         8 => self::TIME_MORNING,
@@ -34,15 +36,8 @@ class TimeOfDay
         99 => self::TIME_NIGHT
     );
 
-    /**
-     * @var DateTime
-     */
-    private $time;
-
-    /**
-     * @var string
-     */
-    private $type;
+    private DateTime $time;
+    private string $type;
 
     public function __construct(DateTime $time)
     {
@@ -58,26 +53,26 @@ class TimeOfDay
         return $this->time;
     }
 
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function isNight() : bool
+    public function isNight(): bool
     {
         return $this->hasAnyType(self::TIME_NIGHT);
     }
 
-    public function isMorning() : bool
+    public function isMorning(): bool
     {
         return $this->hasAnyType(
-          self::TIME_EARLY_MORNING,
-          self::TIME_MORNING,
-          self::TIME_LATE_MORNING
+            self::TIME_EARLY_MORNING,
+            self::TIME_MORNING,
+            self::TIME_LATE_MORNING
         );
     }
 
-    public function isAfternoon() : bool
+    public function isAfternoon(): bool
     {
         return $this->hasAnyType(
             self::TIME_EARLY_AFTERNOON,
@@ -86,7 +81,7 @@ class TimeOfDay
         );
     }
 
-    public function isEvening() : bool
+    public function isEvening(): bool
     {
         return $this->hasAnyType(
             self::TIME_EARLY_EVENING,
@@ -94,25 +89,23 @@ class TimeOfDay
         );
     }
 
-    public function isNoon() : bool
+    public function isNoon(): bool
     {
         return $this->hasAnyType(self::TIME_NOON);
     }
 
-    protected function hasAnyType(...$types) : bool
+    protected function hasAnyType(...$types): bool
     {
         return in_array($this->type, $types);
     }
 
-    protected function resolveType() : string
+    protected function resolveType(): string
     {
         $hour = (int)$this->time->format('h');
 
         $prev = '';
-        foreach (self::$times as $until => $type)
-        {
-            if($hour < $until)
-            {
+        foreach (self::$times as $until => $type) {
+            if ($hour < $until) {
                 return $prev;
             }
 

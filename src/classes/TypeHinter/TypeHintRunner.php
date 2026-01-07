@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
+namespace TypeHinter;
+
+use Application_Interfaces_Loggable;
+use Application_Traits_Loggable;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\PHPFile;
 use AppUtils\FileHelper_PHPClassInfo;
 
-class TypeHinter implements Application_Interfaces_Loggable
+class TypeHintRunner implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
@@ -35,20 +39,19 @@ class TypeHinter implements Application_Interfaces_Loggable
         $this->rootPath = $rootPath;
     }
 
-    public function setFileSuffix(string $suffix) : TypeHinter
+    public function setFileSuffix(string $suffix): TypeHintRunner
     {
         $suffix = ltrim($suffix, '.');
 
-        if(!empty($suffix))
-        {
-            $suffix = '.'.$suffix;
+        if (!empty($suffix)) {
+            $suffix = '.' . $suffix;
         }
 
         $this->fileSuffix = $suffix;
         return $this;
     }
 
-    public function addMethod(string $methodName, string $type, string $classSearch='') : TypeHinter
+    public function addMethod(string $methodName, string $type, string $classSearch = ''): TypeHintRunner
     {
         $this->methods[] = array(
             'name' => $methodName,
@@ -63,25 +66,24 @@ class TypeHinter implements Application_Interfaces_Loggable
         return $this;
     }
 
-    public function addReplace(string $search, string $replace) : TypeHinter
+    public function addReplace(string $search, string $replace): TypeHintRunner
     {
         $this->replaces[$search] = $replace;
         return $this;
     }
 
-    public function process() : TypeHinter
+    public function process(): TypeHintRunner
     {
         $files = $this->getFilesList();
 
-        foreach($files as $file)
-        {
+        foreach ($files as $file) {
             $this->processFile($file);
         }
 
         return $this;
     }
 
-    public function getFilesList() : array
+    public function getFilesList(): array
     {
         return FileHelper::createFileFinder($this->rootPath)
             ->makeRecursive()
@@ -89,12 +91,11 @@ class TypeHinter implements Application_Interfaces_Loggable
             ->getPHPFiles();
     }
 
-    private function processFile(string $file) : void
+    private function processFile(string $file): void
     {
         $info = new FileHelper_PHPClassInfo(PHPFile::factory($file));
 
-        if(!$info->hasClasses())
-        {
+        if (!$info->hasClasses()) {
             $this->log('Ignoring file, no classes found: [%s].', $file);
             return;
         }
@@ -105,8 +106,7 @@ class TypeHinter implements Application_Interfaces_Loggable
 
         $this->log('Class [%s] | Processing methods.', $class);
 
-        foreach($this->methods as $def)
-        {
+        foreach ($this->methods as $def) {
             $content = $this->replaceMethod(
                 $def['name'],
                 $def['regex'],
@@ -117,15 +117,14 @@ class TypeHinter implements Application_Interfaces_Loggable
             );
         }
 
-        FileHelper::saveFile($file.$this->fileSuffix, $content);
+        FileHelper::saveFile($file . $this->fileSuffix, $content);
     }
 
-    private function replaceMethod(string $name, string $regex, string $type, string $content, string $class, string $classSearch) : string
+    private function replaceMethod(string $name, string $regex, string $type, string $content, string $class, string $classSearch): string
     {
         // If a search term is specified, verify that the class name
         // contains the term.
-        if(!empty($classSearch) && stripos($class, $classSearch) === false)
-        {
+        if (!empty($classSearch) && stripos($class, $classSearch) === false) {
             $this->log('Class [%s] | Method [%s] | Search term [%s] not found.', $class, $name, $classSearch);
             return $content;
         }
@@ -135,26 +134,22 @@ class TypeHinter implements Application_Interfaces_Loggable
 
         $replaces = array();
 
-        foreach($matches[0] as $idx => $matchedText)
-        {
+        foreach ($matches[0] as $idx => $matchedText) {
             $replaces[$matchedText] = $this->generateMethod($name, $type, $matches[1][$idx]);
         }
 
         $found = count($replaces);
-        if($found > 0)
-        {
+        if ($found > 0) {
             $this->log('Class [%s] | Method [%s] | Found [%s] matches.', $class, $name, $found);
             $content = str_replace(array_keys($replaces), array_values($replaces), $content);
-        }
-        else
-        {
-            $this->log('Class [%s] | Method [%s] | No replace matches found.', $class,$name);
+        } else {
+            $this->log('Class [%s] | Method [%s] | No replace matches found.', $class, $name);
         }
 
         return str_replace(array_keys($this->replaces), array_values($this->replaces), $content);
     }
 
-    private function generateMethod(string $name, string $type, string $paramsString) : string
+    private function generateMethod(string $name, string $type, string $paramsString): string
     {
         return sprintf(
             'function %s(%s) : %s%s    {',
@@ -165,8 +160,8 @@ class TypeHinter implements Application_Interfaces_Loggable
         );
     }
 
-    public function getLogIdentifier() : string
+    public function getLogIdentifier(): string
     {
-        return 'TypeHinter';
+        return 'TypeHinter\TypeHintRunner';
     }
 }

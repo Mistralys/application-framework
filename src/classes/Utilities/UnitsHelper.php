@@ -1,17 +1,17 @@
 <?php
 /**
- * File containing the {@link UnitsHelper} class.
- * 
  * @package Application
  * @subpackage Core
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * @see UnitsHelper
  */
+
+declare(strict_types=1);
+
+namespace Utilities;
 
 /**
  * Utility helper class for handling common unit measures,
  * localized for the application locale.
- * 
+ *
  * @package Application
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
@@ -23,9 +23,9 @@ class UnitsHelper
      * according to the current UI locale as an associative array
      * with short name => long name value pairs (e.g. CM => Centimeters).
      *
-     * @return array
+     * @return array<string,string>
      */
-    public static function getUnits()
+    public static function getUnits(): array
     {
         return array(
             t('M') => t('Meters'),

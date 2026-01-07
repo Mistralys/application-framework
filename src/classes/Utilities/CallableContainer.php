@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+namespace Utilities;
+use Application;
+
 class CallableContainer
 {
     /**
@@ -18,7 +21,7 @@ class CallableContainer
      * @param callable $callable
      * @param mixed[] $arguments
      */
-    public function __construct($callable, array $arguments=array())
+    public function __construct($callable, array $arguments = array())
     {
         $this->callable = $callable;
         $this->arguments = $arguments;
@@ -37,7 +40,7 @@ class CallableContainer
     /**
      * @return mixed[]
      */
-    public function getArguments() : array
+    public function getArguments(): array
     {
         return $this->arguments;
     }
@@ -50,7 +53,7 @@ class CallableContainer
      * @param mixed[] $arguments
      * @return mixed
      */
-    public function call(array $arguments=array())
+    public function call(array $arguments = array())
     {
         $arguments = array_merge($arguments, $this->arguments);
 
