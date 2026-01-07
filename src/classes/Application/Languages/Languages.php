@@ -6,11 +6,9 @@
 
 declare(strict_types=1);
 
-namespace Application;
+namespace Application\Languages;
 
-use Application\Languages\Language;
-use Application\Languages\LanguageException;
-use AppLocalize\Localization;
+use Application\AppFactory;
 use AppLocalize\Localization\Countries\CountryCollection;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 
