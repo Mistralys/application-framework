@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Application;
+namespace Application\MarkdownRenderer;
 
-use Application\MarkdownRenderer\BaseCustomTag;
 use Application\MarkdownRenderer\CustomTags\APIMethodDocTag;
 use Application\MarkdownRenderer\CustomTags\MediaTag;
 use AppUtils\AttributeCollection;
