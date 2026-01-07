@@ -1,9 +1,6 @@
 <?php
 /**
- * File containing the class {@see PackageInfo}.
- *
  * @package Application
- * @see PackageInfo
  */
 
 declare(strict_types=1);
@@ -20,10 +17,10 @@ use AppUtils\FileHelper\JSONFile;
  */
 final class PackageInfo
 {
-    public const PROJECT_SLUG = 'mistralys/application_framework';
-    public const GITHUB_URL = 'https://github.com/Mistralys/application-framework';
-    public const PROJECT_NAME = 'Application Admin UI Framework';
-    public const PROJECT_NAME_SHORT = 'AppFramework';
+    public const string PROJECT_SLUG = 'mistralys/application_framework';
+    public const string GITHUB_URL = 'https://github.com/Mistralys/application-framework';
+    public const string PROJECT_NAME = 'Application Admin UI Framework';
+    public const string PROJECT_NAME_SHORT = 'AppFramework';
 
     /**
      * @var ArrayDataCollection|NULL
