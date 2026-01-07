@@ -22,6 +22,7 @@ use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Driver\VersionInfo;
 use Application\EventHandler\OfflineEvents\OfflineEventsManager;
+use Application\Languages\Languages;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
 use Application\SourceFolders\SourceFoldersManager;

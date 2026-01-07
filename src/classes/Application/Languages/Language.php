@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Application\Languages;
 
 use Application\AppFactory;
-use Application\Languages;
 use Application\Locales\Locale;
 use Application_Countries_Country;
 use AppLocalize\Localization\Locales\LocaleInterface;
