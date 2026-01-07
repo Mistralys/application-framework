@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use TypeHinter\TypeHintRunner;
+
 class TypeHinter_UpdateV1_21
 {
     private static string $defActionSearch = <<<EOT
@@ -42,9 +44,9 @@ EOT;
         return self::$defActionReplace;
     }
 
-    public function create(string $path) : TypeHinter
+    public function create(string $path) : TypeHintRunner
     {
-        return (new TypeHinter($path))
+        return (new TypeHintRunner($path))
             ->addMethod('_handleBeforeActions', 'void')
             ->addMethod('_handleActions', 'bool')
             ->addMethod('_handleSubactions', 'void')
