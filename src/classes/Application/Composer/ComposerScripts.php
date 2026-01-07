@@ -12,11 +12,9 @@ use Application\Admin\Index\AdminScreenIndexer;
 use Application\API\APIManager;
 use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
-use Application\ApplicationException;
 use Application\CacheControl\CacheManager;
-use Application\EventHandler\OfflineEvents\Index\EventClassFinder;
 use Application\EventHandler\OfflineEvents\Index\EventIndexer;
-use AppUtils\ClassHelper\Repository\ClassRepositoryManager;
+use Application\Exception\ApplicationException;
 use AppUtils\FileHelper\FileInfo;
 
 /**

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Admin\RequestTypes;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 use Application\Interfaces\Admin\MissingRecordInterface;
 
 /**

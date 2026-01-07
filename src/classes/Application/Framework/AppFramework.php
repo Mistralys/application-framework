@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mistralys\AppFramework;
 
 use Application\AppFactory;
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 use AppUtils\BaseException;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;

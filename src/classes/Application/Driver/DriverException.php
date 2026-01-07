@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Driver;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class DriverException extends ApplicationException
 {

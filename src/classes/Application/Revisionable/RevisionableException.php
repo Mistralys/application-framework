@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Revisionable;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class RevisionableException extends ApplicationException
 {

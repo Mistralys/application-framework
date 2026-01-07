@@ -8,9 +8,9 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\ApplicationException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
+use Application\Exception\ApplicationException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper_Exception;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Sets;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class AppSetsException extends ApplicationException
 {

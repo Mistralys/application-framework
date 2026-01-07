@@ -31,7 +31,7 @@ contain system information.
 Example:
 
 ```php
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 throw new ApplicationException(
     'User-facing error message.',

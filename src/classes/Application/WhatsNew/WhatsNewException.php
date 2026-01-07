@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\WhatsNew;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class WhatsNewException extends ApplicationException
 {

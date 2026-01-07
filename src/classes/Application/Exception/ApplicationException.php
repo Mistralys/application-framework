@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Application;
+namespace Application\Exception;
 
 use Application_Exception;
 

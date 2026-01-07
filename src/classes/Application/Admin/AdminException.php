@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class AdminException extends ApplicationException
 {

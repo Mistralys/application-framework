@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 use AppUtils\Interfaces\StringableInterface;
+use AppUtils\URLInfo;
 use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseURL;
-use AppUtils\URLInfo;
 
 /**
  * Application URL parser: this is used to access information

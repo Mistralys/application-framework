@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\DeploymentRegistry;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class DeploymentRegistryException extends ApplicationException
 {

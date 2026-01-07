@@ -9,13 +9,13 @@
 use Application\API\APIFoldersManager;
 use Application\API\APIManager;
 use Application\AppFactory;
-use Application\ApplicationException;
 use Application\AppSets\AppSetsCollection;
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\Driver\DriverException;
 use Application\Environments;
+use Application\Exception\ApplicationException;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Feedback\FeedbackCollection;
 use Application\Messaging\MessagingCollection;
