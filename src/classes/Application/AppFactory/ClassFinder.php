@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application;
+namespace Application\AppFactory;
 
 /**
  * @package Application
