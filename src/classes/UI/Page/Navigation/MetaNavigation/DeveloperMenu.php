@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace UI\Page\Navigation\MetaNavigation;
 
 use Application;
-use Application\Environments;
 use Application_Driver;
 use Application_LockManager;
 use Application_Request;
 use Application_Session_Base;
-use Application_Session_Native;
 use Application_User;
 use UI;
 use UI_Page_Navigation_Item_DropdownMenu;
