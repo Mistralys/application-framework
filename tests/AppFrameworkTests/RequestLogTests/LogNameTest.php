@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace testsuites\RequestLogTests;
 
-use Application;
 use Application\AppFactory;
 use Application_RequestLog_LogInfo;
 use Application_RequestLog_LogWriter;

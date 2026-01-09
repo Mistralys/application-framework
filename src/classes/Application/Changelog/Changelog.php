@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Changelog\Event\ChangelogCommittedEvent;
 use Application\Interfaces\ChangelogableInterface;
 use AppUtils\ConvertHelper\JSONConverter;

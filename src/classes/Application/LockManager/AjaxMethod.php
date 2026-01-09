@@ -1,5 +1,7 @@
 <?php
 
+use Application\Application;
+
 abstract class Application_LockManager_AjaxMethod extends Application_AjaxMethod
 {
     public const ERROR_NO_URL_PATH_SPECIFIED = 13101;

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Application\Uploads;
 
-use Application;
+use Application\Application;
 use Application_Uploads_Upload;
 use AppUtils\FileHelper\FileInfo;
 use DBHelper;

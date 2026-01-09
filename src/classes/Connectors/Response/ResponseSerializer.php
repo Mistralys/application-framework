@@ -9,17 +9,13 @@ declare(strict_types=1);
 
 namespace Connectors\Response;
 
-use Application;
-use Application_Exception;
+use Application\Application;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
-use AppUtils\ConvertHelper\JSONConverter;
 use Connectors_Request;
 use Connectors_Response;
 use HTTP_Request2_Response;
 use Mistralys\AppFramework\Helpers\JSONUnserializer;
-use Mistralys\AppFramework\Helpers\JSONUnserializerException;
-use Throwable;
 
 /**
  * Utility class that handles serializing and unserializing

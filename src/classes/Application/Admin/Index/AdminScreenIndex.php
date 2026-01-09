@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Admin\Index;
 
-use Application;
+use AdminException;
+use Application\Application;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use AdminException;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\FileHelper\FolderInfo;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Media;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application_Exception;
 use Application_Media_Delivery;
 use Application_Media_Document;

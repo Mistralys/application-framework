@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Export;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeTrackerCollection;
 use Closure;

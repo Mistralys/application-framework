@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Media\Collection;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\Media\Admin\MediaRecordAdminURLs;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TaggableInterface;

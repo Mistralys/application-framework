@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;

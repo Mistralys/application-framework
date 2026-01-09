@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;

@@ -7,6 +7,7 @@
  * @see UI_Page_Template
  */
 
+use Application\Application;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 use AppUtils\OutputBuffering;

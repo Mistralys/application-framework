@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Changelog;
 
-use Application;
+use Application\Application;
 use Application\Interfaces\ChangelogableInterface;
 use Application_Changelog;
 use Application_User;

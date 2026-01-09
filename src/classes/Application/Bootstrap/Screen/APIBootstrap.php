@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Bootstrap\Screen;
 
-use Application;
+use Application\Application;
 use Application_Bootstrap_Screen;
 
 /**

@@ -1,5 +1,6 @@
 <?php
 
+use Application\Application;
 use AppUtils\FileHelper;
 
 class Application_Driver_Storage_File extends Application_Driver_Storage

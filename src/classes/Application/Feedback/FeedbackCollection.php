@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Feedback;
 
-use Application;
+use Application\Application;
 use Application\Exception\UnexpectedInstanceException;
-use Application\Feedback\FeedbackRecord;
 use Application_User;
 use DateTime;
 use DBHelper_BaseCollection;

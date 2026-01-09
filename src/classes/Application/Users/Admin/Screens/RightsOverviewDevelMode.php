@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Users\Admin\Screens;
 
-use Application;
 use Application\Admin\Area\BaseMode;
 use Application\Admin\Traits\DevelModeInterface;
 use Application\Admin\Traits\DevelModeTrait;
+use Application\Application;
 use Application\Development\Admin\DevScreenRights;
 use Application_User_Rights;
 use Application_User_Rights_Container;

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 class Application_EventHandler_Event_DriverInstantiated extends Application_EventHandler_Event
 {
    /**

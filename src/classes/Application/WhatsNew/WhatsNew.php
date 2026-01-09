@@ -66,7 +66,7 @@ class WhatsNew
     }
 
     /**
-     * @return \Application\MarkdownRenderer\MarkdownRenderer
+     * @return MarkdownRenderer
      */
     public function getMarkdownRenderer() : MarkdownRenderer
     {

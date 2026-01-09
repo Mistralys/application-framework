@@ -1,5 +1,7 @@
 <?php
 
+use Application\Application;
+
 class UI_Page_Sidebar_Item_DeveloperPanel extends UI_Page_Sidebar_Item
 {
     public const ERROR_SOURCE_BUTTON_NOT_LINKED = 20601;

@@ -23,10 +23,10 @@ use DBHelper\Traits\BeforeCreateEventTrait;
 
 /**
  * Base management class for a collection of database records
- * from the same table. Has methods to retrieve records, and
+ * from the same table. Has methods to retrieve records and
  * access information about records.
  *
- * > NOTE: Requires the primary key to be an integer auto_increment
+ * > NOTE: Requires the primary key to be an integer `auto_increment`
  * > column.
  *
  * This is meant to be extended, in conjunction with

@@ -1,5 +1,6 @@
 <?php
 
+use Application\Application;
 use Application\Interfaces\ChangelogableInterface;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;

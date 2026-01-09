@@ -7,6 +7,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;

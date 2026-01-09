@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+use Application\Framework\PackageInfo;
 use AppUtils\FileHelper;
 use Mistralys\MarkdownViewer\DocsManager;
 use Mistralys\MarkdownViewer\DocsViewer;

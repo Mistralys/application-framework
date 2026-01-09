@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Driver\DriverException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;

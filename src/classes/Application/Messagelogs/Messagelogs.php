@@ -5,6 +5,7 @@
  */
 
 use Application\AppFactory;
+use Application\Application;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 /**

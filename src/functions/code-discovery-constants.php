@@ -13,6 +13,8 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 const APP_CONTENT_LOCALES = 'de_DE,en_GB';
 const APP_UI_LOCALES = 'de_DE,en_GB';
 const APP_AUTH_SALT = '';

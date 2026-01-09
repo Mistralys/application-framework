@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Renamer\Admin\Screens\Submode;
 
-use Application;
 use Application\Admin\Area\Mode\BaseSubmode;
+use Application\Application;
 use Application\Renamer\Admin\RenamerScreenRights;
 use Application\Renamer\Admin\Traits\RenamerSubmodeInterface;
 use Application\Renamer\Admin\Traits\RenamerSubmodeTrait;

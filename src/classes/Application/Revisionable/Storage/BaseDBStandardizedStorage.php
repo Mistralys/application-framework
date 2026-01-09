@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Storage;
 
-use Application;
+use Application\Application;
 use Application\Revisionable\RevisionableInterface;
 use Application_FilterCriteria_RevisionableRevisions;
 use DateTime;

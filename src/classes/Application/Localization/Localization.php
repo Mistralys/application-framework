@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use AppLocalize\Localization;
 use AppLocalize\Localization\LocalizationException;
 use AppLocalize\Localization_Scanner_StringHash;

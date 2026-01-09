@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application;
+use Application\Application;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;

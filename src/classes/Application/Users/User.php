@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application\Users\Admin\UserAdminURLs;
 use AppLocalize\Localization\Locales\LocaleInterface;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Media\Collection;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\Media\MediaException;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;

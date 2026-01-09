@@ -1,5 +1,6 @@
 <?php
 
+use Application\Application;
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\NamedClosure;

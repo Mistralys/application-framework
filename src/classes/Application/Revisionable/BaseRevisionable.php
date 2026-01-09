@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
 use Application\Disposables\DisposableTrait;

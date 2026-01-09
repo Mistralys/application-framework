@@ -1,5 +1,7 @@
 <?php
 
+use Application\Application;
+
 class Application_EventHandler_Event_ApplicationStarted extends Application_EventHandler_Event
 {
    /**

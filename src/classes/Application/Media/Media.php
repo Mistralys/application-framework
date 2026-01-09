@@ -3,11 +3,12 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaFilterCriteria;
+use Application\Media\Events\RegisterMediaTagsListener;
 use Application\Media\MediaException;
 use Application\Media\MediaTagConnector;
-use Application\Media\Events\RegisterMediaTagsListener;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
 use AppUtils\ClassHelper;

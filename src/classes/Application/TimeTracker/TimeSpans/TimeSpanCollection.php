@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\TimeSpans;
 
-use Application;
+use Application\Application;
 use Application\TimeTracker\Admin\TimeSpansAdminURLs;
 use DBHelper_BaseCollection;
 

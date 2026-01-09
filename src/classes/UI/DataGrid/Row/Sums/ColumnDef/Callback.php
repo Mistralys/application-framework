@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 class UI_DataGrid_Row_Sums_ColumnDef_Callback extends UI_DataGrid_Row_Sums_ColumnDef
 {
     /**

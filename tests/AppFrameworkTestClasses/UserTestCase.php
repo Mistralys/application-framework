@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application;
-use Application\AppFactory;
+use Application\Application;
 use Application_User;
-use TestDriver\ClassFactory;
 
 abstract class UserTestCase extends ApplicationTestCase
 {

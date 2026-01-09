@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Storage;
 
-use Application;
+use Application\Application;
 use Application\Disposables\Attributes\DisposedAware;
-use Application\Disposables\DisposableDisposedException;
-use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Disposables\DisposableInterface;
+use Application\Disposables\DisposableTrait;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionDependentInterface;
@@ -21,16 +21,13 @@ use Application\Revisionable\Storage\Event\RevisionSelectedEvent;
 use Application_EventHandler_EventableListener;
 use Application_Exception;
 use Application_FilterCriteria_RevisionableRevisions;
-use Application\Disposables\DisposableInterface;
 use Application_Interfaces_Eventable;
-use Application\Disposables\DisposableTrait;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\TypeFilter\StrictType;
 use ArrayAccess;
-use BaseRevisionable;
 use DateTime;
 use ReturnTypeWillChange;
 

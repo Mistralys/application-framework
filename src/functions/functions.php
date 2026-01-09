@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
 use Application\Exception\ApplicationException;

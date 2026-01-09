@@ -1,10 +1,13 @@
 <?php
-
 /**
- * The SQL mode string as used on the live servers.
+ * @package Application
+ * @subpackage Bootstrap
  */
 
+declare(strict_types=1);
+
 use Application\AppFactory;
+use Application\Application;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Session\Events\SessionInstantiatedEvent;
@@ -13,15 +16,21 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
 
+/**
+ * Abstract base class for all bootstrap screens.
+ *
+ * @package Application
+ * @subpackage Bootstrap
+ */
 abstract class Application_Bootstrap_Screen implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_CONFIG_SETTING_ALREADY_DEFINED = 28201;
-    public const ERROR_DATABASE_WRITE_OPERATION_DURING_EXPORT = 28202;
+    public const int ERROR_CONFIG_SETTING_ALREADY_DEFINED = 28201;
+    public const int ERROR_DATABASE_WRITE_OPERATION_DURING_EXPORT = 28202;
 
-    public const REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
-    public const REQUEST_PARAM_DEVELMODE_ENABLE = 'develmode_enable';
+    public const string REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
+    public const string REQUEST_PARAM_DEVELMODE_ENABLE = 'develmode_enable';
 
     protected array $params = array();
     protected Application $app;
@@ -48,9 +57,9 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     * 
     * @return string
     */
-    abstract public function getDispatcher();
+    abstract public function getDispatcher() : string;
 
-    abstract protected function _boot();
+    abstract protected function _boot() : void;
     
     /**
      * Creates the environment by instantiating the
@@ -208,7 +217,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
             new $class()
         );
 
-        $this->authListener = $this->session->onUserAuthenticated(Closure::fromCallable(array($this, 'handleEvent_userAuthenticated')));
+        $this->authListener = $this->session->onUserAuthenticated($this->handleEvent_userAuthenticated(...));
 
         self::triggerSessionInstantiated($this->session);
 
@@ -252,7 +261,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         $this->log('SETUP | Initializing the database.');
 
         // enable the logging for the DB helper
-        DBHelper::setLogCallback(array('Application', 'log'));
+        DBHelper::setLogCallback(array(AppFactory::createLogger(), 'log'));
 
         DBHelper::init();
         

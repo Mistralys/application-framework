@@ -7,6 +7,7 @@
  * @see Application_CustomProperties
  */
 
+use Application\Application;
 use Application\CustomProperties\Presets\PropertyPresetRecord;
 use Application\CustomProperties\Presets\PropertyPresetsCollection;
 use Application\CustomProperties\PropertyFilterCriteria;

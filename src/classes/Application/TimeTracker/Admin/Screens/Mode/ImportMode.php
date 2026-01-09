@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens\Mode;
 
-use Application;
 use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
+use Application\Application;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\Traits\ModeInterface;
 use Application\TimeTracker\Admin\Traits\ModeTrait;

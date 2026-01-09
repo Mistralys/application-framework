@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Application\Driver;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\DeploymentRegistry\Tasks\StoreCurrentVersionTask;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;

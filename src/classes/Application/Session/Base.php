@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\AppFactory\AppFactoryException;
+use Application\Application;
 use Application\Session\Events\BeforeLogOutEvent;
 use Application\Session\Events\SessionStartedEvent;
 use Application\Session\Events\UserAuthenticatedEvent;

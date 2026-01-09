@@ -7,6 +7,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use Application\Development\Admin\Screens\DevelArea;
 use Application\ErrorLog\Admin\Screens\ErrorLogMode;
 use Application\ErrorLog\Admin\Screens\ListSubmode;

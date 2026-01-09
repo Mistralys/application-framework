@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory\ClassCacheHandler;
+use Application\Application;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;

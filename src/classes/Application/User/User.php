@@ -7,6 +7,7 @@
  * @see Application_User
  */
 
+use Application\Application;
 use Application\Countries\Rights\CountryRightsInterface;
 use Application\Countries\Rights\CountryRightsTrait;
 use Application\Driver\DriverException;

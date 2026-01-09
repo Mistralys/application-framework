@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use Application\WhatsNew\WhatsNew;
 
 /**

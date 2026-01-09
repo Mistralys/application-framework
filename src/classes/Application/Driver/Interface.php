@@ -7,6 +7,7 @@
  * @see Application_Driver_Interface
  */
 
+use Application\Application;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use UI\AdminURLs\AdminURLInterface;

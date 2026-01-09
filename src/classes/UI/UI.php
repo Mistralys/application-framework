@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ArrayDataCollection;

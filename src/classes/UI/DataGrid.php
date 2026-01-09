@@ -5,6 +5,7 @@
  */
 
 use Application\AppFactory;
+use Application\Application;
 use Application\Driver\DriverException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;

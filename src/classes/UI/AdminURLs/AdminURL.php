@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace UI\AdminURLs;
 
-use Application;
+use Application\Application;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\URLBuilder\URLBuilder;
 use AppUtils\URLInfo;

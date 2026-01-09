@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 class Application_Bootstrap_Screen_Ajax extends Application_Bootstrap_Screen
 {
     public const DISPATCHER = 'ajax/';

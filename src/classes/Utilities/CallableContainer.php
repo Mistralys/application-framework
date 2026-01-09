@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace Utilities;
-use Application;
+use Application\Application;
 
 class CallableContainer
 {

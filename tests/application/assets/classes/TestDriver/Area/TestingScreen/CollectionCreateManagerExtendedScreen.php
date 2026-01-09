@@ -12,10 +12,10 @@ use TestDriver\TestDBRecords\TestDBCollection;
 use Application_Formable_RecordSettings_ValueSet;
 use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBRecord;
-use TestDriver\TestDBRecords\TestSettingsManagerExtended;
+use TestDriver\TestDBRecords\TestDBRecordSettingsManager;
 
 /**
- * @see TestSettingsManagerExtended
+ * @see TestDBRecordSettingsManager
  * @property TestDBRecord $record
  */
 class CollectionCreateManagerExtendedScreen
@@ -36,9 +36,9 @@ class CollectionCreateManagerExtendedScreen
         return ClassFactory::createTestDBCollection();
     }
 
-    public function getSettingsManager() : TestSettingsManagerExtended
+    public function getSettingsManager() : TestDBRecordSettingsManager
     {
-        return new TestSettingsManagerExtended($this, $this->record);
+        return new TestDBRecordSettingsManager($this, $this->record);
     }
 
     public function getSuccessMessage(DBHelperRecordInterface $record): string
@@ -67,7 +67,7 @@ class CollectionCreateManagerExtendedScreen
 
     protected function _handleAfterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
-        TestSettingsManagerExtended::verifyValueSet($data);
+        TestDBRecordSettingsManager::verifyValueSet($data);
 
         $this->redirectWithSuccessMessage(
             sprintf('The data has been processed successfully at %1$s.', sb()->time()),

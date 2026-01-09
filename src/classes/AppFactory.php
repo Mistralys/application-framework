@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Application;
 
-use Application;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;

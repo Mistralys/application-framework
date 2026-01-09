@@ -65,7 +65,7 @@ class DeepLTestScreen extends BaseMode implements DevelModeInterface
                 ->note()
                 ->t(
                     'The configuration settings are viewable in the %1$s screen.',
-                    sb()->link(t('Application configuration'), DevManager::getInstance()->adminURL()->appConfiguration())
+                    sb()->link(t('Application\Application configuration'), DevManager::getInstance()->adminURL()->appConfiguration())
                 )
             );
     }

@@ -1,5 +1,6 @@
 <?php
 
+use Application\Application;
 use AppUtils\ConvertHelper;
 
 class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item

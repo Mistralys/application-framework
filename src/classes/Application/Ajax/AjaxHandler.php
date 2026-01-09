@@ -6,6 +6,7 @@ use Application\Ajax\AjaxException;
 use Application\Ajax\AjaxMethodInterface;
 use Application\AjaxMethods\NoAjaxHandlerFoundMethod;
 use Application\AppFactory;
+use Application\Application;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FolderInfo;

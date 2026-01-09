@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\User;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application_Session_AuthTypes_NoneInterface;
 use Application_User;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;

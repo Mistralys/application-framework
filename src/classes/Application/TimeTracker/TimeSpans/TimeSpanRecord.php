@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\TimeSpans;
 
-use Application;
+use Application\Application;
 use Application\TimeTracker\TimeSpans\SpanTypes\TimeSpanTypeInterface;
 use Application\TimeTracker\TimeSpans\SpanTypes\TimeSpanTypes;
 use Application_User;

@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Application;
 
-use Application;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\Environment;
-use Application\Environments\EnvironmentException;use Application\Environments\Events\EnvironmentDetected;
+use Application\Environments\EnvironmentException;
+use Application\Environments\Events\EnvironmentDetected;
 use Application_EventHandler_EventableListener;
 use Application_Interfaces_Eventable;
 use Application_Traits_Eventable;
@@ -20,7 +20,7 @@ use AppUtils\BaseException;
 use Throwable;
 
 /**
- * Application\Environments\Environment manager: handles detecting the environment
+ * AEnvironment manager: handles detecting the environment
  * in which the application runs. This is used in the
  * configuration to determine the settings to use based
  * on the environment (local, dev, prod).

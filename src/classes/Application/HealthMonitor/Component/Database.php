@@ -1,15 +1,10 @@
 <?php
 /**
- * File containing the {@link Application_HealthMonitor_Component_Database} class.
  * @package Application
  * @subpackage HealthMonitor
  */
 
-/**
- * The base component class.
- * @see Application_HealthMonitor_Component
- */
-require_once 'Application/HealthMonitor/Component.php';
+declare(strict_types=1);
 
 /**
  * Checks the database connectivity and speed.
@@ -20,27 +15,27 @@ require_once 'Application/HealthMonitor/Component.php';
  */
 class Application_HealthMonitor_Component_Database extends Application_HealthMonitor_Component
 {
-    public function getName()
+    public function getName() : string
     {
         return 'Database';
     }
 
-    public function getDescription()
+    public function getDescription() : string
     {
         return sprintf('Core database containing all %1$s tables and data.', $this->driver->getAppNameShort());
     }
 
-    public function getYellowPagesURL()
+    public function getYellowPagesURL() : string
     {
         return '';
     }
 
-    public function getSeverity()
+    public function getSeverity() : string
     {
         return self::SEVERITY_BLOCKER;
     }
 
-    public function collectData()
+    public function collectData() : void
     {
         if (!class_exists('PDO')) {
             $this->setError('The PDO extension is not present.');

@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Revisionable\RevisionableInterface;
 use AppUtils\Interfaces\StringableInterface;
 

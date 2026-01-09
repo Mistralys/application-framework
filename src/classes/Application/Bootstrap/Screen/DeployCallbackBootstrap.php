@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Application\Bootstrap;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\DeploymentRegistry\DeploymentRegistry;
 use Application_Bootstrap;
 use Application_Bootstrap_Screen;

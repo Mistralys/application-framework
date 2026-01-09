@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral;
 
-use Application;
+use Application\Application;
 use Application\NewsCentral\Admin\NewsAdminURLs;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application_Formable;

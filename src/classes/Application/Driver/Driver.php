@@ -6,6 +6,7 @@
 
 use Application\Admin\Index\AdminScreenIndex;
 use Application\AppFactory;
+use Application\Application;
 use Application\AppSets\AppSet;
 use Application\AppSets\DefaultAppSet;
 use Application\ConfigSettings\BaseConfigRegistry;

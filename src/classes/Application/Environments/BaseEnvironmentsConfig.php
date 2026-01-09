@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Application\Environments;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments;
 use Application\Environments\EnvironmentSetup\BaseEnvironmentConfig;

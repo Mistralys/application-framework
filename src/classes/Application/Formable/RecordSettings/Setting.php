@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use AppUtils\BaseException;
 use AppUtils\Interfaces\RuntimePropertizableInterface;
 use AppUtils\Traits\RuntimePropertizableTrait;

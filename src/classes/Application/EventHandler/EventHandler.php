@@ -4,6 +4,7 @@
  * @subpackeage EventHandler
  */
 
+use Application\Application;
 use Application\EventHandler\EventInterface;
 use Application\EventHandler\OfflineEvents\OfflineEventsManager;
 use AppUtils\ClassHelper;

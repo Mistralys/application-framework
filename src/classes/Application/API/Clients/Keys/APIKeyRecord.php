@@ -8,11 +8,11 @@ declare(strict_types=1);
 
 namespace Application\API\Clients\Keys;
 
-use Application;
 use Application\API\Admin\APIKeyURLs;
 use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\APIClientRecord;
 use Application\AppFactory;
+use Application\Application;
 use Application_User;
 use Application_Users_User;
 use AppUtils\ClassHelper;

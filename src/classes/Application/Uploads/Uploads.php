@@ -7,6 +7,7 @@
  * @see Application_Uploads
  */
 
+use Application\Application;
 use Application\Uploads\LocalFileUpload;
 use AppUtils\FileHelper\FileInfo;
 
@@ -307,8 +308,6 @@ class Application_Uploads
      */
     public function getByID($upload_id)
     {
-        require_once 'Application/Uploads/Upload.php';
-
         return new Application_Uploads_Upload($upload_id);
     }
 

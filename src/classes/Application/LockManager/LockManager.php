@@ -4,6 +4,7 @@
  * @subpackage LockManager
  */
 
+use Application\Application;
 use Application\LockManager\LockingFilterCriteria;
 use Application\LockManager\LockingFilterSettings;
 use AppUtils\ClassHelper;

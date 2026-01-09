@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Application\API\BaseMethods;
 
-use Application;
 use Application\API\APIException;
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
@@ -20,6 +19,7 @@ use Application\API\Parameters\Validation\ParamValidationResults;
 use Application\API\Response\JSONInfoSerializer;
 use Application\API\ResponsePayload;
 use Application\API\Traits\JSONRequestInterface;
+use Application\Application;
 use Application_CORS;
 use Application_Driver;
 use Application_Interfaces_Loggable;

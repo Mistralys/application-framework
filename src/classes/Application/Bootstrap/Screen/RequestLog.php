@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 
 /**
  * @see Application_RequestLog
@@ -56,7 +57,7 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         define(self::CONST_REQUEST_LOG_RUNNING, true);
     }
 
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->disableAuthentication();
         $this->createEnvironment();

@@ -7,6 +7,7 @@
  * @see UI_StringBuilder
  */
 
+use Application\Application;
 use AppUtils\AttributeCollection;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\StringBuilder;

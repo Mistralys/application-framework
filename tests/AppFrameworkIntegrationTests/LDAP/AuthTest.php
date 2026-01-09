@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace AppFrameworkIntegrationTests\LDAP;
 
 use AppFrameworkTestClasses\LDAP\LDAPTestCase;
-use Application;
+use Application\Application;
 use Application_LDAP;
 use Application_LDAP_Config;
 

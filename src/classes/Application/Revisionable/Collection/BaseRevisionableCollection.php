@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Collection;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\Disposables\DisposableTrait;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableException;

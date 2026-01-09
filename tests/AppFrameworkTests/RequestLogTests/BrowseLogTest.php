@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace testsuites\RequestLogTests;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Mistralys\AppFrameworkTests\TestClasses\RequestLogTestCase;
 
 class BrowseLogTest extends RequestLogTestCase

@@ -8,6 +8,7 @@
  */
 
 use Application\AppFactory;
+use Application\Application;
 use Application\Media\DocumentTrait;
 
 /**

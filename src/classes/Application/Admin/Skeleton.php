@@ -8,6 +8,7 @@
  */
 
 use Application\AppFactory;
+use Application\Application;
 use Application\Framework\AppFolder;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;

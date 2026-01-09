@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AppFrameworkTests\Application;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application;
+use Application\Application;
 
 final class TestFileTest extends ApplicationTestCase
 {

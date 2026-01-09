@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation\MetaNavigation;
 
-use Application;
+use Application\Application;
 use Application_Bootstrap_Screen;
 use Application_Driver;
 use Application_Request;

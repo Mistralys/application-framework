@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace AppFrameworkTests\LDAP;
 
 use AppFrameworkTestClasses\LDAP\LDAPTestCase;
-use Application;
+use Application\Application;
 use Application\ConfigSettings\AppConfig;
 use Application\LDAP\LDAPException;
 use Application_LDAP_Config;

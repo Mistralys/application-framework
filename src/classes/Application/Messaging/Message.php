@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Messaging\MessagingCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\Microtime;

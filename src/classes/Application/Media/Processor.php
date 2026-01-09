@@ -7,6 +7,8 @@
  * @see Application_Media_Processor
  */
 
+use Application\Application;
+
 /**
  * The Media Processor is a helper class for the clientside
  * product media preparation scripts. It adds all the required

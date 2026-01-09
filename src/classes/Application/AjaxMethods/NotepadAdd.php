@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 class Application_AjaxMethods_NotepadAdd extends Application_AjaxMethod
 {
     public const METHOD_NAME = 'NotepadAdd';

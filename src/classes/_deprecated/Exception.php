@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use Application\Exception\ApplicationException;
+use Application\Application;
 use AppUtils\BaseException;
 
 /**

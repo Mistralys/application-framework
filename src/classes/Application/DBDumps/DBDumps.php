@@ -1,5 +1,7 @@
 <?php
 
+use Application\Application;
+
 class Application_DBDumps
 {
    /**

@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Revisionable\RevisionableInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use AppUtils\ConvertHelper;

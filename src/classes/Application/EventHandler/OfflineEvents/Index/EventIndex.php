@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\EventHandler\OfflineEvents\Index;
 
-use Application;
+use Application\Application;
 use Application\EventHandler\OfflineEvents\OfflineEventException;
 use Application\EventHandler\OfflineEvents\OfflineEventInterface;
 use Application\EventHandler\OfflineEvents\OfflineEventListenerInterface;

@@ -4,6 +4,7 @@
  * @subpackage Forms
  */
 
+use Application\Application;
 use Application\Formable\Event\ClientFormRenderedEvent;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ArrayDataCollection;

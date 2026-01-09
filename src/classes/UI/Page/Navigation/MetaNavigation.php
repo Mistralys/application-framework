@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application_Driver;
 use Application_User_Notepad;
 use UI;

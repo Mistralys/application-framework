@@ -42,7 +42,7 @@ const APP_FRAMEWORK_TESTS = true;
  * application environment.
  * @see Application_Bootstrap
  */
-require_once APP_INSTALL_FOLDER.'/classes/Application/Bootstrap.php';
+require_once APP_INSTALL_FOLDER.'/classes/Application/Bootstrap/Bootstrap.php';
 
 // The initialization includes the local configuration files,
 // and defines all global application settings.

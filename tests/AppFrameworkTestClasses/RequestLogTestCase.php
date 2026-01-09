@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application;
 use Application\AppFactory;
 
 class RequestLogTestCase extends ApplicationTestCase

@@ -1,9 +1,10 @@
 <?php
 
-use GetOpt\Command;
-use GetOpt\Option;
+use Application\Application;
 use GetOpt\ArgumentException;
+use GetOpt\Command;
 use GetOpt\GetOpt;
+use GetOpt\Option;
 
 abstract class Application_Bootstrap_CLIScreen extends Application_Bootstrap_Screen
 {
