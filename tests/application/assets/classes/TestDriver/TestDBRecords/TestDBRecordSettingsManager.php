@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace TestDriver\TestDBRecords;
 
-use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Application_Interfaces_Formable;
 use Closure;
+use DBHelper\BaseRecordSettings;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use TestDriver\ClassFactory;
@@ -19,7 +19,7 @@ use UI;
  * guarantees that the values are passed with the correct
  * column names.
  */
-class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Extended
+class TestDBRecordSettingsManager extends BaseRecordSettings
 {
     public const string SETTING_LABEL = 'local-label';
     public const string SETTING_ALIAS = 'local-alias';
@@ -32,8 +32,6 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
     public function __construct(Application_Interfaces_Formable $formable, ?TestDBRecord $record = null)
     {
         parent::__construct($formable, ClassFactory::createTestDBCollection(), $record);
-
-        $this->setDefaultsUseStorageNames(true);
     }
 
     protected function registerSettings(): void

@@ -1,31 +1,63 @@
 <?php
 /**
- * File containing the Application class.
- * @see Application
  * @subpackage Core
  * @package Application
  */
 
+namespace Application;
+
 use Application\API\APIFoldersManager;
 use Application\API\APIManager;
-use Application\AppFactory;
 use Application\AppSets\AppSetsCollection;
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\Driver\DriverException;
-use Application\Environments;
 use Application\Exception\ApplicationException;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Feedback\FeedbackCollection;
 use Application\Messaging\MessagingCollection;
+use Application_Bootstrap;
+use Application_Bootstrap_Screen;
+use Application_Driver;
+use Application_ErrorLog;
+use Application_EventHandler;
+use Application_EventHandler_Event_ApplicationStarted;
+use Application_EventHandler_Event_DriverInstantiated;
+use Application_EventHandler_Exception;
+use Application_EventHandler_Listener;
+use Application_Installer;
+use Application_LDAP;
+use Application_LDAP_Config;
+use Application_Logger;
+use Application_LookupItems;
+use Application_Media;
+use Application_Messagelogs;
+use Application_Ratings;
+use Application_Request;
+use Application_RequestLog;
+use Application_Session;
+use Application_Session_Exception;
+use Application_User;
+use Application_Users;
 use AppUtils\BaseException;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
+use Connectors;
+use Connectors_Connector;
+use DBHelper;
+use DBHelper_Exception;
+use DeeplHelper;
+use Throwable;
+use UI;
 use UI\AdminURLs\AdminURLInterface;
+use UI_Exception;
+use UI_Page;
+use UI_Page_Template;
+use UI_Themes_Theme;
 use function AppUtils\parseVariable;
 
 /**
@@ -41,21 +73,13 @@ use function AppUtils\parseVariable;
 class Application
 {
     public const int ERROR_CANNOT_CREATE_TEMP_FOLDER = 1199543001;
-    public const int ERROR_CLASS_FILE_NOT_FOUND = 1199543002;
     public const int ERROR_NO_USER_PRIOR_TO_SESSION = 1199543003;
-    public const int ERROR_CLASS_NOT_FOUND = 1199543004;
     public const int ERROR_EMPTY_PAGE_ID = 1199543005;
     public const int ERROR_APPLICATION_NOT_STARTED = 1199543006;
     public const int ERROR_DRIVER_DID_NOT_GENERATE_CONTENT = 1199543007;
     public const int ERROR_CANNOT_CREATE_STORAGE_FOLDER = 1199543008;
-    public const int ERROR_TRAIT_FILE_NOT_FOUND = 1199543009;
-    public const int ERROR_TRAIT_CLASS_NOT_FOUND = 1199543010;
-    public const int ERROR_CANNOT_SET_EXECUTION_TIME = 1199543011;
     public const int ERROR_CANNOT_SET_MEMORY_LIMIT = 1199543012;
     public const int ERROR_INVALID_RUN_MODE = 1199543013;
-    public const int ERROR_SCRIPT_RUN_MODE_NO_TYPE_SET = 1199543014;
-    public const int ERROR_NO_RUN_MODE_SET = 1199543015;
-    public const int ERROR_PHP_FILE_SYNTAX_ERRORS = 1199543016;
     public const int ERROR_CALLBACK_NOT_CALLABLE = 1199543017;
     public const int ERROR_SESSION_NOT_AVAILABLE_YET = 1199543018;
     public const int ERROR_USER_CLASS_DOES_NOT_EXIST = 1199543019;
@@ -118,7 +142,7 @@ class Application
      *
      * @return bool
      */
-    public static function isActive() : bool
+    public static function isActive(): bool
     {
         return self::isSessionReady();
     }
@@ -128,12 +152,11 @@ class Application
      * @throws UnexpectedInstanceException
      * @throws DBHelper_Exception
      */
-    public static function createFeedback() : FeedbackCollection
+    public static function createFeedback(): FeedbackCollection
     {
         $collection = DBHelper::createCollection(FeedbackCollection::class);
 
-        if($collection instanceof FeedbackCollection)
-        {
+        if ($collection instanceof FeedbackCollection) {
             return $collection;
         }
 
@@ -143,7 +166,7 @@ class Application
     /**
      * @return Application_Bootstrap_Screen
      */
-    public function getBootScreen() : Application_Bootstrap_Screen
+    public function getBootScreen(): Application_Bootstrap_Screen
     {
         return $this->bootScreen;
     }
@@ -151,20 +174,19 @@ class Application
     /**
      * @return UI_Page
      *
-     * @throws Application_Exception
+     * @throws ApplicationException
      * @see Application::ERROR_APPLICATION_NOT_STARTED
      */
-    public function getPage() : UI_Page
+    public function getPage(): UI_Page
     {
-        if(isset($this->page))
-        {
+        if (isset($this->page)) {
             return $this->page;
         }
 
         throw $this->createNotStartedException();
     }
 
-    public function getID() : int
+    public function getID(): int
     {
         return $this->id;
     }
@@ -177,15 +199,15 @@ class Application
      * @return void
      *
      * @throws Application_EventHandler_Exception
-     * @throws Application_Exception
+     * @throws ApplicationException
      * @throws UI_Exception
      * @throws DriverException
      *
      * @event Application_Event ApplicationStarted
      */
-    public function start(Application_Driver $driver) : void
+    public function start(Application_Driver $driver): void
     {
-        self::log('Starting application.');
+        AppFactory::createLogger()->log('Starting application.');
 
         $runMode = self::getRunMode();
 
@@ -195,8 +217,7 @@ class Application
 
         // let any tasks run that have to be done once the
         // driver object is ready.
-        if (Application_EventHandler::hasListener(self::EVENT_DRIVER_INSTANTIATED))
-        {
+        if (Application_EventHandler::hasListener(self::EVENT_DRIVER_INSTANTIATED)) {
             Application_EventHandler::trigger(
                 self::EVENT_DRIVER_INSTANTIATED,
                 array($this, $driver),
@@ -208,16 +229,14 @@ class Application
         // API method locations
         new APIFoldersManager(AppFactory::createFoldersManager()->choose()->API())->register();
 
-        // let the driver prepare the startup, namely determine which
+        // let the driver prepare the startup, namely, determine which
         // administration areas are available. The driver's getPageID
         // method cannot be called before this is done.
         $this->driver->prepare();
 
-        if ($runMode === self::RUN_MODE_UI)
-        {
+        if ($runMode === self::RUN_MODE_UI) {
             $pageID = $driver->getPageID();
-            if (empty($pageID))
-            {
+            if (empty($pageID)) {
                 throw new ApplicationException(
                     'Empty page ID',
                     'The driver [getPageID] method returned an empty page ID.',
@@ -225,14 +244,12 @@ class Application
                 );
             }
 
-            self::log(sprintf('Determined active page to be [%s].', $pageID));
+            AppFactory::createLogger()->log(sprintf('Determined active page to be [%s].', $pageID));
 
             $this->page = $this->ui->createPage($pageID);
             $this->ui->setPage($this->page);
             $this->driver->setPage($this->page);
-        }
-        else if ($runMode !== self::RUN_MODE_SCRIPT)
-        {
+        } else if ($runMode !== self::RUN_MODE_SCRIPT) {
             throw new ApplicationException(
                 'Invalid application run mode',
                 sprintf(
@@ -245,8 +262,7 @@ class Application
 
         $this->driver->start();
 
-        if (Application_EventHandler::hasListener('ApplicationStarted'))
-        {
+        if (Application_EventHandler::hasListener('ApplicationStarted')) {
             Application_EventHandler::trigger(
                 'ApplicationStarted',
                 array($this, $driver),
@@ -262,7 +278,7 @@ class Application
      * @return Application_Logger
      * @deprecated Use the AppFactory instead.
      */
-    public static function getLogger() : Application_Logger
+    public static function getLogger(): Application_Logger
     {
         return AppFactory::createLogger();
     }
@@ -275,7 +291,7 @@ class Application
      * @param bool $header Whether to display it styled as a header.
      * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
-    public static function log(mixed $message = null, bool $header = false) : Application_Logger
+    public static function log(mixed $message = null, bool $header = false): Application_Logger
     {
         return AppFactory::createLogger()->log($message, $header);
     }
@@ -289,7 +305,7 @@ class Application
      * @return Application_Logger
      * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
-    public static function logSF(string $message, ?string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
+    public static function logSF(string $message, ?string $category = Application_Logger::CATEGORY_GENERAL, ...$args): Application_Logger
     {
         return AppFactory::createLogger()->logSF($message, $category, ...$args);
     }
@@ -303,7 +319,7 @@ class Application
      * @return Application_Logger
      * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
-    public static function logEvent(string $eventName, string $message = '', ...$args) : Application_Logger
+    public static function logEvent(string $eventName, string $message = '', ...$args): Application_Logger
     {
         return AppFactory::createLogger()->logEvent($eventName, $message, ...$args);
     }
@@ -315,7 +331,7 @@ class Application
      * @return Application_Logger
      * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
-    public static function logHeader(string $message) : Application_Logger
+    public static function logHeader(string $message): Application_Logger
     {
         return AppFactory::createLogger()->logHeader($message);
     }
@@ -327,7 +343,7 @@ class Application
      * @return Application_Logger
      * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
-    public static function logData(array $data) : Application_Logger
+    public static function logData(array $data): Application_Logger
     {
         return AppFactory::createLogger()->logData($data);
     }
@@ -337,7 +353,7 @@ class Application
      * @return Application_Logger
      * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
-    public static function logError(string $message) : Application_Logger
+    public static function logError(string $message): Application_Logger
     {
         return AppFactory::createLogger()->logError($message);
     }
@@ -345,7 +361,7 @@ class Application
     /**
      * @return UI
      */
-    public function getUI() : UI
+    public function getUI(): UI
     {
         return $this->ui;
     }
@@ -353,7 +369,7 @@ class Application
     /**
      * @return UI_Themes_Theme
      */
-    public function getTheme() : UI_Themes_Theme
+    public function getTheme(): UI_Themes_Theme
     {
         return $this->getUI()->getTheme();
     }
@@ -361,13 +377,12 @@ class Application
     /**
      * @return Application_Driver
      *
-     * @throws Application_Exception
+     * @throws ApplicationException
      * @see Application::ERROR_APPLICATION_NOT_STARTED
      */
-    public function getDriver() : Application_Driver
+    public function getDriver(): Application_Driver
     {
-        if(isset($this->driver))
-        {
+        if (isset($this->driver)) {
             return $this->driver;
         }
 
@@ -383,15 +398,14 @@ class Application
      * to check if it is available.
      *
      * @return Application_Session
+     * @throws Application_Session_Exception
      * @see Application::isSessionReady()
      *
-     * @throws Application_Session_Exception
      * @see Application::ERROR_SESSION_NOT_AVAILABLE_YET
      */
-    public static function getSession() : Application_Session
+    public static function getSession(): Application_Session
     {
-        if (isset(self::$session))
-        {
+        if (isset(self::$session)) {
             return self::$session;
         }
 
@@ -407,7 +421,7 @@ class Application
      * @throws Application_Session_Exception
      * @see Application::ERROR_NO_USER_PRIOR_TO_SESSION
      */
-    public static function getUser() : Application_User
+    public static function getUser(): Application_User
     {
         return self::getSession()->requireUser();
     }
@@ -415,13 +429,12 @@ class Application
     /**
      * Renders the current page and outputs the generated content.
      */
-    public function display() : void
+    public function display(): void
     {
         $page = $this->getPage();
         $content = $this->getDriver()->renderContent();
 
-        if (empty($content))
-        {
+        if (empty($content)) {
             throw new ApplicationException(
                 'No content to display',
                 'The driver did not generate any contents to display.',
@@ -440,7 +453,7 @@ class Application
      * @param array<string,mixed> $vars
      * @return string
      */
-    public function renderTemplate(string $templateID, array $vars = array()) : string
+    public function renderTemplate(string $templateID, array $vars = array()): string
     {
         $tpl = $this->createTemplate($templateID);
         $tpl->setVars($vars);
@@ -452,26 +465,25 @@ class Application
      * @param string $templateID
      * @return UI_Page_Template
      */
-    public function createTemplate(string $templateID) : UI_Page_Template
+    public function createTemplate(string $templateID): UI_Page_Template
     {
         return $this->getPage()->createTemplate($templateID);
     }
 
     /**
      * @return Application_Request
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
-    public function getRequest() : Application_Request
+    public function getRequest(): Application_Request
     {
-        if(isset($this->request))
-        {
+        if (isset($this->request)) {
             return $this->request;
         }
 
         throw $this->createNotStartedException();
     }
 
-    private function createNotStartedException() : ApplicationException
+    private function createNotStartedException(): ApplicationException
     {
         throw new ApplicationException(
             'Application has not been started yet',
@@ -488,10 +500,9 @@ class Application
      *
      * @return boolean
      */
-    public static function isDevelEnvironment() : bool
+    public static function isDevelEnvironment(): bool
     {
-        if (isset(self::$develEnvironment))
-        {
+        if (isset(self::$develEnvironment)) {
             return self::$develEnvironment;
         }
 
@@ -499,8 +510,7 @@ class Application
 
         $env = Environments::getInstance()->getDetected();
 
-        if($env !== null && $env->isDev())
-        {
+        if ($env !== null && $env->isDev()) {
             self::$develEnvironment = true;
         }
 
@@ -513,12 +523,12 @@ class Application
     // 4: vendor
     // 5: root
     //                                             1  2  3  4  5
-    private const string ROOT_PATH_DEPENDENCY = __DIR__.'/../../../../../';
+    private const string ROOT_PATH_DEPENDENCY = __DIR__ . '/../../../../../';
 
     // 1: src/
     // 2: root
     //                                          1  2
-    private const string ROOT_PATH_PACKAGE = __DIR__.'/../../';
+    private const string ROOT_PATH_PACKAGE = __DIR__ . '/../../';
 
     private static ?bool $isInstalledAsDependency = null;
 
@@ -528,10 +538,10 @@ class Application
      *
      * @return bool
      */
-    public static function isInstalledAsDependency() : bool
+    public static function isInstalledAsDependency(): bool
     {
-        if(!isset(self::$isInstalledAsDependency)) {
-            self::$isInstalledAsDependency = is_dir(self::ROOT_PATH_DEPENDENCY.'/vendor');
+        if (!isset(self::$isInstalledAsDependency)) {
+            self::$isInstalledAsDependency = is_dir(self::ROOT_PATH_DEPENDENCY . '/vendor');
         }
 
         return self::$isInstalledAsDependency;
@@ -549,13 +559,13 @@ class Application
      * @return FolderInfo
      * @throws FileHelper_Exception
      */
-    public static function detectRootFolder() : FolderInfo
+    public static function detectRootFolder(): FolderInfo
     {
-        if(isset(self::$rootFolder)) {
+        if (isset(self::$rootFolder)) {
             return self::$rootFolder;
         }
 
-        if(self::isInstalledAsDependency()) {
+        if (self::isInstalledAsDependency()) {
             $root = FolderInfo::factory(self::ROOT_PATH_DEPENDENCY);
         } else {
             $root = FolderInfo::factory(self::ROOT_PATH_PACKAGE);
@@ -572,7 +582,7 @@ class Application
      *
      * @return APIManager
      */
-    public static function createAPI() : APIManager
+    public static function createAPI(): APIManager
     {
         return APIManager::getInstance();
     }
@@ -582,19 +592,19 @@ class Application
      * where all temporary files can be saved.
      *
      * @return string
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
-    public static function getTempFolder() : string
+    public static function getTempFolder(): string
     {
         return self::getStorageSubfolderPath(self::TEMP_FOLDER_NAME);
     }
 
-    public static function getTempFolderURL() : string
+    public static function getTempFolderURL(): string
     {
         return self::getStorageSubfolderURL(self::TEMP_FOLDER_NAME);
     }
 
-    public static function getCacheFolder() : string
+    public static function getCacheFolder(): string
     {
         return self::getStorageSubfolderPath(self::CACHE_FOLDER_NAME);
     }
@@ -607,23 +617,23 @@ class Application
      * @param string|NULL $name Specific name to use (without extension), or auto-generated if empty.
      * @param string|NULL $extension The extension to use, if empty {@see self::DEFAULT_TEST_FILE_EXTENSION} is used.
      */
-    public static function getTempFile(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION) : string
+    public static function getTempFile(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION): string
     {
         return self::getTempFolder() . '/' . self::resolveTempFileName($name, $extension);
     }
 
-    public static function getTempFileURL(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION) : string
+    public static function getTempFileURL(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION): string
     {
         return self::getTempFolderURL() . '/' . self::resolveTempFileName($name, $extension);
     }
 
-    private static function resolveTempFileName(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION) : string
+    private static function resolveTempFileName(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION): string
     {
         if (empty($name)) {
             $name = md5('tmp' . microtime(true));
         }
 
-        if(empty($extension)) {
+        if (empty($extension)) {
             $extension = self::DEFAULT_TEST_FILE_EXTENSION;
         }
 
@@ -635,23 +645,19 @@ class Application
      * folder. Attempts to create it if it does not exist.
      *
      * @return string
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
-    public static function getStorageFolder() : string
+    public static function getStorageFolder(): string
     {
-        if (self::$storageFolder !== '')
-        {
+        if (self::$storageFolder !== '') {
             return self::$storageFolder;
         }
 
-        self::$storageFolder = APP_ROOT . '/'. self::STORAGE_FOLDER_NAME;
+        self::$storageFolder = APP_ROOT . '/' . self::STORAGE_FOLDER_NAME;
 
-        try
-        {
+        try {
             FileHelper::createFolder(self::$storageFolder);
-        }
-        catch (Exception $e)
-        {
+        } catch (Throwable $e) {
             throw new ApplicationException(
                 'Storage folder does not exist and cannot be created.',
                 sprintf(
@@ -674,7 +680,7 @@ class Application
      * @param string $path
      * @return void
      */
-    public static function setStoragePath(string $path) : void
+    public static function setStoragePath(string $path): void
     {
         self::$storageFolder = $path;
     }
@@ -685,23 +691,19 @@ class Application
      *
      * @param string $subfolderName
      * @return string
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
-    public static function getStorageSubfolderPath(string $subfolderName) : string
+    public static function getStorageSubfolderPath(string $subfolderName): string
     {
-        if (isset(self::$knownStorageFolders[$subfolderName]))
-        {
+        if (isset(self::$knownStorageFolders[$subfolderName])) {
             return self::$knownStorageFolders[$subfolderName];
         }
 
         $folder = self::getStorageFolder() . '/' . $subfolderName;
 
-        try
-        {
+        try {
             FileHelper::createFolder($folder);
-        }
-        catch (FileHelper_Exception $e)
-        {
+        } catch (FileHelper_Exception $e) {
             throw new ApplicationException(
                 sprintf(
                     'Storage subfolder [%s] does not exist and cannot be created.',
@@ -721,7 +723,7 @@ class Application
         return $folder;
     }
 
-    public static function getStorageSubfolderURL(string $subfolderName) : string
+    public static function getStorageSubfolderURL(string $subfolderName): string
     {
         return sprintf(
             '%s/%s/%s',
@@ -735,7 +737,7 @@ class Application
      * @return Application_Messagelogs
      * @deprecated Use the AppFactory instead.
      */
-    public static function getMessageLog() : Application_Messagelogs
+    public static function getMessageLog(): Application_Messagelogs
     {
         return AppFactory::createMessageLog();
     }
@@ -745,7 +747,7 @@ class Application
      * @return Application_Media
      * @deprecated Use the AppFactory instead.
      */
-    public static function createMedia() : Application_Media
+    public static function createMedia(): Application_Media
     {
         return AppFactory::createMedia();
     }
@@ -754,7 +756,7 @@ class Application
      * @return DeeplHelper
      * @deprecated Use the AppFactory instead.
      */
-    public static function createDeeplHelper() : DeeplHelper
+    public static function createDeeplHelper(): DeeplHelper
     {
         return AppFactory::createDeeplHelper();
     }
@@ -763,7 +765,7 @@ class Application
      * @return DeploymentRegistry
      * @deprecated Use the AppFactory instead.
      */
-    public static function createDeploymentRegistry() : DeploymentRegistry
+    public static function createDeploymentRegistry(): DeploymentRegistry
     {
         return AppFactory::createDeploymentRegistry();
     }
@@ -776,7 +778,7 @@ class Application
      * @return Connectors_Connector
      * @throws BaseClassHelperException
      */
-    public static function createConnector(string $typeOrClass) : Connectors_Connector
+    public static function createConnector(string $typeOrClass): Connectors_Connector
     {
         return Connectors::createConnector($typeOrClass);
     }
@@ -790,19 +792,17 @@ class Application
      *
      * @return boolean
      */
-    public static function isSimulation() : bool
+    public static function isSimulation(): bool
     {
         // Avoid checks if it has already been determined.
         // Also, important in case the simulation mode has
         // been set explicitly via setSimulation().
-        if (self::$simulation === true)
-        {
+        if (self::$simulation === true) {
             return true;
         }
 
         // Only developer users may enable the simulation mode
-        if (self::isSessionReady() && !self::isUserDev())
-        {
+        if (self::isSessionReady() && !self::isUserDev()) {
             return false;
         }
 
@@ -816,13 +816,13 @@ class Application
             );
     }
 
-    public static function isUserDev() : bool
+    public static function isUserDev(): bool
     {
         // Use the session to get the user, as the application's
         // getUser() method triggers authentication.
         $user = self::getSession()->getUser();
 
-        if($user !== null) {
+        if ($user !== null) {
             return $user->isDeveloper();
         }
 
@@ -835,7 +835,7 @@ class Application
      *
      * @param boolean $simulation
      */
-    public static function setSimulation(bool $simulation = true) : void
+    public static function setSimulation(bool $simulation = true): void
     {
         self::$simulation = $simulation;
 
@@ -843,7 +843,7 @@ class Application
         // for methods that check the request.
         $_REQUEST[self::REQUEST_VAR_SIMULATION] = ConvertHelper::boolStrict2string($simulation, true);
 
-        self::log(sprintf(
+        AppFactory::createLogger()->log(sprintf(
             'Application | Setting simulation mode to %1$s.',
             strtoupper($_REQUEST[self::REQUEST_VAR_SIMULATION])
         ));
@@ -853,7 +853,7 @@ class Application
      * @return AppSetsCollection
      * @deprecated Use the AppFactory instead.
      */
-    public function getSets() : AppSetsCollection
+    public function getSets(): AppSetsCollection
     {
         return AppSetsCollection::getInstance();
     }
@@ -864,10 +864,9 @@ class Application
      *
      * @return MessagingCollection
      */
-    public static function createMessaging() : MessagingCollection
+    public static function createMessaging(): MessagingCollection
     {
-        if (!isset(self::$messaging))
-        {
+        if (!isset(self::$messaging)) {
             self::$messaging = new MessagingCollection();
         }
 
@@ -881,7 +880,7 @@ class Application
      * @return Application_LookupItems
      * @deprecated Use the AppFactory instead.
      */
-    public static function createLookupItems() : Application_LookupItems
+    public static function createLookupItems(): Application_LookupItems
     {
         return AppFactory::createLookupItems();
     }
@@ -893,7 +892,7 @@ class Application
      * @return Application_Ratings
      * @deprecated Use the AppFactory instead.
      */
-    public static function createRatings() : Application_Ratings
+    public static function createRatings(): Application_Ratings
     {
         return AppFactory::createRatings();
     }
@@ -905,9 +904,9 @@ class Application
      * @param integer $seconds The limit to set. Use 0 for no limit.
      * @param string $operation Human-readable label of the operation that needs the time limit, shown in the exception.
      */
-    public static function setTimeLimit(int $seconds, string $operation) : void
+    public static function setTimeLimit(int $seconds, string $operation): void
     {
-        self::logSF(
+        AppFactory::createLogger()->logSF(
             'ExecutionTime | Setting to [%s] seconds for operation [%s].',
             null,
             $seconds,
@@ -923,21 +922,17 @@ class Application
      *
      * @param integer $megabytes The amount of memory in megabytes. Set to -1 for no limit.
      * @param string $operation Human-readable label of the operation that needs the memory limit, shown in the exception.
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
-    public static function setMemoryLimit(int $megabytes, string $operation) : void
+    public static function setMemoryLimit(int $megabytes, string $operation): void
     {
-        if ($megabytes === -1)
-        {
+        if ($megabytes === -1) {
             $value = '-1';
-        }
-        else
-        {
+        } else {
             $value = $megabytes . 'M';
         }
 
-        if (ini_set('memory_limit', $value) === false)
-        {
+        if (ini_set('memory_limit', $value) === false) {
             throw new ApplicationException(
                 'Cannot change the memory limit.',
                 sprintf(
@@ -951,15 +946,15 @@ class Application
     }
 
     /**
-     * Retrieves the path to the application's class files folder.
+     * Retrieves the path to the application's `classes` folder.
      * @return string
      */
-    public function getClassesFolder() : string
+    public function getClassesFolder(): string
     {
         return APP_INSTALL_FOLDER . '/classes';
     }
 
-    public function getVendorFolder() : string
+    public function getVendorFolder(): string
     {
         return APP_ROOT . '/vendor';
     }
@@ -968,7 +963,7 @@ class Application
      * @return Application_RequestLog
      * @deprecated Use the AppFactory instead.
      */
-    public static function createRequestLog() : Application_RequestLog
+    public static function createRequestLog(): Application_RequestLog
     {
         return AppFactory::createRequestLog();
     }
@@ -977,7 +972,7 @@ class Application
      * @return Application_ErrorLog
      * @deprecated Use the AppFactory instead.
      */
-    public static function createErrorLog() : Application_ErrorLog
+    public static function createErrorLog(): Application_ErrorLog
     {
         return AppFactory::createErrorLog();
     }
@@ -987,9 +982,9 @@ class Application
      * @param string $reason
      * @return never
      */
-    public static function exit(string $reason = '') : never
+    public static function exit(string $reason = ''): never
     {
-        self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
+        AppFactory::createLogger()->log(sprintf('Exiting application. Reason given: [%s].', $reason));
 
         Application_Bootstrap::handleShutDown();
         exit;
@@ -1001,18 +996,16 @@ class Application
      *
      * @param mixed $callable
      * @param int $errorCode
-     * @throws Application_Exception
+     * @throws ApplicationException
      * @throws BaseException
      */
-    public static function requireCallableValid(mixed $callable, int $errorCode = 0) : void
+    public static function requireCallableValid(mixed $callable, int $errorCode = 0): void
     {
-        if (is_callable($callable))
-        {
+        if (is_callable($callable)) {
             return;
         }
 
-        if ($errorCode === 0)
-        {
+        if ($errorCode === 0) {
             $errorCode = self::ERROR_CALLBACK_NOT_CALLABLE;
         }
 
@@ -1026,27 +1019,27 @@ class Application
         );
     }
 
-    public static function getRunMode() : string
+    public static function getRunMode(): string
     {
         return (string)boot_constant(BaseConfigRegistry::RUN_MODE);
     }
 
-    public static function isUIEnabled() : bool
+    public static function isUIEnabled(): bool
     {
         return self::getRunMode() === self::RUN_MODE_UI;
     }
 
-    public static function isAuthenticationEnabled() : bool
+    public static function isAuthenticationEnabled(): bool
     {
         return boot_constant(BaseConfigRegistry::NO_AUTHENTICATION) !== true;
     }
 
-    public static function isSessionSimulated() : bool
+    public static function isSessionSimulated(): bool
     {
         return boot_constant(BaseConfigRegistry::SIMULATE_SESSION) === true;
     }
 
-    public static function isDemoMode() : bool
+    public static function isDemoMode(): bool
     {
         return AppConfig::isDemoMode();
     }
@@ -1057,12 +1050,12 @@ class Application
      * @return bool
      * @see APP_DB_ENABLED
      */
-    public static function isDatabaseEnabled() : bool
+    public static function isDatabaseEnabled(): bool
     {
         return boot_constant(BaseConfigRegistry::DB_ENABLED) === true;
     }
 
-    public static function createLDAP() : Application_LDAP
+    public static function createLDAP(): Application_LDAP
     {
         $conf = new Application_LDAP_Config(
             AppConfig::getLDAPHost(),
@@ -1084,7 +1077,7 @@ class Application
      * @param callable $callback
      * @return Application_EventHandler_Listener
      */
-    public static function addRedirectListener(callable $callback) : Application_EventHandler_Listener
+    public static function addRedirectListener(callable $callback): Application_EventHandler_Listener
     {
         return Application_EventHandler::addListener(self::EVENT_REDIRECT, $callback);
     }
@@ -1093,25 +1086,22 @@ class Application
      * @param string|AdminURLInterface $url
      * @return never
      *
-     * @throws Application_Exception
+     * @throws ApplicationException
      * @see Application::ERROR_REDIRECT_EVENTS_FAILED
      */
-    public static function redirect(string|AdminURLInterface $url) : never
+    public static function redirect(string|AdminURLInterface $url): never
     {
         $url = (string)$url;
 
-        try
-        {
+        try {
             Application_EventHandler::trigger(
                 self::EVENT_REDIRECT,
                 array($url)
             );
-        }
-        catch (ApplicationException $e)
-        {
+        } catch (Throwable $e) {
             throw new ApplicationException(
                 'Error while running redirect event handling.',
-            'Tried running the Redirect event, but an exception occurred.',
+                'Tried running the Redirect event, but an exception occurred.',
                 self::ERROR_REDIRECT_EVENTS_FAILED,
                 $e
             );
@@ -1119,14 +1109,13 @@ class Application
 
         $message = sprintf('Redirected to [%s]', $url);
 
-        if(isCLI()) {
+        if (isCLI()) {
             self::exit($message);
         }
 
         $simulation = self::isSimulation();
 
-        if (!$simulation && !headers_sent())
-        {
+        if (!$simulation && !headers_sent()) {
             header('Location:' . $url);
             self::exit($message);
         }
@@ -1157,20 +1146,18 @@ class Application
         </div>
         <?php
 
-        if ($simulation)
-        {
+        if ($simulation) {
             AppFactory::createLogger()->printLog(true);
         }
 
         self::exit(sprintf('Redirected to [%s]', $url));
     }
 
-    public static function getUserClass() : string
+    public static function getUserClass(): string
     {
         $userClass = APP_CLASS_NAME . '_User';
 
-        if (class_exists($userClass))
-        {
+        if (class_exists($userClass)) {
             return $userClass;
         }
 
@@ -1187,23 +1174,22 @@ class Application
     /**
      * @var array<int,Application_User>
      */
-    private static $knownUsers = array();
+    private static array $knownUsers = array();
 
     /**
      * Creates a user instance for the specified ID.
      *
      * @param int $userID
      * @return Application_User
-     * @throws Application_Exception
+     * @throws ApplicationException
      *
      * @see Application::ERROR_USER_CLASS_DOES_NOT_EXIST
      * @see Application::ERROR_USER_DATA_NOT_FOUND
      * @see Application::ERROR_INVALID_USER_CLASS
      */
-    public static function createUser(int $userID) : Application_User
+    public static function createUser(int $userID): Application_User
     {
-        if (isset(self::$knownUsers[$userID]))
-        {
+        if (isset(self::$knownUsers[$userID])) {
             return self::$knownUsers[$userID];
         }
 
@@ -1211,8 +1197,7 @@ class Application
 
         $user = new $userClass($userID, self::getUserData($userID));
 
-        if ($user instanceof Application_User)
-        {
+        if ($user instanceof Application_User) {
             return $user;
         }
 
@@ -1233,13 +1218,12 @@ class Application
      *
      * @param string $foreignID
      * @return Application_User
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
-    public static function getUserByForeignID(string $foreignID) : Application_User
+    public static function getUserByForeignID(string $foreignID): Application_User
     {
         $userID = self::getUserIDByForeignID($foreignID);
-        if ($userID !== null)
-        {
+        if ($userID !== null) {
             return self::createUser($userID);
         }
 
@@ -1260,7 +1244,7 @@ class Application
      * @param string $foreignID
      * @return int|null
      */
-    public static function getUserIDByForeignID(string $foreignID) : ?int
+    public static function getUserIDByForeignID(string $foreignID): ?int
     {
         $result = DBHelper::fetchKeyInt(
             'user_id',
@@ -1275,8 +1259,7 @@ class Application
             )
         );
 
-        if ($result !== 0)
-        {
+        if ($result !== 0) {
             return $result;
         }
 
@@ -1290,17 +1273,17 @@ class Application
      * @param string $foreignID
      * @return bool
      */
-    public static function userForeignIDExists(string $foreignID) : bool
+    public static function userForeignIDExists(string $foreignID): bool
     {
         return self::getUserIDByForeignID($foreignID) !== null;
     }
 
-    public static function createSystemUser() : Application_User
+    public static function createSystemUser(): Application_User
     {
         return self::createUser(self::USER_ID_SYSTEM);
     }
 
-    public static function createDummyUser() : Application_User
+    public static function createDummyUser(): Application_User
     {
         return self::createUser(self::USER_ID_DUMMY);
     }
@@ -1312,10 +1295,9 @@ class Application
      * @param int $userID
      * @return bool
      */
-    public static function userIDExists(int $userID) : bool
+    public static function userIDExists(int $userID): bool
     {
-        if (isset(self::$knownUsers[$userID]))
-        {
+        if (isset(self::$knownUsers[$userID])) {
             return true;
         }
 
@@ -1329,26 +1311,23 @@ class Application
      *
      * @param int $userID
      * @return array<string,string>
-     * @throws Application_Exception
+     * @throws ApplicationException
      *
      * @see Application::ERROR_USER_DATA_NOT_FOUND
      */
-    private static function getUserData(int $userID) : array
+    private static function getUserData(int $userID): array
     {
-        if ($userID === self::USER_ID_SYSTEM)
-        {
+        if ($userID === self::USER_ID_SYSTEM) {
             return self::getSystemUserData();
         }
 
-        if ($userID === self::USER_ID_DUMMY)
-        {
+        if ($userID === self::USER_ID_DUMMY) {
             return self::getDummyUserData();
         }
 
         $exception = null;
 
-        try
-        {
+        try {
             $data = DBHelper::fetch(
                 'SELECT
                 *
@@ -1362,13 +1341,10 @@ class Application
                 )
             );
 
-            if (!empty($data))
-            {
+            if (!empty($data)) {
                 return $data;
             }
-        }
-        catch (Throwable $e)
-        {
+        } catch (Throwable $e) {
             $exception = $e;
         }
 
@@ -1388,7 +1364,7 @@ class Application
      *
      * @return array<string,string>
      */
-    public static function getDummyUserData() : array
+    public static function getDummyUserData(): array
     {
         return array(
             Application_Users::COL_EMAIL => APP_DUMMY_EMAIL,
@@ -1404,7 +1380,7 @@ class Application
      *
      * @return array<string,string>
      */
-    public static function getSystemUserData() : array
+    public static function getSystemUserData(): array
     {
         return array(
             Application_Users::COL_EMAIL => APP_SYSTEM_EMAIL,
@@ -1415,22 +1391,22 @@ class Application
         );
     }
 
-    public function isStarted() : bool
+    public function isStarted(): bool
     {
         return $this->started;
     }
 
-    public static function isSessionReady() : bool
+    public static function isSessionReady(): bool
     {
         return isset(self::$session) && self::$session->isStarted();
     }
 
-    public static function isUserReady() : bool
+    public static function isUserReady(): bool
     {
         return self::isSessionReady() && self::getSession()->getUser() !== null;
     }
 
-    public static function isSystemUserID(int $userID) : bool
+    public static function isSystemUserID(int $userID): bool
     {
         return in_array($userID, self::getSystemUserIDs());
     }
@@ -1438,7 +1414,7 @@ class Application
     /**
      * @return int[]
      */
-    public static function getSystemUserIDs() : array
+    public static function getSystemUserIDs(): array
     {
         return array(
             self::USER_ID_SYSTEM,
@@ -1446,12 +1422,12 @@ class Application
         );
     }
 
-    public static function createInstaller() : Application_Installer
+    public static function createInstaller(): Application_Installer
     {
         return new Application_Installer();
     }
 
-    public static function isUnitTestingRunning() : bool
+    public static function isUnitTestingRunning(): bool
     {
         return
             (defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true)
@@ -1459,17 +1435,16 @@ class Application
             (defined('APP_FRAMEWORK_TESTS') && APP_FRAMEWORK_TESTS === true);
     }
 
-    public static function getTimeStarted() : float
+    public static function getTimeStarted(): float
     {
-        if(defined('APP_TIME_START'))
-        {
+        if (defined('APP_TIME_START')) {
             return APP_TIME_START;
         }
 
         return 0;
     }
 
-    public static function getTimePassed() : float
+    public static function getTimePassed(): float
     {
         return microtime(true) - self::getTimeStarted();
     }

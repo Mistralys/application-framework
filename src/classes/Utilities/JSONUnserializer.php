@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Mistralys\AppFramework\Helpers;
 
-use Application;
+use Application\Application;
 use AppUtils\ConvertHelper\JSONConverter;
 use Throwable;
 

@@ -5,6 +5,8 @@
 
 declare(strict_types=1);
 
+namespace Application\Framework;
+
 use AppUtils\ArrayDataCollection;
 use AppUtils\FileHelper\JSONFile;
 
@@ -30,25 +32,25 @@ final class PackageInfo
     /**
      * Gets the ID/name of the framework composer package,
      * in the form "vendor/project-name".
-     * 
+     *
      * @return string
      */
-    public static function getComposerID() : string
+    public static function getComposerID(): string
     {
         return self::PROJECT_SLUG;
     }
 
-    public static function getGithubURL() : string
+    public static function getGithubURL(): string
     {
         return self::GITHUB_URL;
     }
 
-    public static function getName() : string
+    public static function getName(): string
     {
         return self::PROJECT_NAME;
     }
 
-    public static function getNameShort() : string
+    public static function getNameShort(): string
     {
         return self::PROJECT_NAME_SHORT;
     }
@@ -59,28 +61,26 @@ final class PackageInfo
      *
      * @return string
      */
-    public static function getDescription() : string
+    public static function getDescription(): string
     {
         return self::getComposerConfig()->getString('description');
     }
 
-    public static function getComposerFile() : JSONFile
+    public static function getComposerFile(): JSONFile
     {
-        return JSONFile::factory(__DIR__.'/../../composer.json');
+        return JSONFile::factory(__DIR__ . '/../../composer.json');
     }
 
-    public static function getComposerConfig() : ArrayDataCollection
+    public static function getComposerConfig(): ArrayDataCollection
     {
-        if(self::$composerConfig !== null)
-        {
+        if (self::$composerConfig !== null) {
             return self::$composerConfig;
         }
 
         $file = self::getComposerFile();
         self::$composerConfig = ArrayDataCollection::create();
 
-        if($file->exists())
-        {
+        if ($file->exists()) {
             self::$composerConfig->setKeys($file->parse());
         }
 
