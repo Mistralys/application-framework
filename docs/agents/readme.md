@@ -5,6 +5,10 @@
 Canonical coding paradigms and patterns used across this project. Agents and contributors
 should follow these rules when implementing interfaces, traits, and classes.
 
+## Framework folder structure
+
+See [folder-structure.md](folder-structure.md).
+
 ## General Conventions
 
 - Null checks: prefer `isset($this->property)` over strict `null` comparisons.

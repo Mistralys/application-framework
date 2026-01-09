@@ -1,0 +1,114 @@
+# Framework Folder Structure
+
+## Main Folders
+
+- `docs`: This folder contains internal documentation and resource files.
+- `localization`: This folder contains the UI for editing localizable UI strings.
+- `src`: This folder contains all the PHP source files.
+  - `classes`: 
+    - `_deprecated`: Deprecated classes are stored here until they are removed. 
+    - `Application`: All application-related classes (See [Application Class Folders](#application-class-folders)).
+    - `Connectors`: Classes used to connect to external services and APIs.
+    - `DBHelper`: Database abstraction and data collection handling classes (See [DBHelper](/src/classes/DBHelper/_readme.md)).
+    - `DeeplHelper`: Utility classes to connect to DeepL services.
+    - `Examples`: Example classes used in the Framework Test Application.
+    - `TypeHinter`: Utility class to run PHP code type hinting adjustments.
+    - `UI`: User Interface related management classes and object-oriented UI components.
+    - `Utilities`: Global utility classes.
+    - `AppFactory.php`: Factory for most framework functions and modules.
+    - `Application.php`: Main Application management class.
+    - `PackageInfo.php`: Information about this app framework package. 
+  - `functions`
+      - `functions.php`: Collection of global functions.
+      - `code-discovery-constants.php`: Constants used for IDE Intellisense. Not loaded or used in the framework.
+  - `localization`: Storage for the localized strings for supported locales.
+  - `themes`: UI theming and template classes.
+    - `default`: The default theme.
+      - `css`: CSS stylesheet files.
+      - `fonts`: Font files.
+      - `img`: Image files.
+      - `js`: JavaScript files and classes.
+      - `templates`: PHP-based template files and classes.
+      - `icons.json`: List of FontAwesome icons available for applications.
+      - `theme.php`: Theme configuration class.
+- `tests`: Test suites and which includes the Framework Test Application, built using the framework.
+  - `AppFrameworkIntegrationTests`: Integration tests.
+  - `AppFrameworkTestClasses`: Abstract test case classes, traits and mock classes.
+  - `AppFrameworkTests`: Unit tests.
+  - `application`: The test application, a working implementation of the framework.
+  - `assets`: Test-related asset files.
+  - `files`: Test-related files.
+  - `phpstan`: CLI scripts to run the static PHPStan code analysis.
+  - `sql`: Source SQL files to initialize the test database.
+- `tools`: CLI tools and batch scripts for developer use.
+
+## Application Class Folders
+
+- `Admin`: The admin UI screen system. Management classes and scaffolding for app implementations.
+- `Ajax`: The AJAX system. AJAX method management classes for app-internal AJAX requests.
+- `AjaxMethods`: Bundled framework AJAX method classes.
+- `API`: The API system. Management classes and scaffolding for public request methods.
+- `AppFactory`: Support classes for the `AppFactory` class.
+- `AppSets`: Enabled features system. Management classes for selecting which features of the application to enable for this installation.
+- `AppSettings`: Management classes for application settings stored in the DB.
+- `Bootstrap`: Bootstrapper system and entry classes for the application's render / process modes.
+- `CacheControl`: Cache storage handling system.
+- `Changelog`: Changelog management classes.
+- `Collection`: Interfaces and base classes for the record collection system.
+- `Composer`: Composer dependency-loading integration classes.
+- `ConfigSettings`: Configuration constant access and management classes.
+- `CORS`: Management classes for CORS headers.
+- `Countries`: Country collection classes.
+- `CustomProperties`: Management classes to add custom property support to records.
+- `DBDumps`: DB dump generation classes.
+- `DeploymentRegistry`: Classes to handle the registry for application deployments.
+- `Development`: Management classes for developer-only functionality.
+- `Disposables`: The disposable system. Management classes and scaffolding for implementations.
+- `Driver`: Application driver management classes (driver = application entry point).
+- `Environments`: The environment handling system. Detection logic and scaffolding.
+- `ErrorDetails`: Error parser and rendering for displaying app exception details.
+- `ErrorLog`: Error log management classes.
+- `EventHandler`: Event handling system classes.
+- `Exception`: Framework exception classes.
+- `Feedback`: UI user feedback collection and management classes.
+- `FilterCriteria`: Record filtering system. Management classes and scaffolding for implementations.
+- `FilterSettings`: Companion to the filtering system: Management and form generation for user-selected filtering settings.
+- `Formable`: Form generation and management classes, built around HTML_QuickForm2.
+- `Framework`: Framework-related utility and information classes.
+- `HealthMonitor`: Management classes for the app health monitoring feature and scaffolding for implementations.
+- `Installer`: (WIP) application installer feature.
+- `Interfaces`: General-purpose interfaces.
+- `Languages`: Language collection with available languages inferred from available countries.
+- `LDAP`: LDAP connectivity management classes.
+- `Locales`: Locales collection with available locales inferred from available countries.
+- `Localization`: UI localization support classes.
+- `LockManager`: Admin screen locking system management classes.
+- `Logger`: Logging classes.
+- `LookupItems`: Management classes for the UI's "Quick Lookup" feature to find records by ID or name.
+- `Mail`: Classes used for system emails.
+- `Maintenance`: The maintenance mode management classes.
+- `MarkdownRenderer`: Framework-flavored Markdown document rendering based on the `league/commonmark` library.
+- `Media`: Media library management classes.
+- `Messagelogs`: Application DB message log management classes.
+- `Messaging`: Management classes for user to user messages (via the LockManager system).
+- `NewsCentral`: The news articles system for application news and detailed release notes.
+- `OAuth`: OAuth implementation classes.
+- `Ratings`: Management classes for user-provided ratings of admin screens.
+- `Renamer`: Classes for the "DB Renamer" tool used to rename strings in supported database tables.
+- `Request`: HTTP Request-handling classes.
+- `RequestLog`: The request logging system.
+- `Revisionable`: Scaffolding and collection classes for records that support versioning.
+- `Session`: Session management classes.
+- `SourceFolders`: Registry classes for folders from which classes can be loaded dynamically.
+- `StateHandler`: Record state handling classes (draft, finalized, inactive...).
+- `Stubs`: General-purpose stub classes, mainly used for static code analysis.
+- `SystemMails`: Classes that handle known framework system emails.
+- `Tags`: The tagging system. Management and collection classes and scaffolding for tag handling.
+- `TimeTracker`: The time tracking module for people to store time worked on projects.
+- `Traits`: General-purpose traits.
+- `Updaters`: Management classes for application update scripts (via CLI and HTTP).
+- `Uploads`: Companion management to the `Media` classes to handle new uploaded documents.
+- `User`: Authenticated user management classes.
+- `Users`: Known users collection and management classes.
+- `Validation`: Utility classes for validating records and data types.
+- `WhatsNew`: Classes to manage the integrated `What's new?` dialog for new application versions.
