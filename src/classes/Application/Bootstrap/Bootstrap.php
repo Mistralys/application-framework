@@ -18,7 +18,7 @@ const APP_DEVEL_SQL_MODE = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPA
  * Must be loaded manually, because autoloading is not ready
  * yet when constant names are accessed.
  */
-require_once __DIR__ . '/ConfigSettings/BaseConfigRegistry.php';
+require_once __DIR__ . '/../ConfigSettings/BaseConfigRegistry.php';
 
 class Application_Bootstrap
 {
