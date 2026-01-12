@@ -47,7 +47,7 @@ class ViewSubmode extends BaseRecordSubmode implements SubmodeInterface
         return StatusAction::URL_NAME;
     }
 
-    public function getDefaultSubscreenClass(): null
+    public function getDefaultSubscreenClass(): string
     {
         return StatusAction::class;
     }

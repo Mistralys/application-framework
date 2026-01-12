@@ -8,7 +8,10 @@ use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Screens\Mode\View\ClientStatusSubmode;
 use Application\API\Admin\Traits\ClientModeInterface;
 use Application\API\Admin\Traits\ClientModeTrait;
+use Application\API\Clients\APIClientRecord;
+use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
@@ -47,6 +50,14 @@ class ViewClientMode extends BaseRecordMode implements ClientModeInterface
         $this->renderer
             ->getTitle()
             ->setText($this->getRecord()->getLabel());
+    }
+
+    public function getRecord(): APIClientRecord
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            APIClientRecord::class,
+            parent::getRecord()
+        );
     }
 
     protected function _handleSubnavigation(): void

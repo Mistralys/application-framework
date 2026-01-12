@@ -41,7 +41,7 @@ class ViewCategoryMode extends BaseRecordMode implements ManageNewsModeInterface
 
     public function getDefaultSubscreenClass(): string
     {
-        return CategorySettingsSubmode::URL_NAME;
+        return CategorySettingsSubmode::class;
     }
 
     protected function createCollection() : CategoriesCollection

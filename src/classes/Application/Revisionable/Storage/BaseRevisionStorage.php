@@ -10,8 +10,11 @@ namespace Application\Revisionable\Storage;
 
 use Application\Application;
 use Application\Disposables\Attributes\DisposedAware;
+use Application\Disposables\DisposableDisposedException;
 use Application\Disposables\DisposableInterface;
 use Application\Disposables\DisposableTrait;
+use Application\Exception\ApplicationException;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionDependentInterface;
@@ -19,7 +22,6 @@ use Application\Revisionable\Storage\Copy\BaseRevisionCopy;
 use Application\Revisionable\Storage\Event\Application_RevisionStorage_Event_RevisionAdded;
 use Application\Revisionable\Storage\Event\RevisionSelectedEvent;
 use Application_EventHandler_EventableListener;
-use Application_Exception;
 use Application_FilterCriteria_RevisionableRevisions;
 use Application_Interfaces_Eventable;
 use Application_Traits_Eventable;
@@ -29,7 +31,6 @@ use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\TypeFilter\StrictType;
 use ArrayAccess;
 use DateTime;
-use ReturnTypeWillChange;
 
 /**
  * Utility class for storing revision data: stores data sets
@@ -54,7 +55,6 @@ abstract class BaseRevisionStorage
     public const int DATA_KEY_MAX_LENGTH = 180;
 
     public const int ERROR_REVISION_DOES_NOT_EXIST = 15557001;
-    public const int ERROR_COPYTO_NOT_IMPLEMENTED = 15557002;
     public const int ERROR_CANNOT_SET_KEY_UNKNOWN_REVISION = 15557003;
     public const int ERROR_CANNOT_SET_KEYS_UNKNOWN_REVISION = 15557004;
     public const int ERROR_INVALID_KEY_LOADER_CALLBACK = 15557005;
@@ -253,7 +253,7 @@ abstract class BaseRevisionStorage
      * @return BaseRevisionStorage
      *
      * @throws RevisionStorageException
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      *
      * @see lock()
      * @see unlock()
@@ -497,7 +497,7 @@ abstract class BaseRevisionStorage
      * @param string $key
      * @param callable $callback
      * @return $this
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
     public function setKeyLoader(string $key, callable $callback): self
     {
@@ -599,7 +599,7 @@ abstract class BaseRevisionStorage
      *
      * @param int $number
      * @return $this
-     * @throws Application_Exception
+     * @throws RevisionStorageException
      */
     public function removeRevision(int $number): self
     {
@@ -654,7 +654,6 @@ abstract class BaseRevisionStorage
      *
      * @param integer $number
      * @return $this
-     * @throws Application_Exception
      */
     public function unloadRevision(int $number): self
     {
@@ -701,7 +700,6 @@ abstract class BaseRevisionStorage
      * @param integer $targetRevision
      * @param integer $sourceRevision
      * @return $this
-     * @throws Application_Exception
      */
     public function replaceRevision(int $targetRevision, int $sourceRevision): self
     {
@@ -793,7 +791,7 @@ abstract class BaseRevisionStorage
      * @return mixed
      * @throws RevisionableException {@see self::ERROR_KEY_REVISION_UNKNOWN}
      */
-    public function getKey(string $name, $default = null)
+    public function getKey(string $name, mixed $default = null) : mixed
     {
         $this->requireNotDisposed();
 
@@ -898,8 +896,7 @@ abstract class BaseRevisionStorage
      * @param string $offset
      * @return mixed|null
      */
-    #[ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset) : mixed
     {
         return $this->getKey($offset);
     }
@@ -908,9 +905,8 @@ abstract class BaseRevisionStorage
      * @param string $offset
      * @param mixed $value
      * @return void
-     * @throws Application_Exception
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, mixed $value): void
     {
         $this->setKey($offset, $value);
     }
@@ -1024,7 +1020,6 @@ abstract class BaseRevisionStorage
      *
      * @param RevisionableInterface $revisionable
      * @return $this
-     * @throws Application_Exception
      */
     public function copyTo(RevisionableInterface $revisionable): self
     {
@@ -1149,7 +1144,7 @@ abstract class BaseRevisionStorage
      * @param mixed $value
      * @return $this
      */
-    public function setStaticColumn(string $name, $value): self
+    public function setStaticColumn(string $name, mixed $value): self
     {
         $this->requireNotDisposed();
 
@@ -1178,7 +1173,7 @@ abstract class BaseRevisionStorage
      * @param mixed $default
      * @return mixed
      */
-    public function getStaticColumn(string $name, $default = null)
+    public function getStaticColumn(string $name, mixed $default = null) : mixed
     {
         $this->requireNotDisposed();
 
@@ -1217,7 +1212,7 @@ abstract class BaseRevisionStorage
      * @return mixed
      * @throws RevisionableException
      */
-    public function getDataKey(string $name, $default = null)
+    public function getDataKey(string $name, mixed $default = null) : mixed
     {
         $this->requireNotDisposed();
 
@@ -1263,7 +1258,7 @@ abstract class BaseRevisionStorage
      * @return $this
      * @throws RevisionableException
      */
-    public function setDataKey(string $name, $value): self
+    public function setDataKey(string $name, mixed $value): self
     {
         $this->requireNotDisposed();
 
@@ -1355,7 +1350,7 @@ abstract class BaseRevisionStorage
 
         // We have to add the label here, because it is not part
         // of the essential revision keys handled by the storage.
-        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_LABEL] = $this->revisionable->getLabel();
+        $data[RevisionableCollectionInterface::COL_REV_LABEL] = $this->revisionable->getLabel();
 
         $this->_writeRevisionKeys($data);
 
@@ -1386,11 +1381,11 @@ abstract class BaseRevisionStorage
      * @param string $key
      * @param mixed $value
      */
-    abstract protected function _writeDataKey(string $key, $value): void;
+    abstract protected function _writeDataKey(string $key, mixed $value): void;
 
     // region: Event handling
 
-    public const EVENT_REVISION_ADDED = 'RevisionAdded';
+    public const string EVENT_REVISION_ADDED = 'RevisionAdded';
 
     protected function triggerRevisionAdded(int $number, int $timestamp, int $ownerID, string $ownerName, ?string $comments = null): void
     {
@@ -1427,7 +1422,7 @@ abstract class BaseRevisionStorage
      * @return $this
      * @throws RevisionableException
      */
-    public function setPrivateKey(string $name, $value): self
+    public function setPrivateKey(string $name, mixed $value): self
     {
         $this->requireNotDisposed();
 
@@ -1439,7 +1434,7 @@ abstract class BaseRevisionStorage
      * @return mixed|NULL
      * @throws RevisionableException
      */
-    public function getPrivateKey(string $name)
+    public function getPrivateKey(string $name) : mixed
     {
         $this->requireNotDisposed();
 

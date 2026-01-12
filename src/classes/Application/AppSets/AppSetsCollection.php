@@ -58,7 +58,7 @@ class AppSetsCollection extends DBHelper_BaseCollection
     /**
      * @return AppSetsCollection
      */
-    public static function getInstance(): AppSetsCollection
+    public static function getInstance(): self
     {
         return ClassHelper::requireObjectInstanceOf(
             self::class,
@@ -171,7 +171,7 @@ class AppSetsCollection extends DBHelper_BaseCollection
         return $record_id === self::DEFAULT_ID || parent::idExists($record_id);
     }
 
-    protected ?AppSet $default = null;
+    protected ?DefaultAppSet $default = null;
 
     public function getByID(int $record_id): AppSet|DefaultAppSet
     {
@@ -203,7 +203,6 @@ class AppSetsCollection extends DBHelper_BaseCollection
     /**
      * Saves all application sets to the configuration file.
      *
-     * @throws AppSetsException
      * @deprecated
      */
     public function save(): void
@@ -226,7 +225,7 @@ class AppSetsCollection extends DBHelper_BaseCollection
                 'Cannot rename set, same name already exists',
                 sprintf(
                     'Cannot rename set [%s] to [%s], that set already exists.',
-                    $oldID,
+                    $set->getID(),
                     $newID
                 ),
                 AppSetsException::ERROR_CANNOT_RENAME_TO_EXISTING_NAME

@@ -47,12 +47,12 @@ class Application_Installer implements Application_Interfaces_Loggable
     /**
      * @var array<string,string>
      */
-    private $taskFolders;
+    private array $taskFolders;
 
     public function __construct()
     {
         $this->taskFolders = array(
-            self::SOURCE_FRAMEWORK => __DIR__.'/Installer/Task',
+            self::SOURCE_FRAMEWORK => __DIR__.'/Task',
             self::SOURCE_APPLICATION => APP_ROOT.'/assets/classes/'.APP_CLASS_NAME.'/Installer/Task'
         );
 

@@ -43,31 +43,31 @@ abstract class Application_Driver implements Application_Driver_Interface
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_INVALID_REVISIONABLE_TYPE = 333002;
-    public const ERROR_MISSING_REVISIONABLE_METHOD = 333003;
-    public const ERROR_NOT_A_REVISIONABLE = 333004;
-    public const ERROR_APPLICATION_SET_DOES_NOT_EXIST = 333005;
-    public const ERROR_DRIVER_ALREADY_PREPARED = 333006;
-    public const ERROR_DRIVER_NOT_PREPARED = 333007;
-    public const ERROR_DRIVER_ALREADY_STARTED = 333008;
-    public const ERROR_CANNOT_GET_PAGEID_BEFORE_PREPARE = 333009;
-    public const ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA = 333010;
-    public const ERROR_MAIN_NAVIGATION_NOT_CONFIGURED = 333011;
-    public const ERROR_UNKNOWN_ADMINISTRATION_AREA = 333012;
-    public const ERROR_CUSTOM_PROPERTY_OWNER_METHOD_MISSING = 333014;
-    public const ERROR_CUSTOM_PROPERTY_OWNER_INVALID = 333015;
-    public const ERROR_UNHANDLED_SCREEN_TYPE = 333019;
-    public const ERROR_NO_ACTIVE_AREA_AVAILABLE = 333020;
-    public const ERROR_DRIVER_INSTANCE_NOT_READY_YET = 333021;
-    public const ERROR_CANNOT_START_SECOND_INSTANCE = 333022;
+    public const int ERROR_INVALID_REVISIONABLE_TYPE = 333002;
+    public const int ERROR_MISSING_REVISIONABLE_METHOD = 333003;
+    public const int ERROR_NOT_A_REVISIONABLE = 333004;
+    public const int ERROR_APPLICATION_SET_DOES_NOT_EXIST = 333005;
+    public const int ERROR_DRIVER_ALREADY_PREPARED = 333006;
+    public const int ERROR_DRIVER_NOT_PREPARED = 333007;
+    public const int ERROR_DRIVER_ALREADY_STARTED = 333008;
+    public const int ERROR_CANNOT_GET_PAGEID_BEFORE_PREPARE = 333009;
+    public const int ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA = 333010;
+    public const int ERROR_MAIN_NAVIGATION_NOT_CONFIGURED = 333011;
+    public const int ERROR_UNKNOWN_ADMINISTRATION_AREA = 333012;
+    public const int ERROR_CUSTOM_PROPERTY_OWNER_METHOD_MISSING = 333014;
+    public const int ERROR_CUSTOM_PROPERTY_OWNER_INVALID = 333015;
+    public const int ERROR_UNHANDLED_SCREEN_TYPE = 333019;
+    public const int ERROR_NO_ACTIVE_AREA_AVAILABLE = 333020;
+    public const int ERROR_DRIVER_INSTANCE_NOT_READY_YET = 333021;
+    public const int ERROR_CANNOT_START_SECOND_INSTANCE = 333022;
 
-    public const SETTING_ROLE_PERSISTENT = 'persistent';
-    public const SETTING_ROLE_CACHE = 'cache';
-    public const SETTING_NAME_MAX_LENGTH = 80;
-    public const SETTING_USER_LAST_USED_VERSION = 'last_used_version';
+    public const string SETTING_ROLE_PERSISTENT = 'persistent';
+    public const string SETTING_ROLE_CACHE = 'cache';
+    public const int SETTING_NAME_MAX_LENGTH = 80;
+    public const string SETTING_USER_LAST_USED_VERSION = 'last_used_version';
 
-    public const STORAGE_TYPE_DB = 'DB';
-    public const STORAGE_TYPE_FILE = 'File';
+    public const string STORAGE_TYPE_DB = 'DB';
+    public const string STORAGE_TYPE_FILE = 'File';
 
     protected Application $app;
     protected ?UI_Page $page = null;
@@ -79,7 +79,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     protected DriverSettings $settings;
     protected ?UI_Page_Navigation $mainNav = null;
     protected bool $started = false;
-    protected ?Application_Admin_Area $activeArea = null;
+    protected ?AdminAreaInterface $activeArea = null;
     private ?Application_OAuth $oauth = null;
 
     /**
@@ -539,66 +539,28 @@ abstract class Application_Driver implements Application_Driver_Interface
         return AppFactory::createMaintenance()->isEnabled();
     }
 
-    /**
-     * Adds an informational message and redirects to the target URL.
-     * The message is displayed on the target page.
-     *
-     * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL Target URL or parameters for an internal page
-     * @return never
-     *
-     * @throws DriverException
-     * @throws UI_Exception
-     */
-    public function redirectWithInfoMessage($message, $paramsOrURL = null)
+    public function redirectWithInfoMessage(string|int|float|StringableInterface $message, string|array|AdminURLInterface|null $paramsOrURL = null) : never
     {
         $this->getUI()->addInfoMessage($message);
 
         $this->redirectTo($paramsOrURL);
     }
 
-    /**
-     * Adds an error message and redirects to the target URL.
-     * The message is displayed on the target page.
-     *
-     * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL Target URL or parameters for an internal page
-     * @return never
-     *
-     * @throws UI_Exception
-     * @throws DriverException
-     */
-    public function redirectWithErrorMessage($message, $paramsOrURL = null)
+    public function redirectWithErrorMessage(string|int|float|StringableInterface $message, string|array|AdminURLInterface|null $paramsOrURL = null) : never
     {
         $this->ui->addErrorMessage($message);
         $this->redirectTo($paramsOrURL);
     }
 
-    /**
-     * Adds a success message and redirects to the target URL.
-     * The message is displayed on the target page.
-     *
-     * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL Target URL or parameters for an internal page
-     * @return never
-     *
-     * @throws UI_Exception
-     * @throws DriverException
-     */
-    public function redirectWithSuccessMessage($message, $paramsOrURL = null)
+    public function redirectWithSuccessMessage(string|int|float|StringableInterface $message, string|array|AdminURLInterface|null $paramsOrURL = null) : never
     {
         $this->ui->addSuccessMessage($message);
         $this->redirectTo($paramsOrURL);
     }
 
     /**
-     * @var UI_Page_Sidebar
-     */
-    protected $sidebar;
-
-    /**
      * Keys in the array are the area URL names.
-     * @var Application_Admin_Area[]
+     * @var AdminAreaInterface[]
      */
     protected array $enabledAreas;
 
@@ -825,12 +787,12 @@ abstract class Application_Driver implements Application_Driver_Interface
     }
 
     /**
-     * @return Application_Admin_Area
+     * @return AdminAreaInterface
      * @throws DriverException
      *
      * @see Application_Driver::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
      */
-    private function resolveDefaultArea() : Application_Admin_Area
+    private function resolveDefaultArea() : AdminAreaInterface
     {
         $areas = $this->getAllowedAreas();
         if (!empty($areas))
@@ -866,7 +828,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * Retrieves all areas the current user is authorized to see.
-     * @return Application_Admin_Area[]
+     * @return AdminAreaInterface[]
      */
     public function getAllowedAreas() : array
     {
@@ -883,7 +845,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     }
 
     /**
-     * @return Application_Admin_Area[]
+     * @return AdminAreaInterface[]
      */
     public function getAreas() : array
     {
@@ -957,10 +919,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $this->activeArea->renderContent();
     }
 
-    /**
-     * @var boolean
-     */
-    protected $uiFrameworkConfigured = false;
+    protected bool $uiFrameworkConfigured = false;
 
     public function isUIFrameworkConfigured() : bool
     {
@@ -978,7 +937,6 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         if (isset($this->page))
         {
-            $this->sidebar = $this->page->getSidebar();
             $this->mainNav = $this->page->getHeader()->addMainNavigation();
         }
 
@@ -1369,7 +1327,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Retrieves all available administration area instances.
      * @param boolean $includeCore Whether to include core areas, which cannot be disabled.
-     * @return Application_Admin_Area[]
+     * @return AdminAreaInterface[]
      */
     public function getAdminAreaObjects(bool $includeCore = true) : array
     {

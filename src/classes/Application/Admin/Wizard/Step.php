@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\Interfaces\StringableInterface;
@@ -697,7 +698,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->wizard->getLogIdentifier().' | '.sprintf('Step [%s]', $this->getID());
     }
 
-    public function getArea() : Application_Admin_Area
+    public function getArea() : AdminAreaInterface
     {
         return $this->wizard->getArea();
     }

@@ -1,11 +1,10 @@
 <?php
 /**
- * File containing the {@link UI_Page} class.
  * @package Application
  * @subpackage UserInterface
- * @see UI_page
  */
 
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;
 use AppUtils\ClassHelper;
@@ -558,10 +557,9 @@ class UI_Page extends UI_Renderable
     }
 
     /**
-     * @return Application_Admin_Area
-     * @throws Application_Exception
+     * @return AdminAreaInterface
      */
-    public function getActiveArea() : Application_Admin_Area
+    public function getActiveArea() : AdminAreaInterface
     {
         return $this->driver->getActiveArea();
     }

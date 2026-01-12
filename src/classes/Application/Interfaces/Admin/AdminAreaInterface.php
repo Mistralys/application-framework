@@ -94,4 +94,10 @@ interface AdminAreaInterface extends AdminScreenInterface
      * @return AdminAreaInterface[]
      */
     public function getDependentAreas() : array;
+
+    /**
+     * Starts the main user interface using this area.
+     * @return void
+     */
+    public function startUI() : void;
 }

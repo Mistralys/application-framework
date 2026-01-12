@@ -12,6 +12,7 @@ namespace Application\Bootstrap;
 use Application\AppFactory;
 use Application\Application;
 use Application\DeploymentRegistry\DeploymentRegistry;
+use Application\SystemMails\SystemMail;
 use Application_Bootstrap;
 use Application_Bootstrap_Screen;
 use DBHelper;
@@ -29,8 +30,8 @@ use function AppUtils\parseThrowable;
  */
 class DeployCallbackBootstrap extends Application_Bootstrap_Screen
 {
-    public const DISPATCHER_NAME = 'deploy-callback.php';
-    public const REQUEST_PARAM_ENABLE_OUTPUT = 'enable-output';
+    public const string DISPATCHER_NAME = 'deploy-callback.php';
+    public const string REQUEST_PARAM_ENABLE_OUTPUT = 'enable-output';
 
     public function getDispatcher() : string
     {
@@ -110,7 +111,7 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
         $mail->send();
     }
 
-    private function addThrowable(Application\SystemMails\SystemMail $mail, Throwable $e) : void
+    private function addThrowable(SystemMail $mail, Throwable $e) : void
     {
         $mail
             ->para('<strong>Exception: '.get_class($e).'</strong>')

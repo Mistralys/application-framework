@@ -7,8 +7,13 @@ namespace Application\Tags\Admin\Screens\Mode\View;
 use Application\Tags\Admin\TagScreenRights;
 use Application\Tags\Admin\Traits\ViewSubmodeInterface;
 use Application\Tags\Admin\Traits\ViewSubmodeTrait;
+use Application\Tags\TagRecord;
 use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 use UI_Themes_Theme_ContentRenderer;
+
+/**
+ * @property TagRecord $record
+ */
 
 class TagTreeSubmode extends BaseRecordSubmode implements ViewSubmodeInterface
 {

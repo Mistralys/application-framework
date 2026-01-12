@@ -26,7 +26,7 @@ use AppUtils\FileHelper\JSONFile;
  *
  * ## Usage
  *
- * Use {@see \Application\API\APIManager::getMethodIndex()} to get an instance
+ * Use {@see APIManager::getMethodIndex} to get an instance
  * of this class, and then call {@see methodExists()} to check
  * if a method exists, or {@see getMethodClass()} to get the
  * class name of a method.
@@ -67,7 +67,7 @@ class APIMethodIndex implements Application_Interfaces_Loggable
     }
 
     /**
-     * @param class-string<Application\API\APIMethodInterface> $methodName
+     * @param class-string<APIMethodInterface> $methodName
      * @return string
      * @throws APIException
      */

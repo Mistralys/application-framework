@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Utilities;
 
+use DateTime;
+
 class TimeOfDay
 {
     public const string TIME_EARLY_MORNING = 'early_morning';
