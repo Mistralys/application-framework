@@ -7,7 +7,7 @@ use AppUtils\ConvertHelper;
 
 class Application_Countries_LocaleCode
 {
-    public const ERROR_CODE_CANNOT_BE_PARSED = 87701;
+    public const int ERROR_CODE_CANNOT_BE_PARSED = 87701;
 
     private string $code;
     private string $countryISO;

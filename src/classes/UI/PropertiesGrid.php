@@ -33,9 +33,9 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     use OptionableTrait;
     use UI_Traits_Conditional;
 
-    public const ERROR_ONLY_NUMERIC_VALUES_ALLOWED = 599502;
-    public const OPTION_LABEL_WIDTH = 'label-width-percent';
-    public const DEFAULT_LABEL_WIDTH = 20; // percent
+    public const int ERROR_ONLY_NUMERIC_VALUES_ALLOWED = 599502;
+    public const string OPTION_LABEL_WIDTH = 'label-width-percent';
+    public const int DEFAULT_LABEL_WIDTH = 20; // percent
 
     protected string $id;
 

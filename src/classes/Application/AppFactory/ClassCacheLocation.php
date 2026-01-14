@@ -8,7 +8,7 @@ use Application\CacheControl\BaseCacheLocation;
 
 class ClassCacheLocation extends BaseCacheLocation
 {
-    public const CACHE_ID = 'DynamicClassCache';
+    public const string CACHE_ID = 'DynamicClassCache';
 
     public function getID(): string
     {

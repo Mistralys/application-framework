@@ -18,9 +18,9 @@ use function AppUtils\parseURL;
  */
 class Application_LDAP_Config
 {
-    public const DEFAULT_PROTOCOL_VERSION = 3;
-    public const DEFAULT_PORT_SSL_DISABLED = 389;
-    public const DEFAULT_PORT_SSL_ENABLED = 636;
+    public const int DEFAULT_PROTOCOL_VERSION = 3;
+    public const int DEFAULT_PORT_SSL_DISABLED = 389;
+    public const int DEFAULT_PORT_SSL_ENABLED = 636;
 
     private string $host;
     private ?int $port;

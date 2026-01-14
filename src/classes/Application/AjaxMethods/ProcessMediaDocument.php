@@ -2,7 +2,7 @@
 
 class Application_AjaxMethods_ProcessMediaDocument extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'ProcessMediaDocument';
+    public const string METHOD_NAME = 'ProcessMediaDocument';
 
     public function getMethodName(): string
     {

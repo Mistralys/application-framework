@@ -13,7 +13,7 @@ use DBHelper_StatementBuilder_ValuesContainer;
  */
 class TagCriteria extends DBHelper_BaseFilterCriteria
 {
-    public const FILTER_PARENT_TAGS = 'parent_tags';
+    public const string FILTER_PARENT_TAGS = 'parent_tags';
 
     private bool $rootTags = false;
 

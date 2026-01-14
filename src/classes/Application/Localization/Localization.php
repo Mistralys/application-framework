@@ -27,9 +27,9 @@ use AppUtils\FileHelper_Exception;
  */
 class Application_Localization
 {
-    const CUT_LENGTH = 80;
-    const REQUEST_PARAM_APPLICATION_LOCALE = 'application_locale';
-    const REQUEST_PARAM_CONTENT_LOCALE = 'locale';
+    const int CUT_LENGTH = 80;
+    const string REQUEST_PARAM_APPLICATION_LOCALE = 'application_locale';
+    const string REQUEST_PARAM_CONTENT_LOCALE = 'locale';
 
     /**
      * @var string[]

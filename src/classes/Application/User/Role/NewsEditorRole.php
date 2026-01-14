@@ -18,14 +18,14 @@ use Application_User;
  */
 class NewsEditorRole extends BaseRole
 {
-    public const ROLE_ID = 'NewsEditor';
+    public const string ROLE_ID = 'NewsEditor';
 
     public function getID(): string
     {
         return self::ROLE_ID;
     }
 
-    public const RIGHTS = array(
+    public const array RIGHTS = array(
         Application_User::RIGHT_LOGIN,
         NewsRightsInterface::RIGHT_CREATE_NEWS,
         NewsRightsInterface::RIGHT_EDIT_NEWS,

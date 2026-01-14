@@ -21,21 +21,21 @@ use AppLocalize\Localization;
  */
 class UI_MarkupEditor_CKEditor extends UI_MarkupEditor
 {
-    public const BUTTON_BOLD = 'bold';
-    public const BUTTON_ITALIC = 'italic';
-    public const BUTTON_SUPERSCRIPT = 'superscript';
-    public const BUTTON_LINK = 'link';
-    public const BUTTON_BULLETED_LIST = 'bulletedList';
-    public const BUTTON_NUMBERED_LIST = 'numberedList';
-    public const BUTTON_REMOVE_FORMAT = 'removeFormat';
-    public const BUTTON_UNDO = 'undo';
-    public const BUTTON_REDO = 'redo';
-    public const BUTTON_PASTE_AS_PLAIN_TEXT = 'pasteAsPlainText';
-    public const BUTTON_STRIKETHROUGH = 'strikethrough';
-    public const BUTTON_ALIGN_LEFT = 'alignment:left';
-    public const BUTTON_ALIGN_CENTER = 'alignment:center';
-    public const BUTTON_ALIGN_RIGHT = 'alignment:right';
-    public const BUTTON_ALIGN = 'alignment';
+    public const string BUTTON_BOLD = 'bold';
+    public const string BUTTON_ITALIC = 'italic';
+    public const string BUTTON_SUPERSCRIPT = 'superscript';
+    public const string BUTTON_LINK = 'link';
+    public const string BUTTON_BULLETED_LIST = 'bulletedList';
+    public const string BUTTON_NUMBERED_LIST = 'numberedList';
+    public const string BUTTON_REMOVE_FORMAT = 'removeFormat';
+    public const string BUTTON_UNDO = 'undo';
+    public const string BUTTON_REDO = 'redo';
+    public const string BUTTON_PASTE_AS_PLAIN_TEXT = 'pasteAsPlainText';
+    public const string BUTTON_STRIKETHROUGH = 'strikethrough';
+    public const string BUTTON_ALIGN_LEFT = 'alignment:left';
+    public const string BUTTON_ALIGN_CENTER = 'alignment:center';
+    public const string BUTTON_ALIGN_RIGHT = 'alignment:right';
+    public const string BUTTON_ALIGN = 'alignment';
     private bool $useCustomJSBuild = false;
 
     public static function getLabel() : string

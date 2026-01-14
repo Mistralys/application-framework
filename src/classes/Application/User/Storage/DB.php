@@ -19,11 +19,11 @@ declare(strict_types=1);
  */
 class Application_User_Storage_DB extends Application_User_Storage
 {
-    const TABLE_NAME = 'user_settings';
+    const string TABLE_NAME = 'user_settings';
 
-    const COL_SETTING_NAME = 'setting_name';
-    const COL_SETTING_VALUE = 'setting_value';
-    const COL_USER_ID = Application_Users::PRIMARY_NAME;
+    const string COL_SETTING_NAME = 'setting_name';
+    const string COL_SETTING_VALUE = 'setting_value';
+    const string COL_USER_ID = Application_Users::PRIMARY_NAME;
 
     /**
      * @return array<string,string>

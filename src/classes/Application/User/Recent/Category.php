@@ -15,17 +15,17 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
     use Application_Traits_Loggable;
     use Application_Traits_Iconizable;
 
-    public const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
+    public const int ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
 
-    public const OPTION_MAX_ITEMS = 'max-items';
-    public const MAX_ITEMS_DEFAULT = 10;
+    public const string OPTION_MAX_ITEMS = 'max-items';
+    public const int MAX_ITEMS_DEFAULT = 10;
 
     /**
      * Maximum number of entries to keep in storage
      */
-    public const STORAGE_MAX_ITEMS = 60;
+    public const int STORAGE_MAX_ITEMS = 60;
 
-    public const REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
+    public const string REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
 
     private string $label;
     private string $alias;

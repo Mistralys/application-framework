@@ -10,11 +10,11 @@ use Application\AppFactory;
  */
 class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
 {
-    public const SETTING_CATEGORY = 'category';
-    public const SETTING_TYPE = 'type';
-    public const SETTING_DATE = 'date';
-    public const SETTING_SEARCH = 'search';
-    public const SETTING_USER = 'user';
+    public const string SETTING_CATEGORY = 'category';
+    public const string SETTING_TYPE = 'type';
+    public const string SETTING_DATE = 'date';
+    public const string SETTING_SEARCH = 'search';
+    public const string SETTING_USER = 'user';
 
     /**
      * {@inheritDoc}

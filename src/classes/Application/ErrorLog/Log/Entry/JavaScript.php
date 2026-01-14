@@ -8,24 +8,24 @@ use AppUtils\ConvertHelper\JSONConverter;
 
 class Application_ErrorLog_Log_Entry_JavaScript extends Application_ErrorLog_Log_Entry
 {
-    public const KEY_CODE = 'code';
-    public const KEY_REFERER = 'referer';
-    public const KEY_COLUMN = 'column';
-    public const KEY_LINE = 'line';
-    public const KEY_DETAILS = 'details';
-    public const KEY_LOG_LINES = 'log_lines';
-    public const KEY_MESSAGE = 'message';
-    public const KEY_URL = 'url';
-    public const KEY_TYPE = 'type';
-    public const KEY_CALL_TRACE = 'call_trace';
+    public const string KEY_CODE = 'code';
+    public const string KEY_REFERER = 'referer';
+    public const string KEY_COLUMN = 'column';
+    public const string KEY_LINE = 'line';
+    public const string KEY_DETAILS = 'details';
+    public const string KEY_LOG_LINES = 'log_lines';
+    public const string KEY_MESSAGE = 'message';
+    public const string KEY_URL = 'url';
+    public const string KEY_TYPE = 'type';
+    public const string KEY_CALL_TRACE = 'call_trace';
 
-    public const INDEX_CODE = 0;
-    public const INDEX_MESSAGE = 2;
-    public const INDEX_DETAILS = 3;
-    public const INDEX_REFERER = 4;
-    public const INDEX_URL = 5;
-    public const INDEX_LINE = 6;
-    public const INDEX_COLUMN = 7;
+    public const int INDEX_CODE = 0;
+    public const int INDEX_MESSAGE = 2;
+    public const int INDEX_DETAILS = 3;
+    public const int INDEX_REFERER = 4;
+    public const int INDEX_URL = 5;
+    public const int INDEX_LINE = 6;
+    public const int INDEX_COLUMN = 7;
 
     public function getTypeLabel() : string
     {

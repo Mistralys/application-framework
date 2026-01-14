@@ -30,8 +30,8 @@ class Application_LookupItems implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_INVALID_LOOKUP_ITEM_CLASS = 25101;
-    public const ERROR_ITEM_NOT_FOUND = 25102;
+    public const int ERROR_INVALID_LOOKUP_ITEM_CLASS = 25101;
+    public const int ERROR_ITEM_NOT_FOUND = 25102;
 
     protected string $driverID;
     protected string $folder;

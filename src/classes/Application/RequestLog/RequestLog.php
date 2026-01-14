@@ -34,8 +34,8 @@ use AppUtils\FileHelper_Exception;
 class Application_RequestLog extends Application_RequestLog_AbstractFolderContainer
 {
 
-    public const SESSION_ID_NONE = 'none';
-    public const SESSION_ID_SIMULATED = 'simulated';
+    public const string SESSION_ID_NONE = 'none';
+    public const string SESSION_ID_SIMULATED = 'simulated';
 
     /**
      * @var Application_RequestLog_EnabledStatus|NULL

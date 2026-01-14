@@ -24,7 +24,7 @@ class CSSClasses
      *
      * @see \UI_StringBuilder::developer()
      */
-    public const RIGHT_DEVELOPER = 'right-developer';
+    public const string RIGHT_DEVELOPER = 'right-developer';
 
     /**
      * Class to highlight parts of a text that refer to concepts,
@@ -43,7 +43,7 @@ class CSSClasses
      *
      * @see \UI_StringBuilder::reference()
      */
-    public const TEXT_REFERENCE = 'text-reference';
+    public const string TEXT_REFERENCE = 'text-reference';
 
 
     /**
@@ -55,7 +55,7 @@ class CSSClasses
      *
      * @see \UI_StringBuilder::clickable()
      */
-    public const CLICKABLE = 'clickable';
+    public const string CLICKABLE = 'clickable';
 
     /**
      * Styles text in a monospace font, without using
@@ -63,20 +63,20 @@ class CSSClasses
      *
      * @see \UI_StringBuilder::mono()
      */
-    public const TEXT_MONOSPACE = 'monospace';
-    public const TEXT_ERROR_XXL = 'text-error-xxl';
-    public const TEXT_SUCCESS = 'text-success';
-    public const TEXT_MUTED = 'muted';
-    public const TEXT_WARNING = 'text-warning';
-    public const TEXT_ERROR = 'text-error';
-    public const TEXT_SECONDARY = 'text-secondary';
-    public const TEXT_INVERTED = 'text-inverted';
-    public const TEXT_INFO = 'text-info';
+    public const string TEXT_MONOSPACE = 'monospace';
+    public const string TEXT_ERROR_XXL = 'text-error-xxl';
+    public const string TEXT_SUCCESS = 'text-success';
+    public const string TEXT_MUTED = 'muted';
+    public const string TEXT_WARNING = 'text-warning';
+    public const string TEXT_ERROR = 'text-error';
+    public const string TEXT_SECONDARY = 'text-secondary';
+    public const string TEXT_INVERTED = 'text-inverted';
+    public const string TEXT_INFO = 'text-info';
 
-    public const INPUT_XLARGE = 'input-xlarge';
-    public const INPUT_LARGE = 'input-large';
-    public const INPUT_XXLARGE = 'input-xxlarge';
-    public const INPUT_XSMALL = 'input-mini';
-    public const INPUT_SMALL = 'input-small';
-    public const INPUT_MEDIUM = 'input-medium';
+    public const string INPUT_XLARGE = 'input-xlarge';
+    public const string INPUT_LARGE = 'input-large';
+    public const string INPUT_XXLARGE = 'input-xxlarge';
+    public const string INPUT_XSMALL = 'input-mini';
+    public const string INPUT_SMALL = 'input-small';
+    public const string INPUT_MEDIUM = 'input-medium';
 }

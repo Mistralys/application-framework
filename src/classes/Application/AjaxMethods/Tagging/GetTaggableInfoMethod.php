@@ -38,11 +38,11 @@ class GetTaggableInfoMethod extends BaseJSONAjaxMethod implements TaggableAjaxRe
 {
     use TaggableAjaxRequestTrait;
 
-    public const METHOD_NAME = 'GetTaggableInfo';
-    public const KEY_UNIQUE_ID = 'uniqueID';
-    public const KEY_LABEL = 'label';
-    public const KEY_TYPE_LABEL = 'typeLabel';
-    public const KEY_TAGS = 'tags';
+    public const string METHOD_NAME = 'GetTaggableInfo';
+    public const string KEY_UNIQUE_ID = 'uniqueID';
+    public const string KEY_LABEL = 'label';
+    public const string KEY_TYPE_LABEL = 'typeLabel';
+    public const string KEY_TAGS = 'tags';
     private TaggableInterface $taggable;
     private TaggableUniqueID $uniqueID;
 

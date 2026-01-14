@@ -17,11 +17,11 @@ class NewsEntryCriticalities extends BaseStringPrimaryCollection implements Appl
 {
     use Application_Traits_Loggable;
 
-    public const CRITICALITY_INFO = 'info';
-    public const CRITICALITY_WARNING = 'warning';
-    public const CRITICALITY_CRITICAL = 'critical';
+    public const string CRITICALITY_INFO = 'info';
+    public const string CRITICALITY_WARNING = 'warning';
+    public const string CRITICALITY_CRITICAL = 'critical';
 
-    public const DEFAULT_CRITICALITY = self::CRITICALITY_INFO;
+    public const string DEFAULT_CRITICALITY = self::CRITICALITY_INFO;
 
     private static ?NewsEntryCriticalities $instance = null;
 

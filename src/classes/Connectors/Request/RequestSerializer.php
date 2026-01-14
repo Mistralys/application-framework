@@ -31,19 +31,19 @@ use Mistralys\AppFramework\Helpers\JSONUnserializer;
  */
 class RequestSerializer
 {
-    public const ERROR_UNKNOWN_REQUEST_TYPE = 124101;
+    public const int ERROR_UNKNOWN_REQUEST_TYPE = 124101;
 
-    public const KEY_CONNECTOR_ID = 'connectorID';
-    public const KEY_URL = 'url';
-    public const KEY_ID = 'id';
-    public const KEY_POST_DATA = 'postData';
-    public const KEY_GET_DATA = 'getData';
-    public const KEY_HEADERS = 'headers';
-    public const KEY_TIMEOUT = 'timeout';
-    public const KEY_HTTP_METHOD = 'HTTPMethod';
-    public const REQUEST_TYPE_URL = 'URL';
-    public const KEY_REQUEST_TYPE = 'requestType';
-    public const REQUEST_TYPE_METHOD = 'Method';
+    public const string KEY_CONNECTOR_ID = 'connectorID';
+    public const string KEY_URL = 'url';
+    public const string KEY_ID = 'id';
+    public const string KEY_POST_DATA = 'postData';
+    public const string KEY_GET_DATA = 'getData';
+    public const string KEY_HEADERS = 'headers';
+    public const string KEY_TIMEOUT = 'timeout';
+    public const string KEY_HTTP_METHOD = 'HTTPMethod';
+    public const string REQUEST_TYPE_URL = 'URL';
+    public const string KEY_REQUEST_TYPE = 'requestType';
+    public const string REQUEST_TYPE_METHOD = 'Method';
 
     /**
      * @param Connectors_Request $request

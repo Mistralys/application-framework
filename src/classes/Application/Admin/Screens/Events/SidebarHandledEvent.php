@@ -19,7 +19,7 @@ use UI_Page_Sidebar;
  */
 class SidebarHandledEvent extends BaseScreenEvent
 {
-    public const EVENT_NAME = 'SidebarHandled';
+    public const string EVENT_NAME = 'SidebarHandled';
 
     public function getSidebar() : UI_Page_Sidebar
     {

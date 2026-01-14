@@ -7,11 +7,11 @@ use Application_EventHandler_EventableEvent;
 
 class Application_RevisionStorage_Event_RevisionAdded extends Application_EventHandler_EventableEvent
 {
-    const ARG_NUMBER = 0;
-    const ARG_TIMESTAMP = 1;
-    const ARG_OWNER_ID = 2;
-    const ARG_OWNER_NAME = 3;
-    const ARG_COMMENTS = 4;
+    const int ARG_NUMBER = 0;
+    const int ARG_TIMESTAMP = 1;
+    const int ARG_OWNER_ID = 2;
+    const int ARG_OWNER_NAME = 3;
+    const int ARG_COMMENTS = 4;
 
     public function getNumber(): int
     {

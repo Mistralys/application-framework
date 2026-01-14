@@ -21,18 +21,18 @@ use AppUtils\FileHelper\FileInfo;
  */
 class Application_Media implements TagCollectionInterface
 {
-    public const COLLECTION_ID = 'media_legacy';
+    public const string COLLECTION_ID = 'media_legacy';
 
     use TagCollectionTrait;
 
-    public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
-    public const ERROR_NOT_AN_IMAGE_MEDIA_FILE = 680002;
+    public const int ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
+    public const int ERROR_NOT_AN_IMAGE_MEDIA_FILE = 680002;
 
-    public const TABLE_NAME = 'media';
-    public const TABLE_NAME_CONFIGURATIONS = 'media_configurations';
-    public const TABLE_TAGS = 'media_tags';
-    public const PRIMARY_NAME = 'media_id';
-    public const TAG_REGISTRY_KEY = 'media_tagging';
+    public const string TABLE_NAME = 'media';
+    public const string TABLE_NAME_CONFIGURATIONS = 'media_configurations';
+    public const string TABLE_TAGS = 'media_tags';
+    public const string PRIMARY_NAME = 'media_id';
+    public const string TAG_REGISTRY_KEY = 'media_tagging';
 
     protected static ?Application_Media $instance = null;
     protected string $storageFolder;

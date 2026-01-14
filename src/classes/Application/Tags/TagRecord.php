@@ -26,7 +26,7 @@ use UI\Tree\TreeRenderer;
  */
 class TagRecord extends DBHelper_BaseRecord
 {
-    public const ERROR_CANNOT_INHERIT_SORTING_WITHOUT_PARENT = 152101;
+    public const int ERROR_CANNOT_INHERIT_SORTING_WITHOUT_PARENT = 152101;
 
     public function setSortType(TagSortType $sortType) : self
     {

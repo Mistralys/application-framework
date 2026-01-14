@@ -4,8 +4,8 @@ use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_Transliterate extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'Transliterate';
-    public const ERROR_EMPTY_STRING_SPECIFIED = 14801;
+    public const string METHOD_NAME = 'Transliterate';
+    public const int ERROR_EMPTY_STRING_SPECIFIED = 14801;
     
     protected string $defaultSpaceChar = '-';
 

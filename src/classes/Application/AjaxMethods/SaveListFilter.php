@@ -2,11 +2,11 @@
 
 class Application_AjaxMethods_SaveListFilter extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'SaveListFilter';
+    public const string METHOD_NAME = 'SaveListFilter';
 
-    public const ERROR_INVALID_LABEL = 460001;
-    public const ERROR_INVALID_SETTINGS_ID = 460002;
-    public const ERROR_NO_SETTINGS_SPECIFIED = 460003;
+    public const int ERROR_INVALID_LABEL = 460001;
+    public const int ERROR_INVALID_SETTINGS_ID = 460002;
+    public const int ERROR_NO_SETTINGS_SPECIFIED = 460003;
 
     public function getMethodName(): string
     {

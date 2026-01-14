@@ -6,9 +6,9 @@ namespace Application\Revisionable;
 
 class TransactionInfo
 {
-    public const TRANSACTION_ROLLED_BACK = 'rolled_back';
-    public const TRANSACTION_UNCHANGED = 'unchanged';
-    public const TRANSACTION_CHANGED = 'changed';
+    public const string TRANSACTION_ROLLED_BACK = 'rolled_back';
+    public const string TRANSACTION_UNCHANGED = 'unchanged';
+    public const string TRANSACTION_CHANGED = 'changed';
 
     private string $result;
     private RevisionableInterface $revisionable;

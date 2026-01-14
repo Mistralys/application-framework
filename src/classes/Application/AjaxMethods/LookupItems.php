@@ -8,7 +8,7 @@ use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'LookupItems';
+    public const string METHOD_NAME = 'LookupItems';
 
     public function getMethodName() : string
     {

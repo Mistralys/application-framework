@@ -23,9 +23,9 @@ use AppUtils\FileHelper\FolderInfo;
  */
 class CountriesCollection
 {
-    public const ERROR_CANNOT_GET_FIRST_COUNTRY = 105201;
-    public const ERROR_CANNOT_GET_BY_ISO = 105202;
-    public const ERROR_CANNOT_GET_BY_ID = 105203;
+    public const int ERROR_CANNOT_GET_FIRST_COUNTRY = 105201;
+    public const int ERROR_CANNOT_GET_BY_ISO = 105202;
+    public const int ERROR_CANNOT_GET_BY_ID = 105203;
 
     /**
      * @var array<int,Application_Countries_Country>

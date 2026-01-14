@@ -9,7 +9,7 @@ use UI_Exception;
 
 class BasicTime implements StringableInterface
 {
-    public const ERROR_INVALID_TIME = 145701;
+    public const int ERROR_INVALID_TIME = 145701;
 
     private int $hour;
     private int $minutes;

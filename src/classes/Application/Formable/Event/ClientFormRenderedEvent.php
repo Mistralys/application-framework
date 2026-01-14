@@ -10,7 +10,7 @@ class ClientFormRenderedEvent extends BaseFormableEvent implements HTMLProcessin
 {
     use HTMLProcessingEventTrait;
 
-    public const EVENT_NAME = 'ClientFormRendered';
+    public const string EVENT_NAME = 'ClientFormRendered';
 
     protected function getHTMLArgumentIndex(): int
     {

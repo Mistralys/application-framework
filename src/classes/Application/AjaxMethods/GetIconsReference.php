@@ -6,7 +6,7 @@ use AppUtils\FileHelper\JSONFile;
 
 class Application_AjaxMethods_GetIconsReference extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'GetIconsReference';
+    public const string METHOD_NAME = 'GetIconsReference';
 
     public function getMethodName() : string
     {

@@ -17,5 +17,5 @@ namespace Application\Admin\Screens\Events;
  */
 class ActionsHandledEvent extends BaseScreenEvent
 {
-    public const EVENT_NAME = 'ActionsHandled';
+    public const string EVENT_NAME = 'ActionsHandled';
 }

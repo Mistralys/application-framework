@@ -13,23 +13,23 @@ use AppUtils\Collections\BaseIntegerPrimaryCollection;
  */
 class HerbsCollection extends BaseIntegerPrimaryCollection
 {
-    public const BASIL = 1;
-    public const THYME = 2;
-    public const ROSEMARY = 3;
-    public const SAGE = 4;
-    public const OREGANO = 5;
-    public const PARSLEY = 6;
-    public const CHIVES = 7;
-    public const DILL = 8;
-    public const MINT = 9;
-    public const TARRAGON = 10;
-    public const CILANTRO = 11;
-    public const LAVENDER = 12;
-    public const LEMON_BALM = 13;
-    public const MARJORAM = 14;
-    public const CHAMOMILE = 15;
+    public const int BASIL = 1;
+    public const int THYME = 2;
+    public const int ROSEMARY = 3;
+    public const int SAGE = 4;
+    public const int OREGANO = 5;
+    public const int PARSLEY = 6;
+    public const int CHIVES = 7;
+    public const int DILL = 8;
+    public const int MINT = 9;
+    public const int TARRAGON = 10;
+    public const int CILANTRO = 11;
+    public const int LAVENDER = 12;
+    public const int LEMON_BALM = 13;
+    public const int MARJORAM = 14;
+    public const int CHAMOMILE = 15;
 
-    public const DEFAULT = self::BASIL;
+    public const int DEFAULT = self::BASIL;
 
     private static ?HerbsCollection $instance = null;
 

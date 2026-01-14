@@ -16,5 +16,5 @@ use Application_Exception;
  */
 class AdminURLException extends Application_Exception
 {
-    public const ERROR_INVALID_HOST = 169601;
+    public const int ERROR_INVALID_HOST = 169601;
 }

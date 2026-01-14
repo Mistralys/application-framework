@@ -22,9 +22,9 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
 {
     use Application_Traits_Iconizable;
     
-    const TYPE_TOGGLE = 'Toggle';
-    const TYPE_LINK = 'Link';
-    const TYPE_MENU = 'Menu';
+    const string TYPE_TOGGLE = 'Toggle';
+    const string TYPE_LINK = 'Link';
+    const string TYPE_MENU = 'Menu';
 
     /**
      * @var string

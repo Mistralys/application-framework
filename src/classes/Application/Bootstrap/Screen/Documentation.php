@@ -25,7 +25,7 @@ use Mistralys\MarkdownViewer\DocsViewer;
  */
 class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_Screen
 {
-    public const DISPATCHER_NAME = 'documentation/index.php';
+    public const string DISPATCHER_NAME = 'documentation/index.php';
 
     private DocsManager $manager;
 

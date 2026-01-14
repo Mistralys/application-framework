@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class Application_Bootstrap_Screen_HealthMonitor extends Application_Bootstrap_Screen
 {
-    public const DISPATCHER = 'xml/monitor/';
+    public const string DISPATCHER = 'xml/monitor/';
 
     public function getDispatcher() : string
     {

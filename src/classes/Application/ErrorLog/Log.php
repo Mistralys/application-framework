@@ -7,7 +7,7 @@ use AppUtils\ConvertHelper;
 
 class Application_ErrorLog_Log
 {
-    public const ERROR_ENTRY_NUMBER_NOT_FOUND = 43001;
+    public const int ERROR_ENTRY_NUMBER_NOT_FOUND = 43001;
     
    /**
     * @var Application_ErrorLog

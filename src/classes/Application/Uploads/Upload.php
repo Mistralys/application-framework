@@ -25,8 +25,8 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
     use Application_Traits_Loggable;
     use DocumentTrait;
 
-    public const ERROR_NO_TRANSACTION_STARTED = 532001;
-    public const ERROR_NO_MATCHING_DOCUMENT_FOUND = 532002;
+    public const int ERROR_NO_TRANSACTION_STARTED = 532001;
+    public const int ERROR_NO_MATCHING_DOCUMENT_FOUND = 532002;
     
     protected Application_Uploads $uploads;
     protected int $id;

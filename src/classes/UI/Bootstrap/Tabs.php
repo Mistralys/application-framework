@@ -18,8 +18,8 @@ use Application\Interfaces\Admin\AdminScreenInterface;
  */
 class UI_Bootstrap_Tabs extends UI_Bootstrap
 {
-    public const ERROR_TAB_ALREADY_EXISTS = 18501;
-    public const ERROR_TAB_NAME_NOT_FOUND = 18502;
+    public const int ERROR_TAB_ALREADY_EXISTS = 18501;
+    public const int ERROR_TAB_NAME_NOT_FOUND = 18502;
     
     protected function init() : void
     {

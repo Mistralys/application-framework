@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 class UI_Bootstrap_Popover extends UI_Bootstrap
 {
-    public const ERROR_INVALID_PLACEMENT = 89801;
+    public const int ERROR_INVALID_PLACEMENT = 89801;
 
-    const TEMPLATE_ID = 'ui/bootstrap/popover';
+    const string TEMPLATE_ID = 'ui/bootstrap/popover';
 
-    const PLACEMENT_RIGHT = 'right';
-    const PLACEMENT_LEFT = 'left';
-    const PLACEMENT_TOP = 'top';
-    const PLACEMENT_BOTTOM = 'bottom';
-    const TEMPLATE_KEY_POPOVER = 'popover';
-    const TEMPLATE_KEY_ATTACH_TO_ID = 'attachToID';
-    const TEMPLATE_KEY_CONTENT = 'content';
-    const TEMPLATE_KEY_PLACEMENT = 'placement';
-    const TEMPLATE_KEY_TITLE = 'title';
+    const string PLACEMENT_RIGHT = 'right';
+    const string PLACEMENT_LEFT = 'left';
+    const string PLACEMENT_TOP = 'top';
+    const string PLACEMENT_BOTTOM = 'bottom';
+    const string TEMPLATE_KEY_POPOVER = 'popover';
+    const string TEMPLATE_KEY_ATTACH_TO_ID = 'attachToID';
+    const string TEMPLATE_KEY_CONTENT = 'content';
+    const string TEMPLATE_KEY_PLACEMENT = 'placement';
+    const string TEMPLATE_KEY_TITLE = 'title';
 
     /**
      * @var string

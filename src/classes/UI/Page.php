@@ -31,8 +31,8 @@ use AppUtils\ConvertHelper;
  */
 class UI_Page extends UI_Renderable
 {
-    public const ERROR_UNKNOWN_NAVIGATION = 45001;
-    public const ERROR_PAGE_TITLE_CONTAINS_HTML = 45002;
+    public const int ERROR_UNKNOWN_NAVIGATION = 45001;
+    public const int ERROR_PAGE_TITLE_CONTAINS_HTML = 45002;
     
     private string $id;
     private string $title = '';

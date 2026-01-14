@@ -8,11 +8,11 @@ class UI_Message extends UI_Renderable implements MessageLayoutInterface, Captur
 {
     use CapturableTrait;
 
-    public const ERROR_INVALID_LAYOUT = 35901;
+    public const int ERROR_INVALID_LAYOUT = 35901;
 
-    public const LAYOUT_DEFAULT = 'default';
-    public const LAYOUT_SLIM = 'slim';
-    public const LAYOUT_LARGE = 'large';
+    public const string LAYOUT_DEFAULT = 'default';
+    public const string LAYOUT_SLIM = 'slim';
+    public const string LAYOUT_LARGE = 'large';
     
    /**
     * @var array<string,mixed>

@@ -34,12 +34,12 @@ class SetTaggableTags extends BaseJSONAjaxMethod implements TaggableAjaxRequestI
 {
     use TaggableAjaxRequestTrait;
 
-    public const METHOD_NAME = 'SetTaggableTags';
+    public const string METHOD_NAME = 'SetTaggableTags';
 
-    public const KEY_TAGS = 'tags';
-    public const KEY_TAG_ID = 'id';
-    public const KEY_TAG_CONNECTED = 'connected';
-    public const ERROR_INVALID_TAG_DEFINITION = 168201;
+    public const string KEY_TAGS = 'tags';
+    public const string KEY_TAG_ID = 'id';
+    public const string KEY_TAG_CONNECTED = 'connected';
+    public const int ERROR_INVALID_TAG_DEFINITION = 168201;
 
     private TaggableInterface $taggable;
 

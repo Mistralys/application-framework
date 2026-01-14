@@ -13,7 +13,7 @@ use DBHelper_StatementBuilder_ValuesContainer;
  */
 class TimeSpanFilterCriteria extends DBHelper_BaseFilterCriteria
 {
-    public const FILTER_DATE = 'date';
+    public const string FILTER_DATE = 'date';
 
     /**
      * Selects all time spans that intersect with the given date.

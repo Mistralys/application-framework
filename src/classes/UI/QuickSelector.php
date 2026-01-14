@@ -31,7 +31,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container
     use OptionableTrait;
     use Application_Traits_Iconizable;
 
-    public const ERROR_UNKNOWN_LAYOUT_PART = 24901;
+    public const int ERROR_UNKNOWN_LAYOUT_PART = 24901;
     
     protected string $jsName;
 

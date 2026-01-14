@@ -14,7 +14,7 @@
  */
 class Application_HealthMonitor_Component_PHP extends Application_HealthMonitor_Component
 {
-    const MINIMUM_PHP_VERSION = 5.6;
+    const float MINIMUM_PHP_VERSION = 5.6;
 
     public function getName()
     {

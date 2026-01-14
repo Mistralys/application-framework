@@ -14,10 +14,10 @@ use AppUtils\Interfaces\StringableInterface;
 
 class Application_AjaxHandler
 {
-    public const ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
-    public const ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
-    public const ERROR_NO_SUCH_METHOD = 17995003;
-    public const REQUEST_PARAM_METHOD = 'method';
+    public const int ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
+    public const int ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
+    public const int ERROR_NO_SUCH_METHOD = 17995003;
+    public const string REQUEST_PARAM_METHOD = 'method';
 
     protected Application_Driver $driver;
     protected Application_Request $request;

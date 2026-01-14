@@ -22,7 +22,7 @@ use Application\DeploymentRegistry\DeploymentTaskInterface;
  */
 class ClearClassCacheTask extends BaseDeployTask
 {
-    public const TASK_NAME = 'ClearClassCache';
+    public const string TASK_NAME = 'ClearClassCache';
 
     public function getPriority() : int
     {

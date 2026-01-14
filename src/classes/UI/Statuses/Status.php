@@ -22,7 +22,7 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
 {
     use Application_Traits_Iconizable;
 
-    const DEFAULT_CRITICALITY = CriticalityEnum::INFO;
+    const string DEFAULT_CRITICALITY = CriticalityEnum::INFO;
 
     /**
      * @var string

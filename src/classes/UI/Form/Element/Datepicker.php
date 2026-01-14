@@ -80,7 +80,7 @@ class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputTe
         return $placeholder;
     }
     
-    public const REGEX_DATE = '%\A[0-9]{2}/[0-9]{2}/[0-9]{2}\z%m';
+    public const string REGEX_DATE = '%\A[0-9]{2}/[0-9]{2}/[0-9]{2}\z%m';
     
     public function getRegex() : string
     {

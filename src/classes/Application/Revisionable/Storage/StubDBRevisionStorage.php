@@ -24,8 +24,8 @@ use DateTime;
  */
 class StubDBRevisionStorage extends BaseDBCollectionStorage
 {
-    public const ERROR_CANNOT_CREATE_STUB_REVISION = 153501;
-    public const STUB_REVISION_NUMBER = 1;
+    public const int ERROR_CANNOT_CREATE_STUB_REVISION = 153501;
+    public const int STUB_REVISION_NUMBER = 1;
 
     public function __construct(RevisionableInterface $revisionable)
     {

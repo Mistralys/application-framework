@@ -23,7 +23,7 @@ use Application\WhatsNew\WhatsNew;
  */
 class Application_Bootstrap_Screen_Changelog extends Application_Bootstrap_Screen
 {
-    public const DISPATCHER = 'changelog.php';
+    public const string DISPATCHER = 'changelog.php';
 
     public function getDispatcher() : string
     {

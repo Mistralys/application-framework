@@ -6,7 +6,7 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 
 class Application_User_ScreenTracker
 {
-    const SETTING_SCREEN_COUNTER = 'tracker_screen_counter';
+    const string SETTING_SCREEN_COUNTER = 'tracker_screen_counter';
 
     /**
      * @var Application_User

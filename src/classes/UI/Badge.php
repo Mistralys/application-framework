@@ -20,11 +20,11 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
 {
     use Application_Traits_Iconizable;
     
-    public const ERROR_WRAPPER_PLACEHOLDER_MISSING = 430002;
+    public const int ERROR_WRAPPER_PLACEHOLDER_MISSING = 430002;
     
-    public const WRAPPER_PLACEHOLDER = '{badge}';
+    public const string WRAPPER_PLACEHOLDER = '{badge}';
 
-    public const TYPE_DEFAULT = 'default';
+    public const string TYPE_DEFAULT = 'default';
 
     protected string $label;
 	protected string $classType;

@@ -6,7 +6,7 @@ use AppUtils\OutputBuffering;
 
 class UI_DataGrid_Column_MultiSelect extends UI_DataGrid_Column
 {
-    public const ERROR_COLUMN_CANNOT_BE_EDITABLE = 513131;
+    public const int ERROR_COLUMN_CANNOT_BE_EDITABLE = 513131;
     
     public function __construct(UI_DataGrid $grid)
     {

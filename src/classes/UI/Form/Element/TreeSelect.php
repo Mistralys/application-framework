@@ -6,9 +6,9 @@ use UI\Tree\TreeRenderer;
 
 class HTML_QuickForm2_Element_TreeSelect extends HTML_QuickForm2_Element
 {
-    public const ERROR_TREE_NOT_SET = 149701;
+    public const int ERROR_TREE_NOT_SET = 149701;
 
-    public const ELEMENT_TYPE = 'treeselect';
+    public const string ELEMENT_TYPE = 'treeselect';
 
     private ?TreeRenderer $treeRenderer = null;
 

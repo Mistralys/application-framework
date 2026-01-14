@@ -10,23 +10,23 @@ use Application\Application;
  */
 class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Screen
 {
-    public const ERROR_MISSING_AUTH_CONFIGURATION = 100901;
+    public const int ERROR_MISSING_AUTH_CONFIGURATION = 100901;
 
-    public const REQUEST_PARAM_YEAR = 'year';
-    public const REQUEST_PARAM_MONTH = 'month';
-    public const REQUEST_PARAM_DAY = 'day';
-    public const REQUEST_PARAM_HOUR = 'hour';
-    public const REQUEST_PARAM_ID = 'requestID';
-    public const REQUEST_PARAM_LOG_OUT = 'log_out';
-    public const REQUEST_PARAM_DELETE_ALL = 'delete_all';
-    public const REQUEST_PARAM_SETTINGS = 'settings';
-    public const REQUEST_PARAM_TOGGLE_STATUS = 'set_status';
-    public const REQUEST_PARAM_DUMP_INFO = 'dump_info';
-    public const REQUEST_PARAM_DESTROY_SESSION = 'destroy_session';
+    public const string REQUEST_PARAM_YEAR = 'year';
+    public const string REQUEST_PARAM_MONTH = 'month';
+    public const string REQUEST_PARAM_DAY = 'day';
+    public const string REQUEST_PARAM_HOUR = 'hour';
+    public const string REQUEST_PARAM_ID = 'requestID';
+    public const string REQUEST_PARAM_LOG_OUT = 'log_out';
+    public const string REQUEST_PARAM_DELETE_ALL = 'delete_all';
+    public const string REQUEST_PARAM_SETTINGS = 'settings';
+    public const string REQUEST_PARAM_TOGGLE_STATUS = 'set_status';
+    public const string REQUEST_PARAM_DUMP_INFO = 'dump_info';
+    public const string REQUEST_PARAM_DESTROY_SESSION = 'destroy_session';
 
-    public const DISPATCHER = 'requestlog.php';
-    public const SESSION_AUTH_PARAM = 'requestlog_authenticated';
-    public const CONST_REQUEST_LOG_RUNNING = 'APP_REQUEST_LOG_RUNNING';
+    public const string DISPATCHER = 'requestlog.php';
+    public const string SESSION_AUTH_PARAM = 'requestlog_authenticated';
+    public const string CONST_REQUEST_LOG_RUNNING = 'APP_REQUEST_LOG_RUNNING';
 
     private Application_RequestLog $log;
 

@@ -22,9 +22,9 @@ class MediaFilterSettings extends DBHelper_BaseFilterSettings implements TagFilt
 {
     use TagFilterSettingsTrait;
 
-    public const SETTING_SEARCH = 'search';
-    public const SETTING_EXTENSIONS = 'extensions';
-    public const SETTING_TAGS = 'tags';
+    public const string SETTING_SEARCH = 'search';
+    public const string SETTING_EXTENSIONS = 'extensions';
+    public const string SETTING_TAGS = 'tags';
 
     private bool $isImageGallery = false;
 

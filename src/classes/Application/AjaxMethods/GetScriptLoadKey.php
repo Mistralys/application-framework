@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class Application_AjaxMethods_GetScriptLoadKey extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'GetScriptLoadKey';
-    public const REGEX_SCRIPT_NAME = '%^([a-z0-9_\-\s\./]+)\.(js|css)$%iU';
-    public const REQUEST_PARAM_SCRIPT = 'script';
+    public const string METHOD_NAME = 'GetScriptLoadKey';
+    public const string REGEX_SCRIPT_NAME = '%^([a-z0-9_\-\s\./]+)\.(js|css)$%iU';
+    public const string REQUEST_PARAM_SCRIPT = 'script';
 
     public function getMethodName(): string
     {

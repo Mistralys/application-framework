@@ -6,7 +6,7 @@ use AppLocalize\Localization;
 
 class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'GetWhatsnew';
+    public const string METHOD_NAME = 'GetWhatsnew';
 
     public function getMethodName(): string
     {

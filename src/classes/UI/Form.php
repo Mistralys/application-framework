@@ -32,36 +32,36 @@ use UI\Form\FormException;
  */
 class UI_Form extends UI_Renderable
 {
-    public const ERROR_DUPLICATE_ELEMENT_ID = 45524001;
-    public const ERROR_INVALID_FORM_DATA = 45524002;
-    public const ERROR_UNKNOWN_REGEX_HINT = 45524003;
-    public const ERROR_UNKNOWN_EVENT_HANDLER = 45524004;
-    public const ERROR_INVALID_EVENT_HANDLER = 45524005;
-    public const ERROR_INVALID_LENGTH_LIMIT = 45524006;
-    public const ERROR_ELEMENT_HAS_NO_ID = 45524007;
-    public const ERROR_MINMAX_VALUES_EMPTY = 45524008;
-    public const ERROR_INVALID_MINMAX_VALUES = 45524009;
-    public const ERROR_MINMAX_VALUES_NOT_A_NUMBER = 45524010;
-    public const ERROR_OBSOLETE_IMAGE_ELEMENT = 45524011;
-    public const ERROR_INVALID_RENDER_CALLBACK = 45524012;
-    public const ERROR_UNHANDLED_SUBMIT_HANDLER_SUBJECT = 45524013;
-    public const ERROR_INVALID_FORM_RENDERER = 45524014;
-    public const ERROR_INVALID_DATEPICKER_ELEMENT = 45524015;
-    public const ERROR_CANNOT_CREATE_ELEMENT = 45524016;
-    public const ERROR_COULD_NOT_SUBMIT_FORM = 45524017;
-    public const ERROR_ELEMENT_NOT_FOUND = 45524018;
+    public const int ERROR_DUPLICATE_ELEMENT_ID = 45524001;
+    public const int ERROR_INVALID_FORM_DATA = 45524002;
+    public const int ERROR_UNKNOWN_REGEX_HINT = 45524003;
+    public const int ERROR_UNKNOWN_EVENT_HANDLER = 45524004;
+    public const int ERROR_INVALID_EVENT_HANDLER = 45524005;
+    public const int ERROR_INVALID_LENGTH_LIMIT = 45524006;
+    public const int ERROR_ELEMENT_HAS_NO_ID = 45524007;
+    public const int ERROR_MINMAX_VALUES_EMPTY = 45524008;
+    public const int ERROR_INVALID_MINMAX_VALUES = 45524009;
+    public const int ERROR_MINMAX_VALUES_NOT_A_NUMBER = 45524010;
+    public const int ERROR_OBSOLETE_IMAGE_ELEMENT = 45524011;
+    public const int ERROR_INVALID_RENDER_CALLBACK = 45524012;
+    public const int ERROR_UNHANDLED_SUBMIT_HANDLER_SUBJECT = 45524013;
+    public const int ERROR_INVALID_FORM_RENDERER = 45524014;
+    public const int ERROR_INVALID_DATEPICKER_ELEMENT = 45524015;
+    public const int ERROR_CANNOT_CREATE_ELEMENT = 45524016;
+    public const int ERROR_COULD_NOT_SUBMIT_FORM = 45524017;
+    public const int ERROR_ELEMENT_NOT_FOUND = 45524018;
 
     /**
      * Stores the string that form element IDs get prefixed with.
      * @var string
      */
-    public const ID_PREFIX = 'f-';
+    public const string ID_PREFIX = 'f-';
 
-    public const ATTRIBUTE_LABEL_ID = 'data-label-id';
-    public const REL_BUTTON = 'Button';
-    public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
-    public const FORM_PREFIX = 'form-';
-    public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
+    public const string ATTRIBUTE_LABEL_ID = 'data-label-id';
+    public const string REL_BUTTON = 'Button';
+    public const string REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
+    public const string FORM_PREFIX = 'form-';
+    public const string ELEMENT_TYPE_DATE_PICKER = 'datepicker';
 
 
     protected string $id;
