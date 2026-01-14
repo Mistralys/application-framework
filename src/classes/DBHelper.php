@@ -1143,7 +1143,7 @@ class DBHelper
                 array(
                     PDO::ATTR_PERSISTENT => false,
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES latin1"
+                    Pdo\Mysql::ATTR_INIT_COMMAND => "SET NAMES latin1"
                 )
             );
         } 
