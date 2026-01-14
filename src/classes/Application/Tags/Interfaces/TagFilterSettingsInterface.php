@@ -8,7 +8,7 @@ use Application\FilterSettings\SettingDef;
 use Application\Tags\Taggables\FilterCriteria\TaggableFilterCriteriaInterface;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\TagRecord;
-use FilterSettingsInterface;
+use Application\FilterSettings\FilterSettingsInterface;
 
 interface TagFilterSettingsInterface extends FilterSettingsInterface
 {

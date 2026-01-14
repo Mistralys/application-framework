@@ -10,6 +10,7 @@ use Application\AppFactory;
 use Application\Application;
 use Application\Driver\DriverException;
 use Application\FilterSettings\FilterSettingsException;
+use Application\FilterSettings\FilterSettingsInterface;
 use Application\FilterSettings\SettingDef;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;

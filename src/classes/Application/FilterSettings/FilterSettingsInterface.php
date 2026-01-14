@@ -6,12 +6,27 @@
 
 declare(strict_types=1);
 
+namespace Application\FilterSettings;
+
 use Application\FilterSettings\SettingDef;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
+use Application_Countries_Country;
+use Application_Exception;
+use Application_Interfaces_Loggable;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\StringableInterface;
+use HTML_QuickForm2_Container;
+use HTML_QuickForm2_Element;
+use HTML_QuickForm2_Element_InputText;
+use HTML_QuickForm2_Element_Multiselect;
+use HTML_QuickForm2_Element_Select;
+use HTML_QuickForm2_Element_Switch;
+use HTML_QuickForm2_InvalidArgumentException;
+use JsonException;
+use UI_Renderable_Interface;
+use UI_Themes_Exception;
 
 /**
  * Base class for custom filter setting implementations. This can

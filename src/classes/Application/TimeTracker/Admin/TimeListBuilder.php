@@ -16,7 +16,7 @@ use AppUtils\ConvertHelper;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\Microtime;
 use DBHelper\Admin\BaseCollectionListBuilder;
-use FilterSettingsInterface;
+use Application\FilterSettings\FilterSettingsInterface;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 use UI_DataGrid;

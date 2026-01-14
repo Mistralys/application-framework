@@ -10,7 +10,7 @@ namespace UI\Interfaces;
 
 use Application\Interfaces\FilterCriteriaInterface;
 use DateTime;
-use FilterSettingsInterface;
+use Application\FilterSettings\FilterSettingsInterface;
 use UI_DataGrid;
 use UI_Page_Sidebar;
 use UI_Renderable_Interface;
@@ -30,7 +30,7 @@ interface ListBuilderInterface extends UI_Renderable_Interface
     public function getFilterCriteria(): FilterCriteriaInterface;
 
     /**
-     * @return \FilterSettingsInterface|NULL Can be `null` if there are no records to filter.
+     * @return \Application\FilterSettings\FilterSettingsInterface|NULL Can be `null` if there are no records to filter.
      */
     public function getFilterSettings(): ?FilterSettingsInterface;
 

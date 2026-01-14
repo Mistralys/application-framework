@@ -19,7 +19,7 @@ use AppUtils\Microtime;
 use AppUtils\Traits\OptionableTrait;
 use DateTime;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use FilterSettingsInterface;
+use Application\FilterSettings\FilterSettingsInterface;
 use UI;
 use UI\Interfaces\ListBuilderInterface;
 use UI_DataGrid;
