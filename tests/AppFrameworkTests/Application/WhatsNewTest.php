@@ -10,6 +10,9 @@ namespace testsuites\Application;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
+use Application\WhatsNew\AppVersion;
+use Application\WhatsNew\AppVersion\CategoryItem;
+use Application\WhatsNew\AppVersion\LanguageCategory;
 use Application\WhatsNew\AppVersion\VersionLanguage;
 use Application\WhatsNew\WhatsNew;
 use Application\WhatsNew\XMLFileWriter;
@@ -78,6 +81,33 @@ class WhatsNewTest extends ApplicationTestCase
         $this->assertSame('Developer text', $items[0]->getText());
         $this->assertSame('ISSUE-123', $items[0]->getIssue());
         $this->assertSame('smordziol', $items[0]->getAuthor());
+    }
+
+    public function test_detectImages() : void
+    {
+        $items = AppFactory::createWhatsNew()
+            ->getCurrentVersion()
+            ->getLanguage('EN')
+            ->getCategoryByLabel('Image')
+            ->getItems();
+
+        $this->assertCount(2, $items);
+
+        $imagesA = $items[0]->detectImages();
+        $this->assertCount(1, $imagesA);
+
+        $this->assertSame('{image:manage-menu.png}', $imagesA[0]->getMatchedText());
+        $this->assertSame('manage-menu.png', $imagesA[0]->getImageName());
+        $this->assertNull($imagesA[0]->getWidth());
+
+        $imagesB = $items[1]->detectImages();
+        $this->assertCount(1, $imagesB);
+
+        $this->assertSame('{image 120px:manage-menu.png}', $imagesB[0]->getMatchedText());
+        $this->assertSame('manage-menu.png', $imagesB[0]->getImageName());
+        $width = $imagesB[0]->getWidth();
+        $this->assertNotNull($width);
+        $this->assertSame('120px', $width->toCSS());
     }
 
     public function test_write() : void
