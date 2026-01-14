@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link BaseDBStandardizedStorage} class.
- *
  * @package Application
  * @subpackage Revisionable
- * @see BaseDBStandardizedStorage
  */
 
 declare(strict_types=1);
@@ -336,7 +333,7 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
             WHERE
                 %s
             ORDER BY
-                `date` ASC",
+                `date`",
             $this->revisionColumn,
             $this->revisionTable,
             $this->buildColumnsWhere()
@@ -359,8 +356,12 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
 
     protected function _getIdentification(): string
     {
+        if(!isset($this->revision)) {
+            return $this->logName . ' [' . $this->revisionableID . '] | RevisionStorage [#--] | ';
+        }
+
         if (!isset($this->logFormat[$this->revision])) {
-            $this->logFormat[$this->revision] = $this->logName . ' [' . $this->revisionableID . '] | RevisionStorage [' . $this->revision . '] | ';
+            $this->logFormat[$this->revision] = $this->logName . ' [' . $this->revisionableID . '] | RevisionStorage [#' . $this->revision . '] | ';
         }
 
         return $this->logFormat[$this->revision];
