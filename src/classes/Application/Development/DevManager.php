@@ -10,10 +10,10 @@ class DevManager
 {
     private static ?DevManager $instance = null;
 
-    public static function getInstance() : static
+    public static function getInstance() : self
     {
         if(self::$instance === null) {
-            self::$instance = new static();
+            self::$instance = new self();
         }
 
         return self::$instance;

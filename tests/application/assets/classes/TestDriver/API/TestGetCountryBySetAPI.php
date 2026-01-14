@@ -87,7 +87,7 @@ class TestGetCountryBySetAPI
 
     public function getCountry() : ?Application_Countries_Country
     {
-        return $this->manageAppCountryParams()->manageAllParamsRule()?->resolveValue();
+        return $this->manageAppCountryParams()->manageAllParamsRule()->resolveValue();
     }
 
     protected function collectRequestData(string $version): void

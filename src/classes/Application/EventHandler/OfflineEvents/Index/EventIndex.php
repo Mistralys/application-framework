@@ -8,11 +8,13 @@ use Application\Application;
 use Application\EventHandler\OfflineEvents\OfflineEventException;
 use Application\EventHandler\OfflineEvents\OfflineEventInterface;
 use Application\EventHandler\OfflineEvents\OfflineEventListenerInterface;
+use Application_Interfaces_Loggable;
+use Application_Traits_Loggable;
 use AppUtils\FileHelper\PHPFile;
 
-class EventIndex implements \Application_Interfaces_Loggable
+class EventIndex implements Application_Interfaces_Loggable
 {
-    use \Application_Traits_Loggable;
+    use Application_Traits_Loggable;
 
     public const string KEY_EVENTS = 'events';
     public const string KEY_LISTENERS = 'listeners';
@@ -78,7 +80,7 @@ class EventIndex implements \Application_Interfaces_Loggable
 
     /**
      * @param string|OfflineEventInterface $event
-     * @return class-string<OfflineEventInterface>[]
+     * @return class-string<OfflineEventListenerInterface>[]
      */
     public function getListenerClasses(string|OfflineEventInterface $event) : array
     {

@@ -41,6 +41,13 @@ class Application_EventHandler_Event implements EventInterface
     {
         $this->name = $name;
         $this->args = $args;
+
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
     }
 
     public function getID(): string

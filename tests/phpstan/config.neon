@@ -20,3 +20,12 @@ parameters:
         -
             message: '#this might not be defined.#'
             path: ../../src/themes/default*
+        -
+            # Ignore unused constructor parameter error
+            identifier: constructor.unusedParameter
+            paths:
+                - ../../src/classes/Application/EventHandler/OfflineEvents/BaseOfflineEvent.php
+        -
+            identifier: nullCoalesce.expr
+            paths:
+                - ../application/assets/classes/TestDriver/Environments/EnvironmentsConfig.php

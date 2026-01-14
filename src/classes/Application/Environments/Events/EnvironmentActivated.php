@@ -19,7 +19,7 @@ use Application_EventHandler_EventableEvent;
  * @subpackage Environments
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see \Application\Environments\Environment::onActivated
+ * @see Environment::onActivated
  */
 class EnvironmentActivated extends Application_EventHandler_EventableEvent
 {
