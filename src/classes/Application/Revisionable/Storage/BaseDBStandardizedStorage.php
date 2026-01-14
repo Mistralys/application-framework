@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link BaseDBStandardizedStorage} class.
- *
  * @package Application
  * @subpackage Revisionable
- * @see BaseDBStandardizedStorage
  */
 
 declare(strict_types=1);
@@ -12,6 +9,7 @@ declare(strict_types=1);
 namespace Application\Revisionable\Storage;
 
 use Application;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application_FilterCriteria_RevisionableRevisions;
 use DateTime;
@@ -29,12 +27,12 @@ use DBHelper_Exception;
  * - A single ID column for the revisionable
  * - An autoincrement column for the revision ID
  * - A revision data table with the usual keys:
- *      - {@see Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_LABEL}
- *      - {@see Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_STATE}
- *      - {@see Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_DATE}
- *      - {@see Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_AUTHOR}
- *      - {@see Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_COMMENTS}
- *      - {@see Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_PRETTY_REVISION}
+ *      - {@see RevisionableCollectionInterface::COL_REV_LABEL}
+ *      - {@see RevisionableCollectionInterface::COL_REV_STATE}
+ *      - {@see RevisionableCollectionInterface::COL_REV_DATE}
+ *      - {@see RevisionableCollectionInterface::COL_REV_AUTHOR}
+ *      - {@see RevisionableCollectionInterface::COL_REV_COMMENTS}
+ *      - {@see RevisionableCollectionInterface::COL_REV_PRETTY_REVISION}
  *      - Any additional custom columns
  *
  * If these conditions are met, to use this class only the abstract
@@ -133,14 +131,14 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
             );
         }
 
-        $userID = (int)$data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_AUTHOR];
+        $userID = (int)$data[RevisionableCollectionInterface::COL_REV_AUTHOR];
 
         if (!Application::userIDExists($userID)) {
             throw new RevisionStorageException(
                 'Revisioning error',
                 sprintf(
                     'Author [%1$s] for revision [%2$s] of revisionable [%3$s] does not exist.',
-                    $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_AUTHOR],
+                    $data[RevisionableCollectionInterface::COL_REV_AUTHOR],
                     $number,
                     $this->revisionableID
                 ),
@@ -154,15 +152,15 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
             $number,
             $author->getID(),
             $author->getName(),
-            strtotime($data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_DATE]),
-            $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_COMMENTS]
+            strtotime($data[RevisionableCollectionInterface::COL_REV_DATE]),
+            $data[RevisionableCollectionInterface::COL_REV_COMMENTS]
         );
 
         $this->setKeys($data);
 
         $this->setKey(
-            Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_STATE,
-            $this->revisionable->getStateHandler()->getStateByName($data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_STATE])
+            RevisionableCollectionInterface::COL_REV_STATE,
+            $this->revisionable->getStateHandler()->getStateByName($data[RevisionableCollectionInterface::COL_REV_STATE])
         );
     }
 
@@ -293,12 +291,12 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
         // to any required static column values.
         $data = $this->getColumns($customFields);
 
-        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_LABEL] = $this->revisionable->getLabel();
-        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_AUTHOR] = $ownerID;
-        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_DATE] = date('Y-m-d H:i:s');
-        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_COMMENTS] = (string)$comments;
-        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_PRETTY_REVISION] = $this->nextPrettyRevision();
-        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_STATE] = $this->revisionable->getStateName();
+        $data[RevisionableCollectionInterface::COL_REV_LABEL] = $this->revisionable->getLabel();
+        $data[RevisionableCollectionInterface::COL_REV_AUTHOR] = $ownerID;
+        $data[RevisionableCollectionInterface::COL_REV_DATE] = date('Y-m-d H:i:s');
+        $data[RevisionableCollectionInterface::COL_REV_COMMENTS] = (string)$comments;
+        $data[RevisionableCollectionInterface::COL_REV_PRETTY_REVISION] = $this->nextPrettyRevision();
+        $data[RevisionableCollectionInterface::COL_REV_STATE] = $this->revisionable->getStateName();
 
         $number = (int)DBHelper::insertDynamic($this->revisionTable, $data);
 
@@ -308,7 +306,7 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
         $this->log(sprintf(
             'Next revision [%1$s] inserted, with pretty revision [%2$s].',
             $number,
-            $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_PRETTY_REVISION]
+            $data[RevisionableCollectionInterface::COL_REV_PRETTY_REVISION]
         ));
 
         return $number;
@@ -335,7 +333,7 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
             WHERE
                 %s
             ORDER BY
-                `date` ASC",
+                `date`",
             $this->revisionColumn,
             $this->revisionTable,
             $this->buildColumnsWhere()
@@ -358,8 +356,12 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
 
     protected function _getIdentification(): string
     {
+        if(!isset($this->revision)) {
+            return $this->logName . ' [' . $this->revisionableID . '] | RevisionStorage [#--] | ';
+        }
+
         if (!isset($this->logFormat[$this->revision])) {
-            $this->logFormat[$this->revision] = $this->logName . ' [' . $this->revisionableID . '] | RevisionStorage [' . $this->revision . '] | ';
+            $this->logFormat[$this->revision] = $this->logName . ' [' . $this->revisionableID . '] | RevisionStorage [#' . $this->revision . '] | ';
         }
 
         return $this->logFormat[$this->revision];
@@ -381,12 +383,12 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
                 `%2$s`
             WHERE
                 %3$s',
-            Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_PRETTY_REVISION,
+            RevisionableCollectionInterface::COL_REV_PRETTY_REVISION,
             $this->revisionTable,
             $this->buildColumnsWhere()
         );
 
-        $rev = DBHelper::fetchKeyInt(Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_PRETTY_REVISION, $query, $this->getColumns());
+        $rev = DBHelper::fetchKeyInt(RevisionableCollectionInterface::COL_REV_PRETTY_REVISION, $query, $this->getColumns());
         if ($rev > 0) {
             return $rev;
         }
