@@ -30,8 +30,8 @@ class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContaine
 {
     use UI_Traits_RenderableGeneric;
 
-    public const ERROR_PLACEHOLDER_NOT_FOUND = 94101;
-    public const ERROR_UNFILLED_PLACEHOLDER_DETECTED = 94102;
+    public const int ERROR_PLACEHOLDER_NOT_FOUND = 94101;
+    public const int ERROR_UNFILLED_PLACEHOLDER_DETECTED = 94102;
 
     /**
      * @var string
