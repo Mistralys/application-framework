@@ -46,7 +46,7 @@ EOT;
 
     public function create(string $path) : TypeHintRunner
     {
-        return (new TypeHintRunner($path))
+        return new TypeHintRunner($path)
             ->addMethod('_handleBeforeActions', 'void')
             ->addMethod('_handleActions', 'bool')
             ->addMethod('_handleSubactions', 'void')

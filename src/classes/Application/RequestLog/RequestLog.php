@@ -170,7 +170,7 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
             $logger = AppFactory::createLogger();
         }
 
-        return (new Application_RequestLog_LogWriter($logger))->write();
+        return new Application_RequestLog_LogWriter($logger)->write();
     }
 
     public static function autoWriteLog() : void

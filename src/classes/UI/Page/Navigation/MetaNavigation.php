@@ -82,7 +82,7 @@ class MetaNavigation implements UI_Renderable_Interface
             ->setAlias(self::META_USER)
             ->setIcon(UI::icon()->user());
 
-        (new UserMenu($menu))->configure();
+        new UserMenu($menu)->configure();
     }
 
     private function configureDeveloperMenu() : void
@@ -96,7 +96,7 @@ class MetaNavigation implements UI_Renderable_Interface
             ->setAlias(self::META_DEVELOPER)
             ->setIcon(UI::icon()->developer());
 
-        (new DeveloperMenu($dropdown))->configure();
+        new DeveloperMenu($dropdown)->configure();
     }
 
     public function isDeveloperMenuEnabled() : bool

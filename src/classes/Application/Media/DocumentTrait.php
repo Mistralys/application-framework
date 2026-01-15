@@ -185,7 +185,7 @@ trait DocumentTrait
      */
     public function renderThumbnail(?int $preferredSize=null) : string
     {
-        return (new ThumbnailRenderer($this))
+        return new ThumbnailRenderer($this)
             ->setPreferredSize($preferredSize)
             ->render();
     }

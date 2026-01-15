@@ -182,12 +182,12 @@ class Application_Uploads
         {
             // Enable logging of non-application exceptions.
             if(!$e instanceof Application_Exception) {
-                (new Application_Exception(
+                new Application_Exception(
                     'Failed to create a new upload entry.',
                     '',
                     $e->getCode(),
                     $e
-                ))
+                )
                     ->log();
             }
 

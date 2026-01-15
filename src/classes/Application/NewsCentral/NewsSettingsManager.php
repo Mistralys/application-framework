@@ -393,7 +393,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
     private function injectCategories() : HTML_QuickForm2_Element
     {
-        return (new CategorySelector($this))
+        return new CategorySelector($this)
             ->setName(self::SETTING_CATEGORIES)
             ->setComment(sb()
                 ->t('Use this to select in which categories this news entry should be included.')

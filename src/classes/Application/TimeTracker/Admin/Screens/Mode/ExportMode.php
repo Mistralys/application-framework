@@ -89,6 +89,6 @@ class ExportMode extends BaseMode implements ModeInterface
 
     protected function handleExport() : void
     {
-        (new TimeExporter())->sendFile();
+        new TimeExporter()->sendFile();
     }
 }

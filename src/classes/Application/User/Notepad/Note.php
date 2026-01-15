@@ -112,7 +112,7 @@ class Application_User_Notepad_Note
             self::KEY_ID => $id,
             self::KEY_CONTENT => self::filterText($content),
             self::KEY_TITLE => self::filterText($title),
-            self::KEY_DATE => (new Microtime())->getMySQLDate()
+            self::KEY_DATE => new Microtime()->getMySQLDate()
         );
 
         $user = $notepad->getUser();

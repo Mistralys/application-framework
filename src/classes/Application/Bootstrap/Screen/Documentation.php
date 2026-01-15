@@ -48,7 +48,7 @@ class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_S
         // The viewer needs to know the URL to the vendor/ folder, relative
         // to the script. This is needed to load the clientside dependencies,
         // like jQuery and Bootstrap.
-        (new DocsViewer($this->manager, $this->resolveVendorURL()))
+        new DocsViewer($this->manager, $this->resolveVendorURL())
             ->setTitle(sprintf('%1$s Documentation', $this->driver->getAppNameShort()))
             ->display();
 
