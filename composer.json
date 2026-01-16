@@ -119,7 +119,8 @@
     "phpunit/phpunit": ">=9.6",
     "phpstan/phpstan": ">=1.10",
     "css-crush/css-crush": ">=v4.1.3",
-    "rector/rector": ">=2.3"
+    "rector/rector": ">=2.3",
+    "mistralys/application-framework-docs": "dev-main"
   },
   "config": {
     "allow-plugins": {

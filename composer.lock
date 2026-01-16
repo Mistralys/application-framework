@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "77c7928b29c4e7eaa5e1fa9ccc87f7c3",
+    "content-hash": "be373a8ea554ac054bc36ef0f292858f",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1252,16 +1252,16 @@
         },
         {
             "name": "mistralys/application-framework-docs",
-            "version": "1.0.1",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-framework-docs.git",
-                "reference": "16541f35b275a141904f19fb36b5c2a8fbea59db"
+                "reference": "2b5cacd2376c2e477f0ec6c7ec37869306557627"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-framework-docs/zipball/16541f35b275a141904f19fb36b5c2a8fbea59db",
-                "reference": "16541f35b275a141904f19fb36b5c2a8fbea59db",
+                "url": "https://api.github.com/repos/Mistralys/application-framework-docs/zipball/2b5cacd2376c2e477f0ec6c7ec37869306557627",
+                "reference": "2b5cacd2376c2e477f0ec6c7ec37869306557627",
                 "shasum": ""
             },
             "require": {
@@ -1271,6 +1271,7 @@
             "require-dev": {
                 "roave/security-advisories": "dev-latest"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "classmap": [
@@ -1290,9 +1291,9 @@
             "description": "Application Framework Documentation Hub",
             "support": {
                 "issues": "https://github.com/Mistralys/application-framework-docs/issues",
-                "source": "https://github.com/Mistralys/application-framework-docs/tree/1.0.1"
+                "source": "https://github.com/Mistralys/application-framework-docs/tree/main"
             },
-            "time": "2024-10-30T15:56:43+00:00"
+            "time": "2024-10-30T16:37:30+00:00"
         },
         {
             "name": "mistralys/application-localization",
@@ -3063,12 +3064,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "ce025952d0d3d527f0426be73d2bfcd73d21dfc8"
+                "reference": "95fda149b750941a5d7bd292e712107ca3227a04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/ce025952d0d3d527f0426be73d2bfcd73d21dfc8",
-                "reference": "ce025952d0d3d527f0426be73d2bfcd73d21dfc8",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/95fda149b750941a5d7bd292e712107ca3227a04",
+                "reference": "95fda149b750941a5d7bd292e712107ca3227a04",
                 "shasum": ""
             },
             "conflict": {
@@ -3083,12 +3084,14 @@
                 "aimeos/ai-cms-grapesjs": ">=2021.04.1,<2021.10.8|>=2022.04.1,<2022.10.9|>=2023.04.1,<2023.10.15|>=2024.04.1,<2024.10.8|>=2025.04.1,<2025.10.2",
                 "aimeos/ai-controller-frontend": "<2020.10.15|>=2021.04.1,<2021.10.8|>=2022.04.1,<2022.10.8|>=2023.04.1,<2023.10.9|==2024.04.1",
                 "aimeos/aimeos-core": ">=2022.04.1,<2022.10.17|>=2023.04.1,<2023.10.17|>=2024.04.1,<2024.04.7",
+                "aimeos/aimeos-laravel": "==2021.10",
                 "aimeos/aimeos-typo3": "<19.10.12|>=20,<20.10.5",
                 "airesvsg/acf-to-rest-api": "<=3.1",
                 "akaunting/akaunting": "<2.1.13",
                 "akeneo/pim-community-dev": "<5.0.119|>=6,<6.0.53",
-                "alextselegidis/easyappointments": "<1.5.2.0-beta1",
+                "alextselegidis/easyappointments": "<=1.5.2",
                 "alexusmai/laravel-file-manager": "<=3.3.1",
+                "algolia/algoliasearch-magento-2": "<=3.16.1|>=3.17.0.0-beta1,<=3.17.1",
                 "alt-design/alt-redirect": "<1.6.4",
                 "altcha-org/altcha": "<1.3.1",
                 "alterphp/easyadmin-extension-bundle": ">=1.2,<1.2.11|>=1.3,<1.3.1",
@@ -3661,14 +3664,15 @@
                 "phpxmlrpc/extras": "<0.6.1",
                 "phpxmlrpc/phpxmlrpc": "<4.9.2",
                 "pi/pi": "<=2.5",
-                "pimcore/admin-ui-classic-bundle": "<1.7.6",
+                "pimcore/admin-ui-classic-bundle": "<=1.7.15|>=2.0.0.0-RC1-dev,<=2.2.2",
                 "pimcore/customer-management-framework-bundle": "<4.2.1",
                 "pimcore/data-hub": "<1.2.4",
                 "pimcore/data-importer": "<1.8.9|>=1.9,<1.9.3",
                 "pimcore/demo": "<10.3",
                 "pimcore/ecommerce-framework-bundle": "<1.0.10",
                 "pimcore/perspective-editor": "<1.5.1",
-                "pimcore/pimcore": "<11.5.4",
+                "pimcore/pimcore": "<=11.5.13|>=12.0.0.0-RC1-dev,<12.3.1",
+                "pimcore/web2print-tools-bundle": "<=5.2.1|>=6.0.0.0-RC1-dev,<=6.1",
                 "piwik/piwik": "<1.11",
                 "pixelfed/pixelfed": "<0.12.5",
                 "plotly/plotly.js": "<2.25.2",
@@ -3780,7 +3784,7 @@
                 "snipe/snipe-it": "<=8.3.4",
                 "socalnick/scn-social-auth": "<1.15.2",
                 "socialiteproviders/steam": "<1.1",
-                "solspace/craft-freeform": ">=5,<5.10.16",
+                "solspace/craft-freeform": "<4.1.29|>=5,<5.10.16",
                 "soosyze/soosyze": "<=2",
                 "spatie/browsershot": "<5.0.5",
                 "spatie/image-optimizer": "<1.7.3",
@@ -4064,7 +4068,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-01-14T17:10:06+00:00"
+            "time": "2026-01-15T23:06:28+00:00"
         },
         {
             "name": "scn/deepl-api-connector",
@@ -5286,16 +5290,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.4",
+            "version": "12.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4ba0e923f9d3fc655de22f9547c01d15a41fc93a"
+                "reference": "ba2d126905713bcf802c7f1e0d7507092ce9bf9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4ba0e923f9d3fc655de22f9547c01d15a41fc93a",
-                "reference": "4ba0e923f9d3fc655de22f9547c01d15a41fc93a",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ba2d126905713bcf802c7f1e0d7507092ce9bf9a",
+                "reference": "ba2d126905713bcf802c7f1e0d7507092ce9bf9a",
                 "shasum": ""
             },
             "require": {
@@ -5309,7 +5313,7 @@
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.3",
-                "phpunit/php-code-coverage": "^12.5.1",
+                "phpunit/php-code-coverage": "^12.5.2",
                 "phpunit/php-file-iterator": "^6.0.0",
                 "phpunit/php-invoker": "^6.0.0",
                 "phpunit/php-text-template": "^5.0.0",
@@ -5363,7 +5367,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.4"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.5"
             },
             "funding": [
                 {
@@ -5387,7 +5391,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-15T06:05:34+00:00"
+            "time": "2026-01-15T12:03:46+00:00"
         },
         {
             "name": "rector/rector",
@@ -6453,6 +6457,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "ccampbell/mousetrap": 20,
+        "mistralys/application-framework-docs": 20,
         "roave/security-advisories": 20,
         "shark/simple_html_dom": 20
     },
