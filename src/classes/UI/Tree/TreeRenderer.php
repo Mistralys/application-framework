@@ -31,13 +31,13 @@ class TreeRenderer extends UI_Renderable
 {
     use OptionableTrait;
 
-    public const OPTION_SHOW_ROOT = 'showRoot';
-    public const OPTION_EDITABLE = 'editable';
-    public const OPTION_SELECTABLE = 'selectable';
-    public const OPTION_ELEMENT_NAME = 'selectable_name';
-    public const DEFAULT_ELEMENT_NAME = 'tree_items';
-    public const OPTION_STANDALONE_FORM = 'standalone_form';
-    public const STYLESHEET_FILE = 'ui/node-tree.css';
+    public const string OPTION_SHOW_ROOT = 'showRoot';
+    public const string OPTION_EDITABLE = 'editable';
+    public const string OPTION_SELECTABLE = 'selectable';
+    public const string OPTION_ELEMENT_NAME = 'selectable_name';
+    public const string DEFAULT_ELEMENT_NAME = 'tree_items';
+    public const string OPTION_STANDALONE_FORM = 'standalone_form';
+    public const string STYLESHEET_FILE = 'ui/node-tree.css';
 
     private TreeNode $rootNode;
     /**

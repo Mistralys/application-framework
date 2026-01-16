@@ -42,9 +42,9 @@ class UI_Button
     use ActivatableTrait;
     use ButtonLayoutTrait;
 
-    public const MODE_CLICKABLE = 'clickable';
-    public const MODE_LINKED = 'linked';
-    public const MODE_SUBMIT = 'submit';
+    public const string MODE_CLICKABLE = 'clickable';
+    public const string MODE_LINKED = 'linked';
+    public const string MODE_SUBMIT = 'submit';
 
     protected string $label = '';
     protected string $id;

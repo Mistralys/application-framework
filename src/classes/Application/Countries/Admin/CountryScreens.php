@@ -12,12 +12,12 @@ use Application\Countries\Rights\CountryScreenRights;
 
 class CountryScreens extends BaseScreenRights
 {
-    public const SCREEN_AREA = CountriesArea::class;
-    public const SCREEN_LIST = ListScreen::class;
-    public const SCREEN_CREATE = CreateScreen::class;
-    public const SCREEN_VIEW = '';
+    public const string SCREEN_AREA = CountriesArea::class;
+    public const string SCREEN_LIST = ListScreen::class;
+    public const string SCREEN_CREATE = CreateScreen::class;
+    public const string SCREEN_VIEW = '';
 
-    public const SCREEN_RIGHTS = array(
+    public const array SCREEN_RIGHTS = array(
         self::SCREEN_LIST => CountryScreenRights::SCREEN_LIST,
         self::SCREEN_CREATE => CountryScreenRights::SCREEN_CREATE,
         self::SCREEN_VIEW => CountryScreenRights::SCREEN_VIEW,

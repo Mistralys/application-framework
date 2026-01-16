@@ -61,6 +61,13 @@ foreach ($ruleDefs as $rule => $type) {
     }
 }
 
+echo "Running Rector with the following rules:\n";
+foreach ($rules as $rule) {
+    echo " - " . $rule . "\n";
+}
+
+echo "\n";
+
 return RectorConfig::configure()
     ->withPaths($paths)
     ->withRules($rules);

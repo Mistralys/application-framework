@@ -22,12 +22,12 @@ class MetaNavigation implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
-    public const META_LOOKUP = 'lookup';
-    public const META_PRINT_PAGE = 'print-page';
-    public const META_NOTEPAD = 'notepad';
-    public const META_DEVELOPER = 'developer';
-    public const META_USER = 'user';
-    public const META_NEWS = 'news';
+    public const string META_LOOKUP = 'lookup';
+    public const string META_PRINT_PAGE = 'print-page';
+    public const string META_NOTEPAD = 'notepad';
+    public const string META_DEVELOPER = 'developer';
+    public const string META_USER = 'user';
+    public const string META_NEWS = 'news';
 
     private UI_Page_Navigation $metaNav;
     private UI $ui;
@@ -82,7 +82,7 @@ class MetaNavigation implements UI_Renderable_Interface
             ->setAlias(self::META_USER)
             ->setIcon(UI::icon()->user());
 
-        (new UserMenu($menu))->configure();
+        new UserMenu($menu)->configure();
     }
 
     private function configureDeveloperMenu() : void
@@ -96,7 +96,7 @@ class MetaNavigation implements UI_Renderable_Interface
             ->setAlias(self::META_DEVELOPER)
             ->setIcon(UI::icon()->developer());
 
-        (new DeveloperMenu($dropdown))->configure();
+        new DeveloperMenu($dropdown)->configure();
     }
 
     public function isDeveloperMenuEnabled() : bool

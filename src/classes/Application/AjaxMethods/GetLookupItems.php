@@ -4,7 +4,7 @@ use Application\AppFactory;
 
 class Application_AjaxMethods_GetLookupItems extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'GetLookupItems';
+    public const string METHOD_NAME = 'GetLookupItems';
 
     public function getMethodName(): string
     {

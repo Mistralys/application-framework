@@ -20,7 +20,7 @@ use AppLocalize\Localization;
  */
 class WriteLocalizationFilesTask extends BaseDeployTask
 {
-    public const TASK_NAME = 'WriteLocalizationFiles';
+    public const string TASK_NAME = 'WriteLocalizationFiles';
 
     public function getID() : string
     {

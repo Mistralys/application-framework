@@ -8,12 +8,12 @@ use AppUtils\Microtime;
 
 class Application_User_Notepad_Note
 {
-    public const ERROR_NO_DATA_FOUND = 90001;
+    public const int ERROR_NO_DATA_FOUND = 90001;
 
-    public const KEY_DATE = 'date';
-    public const KEY_TITLE = 'title';
-    public const KEY_CONTENT = 'content';
-    public const KEY_ID = 'id';
+    public const string KEY_DATE = 'date';
+    public const string KEY_TITLE = 'title';
+    public const string KEY_CONTENT = 'content';
+    public const string KEY_ID = 'id';
 
     private Application_User_Notepad $notepad;
     private string $keyName;
@@ -112,7 +112,7 @@ class Application_User_Notepad_Note
             self::KEY_ID => $id,
             self::KEY_CONTENT => self::filterText($content),
             self::KEY_TITLE => self::filterText($title),
-            self::KEY_DATE => (new Microtime())->getMySQLDate()
+            self::KEY_DATE => new Microtime()->getMySQLDate()
         );
 
         $user = $notepad->getUser();

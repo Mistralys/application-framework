@@ -10,16 +10,16 @@
  */
 class DBHelper_OperationTypes
 {
-    const TYPE_INSERT = 1;
-    const TYPE_UPDATE = 2;
-    const TYPE_DELETE = 3;
-    const TYPE_DROP = 4;
-    const TYPE_SET = 5;
-    const TYPE_SHOW = 6;
-    const TYPE_SELECT = 7;
-    const TYPE_TRUNCATE = 8;
-    const TYPE_TRANSACTION = 9;
-    const TYPE_ALTER = 10;
+    const int TYPE_INSERT = 1;
+    const int TYPE_UPDATE = 2;
+    const int TYPE_DELETE = 3;
+    const int TYPE_DROP = 4;
+    const int TYPE_SET = 5;
+    const int TYPE_SHOW = 6;
+    const int TYPE_SELECT = 7;
+    const int TYPE_TRUNCATE = 8;
+    const int TYPE_TRANSACTION = 9;
+    const int TYPE_ALTER = 10;
     
     protected static $typeDefs = array();
     

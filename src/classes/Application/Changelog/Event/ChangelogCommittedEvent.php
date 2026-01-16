@@ -8,5 +8,5 @@ use Application_EventHandler_EventableEvent;
 
 class ChangelogCommittedEvent extends Application_EventHandler_EventableEvent
 {
-    public const EVENT_NAME = 'ChangelogCommitted';
+    public const string EVENT_NAME = 'ChangelogCommitted';
 }

@@ -10,8 +10,8 @@ use UI_Renderable_Interface;
 
 class ImageSet
 {
-    public const ATTRIBUTE_SET_ID = 'data-image-set';
-    public const PROPERTY_IMAGE_SET = 'image-set';
+    public const string ATTRIBUTE_SET_ID = 'data-image-set';
+    public const string PROPERTY_IMAGE_SET = 'image-set';
 
     private string $id;
     private string $label;

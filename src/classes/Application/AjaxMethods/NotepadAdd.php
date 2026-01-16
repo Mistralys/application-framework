@@ -6,7 +6,7 @@ use Application\Application;
 
 class Application_AjaxMethods_NotepadAdd extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'NotepadAdd';
+    public const string METHOD_NAME = 'NotepadAdd';
 
     public function getMethodName(): string
     {

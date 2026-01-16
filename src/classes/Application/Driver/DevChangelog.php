@@ -27,9 +27,9 @@ class DevChangelog implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    public const CHANGELOG_FILE = 'dev-changelog.md';
-    public const ERROR_NO_CHANGELOG_FILE_FOUND = 164901;
-    public const DEFAULT_VERSION_STRING = '0.0.0';
+    public const string CHANGELOG_FILE = 'dev-changelog.md';
+    public const int ERROR_NO_CHANGELOG_FILE_FOUND = 164901;
+    public const string DEFAULT_VERSION_STRING = '0.0.0';
 
     private FileInfo $changelogFile;
     private ?ChangelogParser $parser = null;

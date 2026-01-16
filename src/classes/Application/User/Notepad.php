@@ -6,10 +6,10 @@ use AppUtils\ConvertHelper;
 
 class Application_User_Notepad
 {
-    public const ERROR_NOTE_NOT_FOUND = 89901;
+    public const int ERROR_NOTE_NOT_FOUND = 89901;
 
-    const KEY_NOTES_INDEX = 'notepad-index';
-    const KEY_NOTE_ID = 'notepad-note-%s';
+    const string KEY_NOTES_INDEX = 'notepad-index';
+    const string KEY_NOTE_ID = 'notepad-note-%s';
 
     /**
      * @var Application_User

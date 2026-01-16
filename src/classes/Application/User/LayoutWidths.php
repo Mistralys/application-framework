@@ -6,11 +6,11 @@ namespace Application\User;
 
 class LayoutWidths
 {
-    public const ERROR_LAYOUT_ID_NOT_EXISTS = 133101;
+    public const int ERROR_LAYOUT_ID_NOT_EXISTS = 133101;
 
-    public const WIDTH_STANDARD = 'standard';
-    public const WIDTH_MAXIMIZED = 'maximized';
-    public const DEFAULT_WIDTH = self::WIDTH_STANDARD;
+    public const string WIDTH_STANDARD = 'standard';
+    public const string WIDTH_MAXIMIZED = 'maximized';
+    public const string DEFAULT_WIDTH = self::WIDTH_STANDARD;
 
     private static ?LayoutWidths $instance = null;
 

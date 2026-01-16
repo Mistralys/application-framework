@@ -29,7 +29,7 @@ class UI_Page_Sidebar implements
     use Application_Traits_LockableStatus;
     use UI_Traits_RenderableGeneric;
 
-    public const DEFAULT_ELEMENT_ID = 'sidebar';
+    public const string DEFAULT_ELEMENT_ID = 'sidebar';
     private UI_Page $page;
     private ?UI_Page_Template $template = null;
     protected string $instanceID;

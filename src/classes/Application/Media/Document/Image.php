@@ -17,7 +17,7 @@ class Application_Media_Document_Image extends Application_Media_Document
 {
     use ImageDocumentTrait;
 
-    public const IMAGE_EXTENSIONS = array(
+    public const array IMAGE_EXTENSIONS = array(
         'jpg',
         'jpeg',
         'png',

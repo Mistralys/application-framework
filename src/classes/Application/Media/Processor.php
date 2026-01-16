@@ -22,7 +22,7 @@ use Application\Application;
  */
 class Application_Media_Processor
 {
-    public const ERROR_MISSING_MEDIA_CONFIGURATION = 660001;
+    public const int ERROR_MISSING_MEDIA_CONFIGURATION = 660001;
     
     protected UI $ui;
     protected string $redirectURL;

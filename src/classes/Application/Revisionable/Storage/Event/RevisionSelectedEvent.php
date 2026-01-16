@@ -9,7 +9,7 @@ use Application_EventHandler_EventableEvent;
 
 class RevisionSelectedEvent extends Application_EventHandler_EventableEvent
 {
-    public const EVENT_NAME = 'RevisionSelected';
+    public const string EVENT_NAME = 'RevisionSelected';
 
     public function getStorage() : BaseRevisionStorage
     {

@@ -22,7 +22,7 @@ use UI_Themes_Theme_ContentRenderer;
  */
 class BeforeContentRenderedEvent extends BaseScreenEvent
 {
-    public const EVENT_NAME = 'BeforeContentRendered';
+    public const string EVENT_NAME = 'BeforeContentRendered';
 
     private ?string $content = null;
 

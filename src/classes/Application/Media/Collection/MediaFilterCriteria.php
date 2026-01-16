@@ -19,7 +19,7 @@ class MediaFilterCriteria extends DBHelper_BaseFilterCriteria implements Taggabl
 {
     use TaggableFilterCriteriaTrait;
 
-    public const FILTER_EXTENSIONS = 'extensions';
+    public const string FILTER_EXTENSIONS = 'extensions';
 
     public function selectExtensions(array $extensions) : self
     {

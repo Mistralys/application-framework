@@ -60,11 +60,11 @@ class Application_RequestLog_FileFilterCriteria extends Application_FilterCriter
 
     // region: Select filter criteria
 
-    public const FILTER_DISPATCHER = 'dispatcher';
-    public const FILTER_SCREEN = 'screen';
-    public const FILTER_USER_NAME = 'user_name';
-    public const FILTER_SESSION_ID = 'session_id';
-    public const FILTER_DURATION = 'duration';
+    public const string FILTER_DISPATCHER = 'dispatcher';
+    public const string FILTER_SCREEN = 'screen';
+    public const string FILTER_USER_NAME = 'user_name';
+    public const string FILTER_SESSION_ID = 'session_id';
+    public const string FILTER_DURATION = 'duration';
 
     public function selectDispatcherSearch(string $value) : Application_RequestLog_FileFilterCriteria
     {

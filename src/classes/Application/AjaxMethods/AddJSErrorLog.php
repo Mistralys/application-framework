@@ -6,7 +6,7 @@ use AppUtils\ConvertHelper\JSONConverter;
 
 class Application_AjaxMethods_AddJSErrorLog extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'AddJSErrorLog';
+    public const string METHOD_NAME = 'AddJSErrorLog';
 
     public function getMethodName() : string
     {

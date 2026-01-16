@@ -38,7 +38,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * Delay, in seconds, after which to hide the status
      * text saying that the text has been copied.
      */
-    public const FADE_OUT_DELAY = 2.1;
+    public const float FADE_OUT_DELAY = 2.1;
 
     /**
     * Adds an icon.

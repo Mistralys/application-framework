@@ -24,15 +24,15 @@ use Shuchkin\SimpleXLSXGen;
  */
 class TimeExporter
 {
-    public const COL_DATE = 'Date';
-    public const COL_START_TIME = 'Start Time';
-    public const COL_END_TIME = 'End Time';
-    public const COL_DURATION = 'Duration';
-    public const COL_TYPE = 'Type';
-    public const COL_TICKET = 'Ticket';
-    public const COL_COMMENTS = 'Comments';
+    public const string COL_DATE = 'Date';
+    public const string COL_START_TIME = 'Start Time';
+    public const string COL_END_TIME = 'End Time';
+    public const string COL_DURATION = 'Duration';
+    public const string COL_TYPE = 'Type';
+    public const string COL_TICKET = 'Ticket';
+    public const string COL_COMMENTS = 'Comments';
 
-    public const COLUMNS = array(
+    public const array COLUMNS = array(
         self::COL_DATE,
         self::COL_START_TIME,
         self::COL_END_TIME,

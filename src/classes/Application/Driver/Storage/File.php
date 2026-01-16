@@ -5,8 +5,8 @@ use AppUtils\FileHelper;
 
 class Application_Driver_Storage_File extends Application_Driver_Storage
 {
-    const COL_EXPIRY = 'expiry';
-    const COL_KEYS = 'keys';
+    const string COL_EXPIRY = 'expiry';
+    const string COL_KEYS = 'keys';
 
     protected $dataFile;
 

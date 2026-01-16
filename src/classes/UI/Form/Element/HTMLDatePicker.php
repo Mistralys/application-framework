@@ -17,8 +17,8 @@
  */
 class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element_Input
 {
-    public const REGEX_GROUP_DATE = '([0-9]{4}-[0-9]{2}-[0-9]{2})';
-    public const ERROR_INVALID_DATE_VALUE = 145801;
+    public const string REGEX_GROUP_DATE = '([0-9]{4}-[0-9]{2}-[0-9]{2})';
+    public const int ERROR_INVALID_DATE_VALUE = 145801;
 
     protected array $attributes = array(
         'type' => 'date'

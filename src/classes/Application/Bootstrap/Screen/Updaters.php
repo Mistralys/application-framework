@@ -6,7 +6,7 @@ use Application\Updaters\UpdatersCollection;
 
 class Application_Bootstrap_Screen_Updaters extends Application_Bootstrap_Screen
 {
-    public const DISPATCHER_NAME = 'upgrade.php';
+    public const string DISPATCHER_NAME = 'upgrade.php';
 
     public function getDispatcher() : string
     {

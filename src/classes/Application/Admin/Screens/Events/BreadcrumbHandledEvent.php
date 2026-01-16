@@ -19,7 +19,7 @@ use UI_Page_Breadcrumb;
  */
 class BreadcrumbHandledEvent extends BaseScreenEvent
 {
-    public const EVENT_NAME = 'BreadcrumbHandled';
+    public const string EVENT_NAME = 'BreadcrumbHandled';
 
     public function getBreadcrumb() : UI_Page_Breadcrumb
     {

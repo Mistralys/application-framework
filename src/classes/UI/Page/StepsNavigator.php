@@ -23,11 +23,11 @@ class UI_Page_StepsNavigator implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
-    public const ERROR_NO_STEPS_TO_SELECT = 556001;
+    public const int ERROR_NO_STEPS_TO_SELECT = 556001;
     
-    public const ERROR_UNKNOWN_STEP = 556002;
+    public const int ERROR_UNKNOWN_STEP = 556002;
 
-    public const OPTION_NUMBERED = 'numbered';
+    public const string OPTION_NUMBERED = 'numbered';
 
     protected UI_Page $page;
     protected ?string $selectedName = null;

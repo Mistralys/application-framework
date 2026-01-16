@@ -46,16 +46,16 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     use Application_Traits_Loggable;
     use Application_Traits_Eventable;
 
-    public const EVENT_KEYS_SAVED = 'KeysSaved';
-    public const EVENT_KEYS_DELETED = 'KeysDeleted';
+    public const string EVENT_KEYS_SAVED = 'KeysSaved';
+    public const string EVENT_KEYS_DELETED = 'KeysDeleted';
 
-    public const ERROR_INVALID_MAX_KEY_NAME_LENGTH = 97301;
+    public const int ERROR_INVALID_MAX_KEY_NAME_LENGTH = 97301;
 
     /**
      * The max key length may not be smaller than this.
      * @see DBHelper_DataTable::setMaxKeyNameLength()
      */
-    public const MIN_MAX_KEY_NAME_LENGTH = 32;
+    public const int MIN_MAX_KEY_NAME_LENGTH = 32;
 
     /**
      * @var array<string,string>

@@ -14,12 +14,12 @@ use AppUtils\Interfaces\StringPrimaryRecordInterface;
  */
 class TimeEntryTypes extends BaseStringPrimaryCollection
 {
-    public const TYPE_MEETING = 'meeting';
-    public const TYPE_DEVELOPMENT = 'development';
-    public const TYPE_MANAGEMENT = 'management';
-    public const TYPE_ABSENCE_GENERAL = 'absence';
-    public const TYPE_ABSENCE_HEALTH = 'health';
-    public const DEFAULT_TYPE = self::TYPE_MANAGEMENT;
+    public const string TYPE_MEETING = 'meeting';
+    public const string TYPE_DEVELOPMENT = 'development';
+    public const string TYPE_MANAGEMENT = 'management';
+    public const string TYPE_ABSENCE_GENERAL = 'absence';
+    public const string TYPE_ABSENCE_HEALTH = 'health';
+    public const string DEFAULT_TYPE = self::TYPE_MANAGEMENT;
 
     private static ?TimeEntryTypes $instance = null;
 

@@ -23,7 +23,7 @@ use AppUtils\NamedClosure;
  */
 class Application_FilterCriteria_Database_CustomColumn
 {
-    public const ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
+    public const int ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
 
     /**
      * @var NamedClosure|NULL
@@ -298,14 +298,14 @@ class Application_FilterCriteria_Database_CustomColumn
 
     // region: Managing markers
 
-    public const COMPONENT_WHERE = 'where';
-    public const COMPONENT_ORDER_BY = 'order_by';
-    public const COMPONENT_GROUP_BY = 'group_by';
-    public const COMPONENT_SELECT_PRIMARY = 'select_primary';
-    public const COMPONENT_SELECT_SECONDARY = 'select_secondary';
-    public const COMPONENT_JOIN = 'join';
+    public const string COMPONENT_WHERE = 'where';
+    public const string COMPONENT_ORDER_BY = 'order_by';
+    public const string COMPONENT_GROUP_BY = 'group_by';
+    public const string COMPONENT_SELECT_PRIMARY = 'select_primary';
+    public const string COMPONENT_SELECT_SECONDARY = 'select_secondary';
+    public const string COMPONENT_JOIN = 'join';
 
-    public const MARKER_SUFFIX = '$$';
+    public const string MARKER_SUFFIX = '$$';
 
     /**
      * @var string

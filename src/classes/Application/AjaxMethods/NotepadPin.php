@@ -6,7 +6,7 @@ use Application\Application;
 
 class Application_AjaxMethods_NotepadPin extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'NotepadPin';
+    public const string METHOD_NAME = 'NotepadPin';
 
     public function getMethodName(): string
     {

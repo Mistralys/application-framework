@@ -12,7 +12,7 @@ use DBHelper_StatementBuilder_ValuesContainer;
  */
 class CategoriesFilterCriteria extends DBHelper_BaseFilterCriteria
 {
-    public const FILTER_CATEGORY_IDS = 'category_ids';
+    public const string FILTER_CATEGORY_IDS = 'category_ids';
 
     /**
      * @param array<int,int|string> $ids

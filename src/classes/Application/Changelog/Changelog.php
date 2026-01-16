@@ -14,13 +14,13 @@ class Application_Changelog implements Application_Interfaces_Eventable
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 
-    public const ERROR_MISSING_CHANGELOG_KEY = 599601;
-    public const ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
-    public const COL_AUTHOR = 'changelog_author';
-    public const COL_TYPE = 'changelog_type';
-    public const COL_DATE = 'changelog_date';
-    public const COL_DATA = 'changelog_data';
-    public const COL_PRIMARY_ID = 'changelog_id';
+    public const int ERROR_MISSING_CHANGELOG_KEY = 599601;
+    public const int ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
+    public const string COL_AUTHOR = 'changelog_author';
+    public const string COL_TYPE = 'changelog_type';
+    public const string COL_DATE = 'changelog_date';
+    public const string COL_DATA = 'changelog_data';
+    public const string COL_PRIMARY_ID = 'changelog_id';
 
     protected ChangelogableInterface $owner;
     private string $logIdentifier;

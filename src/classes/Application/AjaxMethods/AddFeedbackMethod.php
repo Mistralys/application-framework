@@ -10,7 +10,7 @@ use Application_AjaxMethod;
 
 class AddFeedbackMethod extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'AddFeedback';
+    public const string METHOD_NAME = 'AddFeedback';
 
     public function getMethodName(): string
     {

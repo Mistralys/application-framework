@@ -18,7 +18,7 @@
  */
 class Application_AjaxMethods_LockingGetStatus extends Application_LockManager_AjaxMethod
 {
-    public const METHOD_NAME = 'LockingGetStatus';
+    public const string METHOD_NAME = 'LockingGetStatus';
 
     public function getMethodName() : string
     {

@@ -13,9 +13,9 @@ use UI\AdminURLs\AdminURLInterface;
  */
 class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_Item
 {
-    public const ATTRIBUTE_DESCRIPTION = 'description';
-    public const ATTRIBUTE_HREF = 'href';
-    public const ATTRIBUTE_ONCLICK = 'onclick';
+    public const string ATTRIBUTE_DESCRIPTION = 'description';
+    public const string ATTRIBUTE_HREF = 'href';
+    public const string ATTRIBUTE_ONCLICK = 'onclick';
 
     protected string $label = '';
 

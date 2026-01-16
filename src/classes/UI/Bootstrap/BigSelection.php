@@ -19,10 +19,10 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterf
 {
     use OptionableTrait;
 
-    public const OPTION_FILTERING_THRESHOLD = 'filteringThreshold';
-    public const OPTION_FILTERING_ENABLED = 'filteringEnabled';
-    public const OPTION_EMPTY_MESSAGE = 'emptyMessage';
-    public const OPTION_HEIGHT_LIMITED = 'heightLimited';
+    public const string OPTION_FILTERING_THRESHOLD = 'filteringThreshold';
+    public const string OPTION_FILTERING_ENABLED = 'filteringEnabled';
+    public const string OPTION_EMPTY_MESSAGE = 'emptyMessage';
+    public const string OPTION_HEIGHT_LIMITED = 'heightLimited';
 
     public function getDefaultOptions() : array
     {

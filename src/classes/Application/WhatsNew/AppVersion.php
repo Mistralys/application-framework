@@ -28,11 +28,11 @@ use SimpleXMLElement;
  */
 class AppVersion
 {
-    public const ERROR_UNKNOWN_LANGUAGE = 31201;
-    public const ERROR_CANNOT_OVERWRITE_LANGUAGE = 31202;
+    public const int ERROR_UNKNOWN_LANGUAGE = 31201;
+    public const int ERROR_CANNOT_OVERWRITE_LANGUAGE = 31202;
 
-    public const REQUEST_PARAM_NUMBER = 'app_version';
-    const REQUEST_PARAM_LANG_ID = 'lang_id';
+    public const string REQUEST_PARAM_NUMBER = 'app_version';
+    const string REQUEST_PARAM_LANG_ID = 'lang_id';
 
     protected string $version;
     private WhatsNew $whatsNew;

@@ -14,13 +14,13 @@ class TagEditorUI implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
-    public const STYLESHEET_FILE = 'ui/tags/tag-editor.css';
-    public const JAVASCRIPT_FILE_MANAGER = 'ui/tags/tag-editor-manager.js';
-    public const JAVASCRIPT_FILE_EDITOR = 'ui/tags/tag-editor.js';
-    public const JAVASCRIPT_FILE_TAGGABLE = 'ui/tags/taggable.js';
-    public const JAVASCRIPT_FILE_TAGGABLE_TAG = 'ui/tags/taggable-tag.js';
+    public const string STYLESHEET_FILE = 'ui/tags/tag-editor.css';
+    public const string JAVASCRIPT_FILE_MANAGER = 'ui/tags/tag-editor-manager.js';
+    public const string JAVASCRIPT_FILE_EDITOR = 'ui/tags/tag-editor.js';
+    public const string JAVASCRIPT_FILE_TAGGABLE = 'ui/tags/taggable.js';
+    public const string JAVASCRIPT_FILE_TAGGABLE_TAG = 'ui/tags/taggable-tag.js';
 
-    public const JAVASCRIPT_FILES = array(
+    public const array JAVASCRIPT_FILES = array(
         self::JAVASCRIPT_FILE_MANAGER,
         self::JAVASCRIPT_FILE_EDITOR,
         self::JAVASCRIPT_FILE_TAGGABLE,

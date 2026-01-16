@@ -23,12 +23,12 @@ use AppUtils\FileHelper\FileInfo;
  */
 class Application_Uploads
 {
-    public const ERROR_NO_UPLOAD_TMP_DIR = 42801;
-    public const ERROR_UPLOAD_STOPPED_BY_EXTENSION = 42802;
+    public const int ERROR_NO_UPLOAD_TMP_DIR = 42801;
+    public const int ERROR_UPLOAD_STOPPED_BY_EXTENSION = 42802;
 
-    public const TABLE_NAME = 'uploads';
-    public const PRIMARY_NAME = 'upload_id';
-    public const MEDIA_TYPE = 'upload';
+    public const string TABLE_NAME = 'uploads';
+    public const string PRIMARY_NAME = 'upload_id';
+    public const string MEDIA_TYPE = 'upload';
 
     protected static ?Application_Uploads $instance = null;
 
@@ -182,12 +182,12 @@ class Application_Uploads
         {
             // Enable logging of non-application exceptions.
             if(!$e instanceof Application_Exception) {
-                (new Application_Exception(
+                new Application_Exception(
                     'Failed to create a new upload entry.',
                     '',
                     $e->getCode(),
                     $e
-                ))
+                )
                     ->log();
             }
 

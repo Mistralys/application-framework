@@ -36,11 +36,11 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
 {
     use ScriptInjectableTrait;
 
-    public const ERROR_IMAGE_SET_ALREADY_EXISTS = 130901;
+    public const int ERROR_IMAGE_SET_ALREADY_EXISTS = 130901;
 
-    public const PROPERTY_SORTING_ENABLED = 'sorting-enabled';
-    public const PROPERTY_PLEASE_SELECT_LABEL = 'please-select-label';
-    public const PROPERTY_PLEASE_SELECT_ENABLED = 'please-select';
+    public const string PROPERTY_SORTING_ENABLED = 'sorting-enabled';
+    public const string PROPERTY_PLEASE_SELECT_LABEL = 'please-select-label';
+    public const string PROPERTY_PLEASE_SELECT_ENABLED = 'please-select';
 
     protected int $thumbnailSizeL = 80;
     protected int $thumbnailSizeS = 60;

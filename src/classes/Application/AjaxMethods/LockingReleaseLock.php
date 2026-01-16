@@ -2,7 +2,7 @@
 
 class Application_AjaxMethods_LockingReleaseLock extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'LockingReleaseLock';
+    public const string METHOD_NAME = 'LockingReleaseLock';
 
     public function getMethodName(): string
     {

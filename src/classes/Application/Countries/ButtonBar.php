@@ -25,13 +25,13 @@ use function AppUtils\parseURL;
  */
 class Application_Countries_ButtonBar extends UI_Renderable implements ClassableInterface, OptionableInterface
 {
-    public const ERROR_INVALID_COUNTRY_FOR_LINK = 54601;
+    public const int ERROR_INVALID_COUNTRY_FOR_LINK = 54601;
 
-    public const REQUEST_PARAM_SELECT_COUNTRY = 'select_country';
-    public const OPTION_ENABLE_STORAGE = 'enableStorage';
-    public const OPTION_DISPLAY_THRESHOLD = 'displayThreshold';
-    public const OPTION_ENABLE_LABEL = 'enableLabel';
-    public const OPTION_LABEL = 'label';
+    public const string REQUEST_PARAM_SELECT_COUNTRY = 'select_country';
+    public const string OPTION_ENABLE_STORAGE = 'enableStorage';
+    public const string OPTION_DISPLAY_THRESHOLD = 'displayThreshold';
+    public const string OPTION_ENABLE_LABEL = 'enableLabel';
+    public const string OPTION_LABEL = 'label';
 
     use ClassableTrait;
     use OptionableTrait;

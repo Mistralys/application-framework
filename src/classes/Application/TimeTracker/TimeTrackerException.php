@@ -16,5 +16,5 @@ use Application_Exception;
  */
 class TimeTrackerException extends Application_Exception
 {
-    public const ERROR_INVALID_DURATION_DATA_SUBMITTED = 172001;
+    public const int ERROR_INVALID_DURATION_DATA_SUBMITTED = 172001;
 }

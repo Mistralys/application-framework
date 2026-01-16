@@ -7,10 +7,10 @@ use AppUtils\FileHelper;
 
 class Application_OAuth
 {
-    public const ERROR_STRATEGY_CLASS_NOT_FOUND = 75301;
-    public const ERROR_INVALID_STRATEGY_CLASS = 75302;
-    public const ERROR_UNKNOWN_STRATEGY = 75303;
-    public const ERROR_AUTH_SALT_NOT_SET = 75304;
+    public const int ERROR_STRATEGY_CLASS_NOT_FOUND = 75301;
+    public const int ERROR_INVALID_STRATEGY_CLASS = 75302;
+    public const int ERROR_UNKNOWN_STRATEGY = 75303;
+    public const int ERROR_AUTH_SALT_NOT_SET = 75304;
 
     /**
      * @var string

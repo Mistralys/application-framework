@@ -1230,7 +1230,7 @@ class DBHelper
         return self::getLimitSQL($limit, $offset);
     }
 
-    public const INSERTORUPDATE_UPDATE = 'upd';
+    public const string INSERTORUPDATE_UPDATE = 'upd';
 
     /**
      * Utility method that either inserts or updates an existing record.

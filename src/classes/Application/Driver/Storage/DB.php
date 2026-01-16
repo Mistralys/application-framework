@@ -2,12 +2,12 @@
 
 class Application_Driver_Storage_DB extends Application_Driver_Storage
 {
-    const TABLE_NAME = 'app_settings';
+    const string TABLE_NAME = 'app_settings';
 
-    const COL_VALUE = 'data_value';
-    const COL_KEY = 'data_key';
-    const COL_EXPIRY = 'expiry_date';
-    const COL_ROLE = 'data_role';
+    const string COL_VALUE = 'data_value';
+    const string COL_KEY = 'data_key';
+    const string COL_EXPIRY = 'expiry_date';
+    const string COL_ROLE = 'data_role';
 
     public function get($name)
     {

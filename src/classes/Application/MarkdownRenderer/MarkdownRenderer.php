@@ -24,16 +24,16 @@ class MarkdownRenderer implements OptionableInterface
 {
     use OptionableTrait;
 
-    public const OPTION_HTML_INPUT = 'html_input';
-    public const OPTION_ALLOW_UNSAFE_LINKS = 'allow_unsafe_links';
+    public const string OPTION_HTML_INPUT = 'html_input';
+    public const string OPTION_ALLOW_UNSAFE_LINKS = 'allow_unsafe_links';
 
-    public const HTML_MODE_ALLOW = 'allow';
-    public const HTML_MODE_STRIP = 'strip';
-    public const HTML_MODE_ESCAPE = 'escape';
+    public const string HTML_MODE_ALLOW = 'allow';
+    public const string HTML_MODE_STRIP = 'strip';
+    public const string HTML_MODE_ESCAPE = 'escape';
 
-    public const WRAPPER_CLASS = 'markdown';
-    public const WRAPPER_TAG_OPEN = '<div class="'.self::WRAPPER_CLASS.'">';
-    public const WRAPPER_TAG_CLOSE = '</div>';
+    public const string WRAPPER_CLASS = 'markdown';
+    public const string WRAPPER_TAG_OPEN = '<div class="'.self::WRAPPER_CLASS.'">';
+    public const string WRAPPER_TAG_CLOSE = '</div>';
     public const string MARKDOWN_DOCUMENTATION_URL = 'https://commonmark.org/help/';
     public const string MARKDOWN_LANGUAGE_NAME = 'Markdown';
 

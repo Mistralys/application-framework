@@ -13,8 +13,8 @@ class UI_Bootstrap_ButtonGroup
 {
     use ButtonSizeTrait;
 
-    public const ERROR_BUTTON_NAME_NOT_FOUND = 159301;
-    public const ERROR_BUTTON_NAME_NOT_SET = 159302;
+    public const int ERROR_BUTTON_NAME_NOT_FOUND = 159301;
+    public const int ERROR_BUTTON_NAME_NOT_SET = 159302;
 
     /**
     * @var ButtonGroupItemInterface[]

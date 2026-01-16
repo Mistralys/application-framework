@@ -25,8 +25,8 @@ use Connectors_Exception;
  */
 class StubFailureMethod extends Connectors_Connector_Method_Get
 {
-    public const ERROR_CONNECTION_DID_NOT_FAIL = 70101;
-    public const ERROR_CONNECTION_FAILED = 70102;
+    public const int ERROR_CONNECTION_DID_NOT_FAIL = 70101;
+    public const int ERROR_CONNECTION_FAILED = 70102;
 
     /**
      * @return never

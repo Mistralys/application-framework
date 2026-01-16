@@ -7,7 +7,7 @@ use AppUtils\ImageHelper;
 
 class Application_Bootstrap_Screen_AjaxError extends Application_Bootstrap_Screen
 {
-    public const DISPATCHER = 'ajax/error.php';
+    public const string DISPATCHER = 'ajax/error.php';
 
     public function getDispatcher() : string
     {

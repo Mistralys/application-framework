@@ -9,8 +9,8 @@ use AppUtils\Microtime_Exception;
 
 class DeploymentInfo
 {
-    public const KEY_VERSION = 'version';
-    public const KEY_DATE = 'date';
+    public const string KEY_VERSION = 'version';
+    public const string KEY_DATE = 'date';
 
     private string $version;
     private Microtime $date;

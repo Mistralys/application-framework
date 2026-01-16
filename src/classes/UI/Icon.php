@@ -21,9 +21,9 @@ use AppUtils\Interfaces\StringableInterface;
  */
 class UI_Icon implements StringableInterface, UI_Renderable_Interface
 {
-    public const ERROR_INVALID_TYPE_SELECTED = 95601;
-    public const ERROR_INVALID_COLOR_STYLE = 95602;
-    public const ERROR_INVALID_TOOLTIP_POSITION = 95603;
+    public const int ERROR_INVALID_TYPE_SELECTED = 95601;
+    public const int ERROR_INVALID_COLOR_STYLE = 95602;
+    public const int ERROR_INVALID_TOOLTIP_POSITION = 95603;
 
     use UI_Traits_RenderableGeneric;
 
@@ -1000,12 +1000,12 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
      */
     private ?string $colorStyle = null;
 
-    public const COLOR_STYLE_DANGER = 'danger';
-    public const COLOR_STYLE_WARNING = 'warning';
-    public const COLOR_STYLE_MUTED = 'muted';
-    public const COLOR_STYLE_SUCCESS = 'success';
-    public const COLOR_STYLE_INFO = 'info';
-    public const COLOR_STYLE_WHITE = 'white';
+    public const string COLOR_STYLE_DANGER = 'danger';
+    public const string COLOR_STYLE_WARNING = 'warning';
+    public const string COLOR_STYLE_MUTED = 'muted';
+    public const string COLOR_STYLE_SUCCESS = 'success';
+    public const string COLOR_STYLE_INFO = 'info';
+    public const string COLOR_STYLE_WHITE = 'white';
 
     /**
      * @var array<string,string>
@@ -1277,10 +1277,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
      */
     protected array $styles = array();
 
-    public const TOOLTIP_POSITION_TOP = 'top';
-    public const TOOLTIP_POSITION_BOTTOM = 'bottom';
-    public const TOOLTIP_POSITION_LEFT = 'left';
-    public const TOOLTIP_POSITION_RIGHT = 'right';
+    public const string TOOLTIP_POSITION_TOP = 'top';
+    public const string TOOLTIP_POSITION_BOTTOM = 'bottom';
+    public const string TOOLTIP_POSITION_LEFT = 'left';
+    public const string TOOLTIP_POSITION_RIGHT = 'right';
 
     public static function requireValidTooltipPosition(string $pos) : void
     {

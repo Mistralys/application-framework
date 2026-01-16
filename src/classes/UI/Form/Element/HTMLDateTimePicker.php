@@ -15,9 +15,9 @@ use AppUtils\ClassHelper;
  */
 class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Container_Group
 {
-    public const ELEMENT_NAME_DATE = 'date';
-    public const ELEMENT_NAME_TIME = 'time';
-    public const CSS_FILE_NAME = 'forms/date-picker.css';
+    public const string ELEMENT_NAME_DATE = 'date';
+    public const string ELEMENT_NAME_TIME = 'time';
+    public const string CSS_FILE_NAME = 'forms/date-picker.css';
 
     private HTML_QuickForm2_Element_HTMLDatePicker $datePicker;
 

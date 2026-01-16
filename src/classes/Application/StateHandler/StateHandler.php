@@ -9,9 +9,9 @@ use function AppUtils\parseVariable;
 
 class Application_StateHandler
 {
-    public const ERROR_CANNOT_REPLACE_REVISIONABLE = 14001;
-    public const ERROR_DUPLICATE_INITIAL_STATE = 14002;
-    public const ERROR_NO_INITIAL_STATE_DEFINED = 14003;
+    public const int ERROR_CANNOT_REPLACE_REVISIONABLE = 14001;
+    public const int ERROR_DUPLICATE_INITIAL_STATE = 14002;
+    public const int ERROR_NO_INITIAL_STATE_DEFINED = 14003;
 
     /**
      * @var array<string, Application_StateHandler_State>

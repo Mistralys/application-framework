@@ -116,7 +116,7 @@ class ImageGalleryMode extends BaseMode implements MediaModeInterface
         return $page;
     }
 
-    public const IMAGES_PER_PAGE = 20;
+    public const int IMAGES_PER_PAGE = 20;
 
     protected function _renderContent()
     {

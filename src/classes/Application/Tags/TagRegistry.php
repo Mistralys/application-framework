@@ -29,11 +29,11 @@ use JsonException;
  */
 class TagRegistry
 {
-    public const COL_KEY = 'registry_key';
-    public const COL_TAG_ID = TagCollection::PRIMARY_NAME;
+    public const string COL_KEY = 'registry_key';
+    public const string COL_TAG_ID = TagCollection::PRIMARY_NAME;
 
-    public const ERROR_KEY_ALREADY_REGISTERED = 149001;
-    public const ERROR_KEY_NOT_REGISTERED = 149002;
+    public const int ERROR_KEY_ALREADY_REGISTERED = 149001;
+    public const int ERROR_KEY_NOT_REGISTERED = 149002;
 
     public static function isKeyRegistered(string $key) : bool
     {

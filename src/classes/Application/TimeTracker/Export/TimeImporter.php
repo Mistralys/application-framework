@@ -28,8 +28,8 @@ use Shuchkin\SimpleXLSX;
  */
 class TimeImporter
 {
-    public const KEY_DB_COLUMN = 'dbColumn';
-    public const KEY_PARSE_CALLBACK = 'parseCallback';
+    public const string KEY_DB_COLUMN = 'dbColumn';
+    public const string KEY_PARSE_CALLBACK = 'parseCallback';
     private FileInfo $file;
     private int $importedRows = 0;
     private TimeTrackerCollection $timeTracker;

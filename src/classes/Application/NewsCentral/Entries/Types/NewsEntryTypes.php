@@ -15,9 +15,9 @@ use UI;
  */
 class NewsEntryTypes extends BaseStringPrimaryCollection
 {
-    public const NEWS_TYPE_ALERT = 'alert';
-    public const NEWS_TYPE_ARTICLE = 'article';
-    public const DEFAULT_TYPE = self::NEWS_TYPE_ARTICLE;
+    public const string NEWS_TYPE_ALERT = 'alert';
+    public const string NEWS_TYPE_ARTICLE = 'article';
+    public const string DEFAULT_TYPE = self::NEWS_TYPE_ARTICLE;
 
     private static ?NewsEntryTypes $instance = null;
 

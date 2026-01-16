@@ -12,9 +12,9 @@ use DBHelper_BaseFilterSettings;
  */
 class NewsFilterSettings extends DBHelper_BaseFilterSettings
 {
-    public const SETTING_SEARCH = 'search';
-    public const SETTING_TYPE = 'type';
-    public const SETTING_STATUS = 'status';
+    public const string SETTING_SEARCH = 'search';
+    public const string SETTING_TYPE = 'type';
+    public const string SETTING_STATUS = 'status';
 
     protected function registerSettings(): void
     {

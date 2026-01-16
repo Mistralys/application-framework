@@ -20,8 +20,8 @@ use UI\Interfaces\PageTemplateInterface;
  */
 class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
 {
-    public const ERROR_TEMPLATE_FILE_NOT_FOUND = 27301;
-    public const ERROR_NOT_EXPECTED_OBJECT_INSTANCE = 27302;
+    public const int ERROR_TEMPLATE_FILE_NOT_FOUND = 27301;
+    public const int ERROR_NOT_EXPECTED_OBJECT_INSTANCE = 27302;
     
     /**
      * @var UI_Page_Sidebar

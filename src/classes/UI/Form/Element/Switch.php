@@ -25,7 +25,7 @@ class HTML_QuickForm2_Element_Switch
 {
     use ButtonSizeTrait;
 
-    public const ELEMENT_TYPE = 'switch';
+    public const string ELEMENT_TYPE = 'switch';
 
     /**
      * @var array<string,string>

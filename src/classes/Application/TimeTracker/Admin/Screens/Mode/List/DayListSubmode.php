@@ -178,7 +178,7 @@ class DayListSubmode extends BaseSubmode implements ListBuilderScreenInterface, 
 
     private function addSidebarTimeSpans() : void
     {
-        (new SidebarSpans($this->date, $this->sidebar))->addItems();
+        new SidebarSpans($this->date, $this->sidebar)->addItems();
     }
 
     protected function _handleSidebarBottom(): void

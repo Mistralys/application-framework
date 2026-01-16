@@ -15,10 +15,10 @@ use UI;
  */
 class NewsEntryStatuses extends BaseStringPrimaryCollection
 {
-    public const STATUS_DRAFT = 'draft';
-    public const STATUS_PUBLISHED = 'published';
+    public const string STATUS_DRAFT = 'draft';
+    public const string STATUS_PUBLISHED = 'published';
 
-    public const DEFAULT_STATUS = self::STATUS_DRAFT;
+    public const string DEFAULT_STATUS = self::STATUS_DRAFT;
 
     private static ?self $instance = null;
 
