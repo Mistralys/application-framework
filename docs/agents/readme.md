@@ -9,6 +9,14 @@ should follow these rules when implementing interfaces, traits, and classes.
 
 See [folder-structure.md](folder-structure.md).
 
+## Documentation Package
+
+The framework's human-readable documentation is maintained in a separate repository.
+For convenience, a copy of the documentation is automatically checked out into the
+vendor folder during the Composer install process.
+
+It can be found at [mistralys/application-framework-docs](/vendor/mistralys/application-framework-docs/README.md).
+
 ## General Conventions
 
 - Null checks: prefer `isset($this->property)` over strict `null` comparisons.
