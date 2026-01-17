@@ -1,0 +1,59 @@
+$schema: 'https://raw.githubusercontent.com/context-hub/generator/refs/heads/main/json-schema.json'
+
+# CTX Utility Server - To access CTX-specific tools
+mcp:
+  name: "AFMCP"
+  version: "1.0.0"
+  autoload: "vendor/autoload.php"
+  directories:
+    - src/classes # Scans all sub-modules for #[McpTool]
+
+# MCP SERVER - To access the framework's tools
+#
+# > This is what actually discovers and serves the tools defined
+# > in the codebase.
+servers:
+  php-mcp:
+    command: ["php", "mcp-server.php"]
+    env:
+      MCP_AUTOLOAD: "vendor/autoload.php"
+      MCP_DIRECTORIES: "src/classes"
+
+# DOCUMENT GENERATION - To create documentation from codebase
+documents:
+  -
+    description: 'Application Framework Project Structure'
+    outputPath: docs/php-structure.md
+    overwrite: true
+    sources:
+      -
+        type: tree
+        description: 'PHP Directory Structure'
+        sourcePaths:
+          - src/classes
+        filePattern: '*'
+        renderFormat: ascii
+        enabled: true
+        showCharCount: true
+        maxDepth: 4
+
+  -
+    description: 'DBHelper Architecture'
+    outputPath: 'modules/db-helper/architecture.md'
+    sources:
+        - type: file
+          description: "DBHelper Public Interfaces and DTOs"
+          sourcePaths:
+            - src/classes/DBHelper
+          filePattern: "*.php"
+          contains:
+            - "interface"
+            - "abstract class"
+          modifiers:
+            - name: php-content-filter
+              options:
+                    method_visibility: [public]
+                    keep_method_bodies: false
+                    keep_doc_comments: true
+                    exclude_methods:
+                      - __construct
