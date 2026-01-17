@@ -22,7 +22,7 @@ if(!file_exists($configFile))
 require_once $configFile;
 
 // Require classes needed for the test application.
-require_once APP_INSTALL_FOLDER.'/classes/Application/Bootstrap.php';
+require_once __DIR__ . '/../../src/classes/Application/Bootstrap/Bootstrap.php';
 
 // The initialization includes the local configuration files,
 // and defines all global application settings.
