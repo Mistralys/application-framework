@@ -93,7 +93,7 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
      * @param Application_Countries_Country $country
      * @return array<string,mixed>
      */
-    private function collectCountry(Application_Countries_Country $country) : array
+    public static function collectCountry(Application_Countries_Country $country) : array
     {
         $currency = $country->getCurrency();
         $locale = $country->getLocalizationLocale();
