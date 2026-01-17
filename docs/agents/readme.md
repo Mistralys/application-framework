@@ -21,4 +21,5 @@ It can be found at [mistralys/application-framework-docs](/vendor/mistralys/appl
 - [Exception Usage](exception-usage.md)
 - [File Handling](file-handling.md)
 - [Framework Folder Structure](folder-structure.md)
+- [JSON Handling](json-handling.md)
 - [UI Localization](ui-localization.md)
