@@ -1,6 +1,6 @@
 <?php
 
-require_once ('UI/DataGrid/Entry.php');
+declare(strict_types=1);
 
 class UI_DataGrid_Entry_Merged extends UI_DataGrid_Entry
 {

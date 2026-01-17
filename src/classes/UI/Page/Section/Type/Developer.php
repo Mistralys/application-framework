@@ -1,7 +1,5 @@
 <?php
 
-require_once 'UI/Page/Section.php';
-
 class UI_Page_Section_Type_Developer extends UI_Page_Section
 {
     public function __construct(UI_Page $page)
