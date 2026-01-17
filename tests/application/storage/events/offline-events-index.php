@@ -32,8 +32,9 @@ return array (
     ),
     'RegisterCacheLocations' => 
     array (
-      0 => 'Application\\API\\Events\\RegisterAPIIndexCacheListener',
-      1 => 'Application\\OfflineEvents\\RegisterCacheLocationsEvent\\RegisterClassCacheListener',
+      0 => 'Application\\AI\\Cache\\Events\\RegisterAIIndexCacheListener',
+      1 => 'Application\\API\\Events\\RegisterAPIIndexCacheListener',
+      2 => 'Application\\OfflineEvents\\RegisterCacheLocationsEvent\\RegisterClassCacheListener',
     ),
     'RegisterTagCollections' => 
     array (
