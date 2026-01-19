@@ -5,14 +5,6 @@
 Canonical coding paradigms and patterns used across this project. Agents and contributors
 should follow these rules when implementing interfaces, traits, and classes.
 
-## Documentation Package
-
-The framework's human-readable documentation is maintained in a separate repository.
-For convenience, a copy of the documentation is automatically checked out into the
-vendor folder during the Composer install process.
-
-It can be found at [mistralys/application-framework-docs](/vendor/mistralys/application-framework-docs/README.md).
-
 ## Documents Index
 
 - [Array Handling in the Framework](array-handling.md)
@@ -23,3 +15,9 @@ It can be found at [mistralys/application-framework-docs](/vendor/mistralys/appl
 - [Framework Folder Structure](folder-structure.md)
 - [JSON Handling](json-handling.md)
 - [UI Localization](ui-localization.md)
+
+## Individual Module Documentation
+
+- [DBHelper](/src/classes/DBHelper/README.md) - The database abstraction layer
+- [Connectors](/src/classes/Connectors/README.md) - External service connection layer
+- [UI](/src/classes/UI/README.md) - The user interface layer

@@ -130,6 +130,13 @@ package.
 > are some features that are only available there (like code samples that are
 > included dynamically). 
 
+### Vendor Package
+
+For convenience, a copy of the documentation is automatically checked out into 
+the vendor folder during the Composer install process.
+
+It can be found at [mistralys/application-framework-docs](/vendor/mistralys/application-framework-docs/README.md).
+
 ## History
 
 The framework has its origins in several projects where the same development
