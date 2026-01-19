@@ -78,6 +78,10 @@ class Connectors
         );
     }
 
+    /**
+     * @param string|class-string<Connectors_Connector> $connectorID
+     * @return bool
+     */
     public static function connectorExists(string $connectorID) : bool
     {
         if(class_exists($connectorID) && is_a($connectorID, Connectors_Connector::class, true)) {
