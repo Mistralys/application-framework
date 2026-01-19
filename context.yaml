@@ -28,7 +28,7 @@ documents:
     sources:
       -
         type: tree
-        description: 'PHP Directory Structure'
+        description: 'PHP File Structure'
         sourcePaths:
           - src/classes
         filePattern: '*'
