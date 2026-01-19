@@ -43,7 +43,9 @@ class AICacheLocation extends BaseCacheLocation
 
     public function clear(): void
     {
-        FileHelper::deleteTree($this->cacheFolder);
+        if($this->cacheFolder->exists()) {
+            FileHelper::deleteTree($this->cacheFolder);
+        }
     }
 
     public function getID(): string
