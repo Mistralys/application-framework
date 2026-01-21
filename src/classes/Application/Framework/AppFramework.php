@@ -45,7 +45,7 @@ class AppFramework
 
     /**
      * Gets all folders from which classes can be loaded:
-     * From the Framework itself, and from the application.
+     * From the Framework itself and from the application.
      *
      * @return FolderInfo[]
      */
