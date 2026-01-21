@@ -2,7 +2,7 @@ $schema: 'https://raw.githubusercontent.com/context-hub/generator/refs/heads/mai
 
 # CTX Utility Server - To access CTX-specific tools
 mcp:
-  name: "AFMCP"
+  name: "Framework MCP"
   version: "1.0.0"
   autoload: "vendor/autoload.php"
   directories:
@@ -22,13 +22,13 @@ servers:
 # DOCUMENT GENERATION - To create documentation from codebase
 documents:
   -
-    description: 'Application Framework Project Structure'
-    outputPath: docs/php-structure.md
+    description: 'Application Framework Structure'
+    outputPath: framework-file-structure.md
     overwrite: true
     sources:
       -
         type: tree
-        description: 'PHP File Structure'
+        description: 'Tree of PHP Class Files'
         sourcePaths:
           - src/classes
         filePattern: '*'
@@ -37,12 +37,32 @@ documents:
         showCharCount: true
         maxDepth: 4
 
+## ---------------------------------------------------------------
+## DBHELPER
+## ---------------------------------------------------------------
+
   -
-    description: 'DBHelper Architecture'
+    description: 'DBHelper - Overview'
+    outputPath: 'modules/db-helper/overview.md'
+    sources:
+      - type: file
+        description: "DBHelper Overview"
+        sourcePaths:
+          - src/classes/DBHelper/README.md
+        filePattern: "README.md"
+
+      - type: file
+        description: "DBHelper Documentation"
+        sourcePaths:
+          - src/classes/DBHelper/Docs
+        filePattern: "*.md"
+
+  -
+    description: 'DBHelper - Architecture'
     outputPath: 'modules/db-helper/architecture.md'
     sources:
         - type: file
-          description: "DBHelper Public Interfaces and DTOs"
+          description: "Public Interfaces and DTOs"
           sourcePaths:
             - src/classes/DBHelper
           filePattern: "*.php"
@@ -57,3 +77,56 @@ documents:
                     keep_doc_comments: true
                     exclude_methods:
                       - __construct
+
+
+  ## ---------------------------------------------------------------
+  ## APPLICATION SETS
+  ## ---------------------------------------------------------------
+
+  -
+    description: 'Application Sets - Overview'
+    outputPath: 'modules/application-sets/overview.md'
+    sources:
+      - type: file
+        description: "Application Sets Overview"
+        sourcePaths:
+          - src/classes/Application/AppSets/README.md
+        filePattern: "README.md"
+
+  -
+    description: 'Application Sets - Architecture'
+    outputPath: 'modules/application-sets/architecture.md'
+    sources:
+      - type: file
+        description: "Public Class Signatures"
+        sourcePaths:
+          - src/classes/Application/AppSets/
+        excludePatterns:
+          - 'Admin/'
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [public]
+              keep_method_bodies: false
+              keep_doc_comments: true
+              exclude_methods:
+                - __construct
+
+  -
+    description: 'Application Sets - Administration Interface'
+    outputPath: 'modules/application-sets/admin-interface.md'
+    sources:
+      - type: file
+        description: "Public Class Signatures"
+        sourcePaths:
+          - src/classes/Application/AppSets/Admin
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [public]
+              keep_method_bodies: false
+              keep_doc_comments: true
+              exclude_methods:
+                - __construct
