@@ -1545,13 +1545,29 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * Retrieves the absolute path to the folder in
-     * which the driver's class files are stored.
+     * which the driver's class files are stored
+     * (in the driver's subfolder).
+     *
+     * `/assets/classes/{APP_CLASS_NAME}/`
      *
      * @return string
      */
     public function getClassesFolder() : string
     {
-        return $this->getRootFolder() . '/assets/classes/' . APP_CLASS_NAME;
+        return $this->getRootClassesFolder() . '/' . APP_CLASS_NAME;
+    }
+
+    /**
+     * Gets the absolute path to the root of the classes
+     * folder in the driver's assets folder.
+     *
+     * `/assets/classes/`
+     *
+     * @return string
+     */
+    public function getRootClassesFolder() : string
+    {
+        return $this->getRootFolder(). '/assets/classes';
     }
 
     public function getRootFolder() : string
