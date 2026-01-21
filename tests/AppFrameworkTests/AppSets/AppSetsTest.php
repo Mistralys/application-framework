@@ -13,7 +13,7 @@ use Application\NewsCentral\Admin\Screens\ManageNewsArea;
 use Application\AppSets\AppSet;
 use Application\Sets\AppSetsException;
 
-final class AppSetTest extends ApplicationTestCase
+final class AppSetsTest extends ApplicationTestCase
 {
     public function test_createNew() : void
     {
