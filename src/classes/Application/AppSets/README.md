@@ -59,6 +59,13 @@ The driver uses the active application set to determine which
 admin areas to initialize in the admin UI layer, namely in the
 method: `Application_Driver::prepare()`.
 
+## Administration Screens
+
+The available admin screens for the application sets are located
+in the folder:
+
+- **Admin Screens Folder**: [AppSets/Admin](/src/classes/Application/AppSets/Admin)
+
 ## Application Sets Collection
 
 Available application sets are managed by the `Application\AppSets\AppSetsCollection` class.
