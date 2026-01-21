@@ -8,7 +8,7 @@ use Application\Admin\Index\AdminScreenIndex;
 use Application\Admin\Welcome\Screens\WelcomeArea;
 use AppUtils\ArrayDataCollection;
 
-class DefaultAppSet extends AppSet
+final class DefaultAppSet extends AppSet
 {
     public function __construct()
     {

@@ -32,7 +32,7 @@ use UI_Page_Sidebar;
  *
  * @method AppSet[] getAll()
  */
-class AppSetsCollection extends DBHelper_BaseCollection
+final class AppSetsCollection extends DBHelper_BaseCollection
 {
     public const string PRIMARY_NAME = 'app_set_id';
     public const string TABLE_NAME = 'app_sets';
@@ -263,7 +263,6 @@ class AppSetsCollection extends DBHelper_BaseCollection
     {
         return $this->getByID($this->getActiveID());
     }
-
 
     public function injectCoreAreas(UI_Page_Sidebar $sidebar) : void
     {

@@ -17,7 +17,7 @@ use DBHelper\Admin\Screens\Action\BaseRecordDeleteAction;
 use DBHelper\Admin\Screens\Submode\BaseRecordDeleteSubmode;
 use UI\AdminURLs\AdminURLInterface;
 
-class DeleteAction extends BaseRecordDeleteAction implements ViewActionInterface
+final class DeleteAction extends BaseRecordDeleteAction implements ViewActionInterface
 {
     use ViewActionTrait;
 

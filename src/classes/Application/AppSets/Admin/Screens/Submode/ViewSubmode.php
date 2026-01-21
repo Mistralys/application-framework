@@ -16,7 +16,7 @@ use UI;
 /**
  * @property AppSet $record
  */
-class ViewSubmode extends BaseRecordSubmode implements SubmodeInterface
+final class ViewSubmode extends BaseRecordSubmode implements SubmodeInterface
 {
     use SubmodeTrait;
 

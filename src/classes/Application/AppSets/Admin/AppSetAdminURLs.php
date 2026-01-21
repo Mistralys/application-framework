@@ -16,7 +16,7 @@ use Application\Sets\Admin\Screens\Submode\ViewSubmode;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 
-class AppSetAdminURLs
+final class AppSetAdminURLs
 {
     private int $appSetID;
 

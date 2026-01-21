@@ -6,7 +6,7 @@ namespace Application\Sets\Admin;
 
 use Application_User;
 
-class AppSetScreenRights
+final class AppSetScreenRights
 {
     public const string SCREEN_APP_SETS = Application_User::RIGHT_DEVELOPER;
     public const string SCREEN_APP_SETS_CREATE = Application_User::RIGHT_DEVELOPER;

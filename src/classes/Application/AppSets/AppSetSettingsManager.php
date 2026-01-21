@@ -16,7 +16,7 @@ use HTML_QuickForm2_Node;
 use UI;
 use UI\CSSClasses;
 
-class AppSetSettingsManager extends Application_Formable_RecordSettings_Extended
+final class AppSetSettingsManager extends Application_Formable_RecordSettings_Extended
 {
     public const string SETTING_LABEL = 'label';
     public const string SETTING_ALIAS = 'alias';

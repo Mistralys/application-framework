@@ -15,7 +15,7 @@ use DBHelper_BaseFilterCriteria_Record;
 use UI;
 use UI_DataGrid_Entry;
 
-class SetsListSubmode extends BaseRecordListSubmode implements SubmodeInterface
+final class SetsListSubmode extends BaseRecordListSubmode implements SubmodeInterface
 {
     use SubmodeTrait;
 

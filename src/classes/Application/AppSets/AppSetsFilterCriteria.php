@@ -7,7 +7,7 @@ namespace Application\AppSets;
 use DBHelper_BaseFilterCriteria;
 use DBHelper_StatementBuilder_ValuesContainer;
 
-class AppSetsFilterCriteria extends DBHelper_BaseFilterCriteria
+final class AppSetsFilterCriteria extends DBHelper_BaseFilterCriteria
 {
     public function __construct(AppSetsCollection $collection)
     {

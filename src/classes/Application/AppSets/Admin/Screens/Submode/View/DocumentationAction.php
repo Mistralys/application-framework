@@ -10,7 +10,7 @@ use Application\Sets\Admin\Traits\ViewActionTrait;
 use DBHelper\Admin\Screens\Action\BaseRecordAction;
 use UI_Themes_Theme_ContentRenderer;
 
-class DocumentationAction extends BaseRecordAction implements ViewActionInterface
+final class DocumentationAction extends BaseRecordAction implements ViewActionInterface
 {
     use ViewActionTrait;
 

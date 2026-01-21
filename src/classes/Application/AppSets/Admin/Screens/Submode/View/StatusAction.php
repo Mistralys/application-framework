@@ -17,7 +17,7 @@ use UI_PropertiesGrid;
 /**
  * @property AppSet $record
  */
-class StatusAction extends BaseRecordStatusAction implements ViewActionInterface
+final class StatusAction extends BaseRecordStatusAction implements ViewActionInterface
 {
     use ViewActionTrait;
 

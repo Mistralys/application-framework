@@ -6,7 +6,7 @@ namespace Application\AppSets;
 
 use DBHelper_BaseFilterSettings;
 
-class AppSetsFilterSettings extends DBHelper_BaseFilterSettings
+final class AppSetsFilterSettings extends DBHelper_BaseFilterSettings
 {
     public const string SETTING_SEARCH = 'search';
 

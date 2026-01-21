@@ -11,7 +11,7 @@ use Application\Sets\Admin\AppSetScreenRights;
 use Application\Sets\Admin\Screens\Submode\SetsListSubmode;
 use UI;
 
-class AppSetsDevelMode extends BaseMode implements DevelModeInterface
+final class AppSetsDevelMode extends BaseMode implements DevelModeInterface
 {
     use DevelModeTrait;
 

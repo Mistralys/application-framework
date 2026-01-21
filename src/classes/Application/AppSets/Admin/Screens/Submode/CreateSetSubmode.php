@@ -14,7 +14,7 @@ use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 
-class CreateSetSubmode extends BaseRecordCreateSubmode implements SubmodeInterface
+final class CreateSetSubmode extends BaseRecordCreateSubmode implements SubmodeInterface
 {
     use SubmodeTrait;
 

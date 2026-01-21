@@ -11,7 +11,7 @@ use Application\Sets\Admin\Traits\ViewActionTrait;
 use DBHelper\Admin\Screens\Action\BaseRecordSettingsAction;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
-class SettingsAction extends BaseRecordSettingsAction implements ViewActionInterface
+final class SettingsAction extends BaseRecordSettingsAction implements ViewActionInterface
 {
     use ViewActionTrait;
 
