@@ -53,7 +53,7 @@ class AppFramework
     {
         return array(
             FolderInfo::factory($this->getClassesFolder())->requireExists(),
-            FolderInfo::factory(AppFactory::createDriver()->getClassesFolder())->requireExists()
+            FolderInfo::factory(AppFactory::createDriver()->getRootClassesFolder())->requireExists()
         );
     }
 
