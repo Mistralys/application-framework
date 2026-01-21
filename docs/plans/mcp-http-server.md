@@ -29,14 +29,34 @@ The current MCP server uses `StdioServerTransport` for CLI-based communication. 
 
 ## Implementation Steps
 
-### 1. Add HTTP Transport Mode to `FrameworkMCPServer`
+### 1. Refactor Server Architecture with Base Class
 
-**File:** `src/classes/Application/AI/Server/FrameworkMCPServer.php`
+**Files:**
+- `src/classes/Application/AI/Server/BaseMCPServer.php` - New base class with common functionality
+- `src/classes/Application/AI/Server/FrameworkMCPServer.php` - Refactor to extend base class (stdio only)
+- `src/classes/Application/AI/Server/FrameworkMCPServerHTTP.php` - New HTTP server implementation
 
-- Extend constructor to accept transport type parameter (`stdio` or `http`)
-- Add HTTP configuration properties (host, port, SSL context, default response mode)
-- Implement `startHttpTransport()` method using `StreamableHttpServerTransport`
-- Keep existing `startStdioTransport()` for CLI compatibility
+**Base Class (`BaseMCPServer`):**
+- Tool discovery and registration logic
+- Logging configuration
+- Command-line argument parsing (verbose flags, list-tools, etc.)
+- Common MCP server setup and configuration
+- Abstract methods for transport-specific initialization
+
+**Stdio Server (`FrameworkMCPServer`):**
+- Extends `BaseMCPServer`
+- Implements stdio transport using `StdioServerTransport`
+- Maintains current CLI-focused behavior
+- No authentication requirements
+
+**HTTP Server (`FrameworkMCPServerHTTP`):**
+- Extends `BaseMCPServer`
+- Implements HTTP transport using `StreamableHttpServerTransport`
+- HTTP configuration properties (host, port, SSL context)
+- Per-tool response mode detection (via `AIToolInterface`)
+- SSO authentication middleware integration
+- CORS and security configuration
+- Health check endpoints
 
 ### 2. Create Standalone `MCPServerWebBootstrap` Class
 
@@ -122,11 +142,31 @@ mcp-server-http.php
        ├─> UI mode enabled
        ├─> Authentication enabled
        ├─> Session: "appframework_mcp"
-       └─> FrameworkMCPServer (HTTP mode)
+       └─> FrameworkMCPServerHTTP (new class)
+            ├─> extends BaseMCPServer
             ├─> SSO Authentication Middleware
             ├─> StreamableHttpServerTransport
             │    └─> Per-tool response mode (via AIToolInterface)
             └─> EventStore (Redis/File)
+```
+
+### Class Hierarchy
+```
+BaseMCPServer (abstract)
+  ├─> Common functionality
+  │    ├─> Tool discovery
+  │    ├─> Logging setup
+  │    ├─> CLI argument parsing
+  │    └─> Server configuration
+  │
+  ├─> FrameworkMCPServer (stdio)
+  │    └─> StdioServerTransport
+  │
+  └─> FrameworkMCPServerHTTP (http)
+       ├─> StreamableHttpServerTransport
+       ├─> SSO Authentication
+       ├─> CORS Configuration
+       └─> Health Check Endpoints
 ```
 
 ## Open Questions
@@ -247,10 +287,12 @@ mcp-server-http.php
 ## Related Files
 
 ### Existing Files to Modify
-- `src/classes/Application/AI/Server/FrameworkMCPServer.php` - Add HTTP transport mode
+- `src/classes/Application/AI/Server/FrameworkMCPServer.php` - Refactor to extend `BaseMCPServer`
 - `src/classes/Application/AI/AIToolInterface.php` - Add response mode method
 
 ### New Files to Create
+- `src/classes/Application/AI/Server/BaseMCPServer.php` - Base class with common functionality
+- `src/classes/Application/AI/Server/FrameworkMCPServerHTTP.php` - HTTP server implementation
 - `src/classes/Application/Bootstrap/Screen/MCPServerWebBootstrap.php` - HTTP bootstrap
 - `mcp-server-http.php` - HTTP entry point
 - `src/classes/Application/AI/Server/MCPAuthenticationMiddleware.php` - SSO auth (placeholder for user implementation)
@@ -283,10 +325,12 @@ mcp-server-http.php
 3. **Meet with Operations Team** - Determine deployment architecture (standalone vs reverse proxy)
 4. **Decide Health Check Depth** - Define monitoring requirements with operations
 5. **Choose Configuration Strategy** - Environment variables, config file, or hybrid
-6. **Implement Core Changes** - Begin with `FrameworkMCPServer` HTTP transport mode
-7. **Create Bootstrap Class** - Implement `MCPServerWebBootstrap` with session support
-8. **Add Entry Point** - Create `mcp-server-http.php` with configuration loading
-9. **Testing Strategy** - Unit tests, integration tests, cluster deployment tests
+6. **Refactor Server Architecture** - Extract common functionality to `BaseMCPServer` base class
+7. **Update Stdio Server** - Refactor `FrameworkMCPServer` to extend base class
+8. **Implement HTTP Server** - Create `FrameworkMCPServerHTTP` with HTTP transport
+9. **Create Bootstrap Class** - Implement `MCPServerWebBootstrap` with session support
+10. **Add Entry Point** - Create `mcp-server-http.php` with configuration loading
+11. **Testing Strategy** - Unit tests, integration tests, cluster deployment tests
 
 ## Notes
 
@@ -310,5 +354,5 @@ mcp-server-http.php
 
 ---
 
-**Last Updated:** January 17, 2026  
+**Last Updated:** January 19, 2026  
 **Next Review:** After meetings with operations team and SSO integration design
