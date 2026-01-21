@@ -27,7 +27,7 @@ final class DefaultAppSet extends AppSet
             AppSetsCollection::COL_ALIAS => AppSetsCollection::DEFAULT_ALIAS,
             AppSetsCollection::COL_LABEL => t('Default Set'),
             AppSetsCollection::COL_DEFAULT_URL_NAME => WelcomeArea::URL_NAME,
-            AppSetsCollection::COL_URL_NAMES => AdminScreenIndex::getInstance()->getAdminAreaURLNames()
+            AppSetsCollection::COL_URL_NAMES => implode(',', AdminScreenIndex::getInstance()->getAdminAreaURLNames())
         );
     }
 
