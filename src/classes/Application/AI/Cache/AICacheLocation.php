@@ -33,7 +33,11 @@ class AICacheLocation extends BaseCacheLocation
 
     public function getByteSize(): int
     {
-        return $this->cacheFolder->getSize();
+        if($this->cacheFolder->exists() ) {
+            return $this->cacheFolder->getSize();
+        }
+
+        return 0;
     }
 
     public function getLabel(): string
