@@ -22,7 +22,7 @@ servers:
 # DOCUMENT GENERATION - To create documentation from codebase
 documents:
   -
-    description: 'Application Framework Structure'
+    description: 'Application Framework - Class File Structure'
     outputPath: framework-file-structure.md
     overwrite: true
     sources:
@@ -35,7 +35,17 @@ documents:
         renderFormat: ascii
         enabled: true
         showCharCount: true
-        maxDepth: 4
+        maxDepth: 6
+
+  -
+    description: 'Application Framework - Core System Overview'
+    outputPath: 'framework-core-system-overview.md'
+    sources:
+      - type: file
+        description: "Framework Documentation"
+        sourcePaths:
+          - docs/agents
+        filePattern: "*.md"
 
 ## ---------------------------------------------------------------
 ## DBHELPER
