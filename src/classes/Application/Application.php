@@ -855,7 +855,7 @@ class Application
      */
     public function getSets(): AppSetsCollection
     {
-        return AppSetsCollection::getInstance();
+        return AppFactory::createAppSets();
     }
 
     /**
