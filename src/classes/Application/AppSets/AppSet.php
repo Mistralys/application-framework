@@ -180,6 +180,8 @@ class AppSet extends DBHelper_BaseRecord
      */
     public function getEnabledAreas(bool $includeCore = true) : array
     {
+        $this->initEnabledAreas();
+
         $result = array();
 
         if ($includeCore) {
