@@ -249,36 +249,6 @@ class AppSet extends DBHelper_BaseRecord
     }
 
     /**
-     * Updates the set from form values from a set settings form.
-     * Note that the sets have to be saved after this operation.
-     *
-     * @param array<int|string, mixed> $formValues
-     */
-    public function updateFromForm(array $formValues) : void
-    {
-        $sets = AppSetsCollection::getInstance();
-        $driver = Application_Driver::getInstance();
-
-        if ($formValues[self::SETTING_ID] !== $this->id) {
-            $sets->handle_renameSet($this, $formValues[self::SETTING_ID]);
-            $this->id = $formValues[self::SETTING_ID];
-        }
-
-        $this->defaultArea = $driver->createArea($formValues['default_area']);
-
-        $this->enabled = array();
-
-        $areas = $driver->getAdminAreaObjects(false);
-        foreach ($areas as $area) {
-            if (ConvertHelper::string2bool($formValues['area_' . $area->getID()])) {
-                $this->enableArea($area);
-            }
-        }
-    }
-
-
-
-    /**
      * Enables a collection of areas at once.
      * @param AdminAreaInterface[] $areas
      * @return $this
