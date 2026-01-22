@@ -39,6 +39,8 @@ abstract class BaseChildCollection extends DBHelper_BaseCollection implements Ch
      */
     public function getParentRecord() : DBHelperRecordInterface
     {
+        $this->checkRecordPrerequisites();
+
         return $this->parentRecord;
     }
 
