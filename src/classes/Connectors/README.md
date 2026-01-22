@@ -1,4 +1,4 @@
-# Connectors: Connect to External APIs over HTTP
+# Module: Connectors - Connect to External APIs over HTTP
 
 ## Purpose
 

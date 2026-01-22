@@ -1,4 +1,4 @@
-# Core Module: Application Sets
+# Module: Application Sets
 
 ## Purpose
 

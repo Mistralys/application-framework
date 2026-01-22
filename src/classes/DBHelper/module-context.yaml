@@ -1,0 +1,42 @@
+## ---------------------------------------------------------------
+## DBHELPER
+## ---------------------------------------------------------------
+
+documents:
+-
+  description: 'DBHelper - Overview'
+  outputPath: 'modules/db-helper/overview.md'
+  sources:
+    - type: file
+      description: "DBHelper Overview"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+    - type: file
+      description: "DBHelper Documentation"
+      sourcePaths:
+        - Docs
+      filePattern: "*.md"
+
+-
+  description: 'DBHelper - Architecture'
+  outputPath: 'modules/db-helper/architecture.md'
+  sources:
+    - type: file
+      description: "Public Interfaces and DTOs"
+      sourcePaths:
+        - ./
+      filePattern: "*.php"
+      contains:
+        - "interface"
+        - "abstract class"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

@@ -19,6 +19,10 @@ servers:
       MCP_AUTOLOAD: "vendor/autoload.php"
       MCP_DIRECTORIES: "src/classes"
 
+# Import all module context files
+import:
+  - path: "src/classes/**/module-context.yaml"
+
 # DOCUMENT GENERATION - To create documentation from codebase
 documents:
   -
@@ -46,97 +50,3 @@ documents:
         sourcePaths:
           - docs/agents
         filePattern: "*.md"
-
-## ---------------------------------------------------------------
-## DBHELPER
-## ---------------------------------------------------------------
-
-  -
-    description: 'DBHelper - Overview'
-    outputPath: 'modules/db-helper/overview.md'
-    sources:
-      - type: file
-        description: "DBHelper Overview"
-        sourcePaths:
-          - src/classes/DBHelper/README.md
-        filePattern: "README.md"
-
-      - type: file
-        description: "DBHelper Documentation"
-        sourcePaths:
-          - src/classes/DBHelper/Docs
-        filePattern: "*.md"
-
-  -
-    description: 'DBHelper - Architecture'
-    outputPath: 'modules/db-helper/architecture.md'
-    sources:
-        - type: file
-          description: "Public Interfaces and DTOs"
-          sourcePaths:
-            - src/classes/DBHelper
-          filePattern: "*.php"
-          contains:
-            - "interface"
-            - "abstract class"
-          modifiers:
-            - name: php-content-filter
-              options:
-                    method_visibility: [public]
-                    keep_method_bodies: false
-                    keep_doc_comments: true
-                    exclude_methods:
-                      - __construct
-
-
-  ## ---------------------------------------------------------------
-  ## APPLICATION SETS
-  ## ---------------------------------------------------------------
-
-  -
-    description: 'Application Sets - Overview'
-    outputPath: 'modules/application-sets/overview.md'
-    sources:
-      - type: file
-        description: "Application Sets Overview"
-        sourcePaths:
-          - src/classes/Application/AppSets/README.md
-        filePattern: "README.md"
-
-  -
-    description: 'Application Sets - Architecture'
-    outputPath: 'modules/application-sets/architecture.md'
-    sources:
-      - type: file
-        description: "Public Class Signatures"
-        sourcePaths:
-          - src/classes/Application/AppSets/
-        excludePatterns:
-          - 'Admin/'
-        filePattern: "*.php"
-        modifiers:
-          - name: php-content-filter
-            options:
-              method_visibility: [public]
-              keep_method_bodies: false
-              keep_doc_comments: true
-              exclude_methods:
-                - __construct
-
-  -
-    description: 'Application Sets - Administration Interface'
-    outputPath: 'modules/application-sets/admin-interface.md'
-    sources:
-      - type: file
-        description: "Public Class Signatures"
-        sourcePaths:
-          - src/classes/Application/AppSets/Admin
-        filePattern: "*.php"
-        modifiers:
-          - name: php-content-filter
-            options:
-              method_visibility: [public]
-              keep_method_bodies: false
-              keep_doc_comments: true
-              exclude_methods:
-                - __construct
