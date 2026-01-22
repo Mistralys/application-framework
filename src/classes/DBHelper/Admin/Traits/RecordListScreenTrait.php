@@ -184,10 +184,22 @@ trait RecordListScreenTrait
 
         $this->filtersAdded = true;
 
-        $total = $this->filters->countUnfiltered();
-        if ($total > 0) {
+        if ($this->hasFilterSettings()) {
             $this->sidebar->addSeparator();
             $this->sidebar->addFilterSettings($this->filterSettings);
         }
+    }
+
+    private ?bool $filterSettingsEnabled = null;
+
+    public function hasFilterSettings() : bool
+    {
+        if(isset($this->filterSettingsEnabled)) {
+            return $this->filterSettingsEnabled;
+        }
+
+        $this->filterSettingsEnabled = $this->filters->countUnfiltered() > 0;
+
+        return $this->filterSettingsEnabled;
     }
 }
