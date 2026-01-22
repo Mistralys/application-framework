@@ -93,51 +93,51 @@ trait ButtonDecoratorTrait
         return $this;
     }
 
-    public function makeDangerous(): self
+    public function makeDangerous(bool $enabled=true): self
     {
-        $this->getButtonInstance()->makeDangerous();
+        $this->getButtonInstance()->makeDangerous($enabled);
         return $this;
     }
 
-    public function makePrimary(): self
+    public function makePrimary(bool $enabled=true): self
     {
-        $this->getButtonInstance()->makePrimary();
+        $this->getButtonInstance()->makePrimary($enabled);
         return $this;
     }
 
-    public function makeSuccess(): self
+    public function makeSuccess(bool $enabled=true): self
     {
-        $this->getButtonInstance()->makeSuccess();
+        $this->getButtonInstance()->makeSuccess($enabled);
         return $this;
     }
 
-    public function makeDeveloper(): self
+    public function makeDeveloper(bool $enabled=true): self
     {
-        $this->getButtonInstance()->makeDeveloper();
+        $this->getButtonInstance()->makeDeveloper($enabled);
         return $this;
     }
 
-    public function makeWarning(): self
+    public function makeWarning(bool $enabled=true): self
     {
-        $this->getButtonInstance()->makeWarning();
+        $this->getButtonInstance()->makeWarning($enabled);
         return $this;
     }
 
-    public function makeInfo(): self
+    public function makeInfo(bool $enabled=true): self
     {
-        $this->getButtonInstance()->makeInfo();
+        $this->getButtonInstance()->makeInfo($enabled);
         return $this;
     }
 
-    public function makeInverse(): self
+    public function makeInverse(bool $enabled=true): self
     {
-        $this->getButtonInstance()->makeInverse();
+        $this->getButtonInstance()->makeInverse($enabled);
         return $this;
     }
 
-    public function makeLayout(string $layoutID): self
+    public function makeLayout(string $layoutID, bool $enabled=true): self
     {
-        $this->getButtonInstance()->makeLayout($layoutID);
+        $this->getButtonInstance()->makeLayout($layoutID, $enabled);
         return $this;
     }
 

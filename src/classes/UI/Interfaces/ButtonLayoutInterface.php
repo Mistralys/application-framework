@@ -20,60 +20,68 @@ use UI\Traits\ButtonLayoutTrait;
  */
 interface ButtonLayoutInterface extends ActivatableInterface
 {
-    public const LAYOUT_DEFAULT = 'default';
-    public const LAYOUT_DEVELOPER = 'developer';
-    public const LAYOUT_WARNING = 'warning';
-    public const LAYOUT_INVERSE = 'inverse';
-    public const LAYOUT_SUCCESS = 'success';
-    public const LAYOUT_INFO = 'info';
-    public const LAYOUT_DANGER = 'danger';
-    public const LAYOUT_PRIMARY = 'primary';
-    public const LAYOUT_LINK = 'link';
+    public const string LAYOUT_DEFAULT = 'default';
+    public const string LAYOUT_DEVELOPER = 'developer';
+    public const string LAYOUT_WARNING = 'warning';
+    public const string LAYOUT_INVERSE = 'inverse';
+    public const string LAYOUT_SUCCESS = 'success';
+    public const string LAYOUT_INFO = 'info';
+    public const string LAYOUT_DANGER = 'danger';
+    public const string LAYOUT_PRIMARY = 'primary';
+    public const string LAYOUT_LINK = 'link';
 
     /**
      * Styles the button as a button for a dangerous operation, like deleting records.
      *
+     * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeDangerous() : self;
+    public function makeDangerous(bool $enable=true) : self;
 
     /**
+     * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makePrimary() : self;
+    public function makePrimary(bool $enable=true) : self;
 
     /**
+     * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeSuccess() : self;
+    public function makeSuccess(bool $enable=true) : self;
 
     /**
+     * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeDeveloper() : self;
+    public function makeDeveloper(bool $enable=true) : self;
 
     /**
+     * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeWarning() : self;
+    public function makeWarning(bool $enable=true) : self;
 
     /**
+     * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeInfo() : self;
+    public function makeInfo(bool $enable=true) : self;
 
     /**
+     * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeInverse() : self;
+    public function makeInverse(bool $enable=true) : self;
 
     /**
      * Sets the button's layout to the specified type.
      *
      * @param string $layoutID
+     * @param bool $enabled Can be used as a toggle. If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeLayout(string $layoutID) : self;
+    public function makeLayout(string $layoutID, bool $enabled=true) : self;
 
     /**
      * Sets the button's layout when it is active.
