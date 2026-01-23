@@ -582,12 +582,19 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     {
         $this->_onCreated($context);
     }
-    
+
+    /**
+     * Override to run any tasks needed after the record has
+     * been successfully created in the database.
+     *
+     * @param DBHelper_BaseCollection_OperationContext_Create $context
+     * @return void
+     */
     protected function _onCreated(DBHelper_BaseCollection_OperationContext_Create $context) : void
     {
         
     }
-    
+
     final public function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         $this->_onDeleted($context);
@@ -597,17 +604,27 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     {
         $this->_onBeforeDelete($context);
     }
-    
-   /**
-    * Can be extended to run any cleanup
-    * tasks that may be needed when the record
-    * has been deleted.
-    */
+
+    /**
+     * Override to run any tasks needed after the record has
+     * been successfully deleted from the database.
+     *
+     * @param DBHelper_BaseCollection_OperationContext_Delete $context
+     * @return void
+     */
     protected function _onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         
     }
 
+    /**
+     * Override to run any tasks needed before the record is
+     * deleted from the database, or to abort the deletion by
+     * throwing an exception.
+     *
+     * @param DBHelper_BaseCollection_OperationContext_Delete $context
+     * @return void
+     */
     protected function _onBeforeDelete(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
 
