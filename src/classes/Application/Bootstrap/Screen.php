@@ -10,6 +10,7 @@ use Application\AppFactory;
 use Application\Application;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\Session\Events\SessionInstantiatedEvent;
 use Application\Session\Events\UserAuthenticatedEvent;
 use AppUtils\ClassHelper;
@@ -119,7 +120,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
      * roles to be initialized, which require translation.
      *
      * @return void
-     * @throws Application_EventHandler_Exception
+     * @throws EventHandlingException
      * @throws Application_Exception
      * @throws UI_Exception
      * @throws FileHelper_Exception
@@ -232,7 +233,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         );
     }
 
-    private Application_EventHandler_EventableListener $authListener;
+    private EventableListener $authListener;
 
     private function handleEvent_userAuthenticated(UserAuthenticatedEvent $event) : void
     {

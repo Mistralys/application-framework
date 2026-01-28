@@ -5,6 +5,8 @@
  */
 
 use Application\Application;
+use Application\EventHandler\Event\EventListener;
+use Application\EventHandler\EventManager;
 use Application\Formable\Event\ClientFormRenderedEvent;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ArrayDataCollection;
@@ -715,7 +717,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
         $event = ClassHelper::requireObjectInstanceOf(
             ClientFormRenderedEvent::class,
-            Application_EventHandler::trigger(
+            EventManager::trigger(
                 self::EVENT_CLIENT_FORM_RENDERED,
                 array($this, $html),
                 ClientFormRenderedEvent::class
@@ -731,13 +733,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * rendering. It allows modifying the HTML sent to the client.
      *
      * @param callable $listener
-     * @return Application_EventHandler_Listener
+     * @return EventListener
      * @see self::createClientForm()
      * @see self::renderClientFormable()
      */
-    public static function onClientFormRendered(callable $listener) : Application_EventHandler_Listener
+    public static function onClientFormRendered(callable $listener) : EventListener
     {
-        return Application_EventHandler::addListener(
+        return EventManager::addListener(
             self::EVENT_CLIENT_FORM_RENDERED,
             $listener
         );

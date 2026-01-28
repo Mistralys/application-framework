@@ -28,7 +28,7 @@ class RegisterTagCollectionsEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'RegisterTagCollections';
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

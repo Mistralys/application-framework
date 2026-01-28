@@ -16,6 +16,7 @@ use Application\Admin\Screens\Events\BeforeSidebarHandledEvent;
 use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
 use Application\Admin\Screens\Events\ContentRenderedEvent;
 use Application\Admin\Screens\Events\SidebarHandledEvent;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
@@ -206,7 +207,7 @@ trait Application_Traits_Admin_Screen
 
     // region: Event handling
 
-    public function onBeforeActionsHandled(callable $listener) : Application_EventHandler_EventableListener
+    public function onBeforeActionsHandled(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             BeforeActionsHandledEvent::EVENT_NAME,
@@ -215,7 +216,7 @@ trait Application_Traits_Admin_Screen
     }
 
 
-    public function onSidebarHandled(callable $listener) : Application_EventHandler_EventableListener
+    public function onSidebarHandled(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             SidebarHandledEvent::EVENT_NAME,
@@ -223,7 +224,7 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    public function onBeforeSidebarHandled(callable $listener) : Application_EventHandler_EventableListener
+    public function onBeforeSidebarHandled(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             BeforeSidebarHandledEvent::EVENT_NAME,
@@ -231,7 +232,7 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    public function onBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener
+    public function onBreadcrumbHandled(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             BreadcrumbHandledEvent::EVENT_NAME,
@@ -239,7 +240,7 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    public function onBeforeBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener
+    public function onBeforeBreadcrumbHandled(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             BeforeBreadcrumbHandledEvent::EVENT_NAME,
@@ -247,7 +248,7 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    public function onActionsHandled(callable $listener) : Application_EventHandler_EventableListener
+    public function onActionsHandled(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             ActionsHandledEvent::EVENT_NAME,
@@ -255,7 +256,7 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    public function onContentRendered(callable $listener) : Application_EventHandler_EventableListener
+    public function onContentRendered(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             ContentRenderedEvent::EVENT_NAME,
@@ -263,7 +264,7 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    public function onBeforeContentRendered(callable $listener) : Application_EventHandler_EventableListener
+    public function onBeforeContentRendered(callable $listener) : EventableListener
     {
         return $this->addEventListener(
             BeforeContentRenderedEvent::EVENT_NAME,

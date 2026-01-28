@@ -30,7 +30,7 @@ class RegisterAppSettingsEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'RegisterAppSettings';
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

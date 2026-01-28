@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\EventHandler\OfflineEvents;
 
-use AppUtils\ClassHelper;
+use Application\EventHandler\Event\StandardEvent;
 use Mistralys\AppFrameworkDocs\DocumentationPages;
 
 /**
@@ -49,7 +49,7 @@ use Mistralys\AppFrameworkDocs\DocumentationPages;
  *
  * ## Class inheritance
  *
- * - Offline events must extend the regular event class, {@see Application_EventHandler_Event}.
+ * - Offline events must extend the regular event class, {@see StandardEvent}.
  * - Offline listeners must extend the class {@see BaseOfflineListener}.
  *
  * @package Application
@@ -60,6 +60,11 @@ use Mistralys\AppFrameworkDocs\DocumentationPages;
  */
 class OfflineEventsManager
 {
+    /**
+     * @var array<string,OfflineEventContainer[]> $triggeredEvents
+     */
+    private array $triggeredEvents = array();
+
     public function __construct()
     {
     }
@@ -75,6 +80,34 @@ class OfflineEventsManager
 
         $event->trigger();
 
+        if(!isset($this->triggeredEvents[$eventName])) {
+            $this->triggeredEvents[$eventName] = array();
+        }
+
+        $this->triggeredEvents[$eventName][] = $event;
+
         return $event;
+    }
+
+    public function wasEventTriggered(string $eventName): bool
+    {
+        return isset($this->triggeredEvents[$eventName]);
+    }
+
+    /**
+     * @return array<string,OfflineEventContainer[]>
+     */
+    public function getTriggeredEvents(): array
+    {
+        return $this->triggeredEvents;
+    }
+
+    /**
+     * @param string $eventName
+     * @return OfflineEventContainer[]
+     */
+    public function getEventsByName(string $eventName): array
+    {
+        return $this->triggeredEvents[$eventName] ?? array();
     }
 }

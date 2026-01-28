@@ -11,7 +11,7 @@ namespace Application\Environments\Events;
 
 use Application\Environments;
 use Application\Environments\Environment;
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 
 /**
  * Class for the {@see Environments::EVENT_ENVIRONMENT_ACTIVATED} event.
@@ -22,8 +22,15 @@ use Application_EventHandler_EventableEvent;
  *
  * @see Environment::onActivated
  */
-class EnvironmentDetected extends Application_EventHandler_EventableEvent
+class EnvironmentDetected extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'EnvironmentDetected';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function __construct(string $name, Environments $subject, array $args = array())
     {
         parent::__construct($name, $subject, $args);

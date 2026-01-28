@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents\Test;
 
-use Application_EventHandler_Event;
+use Application\EventHandler\Event\EventInterface;
+use Application\EventHandler\Event\StandardEvent;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use TestDriver\OfflineEvents\TestEvent;
 
@@ -22,7 +23,7 @@ class ListenerA extends BaseOfflineListener
      * @param mixed ...$args
      * @return void
      */
-    protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
+    protected function handleEvent(EventInterface $event, ...$args): void
     {
         boot_define(self::CONSTANT_NAME, true);
     }

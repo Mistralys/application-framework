@@ -10,6 +10,8 @@ declare(strict_types=1);
 use Application\AppFactory;
 use Application\Application;
 use Application\ConfigSettings\BaseConfigRegistry;
+use Application\EventHandler\Event\EventListener;
+use Application\EventHandler\EventManager;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
@@ -23,6 +25,7 @@ use AppUtils\PaginationHelper;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 use UI\ClientResourceCollection;
+use UI\Event\FormCreatedEvent;
 use UI\PaginationRenderer;
 use UI\SystemHint;
 use UI\TooltipInfo;
@@ -904,9 +907,9 @@ class UI
 
         $form = new UI_Form($this, $id, 'post', $defaultData);
 
-        if(Application_EventHandler::hasListener('FormCreated'))
+        if(EventManager::hasListener('FormCreated'))
         {
-            Application_EventHandler::trigger('FormCreated', array($form), UI_Event_FormCreated::class);
+            EventManager::trigger('FormCreated', array($form), FormCreatedEvent::class);
         }
 
         return $form;
@@ -1458,11 +1461,11 @@ class UI
      * before it is sent to the browser.
      *
      * @param callable $listener
-     * @return Application_EventHandler_Listener
+     * @return EventListener
      */
-    public static function onPageRendered(callable $listener) : Application_EventHandler_Listener
+    public static function onPageRendered(callable $listener) : EventListener
     {
-        return Application_EventHandler::addListener(
+        return EventManager::addListener(
             self::EVENT_PAGE_RENDERED,
             $listener
         );

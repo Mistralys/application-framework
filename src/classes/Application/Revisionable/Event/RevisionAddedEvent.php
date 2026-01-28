@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Event;
 
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\Storage\Event\Application_RevisionStorage_Event_RevisionAdded;
-use Application_EventHandler_EventableEvent;
 
-class RevisionAddedEvent extends Application_EventHandler_EventableEvent
+class RevisionAddedEvent extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'RevisionAdded';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function getRevisionable(): RevisionableInterface
     {
         return $this->getArgumentObject(0, RevisionableInterface::class);
@@ -40,9 +46,9 @@ class RevisionAddedEvent extends Application_EventHandler_EventableEvent
         return $this->getOriginalEvent()->getOwnerName();
     }
 
-    public function getOriginalEvent(): Application_RevisionStorage_Event_RevisionAdded
+    public function getOriginalEvent(): RevisionAddedEvent
     {
-        return $this->getArgumentObject(1, Application_RevisionStorage_Event_RevisionAdded::class);
+        return $this->getArgumentObject(1, RevisionAddedEvent::class);
     }
 
     public function isCancellable(): bool

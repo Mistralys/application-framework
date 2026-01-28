@@ -24,6 +24,11 @@ class BeforeContentRenderedEvent extends BaseScreenEvent
 {
     public const string EVENT_NAME = 'BeforeContentRendered';
 
+    public function getName(): string
+    {
+        return self::EVENT_NAME;
+    }
+
     private ?string $content = null;
 
     public function getRenderer() : UI_Themes_Theme_ContentRenderer

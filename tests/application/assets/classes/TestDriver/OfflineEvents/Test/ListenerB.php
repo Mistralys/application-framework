@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents\Test;
 
+use Application\EventHandler\Event\EventInterface;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use TestDriver\OfflineEvents\TestEvent;
 
@@ -21,7 +22,7 @@ class ListenerB extends BaseOfflineListener
      * @param mixed ...$args
      * @return void
      */
-    protected function handleEvent($event, ...$args): void
+    protected function handleEvent(EventInterface $event, ...$args): void
     {
         $value = $args[0] ?? 'unknown';
 

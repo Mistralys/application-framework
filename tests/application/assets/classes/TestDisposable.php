@@ -2,11 +2,12 @@
 
 use Application\Disposables\DisposableInterface;
 use Application\Disposables\DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait;
 
 class TestDisposable implements DisposableInterface
 {
     use DisposableTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
 
     public const EVENT_EVENT_TRIGGERED = 'EventTriggered';

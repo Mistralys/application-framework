@@ -10,6 +10,8 @@ use Application\AppFactory;
 use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
 use Application\Disposables\DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableListener;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper\BaseCollection\DBHelperCollectionException;
@@ -41,7 +43,7 @@ use DBHelper\Traits\BeforeCreateEventTrait;
 abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 {
     use DisposableTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
     use BeforeCreateEventTrait;
     use AfterRecordCreatedEventTrait;
@@ -703,17 +705,17 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
     // region: Event handling
 
-    final public function onBeforeCreateRecord(callable $callback) : Application_EventHandler_EventableListener
+    final public function onBeforeCreateRecord(callable $callback) : EventableListener
     {
         return $this->addEventListener(DBHelperCollectionInterface::EVENT_BEFORE_CREATE_RECORD, $callback);
     }
 
-    final public function onAfterCreateRecord(callable $callback) : Application_EventHandler_EventableListener
+    final public function onAfterCreateRecord(callable $callback) : EventableListener
     {
         return $this->addEventListener(DBHelperCollectionInterface::EVENT_AFTER_CREATE_RECORD, $callback);
     }
 
-    final public function onAfterDeleteRecord(callable $callback) : Application_EventHandler_EventableListener
+    final public function onAfterDeleteRecord(callable $callback) : EventableListener
     {
         return $this->addEventListener(DBHelperCollectionInterface::EVENT_AFTER_DELETE_RECORD, $callback);
     }

@@ -6,6 +6,9 @@
 
 declare(strict_types=1);
 
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\FilterCriteria\Events\ApplyFiltersEvent;
 use Application\FilterCriteria\FilterCriteriaException;
 use Application\Interfaces\FilterCriteriaInterface;
@@ -24,12 +27,12 @@ abstract class Application_FilterCriteria
     implements
     Application_Interfaces_Loggable,
     Application_Interfaces_Instanceable,
-    Application_Interfaces_Eventable,
+    EventableInterface,
     FilterCriteriaInterface
 {
     use Application_Traits_Loggable;
     use Application_Traits_Instanceable;
-    use Application_Traits_Eventable;
+    use EventableTrait;
 
     public const int ERROR_INVALID_SORTING_ORDER = 710003;
     public const int ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
@@ -509,7 +512,7 @@ abstract class Application_FilterCriteria
         $this->triggerEvent(self::EVENT_APPLY_FILTERS, array($this), ApplyFiltersEvent::class);
     }
 
-    public function onApplyFilters(callable $listener) : Application_EventHandler_EventableListener
+    public function onApplyFilters(callable $listener) : EventableListener
     {
         return $this->addEventListener(self::EVENT_APPLY_FILTERS, $listener);
     }

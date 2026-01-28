@@ -7,8 +7,8 @@
 declare(strict_types=1);
 
 namespace Application\Disposables;
-use Application_EventHandler_EventableListener;
-use Application_Interfaces_Eventable;
+use Application\EventHandler\Eventables\EventableListener;
+use Application\EventHandler\Eventables\EventableInterface;
 
 /**
  * Interface for objects that can be disposed of, freeing up resources.
@@ -22,7 +22,7 @@ use Application_Interfaces_Eventable;
  * @package Application
  * @subpackage Disposables
  */
-interface DisposableInterface extends Application_Interfaces_Eventable
+interface DisposableInterface extends EventableInterface
 {
     public const string EVENT_DISPOSED = 'Disposed';
 
@@ -30,7 +30,7 @@ interface DisposableInterface extends Application_Interfaces_Eventable
 
     public function isDisposed(): bool;
 
-    public function onDisposed(callable $callback): Application_EventHandler_EventableListener;
+    public function onDisposed(callable $callback): EventableListener;
 
     public function getIdentification(): string;
 

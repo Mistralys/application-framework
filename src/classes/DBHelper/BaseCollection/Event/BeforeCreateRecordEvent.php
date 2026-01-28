@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace DBHelper\BaseCollection\Event;
 
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
-class BeforeCreateRecordEvent extends Application_EventHandler_EventableEvent
+class BeforeCreateRecordEvent extends BaseEventableEvent
 {
     public function getCollection() : DBHelperCollectionInterface
     {

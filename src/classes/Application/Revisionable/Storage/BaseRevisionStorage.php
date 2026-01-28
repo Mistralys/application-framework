@@ -19,12 +19,12 @@ use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Revisionable\Storage\Copy\BaseRevisionCopy;
-use Application\Revisionable\Storage\Event\Application_RevisionStorage_Event_RevisionAdded;
+use Application\Revisionable\Storage\Event\RevisionAddedEvent;
 use Application\Revisionable\Storage\Event\RevisionSelectedEvent;
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use Application_FilterCriteria_RevisionableRevisions;
-use Application_Interfaces_Eventable;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -45,10 +45,10 @@ use DateTime;
 abstract class BaseRevisionStorage
     implements
     ArrayAccess,
-    Application_Interfaces_Eventable,
+    EventableInterface,
     DisposableInterface
 {
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
     use DisposableTrait;
 
@@ -1392,7 +1392,7 @@ abstract class BaseRevisionStorage
         $this->triggerEvent(
             self::EVENT_REVISION_ADDED,
             array($number, $timestamp, $ownerID, $ownerName, (string)$comments),
-            Application_RevisionStorage_Event_RevisionAdded::class
+            RevisionAddedEvent::class
         );
     }
 
@@ -1400,10 +1400,10 @@ abstract class BaseRevisionStorage
      * The callback gets the event instance as single parameter.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
-     * @see Application_RevisionStorage_Event_RevisionAdded
+     * @return EventableListener
+     * @see RevisionAddedEvent
      */
-    public function onRevisionAdded(callable $callback): Application_EventHandler_EventableListener
+    public function onRevisionAdded(callable $callback): EventableListener
     {
         return $this->addEventListener(self::EVENT_REVISION_ADDED, $callback);
     }
@@ -1475,7 +1475,7 @@ abstract class BaseRevisionStorage
         $this->staticColumns = array();
     }
 
-    public function onRevisionSelected(callable $callback): Application_EventHandler_EventableListener
+    public function onRevisionSelected(callable $callback): EventableListener
     {
         return $this->addEventListener(RevisionSelectedEvent::EVENT_NAME, $callback);
     }

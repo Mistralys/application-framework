@@ -7,7 +7,7 @@ namespace DBHelper\Interfaces;
 use Application\Collection\IntegerCollectionItemInterface;
 use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\Disposables\DisposableInterface;
 use Application_Users_User;
 use AppUtils\ConvertHelper_Exception;
@@ -259,9 +259,9 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * NOTE: The callback gets the event instance as sole argument.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onKeyModified(callable $callback) : Application_EventHandler_EventableListener;
+    public function onKeyModified(callable $callback) : EventableListener;
 
     /**
      * This is called once when the record has been created,

@@ -8,8 +8,9 @@ declare(strict_types=1);
 
 namespace Application\Session\Events;
 
+use Application\EventHandler\Event\EventInterface;
+use Application\EventHandler\Event\StandardEvent;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
-use Application_EventHandler_Event;
 use AppUtils\ClassHelper;
 
 /**
@@ -25,7 +26,7 @@ abstract class BaseSessionInstantiatedListener extends BaseOfflineListener
         return SessionInstantiatedEvent::EVENT_NAME;
     }
 
-    protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
+    protected function handleEvent(EventInterface $event, ...$args): void
     {
         $this->handleSessionInstantiated(
             ClassHelper::requireObjectInstanceOf(

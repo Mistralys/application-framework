@@ -10,7 +10,7 @@ class PriorityTestEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'PriorityTest';
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

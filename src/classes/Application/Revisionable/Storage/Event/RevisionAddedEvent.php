@@ -3,15 +3,22 @@
 declare(strict_types=1);
 
 namespace Application\Revisionable\Storage\Event;
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 
-class Application_RevisionStorage_Event_RevisionAdded extends Application_EventHandler_EventableEvent
+class RevisionAddedEvent extends BaseEventableEvent
 {
     const int ARG_NUMBER = 0;
     const int ARG_TIMESTAMP = 1;
     const int ARG_OWNER_ID = 2;
     const int ARG_OWNER_NAME = 3;
     const int ARG_COMMENTS = 4;
+
+    public const string EVENT_NAME = 'RevisionAdded';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
 
     public function getNumber(): int
     {

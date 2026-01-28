@@ -21,6 +21,11 @@ class SidebarHandledEvent extends BaseScreenEvent
 {
     public const string EVENT_NAME = 'SidebarHandled';
 
+    public function getName(): string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function getSidebar() : UI_Page_Sidebar
     {
         return $this->getScreen()->getSidebar();

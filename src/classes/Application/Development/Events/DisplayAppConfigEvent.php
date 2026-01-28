@@ -32,7 +32,7 @@ class DisplayAppConfigEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'DisplayAppConfig';
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

@@ -34,7 +34,7 @@ class SessionInstantiatedEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'SessionInstantiated';
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

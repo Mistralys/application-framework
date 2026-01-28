@@ -10,7 +10,7 @@ class TestEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'Test';
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

@@ -7,6 +7,8 @@
 declare(strict_types=1);
 
 use Application\Application;
+use Application\Driver\Events\DriverInstantiatedEvent;
+use Application\EventHandler\EventManager;
 use AppLocalize\Localization;
 use AppLocalize\Localization\LocalizationException;
 use AppLocalize\Localization_Scanner_StringHash;
@@ -73,7 +75,7 @@ class Application_Localization
     /**
      * Initializes the localization layer during boot.
      *
-     * @throws Application_EventHandler_Exception
+     * @throws EventHandlingException
      * @throws Application_Exception
      * @throws UI_Exception
      * @throws FileHelper_Exception
@@ -96,7 +98,7 @@ class Application_Localization
         
         // add an event handler for when the driver object
         // is instantiated.
-        Application_EventHandler::addListener(
+        EventManager::addListener(
             Application::EVENT_DRIVER_INSTANTIATED,
             array(self::class, 'handle_driverInstantiated')
         );
@@ -167,9 +169,9 @@ class Application_Localization
     * driver's version number. This can only be retrieved once it has
     * been instantiated.
     * 
-    * @param Application_EventHandler_Event_DriverInstantiated $event
+    * @param DriverInstantiatedEvent $event
     */
-    public static function handle_driverInstantiated(Application_EventHandler_Event_DriverInstantiated $event) : void
+    public static function handle_driverInstantiated(DriverInstantiatedEvent $event) : void
     {
         self::initCacheKey($event->getDriver());
     }

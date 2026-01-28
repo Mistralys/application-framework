@@ -10,8 +10,8 @@ use Application\Admin\Screens\Events\BeforeContentRenderedEvent;
 use Application\Admin\Screens\Events\ContentRenderedEvent;
 use Application\Interfaces\AllowableInterface;
 use Application_Admin_Area;
-use Application_EventHandler_EventableListener;
-use Application_Interfaces_Eventable;
+use Application\EventHandler\Eventables\EventableListener;
+use Application\EventHandler\Eventables\EventableInterface;
 use Application_Interfaces_Formable;
 use Application_Interfaces_Loggable;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
@@ -49,7 +49,7 @@ interface AdminScreenInterface
     extends
     Application_Interfaces_Formable,
     Application_Interfaces_Loggable,
-    Application_Interfaces_Eventable,
+    EventableInterface,
     ScreenAccessInterface,
     AllowableInterface,
     StringPrimaryRecordInterface
@@ -355,12 +355,12 @@ interface AdminScreenInterface
     public function getBreadcrumb() : UI_Page_Breadcrumb;
 
 
-    public function onBeforeActionsHandled(callable $listener) : Application_EventHandler_EventableListener;
-    public function onSidebarHandled(callable $listener) : Application_EventHandler_EventableListener;
-    public function onBeforeSidebarHandled(callable $listener) : Application_EventHandler_EventableListener;
-    public function onBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener;
-    public function onBeforeBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener;
-    public function onActionsHandled(callable $listener) : Application_EventHandler_EventableListener;
+    public function onBeforeActionsHandled(callable $listener) : EventableListener;
+    public function onSidebarHandled(callable $listener) : EventableListener;
+    public function onBeforeSidebarHandled(callable $listener) : EventableListener;
+    public function onBreadcrumbHandled(callable $listener) : EventableListener;
+    public function onBeforeBreadcrumbHandled(callable $listener) : EventableListener;
+    public function onActionsHandled(callable $listener) : EventableListener;
 
     /**
      * Listen to when the screen has finished rendering its content.
@@ -373,9 +373,9 @@ interface AdminScreenInterface
      * check if the screen had any content to render.
      *
      * @param callable $listener
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onContentRendered(callable $listener) : Application_EventHandler_EventableListener;
+    public function onContentRendered(callable $listener) : EventableListener;
 
     /**
      * Listen to when the screen is getting ready to render
@@ -398,7 +398,7 @@ interface AdminScreenInterface
      * selection code to not be duplicated across all screens that need it.
      *
      * @param callable $listener
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onBeforeContentRendered(callable $listener) : Application_EventHandler_EventableListener;
+    public function onBeforeContentRendered(callable $listener) : EventableListener;
 }

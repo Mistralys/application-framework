@@ -1,31 +1,29 @@
 <?php
 /**
- * File containing the class {@Application_EventHandler_EventableEvent}.
- *
  * @package Application
  * @subpackage EventHandler
- * @see Application_EventHandler_EventableEvent
  */
 
 declare(strict_types=1);
 
+namespace Application\EventHandler\Eventables;
+
+use Application\EventHandler\Event\BaseEvent;
+
 /**
  * Eventable-specific event class which extends the base event class:
- * it stores an instance of the owner object, and adds the `getSubject()`
+ * it stores an instance of the owner object and adds the `getSubject()`
  * method to retrieve it.
  *
  * @package Application
  * @subpackage EventHandler
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see Application_Traits_Eventable::createEvent()
+ * @see EventableTrait::createEvent()
  */
-class Application_EventHandler_EventableEvent extends Application_EventHandler_Event
+abstract class BaseEventableEvent extends BaseEvent implements EventableEventInterface
 {
-    /**
-     * @var object
-     */
-    protected $subject;
+    protected object $subject;
 
     public function __construct(string $name, object $subject, array $args = array())
     {
@@ -34,7 +32,7 @@ class Application_EventHandler_EventableEvent extends Application_EventHandler_E
         $this->subject = $subject;
     }
 
-    public function getSubject() : object
+    public function getSubject(): object
     {
         return $this->subject;
     }

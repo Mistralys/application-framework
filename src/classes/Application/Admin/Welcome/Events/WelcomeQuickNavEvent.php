@@ -25,7 +25,7 @@ class WelcomeQuickNavEvent extends BaseOfflineEvent
 {
     public const string EVENT_NAME = 'WelcomeQuickNav';
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

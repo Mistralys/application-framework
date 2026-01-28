@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace TestApplication;
 
-use Application_Interfaces_Eventable;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 
-class TestEventable implements Application_Interfaces_Eventable
+class TestEventable implements EventableInterface
 {
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
 
     public function getLogIdentifier(): string

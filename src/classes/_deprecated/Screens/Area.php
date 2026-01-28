@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Application\Admin\Area\Events\UIHandlingCompleteEvent;
 use Application\Admin\BaseArea;
+use Application\EventHandler\EventManager;
 use Application\Interfaces\Admin\AdminActionInterface;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminModeInterface;
@@ -128,7 +129,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton impleme
         $this->handleTabs($this->ui->createTabs('page-content-tabs'));
         $this->handleQuickNavigation($this->createQuickNav());
 
-        Application_EventHandler::trigger(
+        EventManager::trigger(
             UIHandlingCompleteEvent::EVENT_NAME,
             array($this),
             UIHandlingCompleteEvent::class

@@ -9,6 +9,8 @@ declare(strict_types=1);
 use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
 use Application\Disposables\DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableListener;
 use AppUtils\ConvertHelper;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\BaseRecord\BaseRecordException;
@@ -29,7 +31,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
 {
     use Application_Traits_Loggable;
     use DisposableTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use RecordKeyHandlersTrait;
 
     public const int ERROR_RECORD_DOES_NOT_EXIST = 13301;
@@ -573,7 +575,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
         );
     }
 
-    public function onKeyModified(callable $callback) : Application_EventHandler_EventableListener
+    public function onKeyModified(callable $callback) : EventableListener
     {
         return $this->addEventListener(KeyModifiedEvent::EVENT_NAME, $callback);
     }

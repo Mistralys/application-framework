@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Application\Changelog\Event;
 
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 
-class ChangelogCommittedEvent extends Application_EventHandler_EventableEvent
+class ChangelogCommittedEvent extends BaseEventableEvent
 {
     public const string EVENT_NAME = 'ChangelogCommitted';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
 }

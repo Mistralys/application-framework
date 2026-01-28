@@ -21,6 +21,11 @@ class BeforeBreadcrumbHandledEvent extends BaseScreenEvent
 {
     public const string EVENT_NAME = 'BeforeBreadcrumbHandled';
 
+    public function getName(): string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function getBreadcrumb() : UI_Page_Breadcrumb
     {
         return $this->getScreen()->getBreadcrumb();

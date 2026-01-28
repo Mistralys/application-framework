@@ -9,6 +9,8 @@ declare(strict_types=1);
 use Application\AppFactory;
 use Application\AppFactory\AppFactoryException;
 use Application\Application;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\Session\Events\BeforeLogOutEvent;
 use Application\Session\Events\SessionStartedEvent;
 use Application\Session\Events\UserAuthenticatedEvent;
@@ -34,7 +36,7 @@ use function AppUtils\parseURL;
 abstract class Application_Session_Base implements Application_Session
 {
     use Application_Traits_Loggable;
-    use Application_Traits_Eventable;
+    use EventableTrait;
 
     public const ERROR_ADMIN_RIGHTS_PRESET_MISSING = 22201;
     public const ERROR_AUTH_DID_NOT_RETURN_USER = 22205;
@@ -695,9 +697,9 @@ abstract class Application_Session_Base implements Application_Session
      * 1) The event instance, {@see UserAuthenticatedEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onUserAuthenticated(callable $callback) : Application_EventHandler_EventableListener
+    public function onUserAuthenticated(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_USER_AUTHENTICATED, $callback);
     }
@@ -711,9 +713,9 @@ abstract class Application_Session_Base implements Application_Session
      * 1) The event instance, {@see BeforeLogOutEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onBeforeLogOut(callable $callback) : Application_EventHandler_EventableListener
+    public function onBeforeLogOut(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_BEFORE_LOG_OUT, $callback);
     }
@@ -727,9 +729,9 @@ abstract class Application_Session_Base implements Application_Session
      * 1) The event instance, {@see SessionStartedEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onSessionStarted(callable $callback) : Application_EventHandler_EventableListener
+    public function onSessionStarted(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_STARTED, $callback);
     }

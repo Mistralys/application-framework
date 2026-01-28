@@ -67,7 +67,7 @@ class EventClassFinder extends BaseClassLoaderCollectionMulti implements Applica
             return null;
         }
 
-        return new $class();
+        return new $class('StubEventName');
     }
 
     public function getInstanceOfClassName(): string

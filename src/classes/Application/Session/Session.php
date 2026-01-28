@@ -10,6 +10,8 @@
 declare(strict_types=1);
 
 use Application\Application;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableListener;
 
 /**
  * Interface for application session handling classes.
@@ -23,7 +25,7 @@ use Application\Application;
  *
  * @see Application_Bootstrap_Screen::initSession()
  */
-interface Application_Session extends Application_Interfaces_Eventable
+interface Application_Session extends EventableInterface
 {
     public function getID() : string;
 
@@ -171,9 +173,9 @@ interface Application_Session extends Application_Interfaces_Eventable
      * 1) The event instance, {@see UserAuthenticatedEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onUserAuthenticated(callable $callback) : Application_EventHandler_EventableListener;
+    public function onUserAuthenticated(callable $callback) : EventableListener;
 
     /**
      * Adds a listener for the {@see self::EVENT_BEFORE_LOG_OUT} event,
@@ -184,9 +186,9 @@ interface Application_Session extends Application_Interfaces_Eventable
      * 1) The event instance, {@see BeforeLogOutEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onBeforeLogOut(callable $callback) : Application_EventHandler_EventableListener;
+    public function onBeforeLogOut(callable $callback) : EventableListener;
 
     /**
      * Adds a listener for the {@see self::EVENT_STARTED} event,
@@ -197,9 +199,9 @@ interface Application_Session extends Application_Interfaces_Eventable
      * 1) The event instance, {@see SessionStartedEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onSessionStarted(callable $callback) : Application_EventHandler_EventableListener;
+    public function onSessionStarted(callable $callback) : EventableListener;
 
     /**
      * Starts the session. It is then available, but no user has yet

@@ -6,6 +6,8 @@ use Application\AppFactory\ClassCacheHandler;
 use Application\Application;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
+use Application\EventHandler\EventManager;
+use Application\Events\SystemShutDownEvent;
 use AppUtils\BaseException;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper\FileInfo\ExtensionClassRegistry;
@@ -539,12 +541,12 @@ class Application_Bootstrap
 
         Application_RequestLog::autoWriteLog();
 
-        if(Application_EventHandler::hasListener(Application::EVENT_SYSTEM_SHUTDOWN) && Application_Driver::isInitialized())
+        if(EventManager::hasListener(Application::EVENT_SYSTEM_SHUTDOWN) && Application_Driver::isInitialized())
         {
-            Application_EventHandler::trigger(
+            EventManager::trigger(
                 Application::EVENT_SYSTEM_SHUTDOWN,
                 array(Application_Driver::getInstance()),
-                Application_EventHandler_Event_SystemShutDown::class
+                SystemShutDownEvent::class
             );
         }
     }

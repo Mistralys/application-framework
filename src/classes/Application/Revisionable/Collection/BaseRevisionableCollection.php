@@ -11,9 +11,9 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\Storage\BaseDBCollectionStorage;
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use Application_StateHandler_State;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 use Application_User;
 use AppUtils\ClassHelper;
@@ -36,7 +36,7 @@ abstract class BaseRevisionableCollection
     RevisionableCollectionInterface
 {
     use Application_Traits_Loggable;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use DisposableTrait;
     use DBHelper\Traits\BeforeCreateEventTrait;
     use DBHelper\Traits\AfterRecordCreatedEventTrait;
@@ -722,7 +722,7 @@ abstract class BaseRevisionableCollection
         return false;
     }
 
-    final public function onBeforeCreateRecord(callable $callback): Application_EventHandler_EventableListener
+    final public function onBeforeCreateRecord(callable $callback): EventableListener
     {
         return $this->addEventListener(
             DBHelperCollectionInterface::EVENT_BEFORE_CREATE_RECORD,
@@ -730,7 +730,7 @@ abstract class BaseRevisionableCollection
         );
     }
 
-    final public function onAfterCreateRecord(callable $callback): Application_EventHandler_EventableListener
+    final public function onAfterCreateRecord(callable $callback): EventableListener
     {
         return $this->addEventListener(
             DBHelperCollectionInterface::EVENT_AFTER_CREATE_RECORD,
@@ -743,7 +743,7 @@ abstract class BaseRevisionableCollection
      * @inheritDoc
      * @throws RevisionableException {@see RevisionableException::ERROR_CANNOT_DELETE_RECORD_DIRECTLY}
      */
-    final public function onAfterDeleteRecord(callable $callback): Application_EventHandler_EventableListener
+    final public function onAfterDeleteRecord(callable $callback): EventableListener
     {
         throw new RevisionableException(
             'Revisionables cannot be deleted directly',

@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\EventHandler\OfflineEvents;
 
 use Application\EventHandler\OfflineEvents\Index\EventIndex;
-use Application_EventHandler;
+use Application\EventHandler\EventManager;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use Throwable;
@@ -137,7 +137,7 @@ class OfflineEventContainer
         $listeners = $this->getListeners();
 
         foreach ($listeners as $listener) {
-            Application_EventHandler::addListener(
+            EventManager::addListener(
                 $this->triggerName,
                 $listener->getCallable(),
                 $this->getEventName()
@@ -146,7 +146,7 @@ class OfflineEventContainer
 
         $this->triggeredEvent = ClassHelper::requireObjectInstanceOf(
             OfflineEventInterface::class,
-            Application_EventHandler::trigger(
+            EventManager::trigger(
                 $this->triggerName,
                 $this->args,
                 $this->eventClass

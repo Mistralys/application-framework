@@ -12,9 +12,9 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\Environment;
 use Application\Environments\EnvironmentException;
 use Application\Environments\Events\EnvironmentDetected;
-use Application_EventHandler_EventableListener;
-use Application_Interfaces_Eventable;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableListener;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 use AppUtils\BaseException;
 use Throwable;
@@ -29,9 +29,9 @@ use Throwable;
  * @subpackage Environments
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Environments implements Application_Interfaces_Eventable
+class Environments implements EventableInterface
 {
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
 
     public const int ERROR_NO_ENVIRONMENTS_REGISTERED = 47601;
@@ -131,9 +131,9 @@ class Environments implements Application_Interfaces_Eventable
      * method.
      *
      * @param callable $callback Gets an instance of {@see EnvironmentDetected} as sole parameter.
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onEnvironmentDetected(callable $callback): Application_EventHandler_EventableListener
+    public function onEnvironmentDetected(callable $callback): EventableListener
     {
         return $this->addEventListener(self::EVENT_ENVIRONMENT_DETECTED, $callback);
     }

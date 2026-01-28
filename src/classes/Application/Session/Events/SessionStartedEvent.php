@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Session\Events;
 
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use Application_Session;
 
 /**
@@ -16,8 +16,15 @@ use Application_Session;
  * @package Application
  * @subpackage Session
  */
-class SessionStartedEvent extends Application_EventHandler_EventableEvent
+class SessionStartedEvent extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'SessionStarted';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function getSession() : Application_Session
     {
         return $this->getArgumentObject(0, Application_Session::class);

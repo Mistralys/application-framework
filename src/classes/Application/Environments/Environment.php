@@ -18,9 +18,9 @@ use Application_Environments_Environment_Requirement_CLI;
 use Application_Environments_Environment_Requirement_HostNameContains;
 use Application_Environments_Environment_Requirement_LocalTest;
 use Application_Environments_Environment_Requirement_Windows;
-use Application_EventHandler_EventableListener;
-use Application_Interfaces_Eventable;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableListener;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 use AppUtils\FileHelper;
 
@@ -37,9 +37,9 @@ use AppUtils\FileHelper;
  *
  * @see Environments
  */
-class Environment implements Application_Interfaces_Eventable
+class Environment implements EventableInterface
 {
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
 
     public const int ERROR_INCLUDE_FILE_NOT_FOUND = 143901;
@@ -156,9 +156,9 @@ class Environment implements Application_Interfaces_Eventable
      * event, which is triggered when this environment has been detected and activated.
      *
      * @param callable $callback Gets an instance of {@see EnvironmentActivated} as sole parameter.
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onActivated(callable $callback): Application_EventHandler_EventableListener
+    public function onActivated(callable $callback): EventableListener
     {
         return $this->addEventListener(Environments::EVENT_ENVIRONMENT_ACTIVATED, $callback);
     }
@@ -169,9 +169,9 @@ class Environment implements Application_Interfaces_Eventable
      * been loaded.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onIncludesLoaded(callable $callback): Application_EventHandler_EventableListener
+    public function onIncludesLoaded(callable $callback): EventableListener
     {
         return $this->addEventListener(Environments::EVENT_INCLUDES_LOADED, $callback);
     }

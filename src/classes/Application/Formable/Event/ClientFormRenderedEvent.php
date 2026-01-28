@@ -12,6 +12,11 @@ class ClientFormRenderedEvent extends BaseFormableEvent implements HTMLProcessin
 
     public const string EVENT_NAME = 'ClientFormRendered';
 
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     protected function getHTMLArgumentIndex(): int
     {
         return 1;

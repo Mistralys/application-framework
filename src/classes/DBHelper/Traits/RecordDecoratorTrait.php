@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace DBHelper\Traits;
 
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use Application_Users_User;
 use AppUtils\Microtime;
 use DateTime;
@@ -187,7 +187,7 @@ trait RecordDecoratorTrait
         return $this->getDecoratedRecord()->getFormValues();
     }
 
-    public function onKeyModified(callable $callback): Application_EventHandler_EventableListener
+    public function onKeyModified(callable $callback): EventableListener
     {
         return $this->getDecoratedRecord()->onKeyModified($callback);
     }

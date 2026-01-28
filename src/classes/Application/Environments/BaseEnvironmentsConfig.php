@@ -17,7 +17,7 @@ use Application\Environments\EnvironmentSetup\BaseEnvironmentConfig;
 use Application\Environments\Events\IncludesLoaded;
 use Application\SourceFolders\SourceFoldersManager;
 use Application_Bootstrap;
-use Application_EventHandler;
+use Application\EventHandler\EventManager;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper\FolderInfo;
 
@@ -182,7 +182,7 @@ abstract class BaseEnvironmentsConfig
             );
         }
 
-        Application_EventHandler::addListener(
+        EventManager::addListener(
             Application::EVENT_DRIVER_INSTANTIATED,
             $this->triggerDriverInstantiated(...)
         );

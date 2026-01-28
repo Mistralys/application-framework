@@ -7,7 +7,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\EventHandler\EventManager;use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\User\LayoutWidths;
 use Application\Users\Admin\Screens\UserSettingsArea;
 use AppUtils\ClassHelper;
@@ -260,11 +260,11 @@ SAME SQL STATEMENT: (<?php echo count($duplicates) ?>)
             $output
         );
 
-        if(!Application_EventHandler::hasListener(UI::EVENT_PAGE_RENDERED)) {
+        if(!EventManager::hasListener(UI::EVENT_PAGE_RENDERED)) {
             return $html;
         }
 
-        $event = Application_EventHandler::trigger(
+        $event = EventManager::trigger(
             UI::EVENT_PAGE_RENDERED,
             array(
                 $this->page,

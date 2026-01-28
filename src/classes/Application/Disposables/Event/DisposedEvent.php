@@ -5,13 +5,20 @@ declare(strict_types=1);
 namespace Application\Disposables\Event;
 
 use Application\Disposables\DisposableInterface;
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 
-class DisposedEvent extends Application_EventHandler_EventableEvent
+class DisposedEvent extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'Disposed';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     /**
      * @return DisposableInterface
      *

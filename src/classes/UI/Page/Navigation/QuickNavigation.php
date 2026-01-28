@@ -7,7 +7,7 @@ namespace UI\Page\Navigation;
 use Application\Admin\Area\Events\UIHandlingCompleteEvent;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Driver;
-use Application_EventHandler;
+use Application\EventHandler\EventManager;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\NamedClosure;
@@ -47,7 +47,7 @@ class QuickNavigation implements Application_Interfaces_Loggable
             ->getPage()
             ->createNavigation(self::NAV_AREA_QUICK_NAVIGATION);
 
-        Application_EventHandler::addListener(
+        EventManager::addListener(
             UIHandlingCompleteEvent::EVENT_NAME,
             NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'event_areaUIHandlingComplete')),

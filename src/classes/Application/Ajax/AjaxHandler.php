@@ -7,6 +7,7 @@ use Application\Ajax\AjaxMethodInterface;
 use Application\AjaxMethods\NoAjaxHandlerFoundMethod;
 use Application\AppFactory;
 use Application\Application;
+use Application\EventHandler\EventManager;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FolderInfo;
@@ -127,7 +128,7 @@ class Application_AjaxHandler
         $method = $this->getMethod();
         if(!$method) {
             // allow for fallback handlers if no method was found.
-            Application_EventHandler::trigger('NoAjaxHandlerFound', array());
+            EventManager::trigger('NoAjaxHandlerFound', array());
             
             $method = $this->getErrorMethod();
         }

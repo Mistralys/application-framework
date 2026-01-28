@@ -33,7 +33,7 @@ use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
 use Application_ErrorLog;
-use Application_EventHandler;
+use Application\EventHandler\EventManager;
 use Application_Logger;
 use Application_LookupItems;
 use Application_Maintenance;
@@ -259,7 +259,7 @@ class AppFactory
 
     public static function createOfflineEvents() : OfflineEventsManager
     {
-        return Application_EventHandler::createOfflineEvents();
+        return EventManager::createOfflineEvents();
     }
 
     public static function createSystemMailer() : SystemMailer

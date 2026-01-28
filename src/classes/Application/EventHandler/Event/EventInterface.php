@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Application\EventHandler;
+namespace Application\EventHandler\Event;
 
-use Application_EventHandler_Exception;
-use Application_EventHandler_Listener;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
+use EventHandlingException;
 
 interface EventInterface extends StringPrimaryRecordInterface
 {
@@ -18,7 +17,7 @@ interface EventInterface extends StringPrimaryRecordInterface
      *
      * @param string $reason The reason for which the event was cancelled
      * @return $this
-     *@throws Application_EventHandler_Exception {@see Application_EventHandler_Exception::ERROR_EVENT_NOT_CANCELLABLE}
+     *@throws EventHandlingException {@see EventHandlingException::ERROR_EVENT_NOT_CANCELLABLE}
      */
     public function cancel(string $reason) : self;
 
@@ -83,10 +82,10 @@ interface EventInterface extends StringPrimaryRecordInterface
      * Called automatically when a listener for this event is called,
      * to provide information about the listener.
      *
-     * @param Application_EventHandler_Listener $listener
+     * @param EventListener $listener
      * @return $this
      */
-    public function selectListener(Application_EventHandler_Listener $listener) : self;
+    public function selectListener(EventListener $listener) : self;
 
     /**
      * Retrieves the source of the listener that handled this event.

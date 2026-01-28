@@ -10,7 +10,7 @@ namespace Application\CacheControl;
 
 use Application\AppFactory;
 use Application\CacheControl\Events\RegisterCacheLocationsEvent;
-use Application_EventHandler;
+use Application\EventHandler\EventManager;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
@@ -113,7 +113,7 @@ class CacheManager extends BaseStringPrimaryCollection implements Application_In
 
     private function triggerRegisterEvent() : ?RegisterCacheLocationsEvent
     {
-        $event = Application_EventHandler::createOfflineEvents()->triggerEvent(
+        $event = EventManager::createOfflineEvents()->triggerEvent(
             RegisterCacheLocationsEvent::EVENT_NAME
         )
             ->getTriggeredEvent();

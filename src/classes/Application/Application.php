@@ -13,6 +13,10 @@ use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\Driver\DriverException;
+use Application\Driver\Events\DriverInstantiatedEvent;
+use Application\EventHandler\Event\EventListener;
+use Application\EventHandler\EventManager;
+use Application\Events\ApplicationStartedEvent;
 use Application\Exception\ApplicationException;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Feedback\FeedbackCollection;
@@ -21,11 +25,6 @@ use Application_Bootstrap;
 use Application_Bootstrap_Screen;
 use Application_Driver;
 use Application_ErrorLog;
-use Application_EventHandler;
-use Application_EventHandler_Event_ApplicationStarted;
-use Application_EventHandler_Event_DriverInstantiated;
-use Application_EventHandler_Exception;
-use Application_EventHandler_Listener;
 use Application_Installer;
 use Application_LDAP;
 use Application_LDAP_Config;
@@ -51,6 +50,7 @@ use Connectors_Connector;
 use DBHelper;
 use DBHelper_Exception;
 use DeeplHelper;
+use EventHandlingException;
 use Throwable;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
@@ -198,7 +198,7 @@ class Application
      * @param Application_Driver $driver
      * @return void
      *
-     * @throws Application_EventHandler_Exception
+     * @throws EventHandlingException
      * @throws ApplicationException
      * @throws UI_Exception
      * @throws DriverException
@@ -217,11 +217,11 @@ class Application
 
         // let any tasks run that have to be done once the
         // driver object is ready.
-        if (Application_EventHandler::hasListener(self::EVENT_DRIVER_INSTANTIATED)) {
-            Application_EventHandler::trigger(
+        if (EventManager::hasListener(self::EVENT_DRIVER_INSTANTIATED)) {
+            EventManager::trigger(
                 self::EVENT_DRIVER_INSTANTIATED,
                 array($this, $driver),
-                Application_EventHandler_Event_DriverInstantiated::class
+                DriverInstantiatedEvent::class
             );
         }
 
@@ -262,11 +262,11 @@ class Application
 
         $this->driver->start();
 
-        if (Application_EventHandler::hasListener('ApplicationStarted')) {
-            Application_EventHandler::trigger(
+        if (EventManager::hasListener('ApplicationStarted')) {
+            EventManager::trigger(
                 'ApplicationStarted',
                 array($this, $driver),
-                Application_EventHandler_Event_ApplicationStarted::class
+                ApplicationStartedEvent::class
             );
         }
     }
@@ -1075,11 +1075,11 @@ class Application
      * triggered every time a redirect is made to a target URL.
      *
      * @param callable $callback
-     * @return Application_EventHandler_Listener
+     * @return EventListener
      */
-    public static function addRedirectListener(callable $callback): Application_EventHandler_Listener
+    public static function addRedirectListener(callable $callback): EventListener
     {
-        return Application_EventHandler::addListener(self::EVENT_REDIRECT, $callback);
+        return EventManager::addListener(self::EVENT_REDIRECT, $callback);
     }
 
     /**
@@ -1094,7 +1094,7 @@ class Application
         $url = (string)$url;
 
         try {
-            Application_EventHandler::trigger(
+            EventManager::trigger(
                 self::EVENT_REDIRECT,
                 array($url)
             );

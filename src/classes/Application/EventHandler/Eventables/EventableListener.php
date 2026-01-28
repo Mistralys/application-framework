@@ -1,26 +1,27 @@
 <?php
 /**
- * File containing the class {@Application_EventHandler_EventableListener}.
- *
  * @package Application
  * @subpackage EventHandler
- * @see Application_EventHandler_EventableListener
  */
 
 declare(strict_types=1);
 
+namespace Application\EventHandler\Eventables;
+
+use Application\EventHandler\Event\EventListener;
+
 /**
  * Eventable-specific listener class which extends the base listener class:
- * it stores an instance of the owner object, and adds the `getSubject()`
+ * it stores an instance of the owner object and adds the `getSubject()`
  * method to retrieve it.
  *
  * @package Application
  * @subpackage EventHandler
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see Application_Traits_Eventable::addEventListener()
+ * @see EventableTrait::addEventListener()
  */
-class Application_EventHandler_EventableListener extends Application_EventHandler_Listener
+class EventableListener extends EventListener
 {
     /**
      * @var object
@@ -36,7 +37,7 @@ class Application_EventHandler_EventableListener extends Application_EventHandle
         $this->subject = $subject;
     }
 
-    public function getEventNameNS() : string
+    public function getEventNameNS(): string
     {
         return $this->eventNameNS;
     }

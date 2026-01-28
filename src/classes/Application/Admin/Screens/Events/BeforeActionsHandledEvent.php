@@ -26,4 +26,9 @@ use TestDriver\Area\TestingScreen\CancelHandleActionsScreen;
 class BeforeActionsHandledEvent extends BaseScreenEvent
 {
     public const string EVENT_NAME = 'BeforeActionsHandled';
+
+    public function getName(): string
+    {
+        return self::EVENT_NAME;
+    }
 }

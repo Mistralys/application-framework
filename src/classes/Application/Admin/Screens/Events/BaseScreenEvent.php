@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Application\Admin\Screens\Events;
 
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_EventHandler_EventableEvent;
 
 /**
  * Abstract base class for admin screen events.
@@ -17,7 +17,7 @@ use Application_EventHandler_EventableEvent;
  * @package Application
  * @subpackage Admin Screens - Events
  */
-abstract class BaseScreenEvent extends Application_EventHandler_EventableEvent
+abstract class BaseScreenEvent extends BaseEventableEvent
 {
     public function getScreen() : AdminScreenInterface
     {

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Disposables;
 
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\Disposables\Event\DisposedEvent;
 
 /**
@@ -68,9 +68,9 @@ trait DisposableTrait
      * Adds an event listener to the "Disposed" event.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onDisposed(callable $callback): Application_EventHandler_EventableListener
+    public function onDisposed(callable $callback): EventableListener
     {
         return $this->addEventListener(DisposableInterface::EVENT_DISPOSED, $callback);
     }

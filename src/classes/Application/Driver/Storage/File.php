@@ -1,6 +1,8 @@
 <?php
 
 use Application\Application;
+use Application\EventHandler\EventManager;
+use Application\Events\SystemShutDownEvent;
 use AppUtils\FileHelper;
 
 class Application_Driver_Storage_File extends Application_Driver_Storage
@@ -24,7 +26,7 @@ class Application_Driver_Storage_File extends Application_Driver_Storage
         // to avoid multiple writes for single setting values,
         // we use the shutdown event to save everything at the
         // end of the request.
-        Application_EventHandler::addListener(
+        EventManager::addListener(
             Application::EVENT_SYSTEM_SHUTDOWN,
             array($this, 'handle_shutDown')
         );
@@ -95,7 +97,7 @@ class Application_Driver_Storage_File extends Application_Driver_Storage
         }
     }
 
-    public function handle_shutDown(Application_EventHandler_Event_SystemShutDown $event)
+    public function handle_shutDown(SystemShutDownEvent $event)
     {
         $this->writeToDisk();
     }

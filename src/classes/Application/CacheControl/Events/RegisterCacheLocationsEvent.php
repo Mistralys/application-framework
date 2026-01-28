@@ -34,7 +34,7 @@ class RegisterCacheLocationsEvent extends BaseOfflineEvent
      */
     private array $locations = array();
 
-    protected function _getEventName(): string
+    public function getName(): string
     {
         return self::EVENT_NAME;
     }

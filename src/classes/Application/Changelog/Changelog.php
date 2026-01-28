@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 use Application\Application;
 use Application\Changelog\Event\ChangelogCommittedEvent;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\Interfaces\ChangelogableInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\ConvertHelper_Exception;
 
-class Application_Changelog implements Application_Interfaces_Eventable
+class Application_Changelog implements EventableInterface
 {
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
 
     public const int ERROR_MISSING_CHANGELOG_KEY = 599601;
@@ -130,7 +133,7 @@ class Application_Changelog implements Application_Interfaces_Eventable
         );
     }
 
-    public function onQueueCommitted(callable $callback) : Application_EventHandler_EventableListener
+    public function onQueueCommitted(callable $callback) : EventableListener
     {
         return $this->addEventListener(ChangelogCommittedEvent::EVENT_NAME, $callback);
     }

@@ -20,6 +20,11 @@ class ContentRenderedEvent extends BaseScreenEvent
 {
     public const string EVENT_NAME = 'ContentRendered';
 
+    public function getName(): string
+    {
+        return self::EVENT_NAME;
+    }
+
     /**
      * Whether the screen rendered any content.
      *

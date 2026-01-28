@@ -629,9 +629,10 @@ PRE.console {
 
 /* region: Menus, Dropdowns */
 
-.dropdown-menu.height-mini {
-    height: 80px;
-    overflow: auto;
+.dropdown-menu.height-fixed {
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* Fix for submenus nested in dropup menus */

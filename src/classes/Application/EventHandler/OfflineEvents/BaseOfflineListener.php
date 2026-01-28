@@ -8,7 +8,8 @@ declare(strict_types=1);
 
 namespace Application\EventHandler\OfflineEvents;
 
-use Application_EventHandler_Event;
+use Application\EventHandler\Event\EventInterface;
+use Application\EventHandler\Event\StandardEvent;
 use AppUtils\NamedClosure;
 
 /**
@@ -56,9 +57,9 @@ abstract class BaseOfflineListener implements OfflineEventListenerInterface
     /**
      * This method is called when the event is triggered.
      *
-     * @param Application_EventHandler_Event $event This will be the event class specific to the event that triggered this listener.
+     * @param EventInterface $event This will be the event class specific to the event that triggered this listener.
      * @param mixed ...$args Any arguments that were added in the original event trigger call.
      * @return void
      */
-    abstract protected function handleEvent(Application_EventHandler_Event $event, ...$args): void;
+    abstract protected function handleEvent(EventInterface $event, ...$args): void;
 }

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Formable\Event;
 
-use Application_EventHandler_Event;
+use Application\EventHandler\Event\BaseEvent;
 use Application_Interfaces_Formable;
 
 /**
@@ -17,9 +17,9 @@ use Application_Interfaces_Formable;
  * @package Application
  * @subpackage Formable
  */
-abstract class BaseFormableEvent extends Application_EventHandler_Event
+abstract class BaseFormableEvent extends BaseEvent
 {
-    public function getFormable() : Application_Interfaces_Formable
+    final public function getFormable() : Application_Interfaces_Formable
     {
         return $this->getArgumentObject(0, Application_Interfaces_Formable::class);
     }

@@ -9,8 +9,9 @@ declare(strict_types=1);
 namespace Application\CacheControl\Events;
 
 use Application\CacheControl\CacheLocationInterface;
+use Application\EventHandler\Event\EventInterface;
+use Application\EventHandler\Event\StandardEvent;
 use Application\EventHandler\OfflineEvents\BaseOfflineListener;
-use Application_EventHandler_Event;
 use AppUtils\ClassHelper;
 
 /**
@@ -26,7 +27,7 @@ abstract class BaseRegisterCacheLocationsListener extends BaseOfflineListener
         return RegisterCacheLocationsEvent::EVENT_NAME;
     }
 
-    protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
+    protected function handleEvent(EventInterface $event, ...$args): void
     {
         $this->handleTagRegistration(
             ClassHelper::requireObjectInstanceOf(

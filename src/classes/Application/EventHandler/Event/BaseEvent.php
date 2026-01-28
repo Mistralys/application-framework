@@ -1,43 +1,41 @@
 <?php
-/**
- * @package Application
- * @subpackeage Core
- */
 
 declare(strict_types=1);
 
-use Application\EventHandler\EventInterface;
+namespace Application\EventHandler\Event;
+
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
+use EventHandlingException;
 
 /**
- * Event class for individual events: an instance of this is
- * given as argument to event listener callbacks. May be extended
+ * Abstract base class for individual events: an instance of this is
+ * given as an argument to event listener callbacks. May be extended
  * to provide a more specialized API depending on the event.
  *
  * @package Application
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_EventHandler_Event implements EventInterface
+abstract class BaseEvent implements EventInterface
 {
-    protected ?Application_EventHandler_Listener $selectedListener = null;
+    protected ?EventListener $selectedListener = null;
     protected bool $cancel = false;
     protected string $cancelReason = '';
     protected string $name;
 
-   /**
-    * @var array<int,mixed>
-    */
+    /**
+     * @var array<int,mixed>
+     */
     protected array $args;
 
-   /**
-    * @param string $name
-    * @param array<int,mixed> $args Indexed array with a list of arguments for the event.
-    */
-    public function __construct(string $name, array $args=array())
+    /**
+     * @param string $name
+     * @param array<int,mixed> $args Indexed array with a list of arguments for the event.
+     */
+    public function __construct(string $name, array $args = array())
     {
         $this->name = $name;
         $this->args = $args;
@@ -45,73 +43,67 @@ class Application_EventHandler_Event implements EventInterface
         $this->init();
     }
 
-    protected function init() : void
+    protected function init(): void
     {
 
     }
 
-    public function getID(): string
+    final public function getID(): string
     {
         return $this->getName();
     }
 
-    public function getName() : string
+    public function cancel(string $reason): self
     {
-        return $this->name;
-    }
-
-    public function cancel(string $reason) : self
-    {
-        if(!$this->isCancellable()) 
-        {
-            throw new Application_EventHandler_Exception(
+        if (!$this->isCancellable()) {
+            throw new EventHandlingException(
                 'Event cannot be cancelled',
                 sprintf(
                     'The event [%s] cannot be cancelled.',
                     $this->getName()
                 ),
-                Application_EventHandler_Exception::ERROR_EVENT_NOT_CANCELLABLE
+                EventHandlingException::ERROR_EVENT_NOT_CANCELLABLE
             );
         }
 
         $this->cancel = true;
         $this->cancelReason = $reason;
-        
+
         return $this;
     }
 
-    final public function getArguments() : array
+    final public function getArguments(): array
     {
         return $this->args;
     }
 
-    final public function getArgument(int $index) : mixed
+    final public function getArgument(int $index): mixed
     {
         return $this->args[$index] ?? null;
     }
 
-    final public function getArgumentString(int $index) : string
+    final public function getArgumentString(int $index): string
     {
         return (string)$this->getArgument($index);
     }
 
-    final public function getArgumentArray(int $index) : array
+    final public function getArgumentArray(int $index): array
     {
         $arg = $this->getArgument($index);
 
-        if(is_array($arg)) {
+        if (is_array($arg)) {
             return $arg;
         }
 
         return array();
     }
 
-    final public function getArgumentInt(int $index) : int
+    final public function getArgumentInt(int $index): int
     {
         return (int)$this->getArgument($index);
     }
 
-    final public function getArgumentBool(int $index) : bool
+    final public function getArgumentBool(int $index): bool
     {
         return ConvertHelper::string2bool($this->getArgument($index));
     }
@@ -132,47 +124,46 @@ class Application_EventHandler_Event implements EventInterface
         return ClassHelper::requireObjectInstanceOf($class, $this->getArgument($int));
     }
 
-    public function isCancelled() : bool
+    public function isCancelled(): bool
     {
         return $this->cancel;
     }
 
-    public function getCancelReason() : string
+    public function getCancelReason(): string
     {
         return $this->cancelReason;
     }
 
-   /**
-    * Whether this event can be cancelled.
-    * @return boolean
-    */
-    public function isCancellable() : bool
+    /**
+     * Whether this event can be cancelled.
+     * @return boolean
+     */
+    public function isCancellable(): bool
     {
         return true;
     }
 
-    public function selectListener(Application_EventHandler_Listener $listener) : self
+    public function selectListener(EventListener $listener): self
     {
         $this->selectedListener = $listener;
         return $this;
     }
 
-    public function getSource() : string
+    public function getSource(): string
     {
-        if(isset($this->selectedListener)) 
-        {
+        if (isset($this->selectedListener)) {
             return $this->selectedListener->getSource();
         }
 
         return '';
     }
 
-    public function startTrigger() : void
+    public function startTrigger(): void
     {
 
     }
 
-    public function stopTrigger() : void
+    public function stopTrigger(): void
     {
         $this->selectedListener = null;
     }
@@ -185,7 +176,7 @@ class Application_EventHandler_Event implements EventInterface
      * @param mixed $value
      * @return $this
      */
-    protected function setArgument(int $index, mixed $value) : self
+    protected function setArgument(int $index, mixed $value): self
     {
         $this->args[$index] = $value;
         return $this;
