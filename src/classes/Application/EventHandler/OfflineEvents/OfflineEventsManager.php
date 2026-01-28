@@ -31,21 +31,16 @@ use Mistralys\AppFrameworkDocs\DocumentationPages;
  * regular listeners by "waking" the listening classes, and
  * adding them as listeners.
  *
- * ## Event classes folder structure
+ * ## Event discovery
  *
- * By default, offline events are stored in the driver's
- * `OfflineEvents` subfolder under `assets/classes/{DriverName}/OfflineEvents`.
- * Each event has its own class, and listeners must be added
- * to a subfolder named after the event class.
+ * Offline event classes and listener classes can be placed anywhere
+ * in the codebase. The event indexer automatically discovers them by
+ * scanning for classes that implement `OfflineEventInterface` and
+ * `OfflineEventListenerInterface`.
  *
- * ### Example structure
- *
- * - `OfflineEvents/CriticalEvent.php`
- * - `OfflineEvents/CriticalEvent/LogHandler.php`
- * - `OfflineEvents/CriticalEvent/NotifyHandler.php`
- *
- * `CriticalEvent.php` contains the event class, `LogHandler.php`
- * and `NotifyHandler.php` are listeners of the event.
+ * Listeners are linked to events by matching the event name returned
+ * by the listener's `getEventName()` method with the event's `getName()`
+ * method.
  *
  * ## Class inheritance
  *
