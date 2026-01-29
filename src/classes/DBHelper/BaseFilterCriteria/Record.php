@@ -10,11 +10,15 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
 class DBHelper_BaseFilterCriteria_Record
 {
     /**
-     * @var array<string,string>
+     * @var array<string,string|int|float|NULL>
      */
     private array $data;
     private IntegerCollectionItemInterface $record;
 
+    /**
+     * @param array<string,string|int|float|NULL> $data
+     * @param IntegerCollectionItemInterface $record
+     */
     public function __construct(array $data, IntegerCollectionItemInterface $record)
     {
         $this->data = $data;
@@ -62,6 +66,9 @@ class DBHelper_BaseFilterCriteria_Record
         return isset($this->data[$name]);
     }
 
+    /**
+     * @return array<string,string|int|float|NULL>
+     */
     public function getColumns() : array
     {
         return $this->data;

@@ -33,6 +33,9 @@ class DBHelper_FetchMany extends DBHelper_FetchOne
      */
     protected $orderDir = 'ASC';
 
+    /**
+     * @return array<int,array<int|string,string|int|float|NULL>>
+     */
     public function fetch() : array
     {
         return DBHelper::fetchAll($this->renderQuery(), $this->data);
@@ -48,7 +51,8 @@ class DBHelper_FetchMany extends DBHelper_FetchOne
 
     /**
     * Retrieves only the specified column from all results.
-    * 
+    * Note: Values are converted to strings.
+    *
     * @param string $column
     * @return string[]
     */

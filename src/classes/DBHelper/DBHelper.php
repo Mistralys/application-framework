@@ -522,7 +522,7 @@ class DBHelper
      * Fetches a single entry as an associative array from a SELECT query.
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
-     * @return array<int|string,mixed>|NULL
+     * @return array<int|string,string|int|float|NULL>|NULL
      * @throws DBHelper_Exception
      * @throws JsonException
      */
@@ -546,7 +546,7 @@ class DBHelper
      * @param string $table The table name
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $where Any "WHERE" column values required
      * @param string[] $columnNames The columns to fetch. Defaults to all columns if empty.
-     * @return NULL|array
+     * @return array<int|string,string|int|float|NULL>|NULL
      * @throws DBHelper_Exception
      */
     public static function fetchData(string $table, array $where=array(), array $columnNames=array()) : ?array
@@ -585,7 +585,7 @@ class DBHelper
      *
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
-     * @return array<int,array<string,string>>
+     * @return array<int,array<int|string,string|int|float|NULL>>
      * @throws DBHelper_Exception
      */
     public static function fetchAll(string|DBHelper_StatementBuilder $statementOrBuilder, array $variables = array()) : array
@@ -1532,12 +1532,12 @@ class DBHelper
      * @param string $key
      * @param string|DBHelper_StatementBuilder $statementOrBuilder
      * @param array<string,mixed> $variables
-     * @return string|NULL
+     * @return string|int|float|NULL
      *
      * @throws DBHelper_Exception
      * @throws JsonException
      */
-    public static function fetchKey(string $key, $statementOrBuilder, array $variables=array()) : ?string
+    public static function fetchKey(string $key, $statementOrBuilder, array $variables=array()) : string|int|float|null
     {
         $data = self::fetch($statementOrBuilder, $variables);
         if($data !== null && isset($data[$key])) {
@@ -1593,7 +1593,7 @@ class DBHelper
      * @param string $key
      * @param string|DBHelper_StatementBuilder $statementOrBuilder
      * @param array<string,mixed> $variables
-     * @return string[]
+     * @return array<int,string|int|float|NULL>
      *
      * @throws DBHelper_Exception
      */
