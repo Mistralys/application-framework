@@ -11,7 +11,6 @@ use Application\Application;
 use AppUtils\AttributeCollection;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\StringBuilder;
-use testsuites\DBHelper\RecordTests;
 use UI\AdminURLs\AdminURLInterface;
 use UI\CSSClasses;
 
@@ -46,7 +45,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     * @param UI_Icon $icon
     * @return $this
     */
-    public function icon(UI_Icon $icon) : UI_StringBuilder
+    public function icon(UI_Icon $icon) : self
     {
         return $this->add((string)$icon);
     }
@@ -54,11 +53,10 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     /**
      * Adds an informational styled text.
      *
-     * @param string|number|UI_Renderable_Interface $string
+     * @param string|int|float|StringableInterface $string
      * @return $this
-     * @throws UI_Exception
      */
-    public function info($string) : UI_StringBuilder
+    public function info(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_INFO);
     }
@@ -67,7 +65,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     * Adds the danger-styled text "This cannot be undone, are you sure?".
     * @return $this
     */
-    public function cannotBeUndone() : UI_StringBuilder
+    public function cannotBeUndone() : self
     {
         return $this->bold(sb()->danger(t('This cannot be undone, are you sure?')));
     }
@@ -75,10 +73,10 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
    /**
     * Adds a muted text.
     * 
-    * @param string|number|UI_Renderable_Interface $string
+    * @param string|int|float|StringableInterface $string
     * @return $this
     */
-    public function muted($string) : UI_StringBuilder
+    public function muted(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_MUTED);
     }
@@ -89,7 +87,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     * @param UI_Button $button
     * @return $this
     */
-    public function button(UI_Button $button) : UI_StringBuilder
+    public function button(UI_Button $button) : self
     {
         return $this->add($button);
     }
@@ -97,15 +95,15 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
    /**
     * Adds a danger-styled text.
     * 
-    * @param string|number|UI_Renderable_Interface $string
+    * @param string|int|float|StringableInterface $string
     * @return $this
     */
-    public function danger($string) : UI_StringBuilder
+    public function danger(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_ERROR);
     }
 
-    public function dangerXXL($string) : UI_StringBuilder
+    public function dangerXXL($string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_ERROR_XXL);
     }
@@ -113,10 +111,10 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
    /**
     * Adds a warning-styled text.
     *
-    * @param string|number|UI_Renderable_Interface $string
+    * @param string|int|float|StringableInterface $string
     * @return $this
     */
-    public function warning($string) : UI_StringBuilder
+    public function warning(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_WARNING);
     }
@@ -124,21 +122,21 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     /**
      * Adds a success-styled text.
      *
-     * @param string|number|UI_Renderable_Interface $string
+     * @param string|int|float|StringableInterface $string
      * @return $this
      */
-    public function success($string) : UI_StringBuilder
+    public function success(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_SUCCESS);
     }
 
     /**
-     * Adds an inverted color styled text.
+     * Adds an inverted color-styled text.
      *
-     * @param string|number|UI_Renderable_Interface $string
+     * @param string|int|float|StringableInterface $string
      * @return $this
      */
-    public function inverted($string) : UI_StringBuilder
+    public function inverted(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_INVERTED);
     }
@@ -147,10 +145,10 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * Adds a secondary-styled text, which is slightly more
      * marked than muted text.
      *
-     * @param string|number|UI_Renderable_Interface $string
+     * @param string|int|float|StringableInterface $string
      * @return $this
      */
-    public function secondary($string) : UI_StringBuilder
+    public function secondary(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_SECONDARY);
     }
@@ -159,10 +157,10 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     * Adds a monospace-styled text by giving it the
     * class {@link CSSClasses::TEXT_MONOSPACE}.
     * 
-    * @param string|number|UI_Renderable_Interface $string
+    * @param string|int|float|StringableInterface $string
     * @return $this
     */
-    public function mono($string) : UI_StringBuilder
+    public function mono(string|int|float|StringableInterface $string) : self
     {
         return $this->spanned($string, CSSClasses::TEXT_MONOSPACE);
     }
@@ -178,7 +176,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * @return UI_StringBuilder
      * @throws Application_Exception
      */
-    public function linkRight(string $label, $url, string $right='', bool $newTab=false) : UI_StringBuilder
+    public function linkRight(string $label, string|AdminURLInterface $url, string $right='', bool $newTab=false) : self
     {
         if(!empty($right) && !Application::getUser()->can($right))
         {
@@ -195,7 +193,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * @param AttributeCollection|null $attributes
      * @return self
      */
-    public function adminLink(string $label, $url, bool $newTab=false, ?AttributeCollection $attributes=null) : self
+    public function adminLink(string $label, string|AdminURLInterface $url, bool $newTab=false, ?AttributeCollection $attributes=null) : self
     {
         return $this->link($label, $url, $newTab, $attributes);
     }
@@ -208,12 +206,12 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * Markup may require adding styling exceptions, see the
      * `ui-core.css` file, and the `text-tooltip` class.
      *
-     * @param string|number|UI_Renderable_Interface $string
-     * @param string|number|UI_Renderable_Interface $tooltip
+     * @param string|int|float|StringableInterface $string
+     * @param string|int|float|StringableInterface $tooltip
      * @return $this
      * @throws UI_Exception
      */
-    public function tooltip($string, $tooltip)
+    public function tooltip(string|int|float|StringableInterface $string, string|int|float|StringableInterface $tooltip) : self
     {
         $jsID = nextJSID();
         JSHelper::tooltipify($jsID);
@@ -227,12 +225,12 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $string
-     * @param string|number|UI_Renderable_Interface $author
+     * @param string|int|float|StringableInterface $string
+     * @param string|int|float|StringableInterface $author
      * @return $this
      * @throws UI_Exception
      */
-    public function blockquote($string, $author='') : UI_StringBuilder
+    public function blockquote(string|int|float|StringableInterface $string, string|int|float|StringableInterface $author='') : self
     {
         $author = toString($author);
 
@@ -253,11 +251,11 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $string
+     * @param string|int|float|StringableInterface $string
      * @return UI_StringBuilder
      * @throws UI_Exception
      */
-    public function parentheses($string) : UI_StringBuilder
+    public function parentheses(string|int|float|StringableInterface $string) : self
     {
         return $this->sf('(%s)', toString($string));
     }
@@ -265,15 +263,15 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     /**
      * Renders a text clickable, with an optional tooltip.
      *
-     * @param string|number|UI_Renderable_Interface $string
+     * @param string|int|float|StringableInterface $string
      * @param string $statement The JavaScript statement to execute on click.
      *                          Warning: must not include any double quotes, since
      *                          It is inserted in an HTML attribute.
-     * @param string|number|UI_Renderable_Interface $tooltip
+     * @param string|int|float|StringableInterface $tooltip
      * @return UI_StringBuilder
      * @throws UI_Exception
      */
-    public function clickable($string, string $statement, $tooltip='') : UI_StringBuilder
+    public function clickable(string|int|float|StringableInterface $string, string $statement, string|int|float|StringableInterface $tooltip='') : self
     {
         $result = sb()->spanned(
             $string,
@@ -290,16 +288,16 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     }
 
     /**
-     * Formats a text as code, and adds a button next to it to
+     * Formats a text as code and adds a button next to it to
      * copy the text to the clipboard.
      *
-     * @param string|number|UI_Renderable_Interface $string
-     * @param string|null $emptyText The text to display if the string is empty.
+     * @param string|int|float|StringableInterface $string
+     * @param string|int|float|StringableInterface|null $emptyText The text to display if the string is empty.
      * @return UI_StringBuilder
      * @throws Application_Exception
      * @throws UI_Exception
      */
-    public function codeCopy($string, ?string $emptyText=null) : UI_StringBuilder
+    public function codeCopy(string|int|float|StringableInterface $string, string|int|float|StringableInterface|NULL $emptyText=null) : self
     {
         $string = (string)$string;
 
@@ -357,7 +355,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * Highlight parts of a text that refer to concepts,
      * names or the like using the class {@see CSSClasses::TEXT_REFERENCE}.
      *
-     * @param string|number|StringableInterface $string
+     * @param string|int|float|StringableInterface $string
      * @param AttributeCollection|null $attributes
      * @return $this
      */
@@ -381,11 +379,11 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * nesting other block-level elements. This can be overridden
      * by passing a custom `display` style in the attributes.
      *
-     * @param string|number|StringableInterface $content
+     * @param string|int|float|StringableInterface $content
      * @param AttributeCollection|null $attributes
      * @return $this
      */
-    public function developer($content, ?AttributeCollection $attributes=null) : self
+    public function developer(string|int|float|StringableInterface $content, ?AttributeCollection $attributes=null) : self
     {
         if(!Application::getUser()->isDeveloper()) {
             return $this;
@@ -403,42 +401,42 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     }
 
     /**
-     * @param string|number|StringableInterface $string
+     * @param string|int|float|StringableInterface $string
      * @param AttributeCollection|null $attributes
      * @return $this
      */
-    public function h1($string, ?AttributeCollection $attributes=null) : self
+    public function h1(string|int|float|StringableInterface $string, ?AttributeCollection $attributes=null) : self
     {
         return $this->heading(1, $string, $attributes);
     }
 
     /**
-     * @param string|number|StringableInterface $string
+     * @param string|int|float|StringableInterface $string
      * @param AttributeCollection|null $attributes
      * @return $this
      */
-    public function h2($string, ?AttributeCollection $attributes=null) : self
+    public function h2(string|int|float|StringableInterface $string, ?AttributeCollection $attributes=null) : self
     {
         return $this->heading(2, $string, $attributes);
     }
 
     /**
-     * @param string|number|StringableInterface $string
+     * @param string|int|float|StringableInterface $string
      * @param AttributeCollection|null $attributes
      * @return $this
      */
-    public function h3($string, ?AttributeCollection $attributes=null) : self
+    public function h3(string|int|float|StringableInterface $string, ?AttributeCollection $attributes=null) : self
     {
         return $this->heading(3, $string, $attributes);
     }
 
     /**
      * @param int $level
-     * @param string|number|StringableInterface $string
+     * @param string|int|float|StringableInterface $string
      * @param AttributeCollection|null $attributes
      * @return $this
      */
-    public function heading(int $level, $string, ?AttributeCollection $attributes=null) : self
+    public function heading(int $level, string|int|float|StringableInterface $string, ?AttributeCollection $attributes=null) : self
     {
         return $this->tag('h'.$level, $string, $attributes);
     }
