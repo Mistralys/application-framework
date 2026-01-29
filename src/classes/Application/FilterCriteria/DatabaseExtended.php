@@ -10,7 +10,6 @@ use Application\FilterCriteria\FilterCriteriaDBExtendedInterface;
 use Application\FilterCriteria\FilterCriteriaException;
 use Application\FilterCriteria\Items\GenericIntegerItem;
 use AppUtils\ConvertHelper;
-use AppUtils\NamedClosure;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
@@ -22,7 +21,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  *
  * ## Custom Columns
  *
- * Formalizes the use of custom columns in the filter criteria,
+ * Formalizes the use of custom columns in the filter criteria
  * by defining abstract methods to set up the custom columns to
  * use.
  *
@@ -48,7 +47,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  * these markers are replaced with the actual SQL statements.
  *
  * This makes it possible to easily detect which custom columns
- * are actually used in the query string, and to enable them
+ * are actually used in the query string and to enable them
  * as needed if they have not been enabled manually. Example:
  * enabling a custom column if it is used in the `ORDER BY`
  * statement.
@@ -78,9 +77,9 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
     private array $columnUsage = array();
 
     /**
-     * Actually boolean keys in the array, but since
-     * booleans are converted to int, documenting it
-     * as int here.
+     * There are actually boolean keys in the array,
+     * but since booleans are converted to int,
+     * documenting it as int here.
      *
      * @var array<int,string>
      */
@@ -161,12 +160,12 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @param bool $enable Whether to enable this column. Allows turning it on and off at will.
      * @return $this
      *
-     * @throws Application_Exception
      * @see Application_FilterCriteria_Database::registerCustomColumn()
      *
+     * @throws Application_Exception
      * @see FilterCriteriaException::ERROR_CUSTOM_COLUMN_NOT_REGISTERED
      */
-    protected function withCustomColumn(string $columnID, bool $enable=true)
+    protected function withCustomColumn(string $columnID, bool $enable=true) : self
     {
         $this->initCustomColumns();
 
@@ -194,8 +193,8 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
     }
 
     /**
-     * Check if the specified custom column has been added,
-     * and is enabled. Returns false if it has been added,
+     * Check if the specified custom column has been added
+     * and is enabled. Returns false if it has been added
      * but is not enabled.
      *
      * @param string $columnID
@@ -223,7 +222,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @param string $columnID
      * @return Application_FilterCriteria_Database_CustomColumn
      */
-    protected function registerCountryLabelSelect($countryIDColumn, string $columnID) : Application_FilterCriteria_Database_CustomColumn
+    protected function registerCountryLabelSelect(string|DBHelper_StatementBuilder $countryIDColumn, string $columnID) : Application_FilterCriteria_Database_CustomColumn
     {
         return $this->registerCustomSelect(
             $this->renderCountriesCase($countryIDColumn),
@@ -233,14 +232,14 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
     /**
      * Adds a custom column to select a username, given
-     * a user ID column value, ideal for sorting purposes
+     * a user ID column value, ideal for sorting purposes,
      * for example.
      *
      * @param string|DBHelper_StatementBuilder $userIDColumn
      * @param string $columnID
      * @return Application_FilterCriteria_Database_CustomColumn
      */
-    protected function registerUserNameSelect($userIDColumn, string $columnID) : Application_FilterCriteria_Database_CustomColumn
+    protected function registerUserNameSelect(string|DBHelper_StatementBuilder $userIDColumn, string $columnID) : Application_FilterCriteria_Database_CustomColumn
     {
         $query = statementBuilder(
         "
@@ -267,12 +266,12 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
     /**
      * Adds a column to select translated country labels
      * given a country ID column value, ideal for sorting
-     * purposes for example.
+     * purposes, for example.
      *
      * @param string|DBHelper_StatementBuilder $countryIDColumn
      * @return string
      */
-    private function renderCountriesCase($countryIDColumn) : string
+    private function renderCountriesCase(string|DBHelper_StatementBuilder $countryIDColumn) : string
     {
         $countries = Application_Countries::getInstance();
         $all = $countries->getAll(false);
@@ -287,20 +286,20 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
     }
 
     /**
-     * Registers a new custom column that is used to add
-     * additional, dynamic select statements to the query.
+     * Registers a new custom column used to add additional,
+     * dynamic select statements to the query.
      *
-     * NOTE: When using a closure, the callback method gets
-     * the custom column instance as argument.
+     * > NOTE: When using a callable, the callback method gets
+     * > the custom column instance as its sole argument.
      *
      * @param string $columnID
-     * @param NamedClosure|DBHelper_StatementBuilder $source
+     * @param callable|DBHelper_StatementBuilder $source
      * @return Application_FilterCriteria_Database_CustomColumn
      *
      * @throws Application_Exception
      * @see FilterCriteriaException::ERROR_CANNOT_REGISTER_COLUMN_AGAIN
      */
-    protected function registerCustomColumn(string $columnID, $source) : Application_FilterCriteria_Database_CustomColumn
+    protected function registerCustomColumn(string $columnID, callable|DBHelper_StatementBuilder $source) : Application_FilterCriteria_Database_CustomColumn
     {
         if(!isset($this->customColumns[$columnID]))
         {
@@ -388,7 +387,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         }
 
         // Automatically detect which custom columns
-        // are used in the query, and enable them as
+        // are used in the query and enable them as
         // needed.
         $this->autoEnableColumns($query);
 
@@ -439,8 +438,8 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         // enabled yet.
         //
         // This is handled with replacement iterations: Each
-        // iteration replaces newly revealed markers, and auto-
-        // enables any new columns that are detected.
+        // iteration replaces newly revealed markers and auto-enables
+        // any new columns that are detected.
         //
         // Example with markers nested 2 times:
         //
@@ -517,7 +516,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         // Failsafe: Nesting columns further than this is not allowed.
         if($this->replaceIteration > self::MAX_REPLACE_ITERATIONS)
         {
-            throw new Application_Exception(
+            throw new FilterCriteriaException(
                 'Column markers are nested too deep.',
                 sprintf(
                     'Reached replace iteration [%s]. Query: %s',
@@ -528,7 +527,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
             );
         }
 
-        $this->autoEnableColumns($query, true);
+        $this->autoEnableColumns($query);
 
         $this->replaceIteration++;
         $this->buildIteration++;
@@ -603,7 +602,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         }
     }
 
-    protected function autoEnableColumns(string $query, bool $iteration=false) : void
+    protected function autoEnableColumns(string $query) : void
     {
         foreach($this->customColumns as $column)
         {

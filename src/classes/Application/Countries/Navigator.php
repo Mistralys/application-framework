@@ -115,7 +115,7 @@ class Application_Countries_Navigator extends UI_Renderable
         return $this;
     }
     
-    public function setURLParamsByArea(AdminAreaInterface $area) : self
+    public function setURLParamsByScreen(AdminScreenInterface $area) : self
     {
         return $this->setURLParams($area->getPageParams());
     }
