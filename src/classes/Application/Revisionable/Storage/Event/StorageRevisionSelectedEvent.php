@@ -7,7 +7,7 @@ namespace Application\Revisionable\Storage\Event;
 use Application\EventHandler\Eventables\BaseEventableEvent;
 use Application\Revisionable\Storage\BaseRevisionStorage;
 
-class RevisionSelectedEvent extends BaseEventableEvent
+class StorageRevisionSelectedEvent extends BaseEventableEvent
 {
     public const string EVENT_NAME = 'RevisionSelected';
 

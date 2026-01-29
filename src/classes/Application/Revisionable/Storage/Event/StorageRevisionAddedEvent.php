@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Revisionable\Storage\Event;
 use Application\EventHandler\Eventables\BaseEventableEvent;
 
-class RevisionAddedEvent extends BaseEventableEvent
+class StorageRevisionAddedEvent extends BaseEventableEvent
 {
     const int ARG_NUMBER = 0;
     const int ARG_TIMESTAMP = 1;

@@ -19,8 +19,8 @@ use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Revisionable\Storage\Copy\BaseRevisionCopy;
-use Application\Revisionable\Storage\Event\RevisionAddedEvent;
-use Application\Revisionable\Storage\Event\RevisionSelectedEvent;
+use Application\Revisionable\Storage\Event\StorageRevisionAddedEvent;
+use Application\Revisionable\Storage\Event\StorageRevisionSelectedEvent;
 use Application\EventHandler\Eventables\EventableListener;
 use Application_FilterCriteria_RevisionableRevisions;
 use Application\EventHandler\Eventables\EventableInterface;
@@ -1392,16 +1392,16 @@ abstract class BaseRevisionStorage
         $this->triggerEvent(
             self::EVENT_REVISION_ADDED,
             array($number, $timestamp, $ownerID, $ownerName, (string)$comments),
-            RevisionAddedEvent::class
+            StorageRevisionAddedEvent::class
         );
     }
 
     /**
-     * The callback gets the event instance as single parameter.
+     * The callback gets the event instance as a single parameter.
      *
      * @param callable $callback
      * @return EventableListener
-     * @see RevisionAddedEvent
+     * @see StorageRevisionAddedEvent
      */
     public function onRevisionAdded(callable $callback): EventableListener
     {
@@ -1477,15 +1477,15 @@ abstract class BaseRevisionStorage
 
     public function onRevisionSelected(callable $callback): EventableListener
     {
-        return $this->addEventListener(RevisionSelectedEvent::EVENT_NAME, $callback);
+        return $this->addEventListener(StorageRevisionSelectedEvent::EVENT_NAME, $callback);
     }
 
     private function triggerRevisionSelected(int $number): void
     {
         $this->triggerEvent(
-            RevisionSelectedEvent::EVENT_NAME,
+            StorageRevisionSelectedEvent::EVENT_NAME,
             array($this, $number),
-            RevisionSelectedEvent::class
+            StorageRevisionSelectedEvent::class
         );
     }
 }

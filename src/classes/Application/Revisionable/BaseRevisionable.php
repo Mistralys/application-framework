@@ -17,12 +17,12 @@ use Application\Revisionable\Changelog\RevisionableChangelogHandlerInterface;
 use Application\Revisionable\Changelog\RevisionableChangelogTrait;
 use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\Event\BeforeSaveEvent;
-use Application\Revisionable\Event\RevisionAddedEvent;
 use Application\Revisionable\Event\TransactionEndedEvent;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\Storage\BaseDBCollectionStorage;
-use Application\Revisionable\Storage\Event\RevisionSelectedEvent;
+use Application\Revisionable\Storage\Event\StorageRevisionAddedEvent;
+use Application\Revisionable\Storage\Event\StorageRevisionSelectedEvent;
 use Application\Revisionable\Storage\RevisionableStorageException;
 use Application\Revisionable\Storage\RevisionStorageException;
 use Application\Revisionable\Storage\StubDBRevisionStorage;
@@ -2375,7 +2375,7 @@ abstract class BaseRevisionable implements RevisionableInterface
         $this->_registerEvents();
     }
 
-    private function callback_revisionSelected(RevisionSelectedEvent $event) : void
+    private function callback_revisionSelected(StorageRevisionSelectedEvent $event) : void
     {
         $this->selectedRevision = $event->getRevision();
 
@@ -2386,12 +2386,12 @@ abstract class BaseRevisionable implements RevisionableInterface
         );
     }
 
-    private function callback_revisionAdded(RevisionAddedEvent $event) : void
+    private function callback_revisionAdded(StorageRevisionAddedEvent $event) : void
     {
         $this->triggerEvent(
             self::EVENT_REVISION_ADDED,
             array($this, $event),
-            RevisionAddedEvent::class
+            StorageRevisionAddedEvent::class
         );
     }
 
@@ -2474,11 +2474,11 @@ abstract class BaseRevisionable implements RevisionableInterface
      * The callback gets the following parameters:
      *
      * 1) The revisionable instance {@see RevisionableInterface}.
-     * 2) The event instance {@see RevisionAddedEvent}.
+     * 2) The event instance {@see StorageRevisionAddedEvent}.
      *
      * @param callable $callback
      * @return EventableListener
-     * @see RevisionAddedEvent
+     * @see StorageRevisionAddedEvent
      */
     public function onRevisionAdded(callable $callback) : EventableListener
     {

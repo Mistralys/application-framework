@@ -13,7 +13,7 @@ use Application\Disposables\DisposableDisposedException;
 use Application\Disposables\DisposableInterface;
 use Application\Revisionable\Changelog\RevisionableChangelogInterface;
 use Application\Revisionable\Collection\RevisionableCollectionInterface;
-use Application\Revisionable\Storage\Event\RevisionAddedEvent;
+use Application\Revisionable\Storage\Event\StorageRevisionAddedEvent;
 use Application\Revisionable\Storage\RevisionStorageException;
 use Application\StateHandler\StateHandlerException;
 use Application\EventHandler\Eventables\EventableListener;
@@ -506,11 +506,11 @@ interface RevisionableInterface
      *
      * The callback gets a single parameter:
      *
-     * 1. The event object {@see RevisionAddedEvent}.
+     * 1. The event object {@see StorageRevisionAddedEvent}.
      *
      * @param callable $callback
      * @return EventableListener
-     * @see RevisionAddedEvent
+     * @see StorageRevisionAddedEvent
      */
     public function onRevisionAdded(callable $callback) : EventableListener;
 
