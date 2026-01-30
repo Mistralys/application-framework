@@ -237,7 +237,7 @@ class Application_Media implements TagCollectionInterface
         $this->extensions = array();
         $this->types = array();
 
-        $folder = __DIR__ . '/Media/Document';
+        $folder = __DIR__ . '/Document';
         $d = new DirectoryIterator($folder);
 
         foreach ($d as $item)
