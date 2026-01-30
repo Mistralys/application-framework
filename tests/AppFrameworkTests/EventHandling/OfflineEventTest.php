@@ -11,6 +11,7 @@ namespace AppFrameworkTests\EventHandling;
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
 use application\assets\classes\TestDriver\OfflineEvents\PriorityTest\PriorityListenerC;
+use Application\EventHandler\OfflineEvents\Index\EventIndex;
 use Application\EventHandler\OfflineEvents\OfflineEventContainer;
 use TestDriver\OfflineEvents\PriorityTest\PriorityListenerA;
 use TestDriver\OfflineEvents\PriorityTest\PriorityListenerB;
@@ -41,7 +42,20 @@ final class OfflineEventTest extends ApplicationTestCase
             array('argument')
         );
 
-        $this->assertSame(TEstEvent::EVENT_NAME, $container->getEventName());
+        $this->assertSame(TestEvent::EVENT_NAME, $container->getEventName());
+    }
+
+    public function test_index() : void
+    {
+        $this->assertNotEmpty(EventIndex::getInstance()->getAllEventClasses());
+        $this->assertNotEmpty(EventIndex::getInstance()->getAllListenerClasses());
+    }
+
+    public function test_eventExists() : void
+    {
+        $this->assertTrue(EventIndex::getInstance()->eventClassExists(TestEvent::class));
+        $this->assertTrue(EventIndex::getInstance()->listenerClassExists(ListenerA::class));
+        $this->assertTrue(EventIndex::getInstance()->listenerClassExists(ListenerB::class));
     }
 
     public function test_eventHasExpectedListeners(): void
