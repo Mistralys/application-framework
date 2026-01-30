@@ -78,6 +78,20 @@ class EventIndex implements Application_Interfaces_Loggable
         return null;
     }
 
+    public function getAllEventClasses() : array
+    {
+        $this->load();
+
+        return array_values($this->events);
+    }
+
+    public function getAllListenerClasses() : array
+    {
+        $this->load();
+
+        return array_values(array_merge(...array_values($this->listeners)));
+    }
+
     /**
      * @param string|OfflineEventInterface $event
      * @return class-string<OfflineEventListenerInterface>[]
@@ -146,5 +160,22 @@ class EventIndex implements Application_Interfaces_Loggable
 
             $this->listeners[(string)$eventName] = $validListeners;
         }
+    }
+
+    public function eventClassExists(string $class) : bool
+    {
+        $this->load();
+
+        return in_array($class, $this->events, true);
+    }
+
+    public function listenerClassExists(string $class) : bool
+    {
+        $this->load();
+
+        return array_any(
+            $this->listeners,
+            fn($listenerClasses) => in_array($class, $listenerClasses, true)
+        );
     }
 }
