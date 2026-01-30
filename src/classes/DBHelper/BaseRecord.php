@@ -122,19 +122,6 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
 
         $this->recordData = $this->loadData();
 
-        if(empty($this->recordData)) {
-            throw new BaseRecordException(
-                'Record not found',
-                sprintf(
-                    'Tried to retrieve a [%s] with primary id [%s] from table [%s].',
-                    $this->recordTypeName,
-                    $this->recordID,
-                    $this->recordTable
-                ),
-                self::ERROR_RECORD_DOES_NOT_EXIST
-            );
-        }
-
         if(!$initial)
         {
             $this->_onDataRefreshed();
@@ -157,9 +144,24 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
             DBHelper::buildWhereFieldsStatement($where)
         );
 
-        return DBHelper::fetch(
+        $data = DBHelper::fetch(
             $query,
             $where
+        );
+
+        if(!empty($data)) {
+            return $data;
+        }
+
+        throw new BaseRecordException(
+            'Record data not found',
+            sprintf(
+                'Tried to retrieve a [%s] with primary id [%s] from table [%s].',
+                $this->recordTypeName,
+                $this->recordID,
+                $this->recordTable
+            ),
+            self::ERROR_RECORD_DOES_NOT_EXIST
         );
     }
 
