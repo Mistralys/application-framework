@@ -200,6 +200,7 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     {
         Localization::selectAppLocale(Localization::BUILTIN_LOCALE_NAME);
         AppFactory::createLogger()->reset();
+        AppFactory::createOfflineEvents()->clearEventHistory();
         Application_Session_Base::setRedirectsEnabled(true);
         UI::selectDefaultInstance();
 

@@ -105,4 +105,14 @@ class OfflineEventsManager
     {
         return $this->triggeredEvents[$eventName] ?? array();
     }
+
+    /**
+     * Clears the history of triggered events.
+     * @return $this
+     */
+    public function clearEventHistory() : self
+    {
+        $this->triggeredEvents = array();
+        return $this;
+    }
 }
