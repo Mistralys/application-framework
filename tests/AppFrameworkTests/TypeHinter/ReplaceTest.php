@@ -30,7 +30,7 @@ final class ReplaceTest extends ApplicationTestCase
     {
         parent::setUp();
 
-        $this->sourceFolder = TESTS_ROOT.'/files/TypeHinter\TypeHinter';
+        $this->sourceFolder = TESTS_ROOT.'/files/TypeHinter';
 
         $this->assertDirectoryExists($this->sourceFolder);
 

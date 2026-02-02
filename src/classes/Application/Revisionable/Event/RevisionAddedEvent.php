@@ -6,6 +6,7 @@ namespace Application\Revisionable\Event;
 
 use Application\EventHandler\Eventables\BaseEventableEvent;
 use Application\Revisionable\RevisionableInterface;
+use Application\Revisionable\Storage\Event\StorageRevisionAddedEvent;
 
 class RevisionAddedEvent extends BaseEventableEvent
 {
@@ -46,9 +47,9 @@ class RevisionAddedEvent extends BaseEventableEvent
         return $this->getOriginalEvent()->getOwnerName();
     }
 
-    public function getOriginalEvent(): RevisionAddedEvent
+    public function getOriginalEvent(): StorageRevisionAddedEvent
     {
-        return $this->getArgumentObject(1, RevisionAddedEvent::class);
+        return $this->getArgumentObject(1, StorageRevisionAddedEvent::class);
     }
 
     public function isCancellable(): bool

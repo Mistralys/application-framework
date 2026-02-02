@@ -102,11 +102,15 @@ class RevisionableRecord
     // region: C - Saving data
     public function createTestRevision() : int
     {
+        $this->logHeader('Creating test revision');
+
         $this->startCurrentUserTransaction();
 
-        $this->setStructuralDataKey('some_structural_key');
+        $this->setStructuralDataKey('structural_key_value_' . uniqid('', true));
 
         $this->endTransaction();
+
+        $this->log('Test revision created: v' . $this->getRevision());
 
         return $this->getRevision();
     }

@@ -20,6 +20,7 @@ use Application\Events\ApplicationStartedEvent;
 use Application\Exception\ApplicationException;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Feedback\FeedbackCollection;
+use Application\Framework\PackageInfo;
 use Application\Messaging\MessagingCollection;
 use Application_Bootstrap;
 use Application_Bootstrap_Screen;
@@ -51,6 +52,7 @@ use DBHelper;
 use DBHelper_Exception;
 use DeeplHelper;
 use EventHandlingException;
+use Mistralys\AppFramework\AppFramework;
 use Throwable;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
@@ -517,18 +519,11 @@ class Application
         return self::$develEnvironment;
     }
 
-    // 1: src/
-    // 2: {packageName}/
-    // 3: {vendorName}/
-    // 4: vendor
-    // 5: root
-    //                                             1  2  3  4  5
-    private const string ROOT_PATH_DEPENDENCY = __DIR__ . '/../../../../../';
-
-    // 1: src/
-    // 2: root
-    //                                          1  2
-    private const string ROOT_PATH_PACKAGE = __DIR__ . '/../../';
+    // 1: Application
+    // 2: src
+    // 3: root
+    //                                                    1  2  3
+    private const string ROOT_PATH_PACKAGE = __DIR__ . '/../../../';
 
     private static ?bool $isInstalledAsDependency = null;
 
@@ -541,7 +536,7 @@ class Application
     public static function isInstalledAsDependency(): bool
     {
         if (!isset(self::$isInstalledAsDependency)) {
-            self::$isInstalledAsDependency = is_dir(self::ROOT_PATH_DEPENDENCY . '/vendor');
+            self::$isInstalledAsDependency = str_contains(__DIR__, '/vendor/'.PackageInfo::getComposerID().'/src/');
         }
 
         return self::$isInstalledAsDependency;
@@ -566,7 +561,9 @@ class Application
         }
 
         if (self::isInstalledAsDependency()) {
-            $root = FolderInfo::factory(self::ROOT_PATH_DEPENDENCY);
+            $sep = '/vendor/'.PackageInfo::getComposerID().'/';
+            $parts = explode($sep, __DIR__);
+            $root = array_shift($parts).$sep;
         } else {
             $root = FolderInfo::factory(self::ROOT_PATH_PACKAGE);
         }
