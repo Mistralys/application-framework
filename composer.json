@@ -26,7 +26,8 @@
   "autoload-dev": {
     "classmap": [
       "tests/application/assets/classes",
-      "tests/AppFrameworkTestClasses"
+      "tests/AppFrameworkTestClasses",
+      "vendor/apereo/phpcas/source"
     ]
   },
   "repositories": [
