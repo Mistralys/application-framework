@@ -13,6 +13,8 @@ use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\FileHelper_Exception;
+use Connectors\Connector\ConnectorException;
+use Connectors\Connector\ConnectorInterface;
 use Connectors\Request\RequestSerializer;
 use function AppUtils\parseURL;
 
@@ -36,7 +38,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
     protected string $url;
     protected int $timeoutSeconds = 0;
-    protected Connectors_Connector $connector;
+    protected ConnectorInterface $connector;
     protected string $body = '';
     protected string $HTTPMethod = HTTP_Request2::METHOD_POST;
     protected ?HTTP_Request2 $request = null;
@@ -82,16 +84,16 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     );
 
     /**
-     * @param Connectors_Connector $connector
+     * @param ConnectorInterface $connector
      * @param string $url The URL to the API endpoint
      * @param array<string,mixed> $postData POST data to send with the request
      * @param array<string,mixed> $getData GET data to append the URL
      * @param string|null $id Request ID, used when restoring from serialized data.
      *
      * @throws Application_Exception
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
-    public function __construct(Connectors_Connector $connector, string $url, array $postData = array(), array $getData = array(), ?string $id = null)
+    public function __construct(ConnectorInterface $connector, string $url, array $postData = array(), array $getData = array(), ?string $id = null)
     {
         // Remove any GET parameters from the target URL, and
         // merge them into the get data collection. We use only
@@ -125,7 +127,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     /**
      * @return string
      *
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      * @throws JSONConverterException
      */
     public function serialize(): string
@@ -145,7 +147,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return Connectors_Request|NULL Can be null if the data is invalid, or obsolete.
      *
      * @throws Application_Exception
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      * @throws JSONConverterException
      * @throws UnexpectedInstanceException
      */
@@ -205,7 +207,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @param string $password
      * @param string $authScheme
      * @return $this
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function useProxy(string $host, string $port, string $user, string $password, string $authScheme = HTTP_Request2::AUTH_DIGEST): self
     {
@@ -214,7 +216,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         $validAuths = array(HTTP_Request2::AUTH_BASIC, HTTP_Request2::AUTH_DIGEST);
 
         if (!in_array($authScheme, $validAuths, true)) {
-            $ex = new Connectors_Exception(
+            $ex = new ConnectorException(
                 $this->connector,
                 'Invalid authentication scheme',
                 sprintf(
@@ -256,7 +258,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * Retrieves the full request URL including all GET request parameters.
      *
      * @return string
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function getRequestURL(): string
     {
@@ -273,7 +275,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     }
 
     /**
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     protected function requireResponse(): void
     {
@@ -281,7 +283,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
             return;
         }
 
-        $ex = new Connectors_Exception(
+        $ex = new ConnectorException(
             $this->connector,
             'No request sent yet',
             'Cannot access some information before the request has been sent using the [getData] method.',
@@ -295,7 +297,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
     /**
      * @return float
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function getTimeTaken(): float
     {
@@ -310,13 +312,13 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      *
      * @param string $method
      * @return $this
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function setHTTPMethod(string $method): self
     {
 
         if (!in_array($method, self::$validHTTPMethods, true)) {
-            $ex = new Connectors_Exception(
+            $ex = new ConnectorException(
                 $this->connector,
                 sprintf('Invalid request method [%s]', $method),
                 'The method [%s] is not a valid request method. Valid methods are available in the constants HTTP_Request2::METHOD_POST and HTTP_Request2::METHOD_GET.',
@@ -343,7 +345,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
     /**
      * @return $this
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function makePOST(): self
     {
@@ -504,7 +506,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      *
      * @return Connectors_Response
      *
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      * @throws HTTP_Request2_Exception
      * @throws HTTP_Request2_LogicException
      * @throws FileHelper_Exception
@@ -594,7 +596,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * GET variables that may have been added.
      *
      * @return string
-     * @throws Connectors_Exception If the URL is invalid.
+     * @throws ConnectorException If the URL is invalid.
      */
     protected function buildURL(): string
     {
@@ -620,7 +622,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      *
      * @param HTTP_Request2_Response $response
      * @return Connectors_Response
-     * @throws Connectors_Exception If the response code is not valid for the type of HTTP method.
+     * @throws ConnectorException If the response code is not valid for the type of HTTP method.
      */
     protected function createResponse(HTTP_Request2_Response $response): Connectors_Response
     {
@@ -633,11 +635,11 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return $this->response;
     }
 
-    private function createResponseException(HTTP_Request2_Response $response): Connectors_Exception
+    private function createResponseException(HTTP_Request2_Response $response): ConnectorException
     {
         $body = $response->getBody();
 
-        $ex = new Connectors_Exception(
+        $ex = new ConnectorException(
             $this->connector,
             'Remote API request failed, invalid response code.',
             sprintf(
@@ -696,7 +698,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * to send the request.
      *
      * @return HTTP_Request2
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      * @throws HTTP_Request2_LogicException
      */
     protected function createRequest(): HTTP_Request2
@@ -844,7 +846,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return array(200);
     }
 
-    public function getConnector(): Connectors_Connector
+    public function getConnector(): ConnectorInterface
     {
         return $this->connector;
     }
@@ -861,7 +863,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @param string $name
      * @param mixed $value
      * @return $this
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function setPOSTData(string $name, mixed $value): self
     {
@@ -870,7 +872,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         }
 
         if (!is_string($value) && !is_numeric($value)) {
-            $ex = new Connectors_Exception(
+            $ex = new ConnectorException(
                 $this->connector,
                 'Invalid data value',
                 sprintf(
@@ -893,7 +895,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     /**
      * @param array<int|string,mixed>|ArrayDataCollection $params
      * @return $this
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function setPOSTParams(array|ArrayDataCollection $params): self
     {
@@ -931,12 +933,12 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @param string $name
      * @param mixed $value
      * @return $this
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function setGETData(string $name, mixed $value): self
     {
         if (!is_string($value) && !is_numeric($value)) {
-            $ex = new Connectors_Exception(
+            $ex = new ConnectorException(
                 $this->connector,
                 'Invalid data value',
                 sprintf(

@@ -15,7 +15,7 @@ use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use Connectors;
-use Connectors_Exception;
+use Connectors\Connector\ConnectorException;
 use Connectors_Request;
 use Connectors_Request_Method;
 use Connectors_Request_URL;
@@ -49,7 +49,7 @@ class RequestSerializer
      * @param Connectors_Request $request
      * @return string
      *
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      * @throws JSONConverterException
      */
     public static function serialize(Connectors_Request $request) : string
@@ -79,7 +79,7 @@ class RequestSerializer
             return self::REQUEST_TYPE_METHOD;
         }
 
-        throw new Connectors_Exception(
+        throw new ConnectorException(
             $request->getConnector(),
             'Unknown request type.',
             sprintf(
@@ -97,7 +97,7 @@ class RequestSerializer
      * @throws JSONConverterException
      * @throws UnexpectedInstanceException
      * @throws Application_Exception
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public static function unserialize(string $json) : ?Connectors_Request
     {
@@ -155,7 +155,7 @@ class RequestSerializer
         }
         else
         {
-            throw new Connectors_Exception(
+            throw new ConnectorException(
                 $connector,
                 'Unknown request type.',
                 sprintf(

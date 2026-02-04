@@ -8,6 +8,8 @@
 
 declare(strict_types=1);
 
+use Connectors\Connector\ConnectorException;
+use Connectors\Connector\ConnectorInterface;
 use Connectors\Headers\HTTPHeadersBasket;
 
 /**
@@ -24,16 +26,16 @@ class Connectors_Request_Method extends Connectors_Request
     protected string $methodVar = 'method';
 
     /**
-     * @param Connectors_Connector $connector
+     * @param ConnectorInterface $connector
      * @param string $url The URL to the API endpoint
      * @param string $method The API method to call
      * @param array<string,string> $postData POST parameters to send with the request
      * @param array<string,string> $getData GET parameters to append to the request URL
      *
      * @throws Application_Exception
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
-    public function __construct(Connectors_Connector $connector, string $url, string $method, array $postData = array(), array $getData = array(), ?string $id=null)
+    public function __construct(ConnectorInterface $connector, string $url, string $method, array $postData = array(), array $getData = array(), ?string $id=null)
     {
         parent::__construct($connector, $url, $postData, $getData, $id);
 

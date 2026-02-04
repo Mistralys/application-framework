@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 use AppUtils\ArrayDataCollection;
 use AppUtils\ThrowableInfo;
+use Connectors\Connector\ConnectorException;
+use Connectors\Connector\ConnectorInterface;
 use Connectors\Response\ResponseEndpointError;
 use Connectors\Response\ResponseError;
 use Connectors\Response\ResponseSerializer;
@@ -50,7 +52,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
 
     protected Connectors_Request $request;
     protected HTTP_Request2_Response $result;
-    protected Connectors_Connector $connector;
+    protected ConnectorInterface $connector;
     private ?ThrowableInfo $exception = null;
     protected string $json = '';
 
@@ -451,7 +453,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
             return $data;
         }
 
-        throw new Connectors_Exception(
+        throw new ConnectorException(
             $this->connector,
             'No data specified in the response',
             'A data set is required to be sent with the response, but it is empty.',
@@ -464,14 +466,14 @@ class Connectors_Response implements Application_Interfaces_Loggable
     * 
     * @param string $message
     * @param int $code
-    * @throws Connectors_Exception
+    * @throws ConnectorException
     */
     public function throwException(string $message='', int $code=0) : void
     {
         throw $this->createException($message, $code);
     }
     
-    public function createException(string $message='', int $code=0) : Connectors_Exception
+    public function createException(string $message='', int $code=0) : ConnectorException
     {
         $error = $this->getError();
         $details = '';
@@ -493,7 +495,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
             }
         }
 
-        $ex = new Connectors_Exception(
+        $ex = new ConnectorException(
             $this->request->getConnector(),
             $eMessage,
             $details,

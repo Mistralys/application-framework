@@ -8,6 +8,7 @@ declare(strict_types=1);
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use Connectors\Connector\ConnectorInterface;
 use Connectors\Connector\StubConnector;
 use Mistralys\VariableHasher\VariableHasher;
 
@@ -24,7 +25,7 @@ class Connectors
     public const int ERROR_INVALID_CONNECTOR_TYPE = 100701;
 
     /**
-     * @var array<string,Connectors_Connector>
+     * @var array<string,ConnectorInterface>
      */
     protected static array $connectors = array();
 
@@ -36,15 +37,15 @@ class Connectors
      * Connector instances are cached, so multiple calls with the same
      * arguments will return the same instance.
      *
-     * @param string|class-string<Connectors_Connector> $typeOrClass Connector type ID or class name.
+     * @param string|class-string<ConnectorInterface> $typeOrClass Connector type ID or class name.
      * @param mixed ...$constructorArguments Optional arguments to pass to the connector's constructor.
-     * @return Connectors_Connector
+     * @return ConnectorInterface
      *
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      * @see Connectors::ERROR_INVALID_CONNECTOR_TYPE
      */
-    public static function createConnector(string $typeOrClass, ...$constructorArguments) : Connectors_Connector
+    public static function createConnector(string $typeOrClass, ...$constructorArguments) : ConnectorInterface
     {
         $cacheKey = VariableHasher::create($typeOrClass, $constructorArguments)->getHash();
 
@@ -60,7 +61,7 @@ class Connectors
         }
 
         $instance = ClassHelper::requireObjectInstanceOf(
-            Connectors_Connector::class,
+            ConnectorInterface::class,
             new $class(...$constructorArguments),
             self::ERROR_INVALID_CONNECTOR_TYPE
         );
@@ -79,17 +80,17 @@ class Connectors
     }
 
     /**
-     * @param string|class-string<Connectors_Connector> $connectorID
+     * @param string|class-string<ConnectorInterface> $connectorID
      * @return bool
      */
     public static function connectorExists(string $connectorID) : bool
     {
-        if(class_exists($connectorID) && is_a($connectorID, Connectors_Connector::class, true)) {
+        if(class_exists($connectorID) && is_a($connectorID, ConnectorInterface::class, true)) {
             return true;
         }
 
         $class = ClassHelper::resolveClassName('Connectors_Connector_' . $connectorID);
 
-        return $class !== null && class_exists($class) && is_a($class, Connectors_Connector::class, true);
+        return $class !== null && class_exists($class) && is_a($class, ConnectorInterface::class, true);
     }
 }

@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Connectors\Connector\Stub\Method;
 
+use Connectors\Connector\ConnectorException;
 use Connectors_Connector_Method_Get;
-use Connectors_Exception;
 
 /**
  * Pigeon API method: Retrieves all words available in the
@@ -30,14 +30,14 @@ class StubFailureMethod extends Connectors_Connector_Method_Get
 
     /**
      * @return never
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function failFetchData()
     {
         $response = $this->executeRequestByName('somehwere');
 
         if (!$response->isError()) {
-            throw new Connectors_Exception(
+            throw new ConnectorException(
                 $this->connector,
                 'Request did not fail as expected.',
                 '',

@@ -47,12 +47,11 @@ use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 use Connectors;
-use Connectors_Connector;
+use Connectors\Connector\ConnectorInterface;
 use DBHelper;
 use DBHelper_Exception;
 use DeeplHelper;
 use EventHandlingException;
-use Mistralys\AppFramework\AppFramework;
 use Throwable;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
@@ -772,10 +771,10 @@ class Application
      * The type is the filename of the connector minus the extension.
      *
      * @param string|class-string $typeOrClass
-     * @return Connectors_Connector
+     * @return ConnectorInterface
      * @throws BaseClassHelperException
      */
-    public static function createConnector(string $typeOrClass): Connectors_Connector
+    public static function createConnector(string $typeOrClass): ConnectorInterface
     {
         return Connectors::createConnector($typeOrClass);
     }

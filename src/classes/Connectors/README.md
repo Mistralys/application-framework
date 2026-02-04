@@ -27,7 +27,9 @@ The connector class should use namespaces and be called
 All connectors must extend the abstract base connector class:
 
 ```php
-class MyConnector extends Connectors_Connector
+use Connectors\Connector\BaseConnector;
+
+class MyConnector extends BaseConnector
 {
     public const string SERVICE_URL = 'https://mistralys.eu/example-service';
 
@@ -56,7 +58,10 @@ configuring a request instance.
 requests should be preferred because they encapsulate each method's logic.
 
 ```php
-class MyConnector extends Connectors_Connector
+use Connectors\Connector\BaseConnector;
+use Connectors\Connector\ConnectorException;
+
+class MyConnector extends BaseConnector
 {
     public const string SERVICE_URL = 'https://mistralys.eu/example-service';
     public const int ERROR_FAILED_TO_LOAD_DATA = 42;
@@ -68,7 +73,7 @@ class MyConnector extends Connectors_Connector
             return $data;
         }
         
-        throw new Connectors_Exception(
+        throw new ConnectorException(
             $this,
             'Failed to load data.',
             'Developer information',

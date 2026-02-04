@@ -8,11 +8,11 @@ use Application\Bootstrap\Screen\APIBootstrap;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use Connectors;
+use Connectors\Connector\BaseConnector;
+use Connectors\Connector\ConnectorException;
 use Connectors\Headers\HTTPHeadersBasket;
-use Connectors_Connector;
-use Connectors_Exception;
 
-class AppAPIConnector extends Connectors_Connector
+class AppAPIConnector extends BaseConnector
 {
     private string $appURL;
 
@@ -44,7 +44,7 @@ class AppAPIConnector extends Connectors_Connector
      * @param array<string,mixed>|ArrayDataCollection $params
      * @param HTTPHeadersBasket|null $headers Optional headers to include in the request
      * @return ArrayDataCollection
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function fetchMethodData(string $methodName, array|ArrayDataCollection $params=array(), ?HTTPHeadersBasket $headers=null) : ArrayDataCollection
     {
