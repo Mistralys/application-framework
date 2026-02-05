@@ -677,16 +677,26 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
     private string $adapter = self::ADAPTER_CURL;
 
+    /**
+     * @return $this
+     */
     public function useCURL(): self
     {
         return $this->setAdapter(self::ADAPTER_CURL);
     }
 
+    /**
+     * @return $this
+     */
     public function useSockets(): self
     {
         return $this->setAdapter(self::ADAPTER_SOCKETS);
     }
 
+    /**
+     * @param string $adapter
+     * @return $this
+     */
     public function setAdapter(string $adapter): self
     {
         $this->adapter = $adapter;
