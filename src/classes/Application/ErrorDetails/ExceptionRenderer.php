@@ -26,6 +26,16 @@ class ExceptionRenderer implements StringableInterface
         }
     }
 
+    public static function create(Throwable $e, bool $develinfo=false) : self
+    {
+        return new self($e, $develinfo);
+    }
+
+    public static function render(Throwable $e, bool $develinfo=false) : string
+    {
+        return self::create($e, $develinfo)->renderStack();
+    }
+
     public function getException() : Throwable
     {
         return $this->exception;
