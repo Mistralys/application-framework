@@ -24,6 +24,7 @@ use AppUtils\OutputBuffering;
 use AppUtils\PaginationHelper;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
+use UI\Bootstrap\BigSelection\BigSelectionWidget;
 use UI\ClientResourceCollection;
 use UI\Event\FormCreatedEvent;
 use UI\PaginationRenderer;
@@ -1014,11 +1015,11 @@ class UI
     * is used to let the user select from a prominent list
     * of items.
     * 
-    * @return UI_Bootstrap_BigSelection
+    * @return BigSelectionWidget
     */    
-    public function createBigSelection() : UI_Bootstrap_BigSelection
+    public function createBigSelection() : BigSelectionWidget
     {
-        return new UI_Bootstrap_BigSelection($this);
+        return new BigSelectionWidget($this);
     }
 
     public function createTreeRenderer(TreeNode $rootNode) : TreeRenderer

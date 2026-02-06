@@ -91,6 +91,10 @@
     color: var(--color-text-inverted);
 }
 
+.bigselection > LI.bigselection-separator HR{
+    margin: 30px 0;
+}
+
 .bigselection .bigselection-entry.active .bigselection-description {
     color: var(--color-text-inverted-muted);
 }

@@ -10,6 +10,7 @@
 - Admin: The "Welcome" screen is now loaded via the new system.
 - Admin: The "User Settings" screen is now loaded via the new system.
 - Admin: All admin areas are now enabled by default. Use the AppSets feature to disable any as needed.
+- UI: Added separators to the big selection widget.
 - Attributes: Added the `UncachedQuery` attribute to mark methods that run uncached queries.
 - AppSets: Refactored to use database storage.
 - AppSets: Improved administration screens.

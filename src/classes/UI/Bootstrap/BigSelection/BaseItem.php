@@ -2,18 +2,24 @@
 
 declare(strict_types=1);
 
+namespace UI\Bootstrap\BigSelection;
+
+use Application_Interfaces_Iconizable;
+use Application_Traits_Iconizable;
+use UI_Bootstrap;
+
 /**
- * @property UI_Bootstrap_BigSelection $parent
+ * @property BigSelectionWidget $parent
  */
-abstract class UI_Bootstrap_BigSelection_Item extends UI_Bootstrap implements Application_Interfaces_Iconizable
+abstract class BaseItem extends UI_Bootstrap implements Application_Interfaces_Iconizable
 {
-    const CLASS_NAME_ENTRY = 'bigselection-entry';
+    public const string CLASS_NAME_ENTRY = BigSelectionCSS::ITEM_ENTRY;
 
     use Application_Traits_Iconizable;
 
-    protected $referenceID = '';
+    protected string $referenceID = '';
 
-    abstract protected function resolveSearchWords() : string;
+    abstract protected function resolveSearchWords(): string;
 
     /**
      * Sets an optional reference ID for the item, which can be
@@ -26,7 +32,7 @@ abstract class UI_Bootstrap_BigSelection_Item extends UI_Bootstrap implements Ap
      * @param string $referenceID
      * @return $this
      */
-    public function setReferenceID(string $referenceID)
+    public function setReferenceID(string $referenceID) : self
     {
         $this->referenceID = $referenceID;
         return $this;
@@ -35,7 +41,7 @@ abstract class UI_Bootstrap_BigSelection_Item extends UI_Bootstrap implements Ap
     /**
      * @return string
      */
-    public function getReferenceID() : string
+    public function getReferenceID(): string
     {
         return $this->referenceID;
     }

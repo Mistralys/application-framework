@@ -2,16 +2,20 @@
 
 declare(strict_types=1);
 
+namespace UI\Bootstrap\BigSelection\Item;
+
 use AppUtils\AttributeCollection;
-use AppUtils\ClassHelper;
-use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use UI\AdminURLs\AdminURLInterface;
+use UI\Bootstrap\BigSelection\BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS;
+use UI_Exception;
+use UI_Renderable_Interface;
 
 /**
  */
-class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_Item
+class RegularItem extends BaseItem
 {
     public const string ATTRIBUTE_DESCRIPTION = 'description';
     public const string ATTRIBUTE_HREF = 'href';
@@ -28,16 +32,16 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
      * Changes the label after instantiating the item.
      *
      * @param string|number|UI_Renderable_Interface $label
-     * @return UI_Bootstrap_BigSelection_Item_Regular
+     * @return RegularItem
      * @throws UI_Exception
      */
-    public function setLabel($label) : UI_Bootstrap_BigSelection_Item_Regular
+    public function setLabel($label): RegularItem
     {
         $this->label = toString($label);
         return $this;
     }
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return $this->label;
     }
@@ -46,34 +50,33 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
      * Sets a description that will be shown along with the label.
      *
      * @param string|number|UI_Renderable_Interface $text
-     * @return UI_Bootstrap_BigSelection_Item_Regular
+     * @return RegularItem
      * @throws UI_Exception
      */
-    public function setDescription($text) : UI_Bootstrap_BigSelection_Item_Regular
+    public function setDescription($text): RegularItem
     {
         $this->setAttribute(self::ATTRIBUTE_DESCRIPTION, toString($text));
         return $this;
     }
 
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return (string)$this->getAttribute(self::ATTRIBUTE_DESCRIPTION);
     }
 
-    protected function _render() : string
+    protected function _render(): string
     {
         $anchorAtts = array(
-            'href' => $this->getAttribute(self::ATTRIBUTE_HREF),
-            'onclick' => $this->getAttribute(self::ATTRIBUTE_ONCLICK)
+                'href' => $this->getAttribute(self::ATTRIBUTE_HREF),
+                'onclick' => $this->getAttribute(self::ATTRIBUTE_ONCLICK)
         );
 
         $this->addClass(self::CLASS_NAME_ENTRY);
 
         $searchAtt = '';
 
-        if($this->parent->isFilteringInUse())
-        {
-            $searchAtt = ' data-terms="'.$this->resolveSearchWords().'"';
+        if ($this->parent->isFilteringInUse()) {
+            $searchAtt = ' data-terms="' . $this->resolveSearchWords() . '"';
         }
 
         OutputBuffering::start();
@@ -81,11 +84,11 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
         ?>
         <li class="<?php echo implode(' ', $this->classes) ?>"<?php echo $searchAtt ?>>
             <?php $this->renderMetaControls() ?>
-            <a<?php echo compileAttributes($anchorAtts) ?> class="bigselection-anchor">
-                <span class="bigselection-label">
+            <a<?php echo compileAttributes($anchorAtts) ?> class="<?php echo BigSelectionCSS::ANCHOR ?>">
+                <span class="<?php echo BigSelectionCSS::LABEL ?>">
                     <?php echo $this->renderLabel() ?>
                 </span>
-                <span class="bigselection-description">
+                <span class="<?php echo BigSelectionCSS::DESCRIPTION ?>">
                     <?php echo $this->getAttribute(self::ATTRIBUTE_DESCRIPTION) ?>
                 </span>
             </a>
@@ -102,34 +105,33 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
      * @param AttributeCollection|null $attributes Optional attributes for the meta-control element.
      * @return $this
      */
-    public function addMetaControl($control, ?AttributeCollection $attributes=null) : self
+    public function addMetaControl($control, ?AttributeCollection $attributes = null): self
     {
         $this->metaControls[] = array(
-            'control' => (string)$control,
-            'attributes' => $attributes
+                'control' => (string)$control,
+                'attributes' => $attributes
         );
 
         return $this;
     }
 
-    protected function renderMetaControls() : void
+    protected function renderMetaControls(): void
     {
-        if(empty($this->metaControls)) {
+        if (empty($this->metaControls)) {
             return;
         }
 
         ?>
-        <ul class="bigselection-meta-controls unstyled">
+        <ul class="<?php echo BigSelectionCSS::META_CONTROLS_LIST ?> unstyled">
             <?php
-            foreach($this->metaControls as $control)
-            {
-                if(isset($control['attributes'])) {
+            foreach ($this->metaControls as $control) {
+                if (isset($control['attributes'])) {
                     $attributes = $control['attributes']->render();
                 } else {
                     $attributes = AttributeCollection::create();
                 }
 
-                $attributes->addClass('bigselection-meta-control');
+                $attributes->addClass(BigSelectionCSS::META_CONTROL_ITEM);
 
                 ?>
                 <li <?php echo $attributes ?>>
@@ -142,25 +144,24 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
         <?php
     }
 
-    protected function resolveSearchWords() : string
+    protected function resolveSearchWords(): string
     {
         $words = strip_tags($this->label);
 
         $descr = $this->getDescription();
-        if(!empty($descr))
-        {
-            $words .= ' '.strip_tags($descr);
+        if (!empty($descr)) {
+            $words .= ' ' . strip_tags($descr);
         }
 
         return str_replace(array('"'), " ", $words);
     }
 
-    protected function renderLabel() : string
+    protected function renderLabel(): string
     {
         $label = $this->label;
 
-        if(isset($this->icon)) {
-            $label = $this->icon.' '.$label;
+        if (isset($this->icon)) {
+            $label = $this->icon . ' ' . $label;
         }
 
         return $label;
@@ -170,7 +171,7 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
      * @param string|AdminURLInterface $url
      * @return $this
      */
-    public function makeLinked($url) : self
+    public function makeLinked($url): self
     {
         return $this->setAttribute(self::ATTRIBUTE_HREF, (string)$url);
     }
@@ -178,12 +179,12 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
     /**
      * @return $this
      */
-    public function makeActive() : self
+    public function makeActive(): self
     {
-        return $this->addClass('active');
+        return $this->addClass(BigSelectionCSS::STATE_ACTIVE);
     }
 
-    public function makeClickable($statement) : UI_Bootstrap_BigSelection_Item_Regular
+    public function makeClickable($statement): RegularItem
     {
         $this->setAttribute(self::ATTRIBUTE_ONCLICK, $statement);
         $this->setAttribute(self::ATTRIBUTE_HREF, 'javascript:void(0)');

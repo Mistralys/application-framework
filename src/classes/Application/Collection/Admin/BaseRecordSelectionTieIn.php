@@ -22,7 +22,7 @@ use UI;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLException;
 use UI\AdminURLs\AdminURLInterface;
-use UI_Bootstrap_BigSelection_Item_Regular;
+use UI\Bootstrap\BigSelection\Item\RegularItem;
 use UI_Page_Breadcrumb;
 
 /**
@@ -392,11 +392,11 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
      * Gives the possibility to adjust the record entry
      * before it is rendered in the list.
      *
-     * @param UI_Bootstrap_BigSelection_Item_Regular $entry
+     * @param RegularItem $entry
      * @param CollectionItemInterface $record
      * @return void
      */
-    abstract protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, CollectionItemInterface $record) : void;
+    abstract protected function adjustEntry(RegularItem $entry, CollectionItemInterface $record) : void;
 
     private function renderNoRecordsAvailable() : string
     {

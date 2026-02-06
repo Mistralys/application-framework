@@ -11,7 +11,7 @@ namespace TestDriver\TestDBRecords;
 use Application\Collection\CollectionItemInterface;
 use DBHelper\Admin\BaseDBRecordSelectionTieIn;
 use TestDriver\ClassFactory;
-use UI_Bootstrap_BigSelection_Item_Regular;
+use UI\Bootstrap\BigSelection\Item\RegularItem;
 
 /**
  * @package Test Driver
@@ -19,7 +19,7 @@ use UI_Bootstrap_BigSelection_Item_Regular;
  */
 class TestDBRecordSelectionTieIn extends BaseDBRecordSelectionTieIn
 {
-    protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, CollectionItemInterface $record): void
+    protected function adjustEntry(RegularItem $entry, CollectionItemInterface $record): void
     {
     }
 
