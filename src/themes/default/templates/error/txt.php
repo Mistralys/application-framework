@@ -1,7 +1,8 @@
 <?php
 
-/* @var $error Application_ErrorDetails */
+/* @var $error ExceptionPageRenderer */
 
+use Application\ErrorDetails\ExceptionPageRenderer;
 use AppUtils\ClassHelper;
 
 if(!isset($error))
@@ -9,7 +10,7 @@ if(!isset($error))
     return;
 }
 
-$error = ClassHelper::requireObjectInstanceOf(Application_ErrorDetails::class, $error);
+$error = ClassHelper::requireObjectInstanceOf(ExceptionPageRenderer::class, $error);
 
 ?>
 

@@ -11,6 +11,7 @@ use Application\AppFactory;
 use Application\Application;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
+use Application\ErrorDetails\ExceptionPageRenderer;
 use Application\Exception\ApplicationException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -240,9 +241,9 @@ function isContentTypeHTML() : bool
  * displays the generated markup as a full HTML page complete
  * with doctype. Intended to be used instead of a regular page.
  * 
- * Note: In case the content type header has been set to something
- * other than <code>text/html</code>, the output will automatically
- * be switched to plain text.
+ * > Note: In case the content type header has been set to something
+ * > other than `text/html`, the output will automatically
+ * > be switched to plain text.
  *
  * @param Throwable $e
  * @return never
@@ -267,56 +268,20 @@ function displayError(Throwable $e) : never
             $develinfo = $user->isDeveloper();
         }
     }
-    catch(Exception $ue) {}
+    catch(Throwable $ue) {}
 
     if(isDevelMode()) {
         $develinfo = true;
     }
 
-    $contentType = 'html';
-    if(!isContentTypeHTML())
-    {
-        $contentType = 'txt';
-    }
-    
-    $locations = array();
-
-    if(defined('APP_THEME')) {
-        $locations[] = array(APP_URL.'/themes/'.APP_THEME, APP_URL.'/themes/'.APP_THEME);
-        $locations[] = array(APP_INSTALL_URL.'/themes/'.APP_THEME, APP_INSTALL_FOLDER.'/themes/'.APP_THEME);
-    }
-    
-    $locations[] = array(APP_URL.'/themes/default', APP_ROOT.'/themes/default');
-    $locations[] = array(APP_INSTALL_URL.'/themes/default', APP_INSTALL_FOLDER.'/themes/default');
-    
-    $themeLocation = null;
-    $templateFile = null;
-    foreach($locations as $location) 
-    {
-        $file = $location[1].'/templates/error/'.$contentType.'.php';
-        if(file_exists($file)) {
-            $templateFile = $file;
-            $themeLocation = $location;
-            break;
-        }
-    }
-
-    $error = new Application_ErrorDetails(
+    new ExceptionPageRenderer(
         APP_ERROR_PAGE_TITLE, 
         'An unexpected issue came up, and the system decided to stop the current operation to avoid breaking anything. '.
         'While this is certainly inconvenient, we invite you to review the error details below - they may shed some light on possible solutions. ',
-        $themeLocation[1] ?? '(unknown)',
-        $themeLocation[0] ?? '(unknown)',
-        $locations,
         $output,
-        $contentType,
-        $e, 
+        $e,
         $develinfo
-    );
-    
-    require_once $templateFile;
-	
-    Application::exit();
+    )->display();
 }
 
 function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=false, bool $detailed=true) : string
