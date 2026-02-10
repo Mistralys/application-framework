@@ -6,9 +6,9 @@ namespace AppFrameworkTestClasses\Stubs\UI;
 
 use UI;
 use UI\Traits\ButtonDecoratorInterface;
+use UI\Traits\ButtonDecoratorTrait;
 use UI_Button;
 use UI_Traits_Conditional;
-use UI\Traits\ButtonDecoratorTrait;
 
 class GenericButtonStub implements ButtonDecoratorInterface
 {

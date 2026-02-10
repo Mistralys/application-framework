@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 use Application\Disposables\DisposableDisposedException;
 use AppUtils\BaseException;
-use AppUtils\ConvertHelper_Exception;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**

@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-use Application\NewsCentral\NewsEntry;
 use AppUtils\ConvertHelper;
 use NewsCentral\Entries\NewsArticle;
 
 class template_default_news_entry_article extends UI_Page_Template_Custom
 {
+    public const string VAR_ARTICLE = 'article';
+
     protected function generateOutput(): void
     {
         $manager = $this->article->getCategoriesManager();
@@ -19,7 +20,7 @@ class template_default_news_entry_article extends UI_Page_Template_Custom
                 {
                     ?>
                     <h4 class="news-article-title">
-                        <a href="<?php echo $this->article->getLiveURLRead() ?>">
+                        <a href="<?php echo $this->article->adminURL()->read() ?>">
                             <?php echo $this->article->getLabel(); ?>
                         </a>
                     </h4>
@@ -60,7 +61,7 @@ class template_default_news_entry_article extends UI_Page_Template_Custom
 
     protected function preRender(): void
     {
-        $this->article = $this->getObjectVar('article', NewsArticle::class);
+        $this->article = $this->getObjectVar(self::VAR_ARTICLE, NewsArticle::class);
 
         $this->ui->addStylesheet('ui-news.css');
     }

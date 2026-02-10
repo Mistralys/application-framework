@@ -8,6 +8,6 @@ use Application_Exception;
 
 class SystemMailException extends Application_Exception
 {
-    public const ERROR_NO_BODY_CONTENT = 159601;
-    public const ERROR_NO_SUBJECT_SET = 159602;
+    public const int ERROR_NO_BODY_CONTENT = 159601;
+    public const int ERROR_NO_SUBJECT_SET = 159602;
 }

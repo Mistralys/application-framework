@@ -2,7 +2,7 @@
 
 class Application_AjaxMethods_AddMessage extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'AddMessage';
+    public const string METHOD_NAME = 'AddMessage';
 
     public function getMethodName() : string
     {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Users\Admin;
 
-use Application\Users\Admin\Screens\BaseUsersArea;
-use Application\Users\Admin\Screens\Mode\BaseCreateUserMode;
-use Application\Users\Admin\Screens\Mode\BaseUserListMode;
+use Application\Users\Admin\Screens\Manage\Mode\CreateMode;
+use Application\Users\Admin\Screens\Manage\Mode\ListMode;
+use Application\Users\Admin\Screens\Manage\ManageUsersArea;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -16,19 +16,19 @@ class UsersAdminURLs
     {
         return $this
             ->base()
-            ->mode(BaseUserListMode::URL_NAME);
+            ->mode(ListMode::URL_NAME);
     }
 
     public function base() : AdminURLInterface
     {
         return AdminURL::create()
-            ->area(BaseUsersArea::URL_NAME);
+            ->area(ManageUsersArea::URL_NAME);
     }
 
     public function create() : AdminURLInterface
     {
         return $this
             ->base()
-            ->mode(BaseCreateUserMode::URL_NAME);
+            ->mode(CreateMode::URL_NAME);
     }
 }

@@ -6,16 +6,16 @@ namespace Application\TimeTracker\Admin;
 
 use Application\Admin\BaseScreenRights;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\TimeTracker\Admin\Screens\BaseCreateScreen;
-use Application\TimeTracker\Admin\Screens\BaseCreateTimeSpanScreen;
-use Application\TimeTracker\Admin\Screens\BaseExportScreen;
-use Application\TimeTracker\Admin\Screens\BaseImportScreen;
-use Application\TimeTracker\Admin\Screens\BaseListScreen;
-use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
-use Application\TimeTracker\Admin\Screens\BaseViewScreen;
-use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalSettingsScreen;
-use Application\TimeTracker\Admin\Screens\ListScreen\BaseTimeSpansListScreen;
-use Application\TimeTracker\Admin\Screens\ViewScreen\BaseSettingsScreen;
+use Application\TimeTracker\Admin\Screens\Mode\CreateEntryMode;
+use Application\TimeTracker\Admin\Screens\Mode\CreateTimeSpanMode;
+use Application\TimeTracker\Admin\Screens\Mode\ExportMode;
+use Application\TimeTracker\Admin\Screens\Mode\ImportMode;
+use Application\TimeTracker\Admin\Screens\Mode\ListMode;
+use Application\TimeTracker\Admin\Screens\Mode\ListScreen\GlobalSettingsSubmode;
+use Application\TimeTracker\Admin\Screens\Mode\ListScreen\TimeSpanListSubmode;
+use Application\TimeTracker\Admin\Screens\Mode\ViewMode;
+use Application\TimeTracker\Admin\Screens\Mode\ViewScreen\SettingsSubmode;
+use Application\TimeTracker\Admin\Screens\TimeTrackerArea;
 use Application\TimeTracker\User\TimeTrackerRightsInterface;
 
 class TimeTrackerScreenRights extends BaseScreenRights
@@ -35,20 +35,21 @@ class TimeTrackerScreenRights extends BaseScreenRights
      * @var array<class-string<AdminScreenInterface>, string>
      */
     public const array SCREEN_RIGHTS = array(
-        BaseTimeTrackerArea::class => self::SCREEN_TIME_TRACKER_AREA,
-        BaseCreateScreen::class => self::SCREEN_CREATE_ENTRY,
-        BaseListScreen::class => self::SCREEN_ENTRIES_LIST,
-        BaseViewScreen::class => self::SCREEN_VIEW,
-        BaseExportScreen::class => self::SCREEN_EXPORT,
-        BaseImportScreen::class => self::SCREEN_IMPORT,
-        BaseSettingsScreen::class => self::SCREEN_GLOBAL_SETTINGS,
-        BaseTimeSpansListScreen::class =>  self::SCREEN_TIME_SPANS_LIST,
-        BaseCreateTimeSpanScreen::class => self::SCREEN_TIME_SPANS_CREATE,
-        BaseGlobalSettingsScreen::class => self::SCREEN_GLOBAL_SETTINGS,
+        TimeTrackerArea::class => self::SCREEN_TIME_TRACKER_AREA,
+        CreateEntryMode::class => self::SCREEN_CREATE_ENTRY,
+        ListMode::class => self::SCREEN_ENTRIES_LIST,
+        ViewMode::class => self::SCREEN_VIEW,
+        ExportMode::class => self::SCREEN_EXPORT,
+        ImportMode::class => self::SCREEN_IMPORT,
+        SettingsSubmode::class => self::SCREEN_GLOBAL_SETTINGS,
+        TimeSpanListSubmode::class =>  self::SCREEN_TIME_SPANS_LIST,
+        CreateTimeSpanMode::class => self::SCREEN_TIME_SPANS_CREATE,
+        GlobalSettingsSubmode::class => self::SCREEN_GLOBAL_SETTINGS,
     );
     public const string SCREEN_VIEW_SETTINGS = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
     public const string SCREEN_VIEW_SETTINGS_EDIT = TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES;
     public const string SCREEN_VIEW_STATUS = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
+    public const string SCREEN_LIST_DAY = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
 
     protected function _registerRights(): void
     {

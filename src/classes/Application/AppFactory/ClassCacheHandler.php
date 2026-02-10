@@ -8,15 +8,12 @@ declare(strict_types=1);
 
 namespace Application\AppFactory;
 
-use Application;
-use Application\AppFactory;
+use Application\Application;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\Repository\ClassRepositoryManager;
-use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
-use AppUtils\FileHelper\SerializedFile;
 
 /**
  * Handles the caching of class information to speed up class

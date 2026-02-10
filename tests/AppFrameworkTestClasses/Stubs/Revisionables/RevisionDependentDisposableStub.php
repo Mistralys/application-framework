@@ -12,7 +12,7 @@ use Application\Disposables\DisposableInterface;
 use Application\Disposables\DisposableTrait;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Traits\RevisionDependentTrait;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 
 /**
@@ -32,7 +32,7 @@ class RevisionDependentDisposableStub
     implements DisposableInterface
 {
     use DisposableTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
 
     protected function _getIdentification(): string

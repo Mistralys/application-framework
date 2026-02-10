@@ -9,7 +9,7 @@ use Application_User;
 
 class DeveloperRole extends BaseRole
 {
-    public const ROLE_ID = 'Developer';
+    public const string ROLE_ID = 'Developer';
 
     public function getID(): string
     {

@@ -4,12 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Development;
 
-use AppUtils\FileHelper\FolderInfo;
+use Application\Development\Admin\AppDevAdminURLs;
 
 class DevManager
 {
-    public static function getAdminScreensFolder() : FolderInfo
+    private static ?DevManager $instance = null;
+
+    public static function getInstance() : self
     {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
+        if(self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    public function adminURL() : AppDevAdminURLs
+    {
+        return AppDevAdminURLs::getInstance();
     }
 }

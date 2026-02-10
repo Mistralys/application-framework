@@ -9,12 +9,12 @@ class Application_User_Statistics
     // ---------------------------------------------------------
     // WARNING: Update the reset() method when adding new ones!
 
-    const SETTING_DATE_LAST_LOGIN = 'stats_date_last_login';
-    const SETTING_DATE_FIRST_LOGIN = 'stats_date_first_login';
-    const SETTING_IS_FIRST_LOGIN = 'stats_is_first_login';
-    const SETTING_TOTAL_LOGINS = 'stats_total_logins';
-    const SETTING_AMOUNT_LOGINS_TODAY = 'stats_amount_logins_today';
-    const SETTING_LOGIN_DATES = 'stats_dates_logged_in';
+    const string SETTING_DATE_LAST_LOGIN = 'stats_date_last_login';
+    const string SETTING_DATE_FIRST_LOGIN = 'stats_date_first_login';
+    const string SETTING_IS_FIRST_LOGIN = 'stats_is_first_login';
+    const string SETTING_TOTAL_LOGINS = 'stats_total_logins';
+    const string SETTING_AMOUNT_LOGINS_TODAY = 'stats_amount_logins_today';
+    const string SETTING_LOGIN_DATES = 'stats_dates_logged_in';
 
     /**
      * The TEXT column can store 65000 characters. Accounting

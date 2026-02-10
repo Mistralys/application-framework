@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Application\Admin\Area\Events\UIHandlingCompleteEvent;
 use Application\Admin\BaseArea;
+use Application\EventHandler\EventManager;
 use Application\Interfaces\Admin\AdminActionInterface;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminModeInterface;
@@ -23,8 +24,6 @@ use UI\Page\Navigation\QuickNavigation;
 abstract class Application_Admin_Area extends Application_Admin_Skeleton implements AdminAreaInterface
 {
     use Application_Traits_Admin_Screen;
-
-    public const string EVENT_UI_HANDLING_COMPLETE = 'UIHandlingComplete';
 
     public function __construct(Application_Driver $driver, bool $adminMode = false)
     {
@@ -130,11 +129,9 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton impleme
         $this->handleTabs($this->ui->createTabs('page-content-tabs'));
         $this->handleQuickNavigation($this->createQuickNav());
 
-        Application_EventHandler::trigger(
-            self::EVENT_UI_HANDLING_COMPLETE,
-            array(
-                $this
-            ),
+        EventManager::trigger(
+            UIHandlingCompleteEvent::EVENT_NAME,
+            array($this),
             UIHandlingCompleteEvent::class
         );
 

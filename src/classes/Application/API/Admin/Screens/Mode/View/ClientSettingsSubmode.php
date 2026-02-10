@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Application\API\Admin\Screens\Mode\View;
+
+use Application\API\Admin\APIScreenRights;
+use Application\API\Admin\RequestTypes\APIClientRequestTrait;
+use Application\API\Admin\Traits\ClientSubmodeInterface;
+use Application\API\Admin\Traits\ClientSubmodeTrait;
+use Application\API\Clients\APIClientRecordSettings;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
+
+class ClientSettingsSubmode extends BaseRecordSettingsSubmode implements ClientSubmodeInterface
+{
+    use ClientSubmodeTrait;
+    use APIClientRequestTrait;
+
+    public const string URL_NAME = 'settings';
+
+    public function getURLName(): string
+    {
+        return self::URL_NAME;
+    }
+
+    public function getTitle(): string
+    {
+        return t('API Client Settings');
+    }
+
+    public function getSettingsManager() : APIClientRecordSettings
+    {
+        return new APIClientRecordSettings($this, $this->getAPIClientRequest()->requireRecord());
+    }
+
+    public function getRequiredRight(): string
+    {
+        return APIScreenRights::SCREEN_CLIENTS_SETTINGS;
+    }
+
+    public function isUserAllowedEditing(): bool
+    {
+        return $this->getUser()->can(APIScreenRights::SCREEN_CLIENTS_SETTINGS_EDIT);
+    }
+
+    public function isEditable(): bool
+    {
+        return true;
+    }
+
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
+    {
+        return t(
+            'The %1$s API Client settings have been updated successfully at %2$s.',
+            sb()->reference($record->getLabel()),
+            sb()->time()
+        );
+    }
+
+    public function getBackOrCancelURL(): string
+    {
+        return (string)$this->getAPIClientRequest()->requireRecord()->adminURL()->base();
+    }
+}

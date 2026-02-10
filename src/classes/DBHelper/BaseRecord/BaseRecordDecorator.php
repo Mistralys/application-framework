@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace DBHelper\BaseRecord;
 
 use Application\Disposables\DisposableTrait;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 use DBHelper\Traits\RecordDecoratorInterface;
 use DBHelper\Traits\RecordDecoratorTrait;
@@ -30,5 +30,5 @@ abstract class BaseRecordDecorator implements RecordDecoratorInterface
     use RecordDecoratorTrait;
     use Application_Traits_Loggable;
     use DisposableTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
 }

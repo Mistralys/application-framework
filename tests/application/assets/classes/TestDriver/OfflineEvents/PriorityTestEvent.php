@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents;
 
-use Application_EventHandler_Event;
+use Application\EventHandler\OfflineEvents\BaseOfflineEvent;
 
-class PriorityTestEvent extends Application_EventHandler_Event
+class PriorityTestEvent extends BaseOfflineEvent
 {
-    public const EVENT_NAME = 'PriorityTest';
+    public const string EVENT_NAME = 'PriorityTest';
+
+    public function getName(): string
+    {
+        return self::EVENT_NAME;
+    }
 }

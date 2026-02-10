@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Revisionable\RevisionableInterface;
 
 trait UI_Traits_Conditional

@@ -11,10 +11,10 @@ namespace Application\API\Clients\Keys;
 use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\APIClientRecord;
 use Application\AppFactory;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
@@ -35,7 +35,7 @@ class APIKeyRecordSettings extends Application_Formable_RecordSettings_Extended
     public const string SETTING_COMMENTS = 'comments';
     public const string SETTING_GRANT_ALL = 'grant_all';
 
-    public function __construct(Application_Formable $formable, APIClientRecord $client, ?APIKeyRecord $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, APIClientRecord $client, ?APIKeyRecord $record = null)
     {
         parent::__construct($formable, $client->createAPIKeys(), $record);
 

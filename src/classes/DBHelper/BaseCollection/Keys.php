@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 use Application\Disposables\DisposableInterface;
 use Application\Disposables\DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 class DBHelper_BaseCollection_Keys implements DisposableInterface
 {
     use Application_Traits_Loggable;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use DisposableTrait;
 
     public const int ERROR_KEY_ALREADY_REGISTERED = 71401;

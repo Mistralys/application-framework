@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Messaging;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class MessagingException extends ApplicationException
 {

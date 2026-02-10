@@ -8,16 +8,16 @@ use Application\Media\ImageDocumentTrait;
 use Application\Media\MediaException;
 use AppUtils\BaseException;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\ImageHelper;
 use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
 use AppUtils\ImageHelper_Size;
-use AppUtils\ImageHelper;
 
 class Application_Media_Document_Image extends Application_Media_Document
     implements ImageDocumentInterface
 {
     use ImageDocumentTrait;
 
-    public const IMAGE_EXTENSIONS = array(
+    public const array IMAGE_EXTENSIONS = array(
         'jpg',
         'jpeg',
         'png',
@@ -116,20 +116,12 @@ class Application_Media_Document_Image extends Application_Media_Document
             return $this->dimensions;
         }
 
-        $path = $this->getPath();
-        if (!file_exists($path)) {
-            throw new MediaException(
-                'Image file does not exist',
-                sprintf(
-                    'Retrieving size of image [%1$s] from document [%2$s] failed, file not found.',
-                    $path,
-                    $this->id
-                ),
-                self::ERROR_FILE_NOT_FOUND
-            );
-        }
+        $this->dimensions = new ImageHelper_Size(array(0, 0));
 
-        $this->dimensions = ImageHelper::getImageSize($path);
+        $path = $this->getPath();
+        if(file_exists($path)) {
+            $this->dimensions = ImageHelper::getImageSize($path);
+        }
         
         return $this->dimensions;
     }

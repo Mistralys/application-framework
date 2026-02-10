@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use Application\AppFactory;
-use Application\OfflineEvents\RegisterTagCollectionsEvent;
+use Application\Tags\Events\RegisterTagCollectionsEvent;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableUniqueID;

@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace testsuites\TypeHinter;
 
-use Application;
-use Application\AppFactory;
 use AppFrameworkTestClasses\ApplicationTestCase;
+use Application\AppFactory;
 use AppUtils\FileHelper;
-use TypeHinter;
+use TypeHinter\TypeHintRunner;
 use TypeHinter_UpdateV1_21;
 
 final class ReplaceTest extends ApplicationTestCase
@@ -43,7 +42,7 @@ final class ReplaceTest extends ApplicationTestCase
 
     public function test_findFiles() : void
     {
-        $this->assertCount(1, (new TypeHinter($this->sourceFolder))->getFilesList());
+        $this->assertCount(1, (new TypeHintRunner($this->sourceFolder))->getFilesList());
     }
 
     public function test_updateV1_21() : void
@@ -52,7 +51,7 @@ final class ReplaceTest extends ApplicationTestCase
 
         $this->enableLogging();
 
-        $hinter = (new TypeHinter($this->sourceFolder))
+        $hinter = (new TypeHintRunner($this->sourceFolder))
             ->setFileSuffix('output')
             ->addMethod('_handleActions', 'bool')
             ->addReplace($update->getActionSearch(), $update->getActionReplace());

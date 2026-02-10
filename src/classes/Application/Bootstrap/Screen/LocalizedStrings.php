@@ -2,14 +2,14 @@
 
 class Application_Bootstrap_Screen_LocalizedStrings extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public function getDispatcher() : string
     {
         return 'themes/default/js/localized_strings.js.php';
     }
     
     protected $driverVersion;
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->createEnvironment();
         

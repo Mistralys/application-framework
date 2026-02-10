@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\TimeSpans;
 
-use Application;
+use Application\Application;
 use Application\TimeTracker\Admin\TimeSpansAdminURLs;
 use DBHelper_BaseCollection;
 
@@ -16,8 +16,8 @@ use DBHelper_BaseCollection;
  */
 class TimeSpanCollection extends DBHelper_BaseCollection
 {
-    public const TABLE_NAME = 'time_tracker_time_spans';
-    public const PRIMARY_NAME = 'time_span_id';
+    public const string TABLE_NAME = 'time_tracker_time_spans';
+    public const string PRIMARY_NAME = 'time_span_id';
 
     public function getRecordClassName(): string
     {

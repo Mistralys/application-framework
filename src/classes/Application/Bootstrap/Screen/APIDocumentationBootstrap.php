@@ -8,11 +8,10 @@ declare(strict_types=1);
 
 namespace Application\Bootstrap\Screen;
 
-use Application;
 use Application\API\APIManager;
-use Application\API\APIMethodInterface;
 use Application\API\Documentation\APIDocumentation;
 use Application\API\Documentation\MethodDocumentation;
+use Application\Application;
 use Application_Bootstrap_Screen;
 
 /**

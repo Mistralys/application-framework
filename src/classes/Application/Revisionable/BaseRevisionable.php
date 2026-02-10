@@ -6,23 +6,25 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
 use Application\Disposables\DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableListener;
 use Application\Revisionable\Changelog\BaseRevisionableChangelogHandler;
 use Application\Revisionable\Changelog\RevisionableChangelogHandlerInterface;
 use Application\Revisionable\Changelog\RevisionableChangelogTrait;
-use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\Event\BeforeSaveEvent;
 use Application\Revisionable\Event\RevisionAddedEvent;
+use Application\Revisionable\Event\RevisionSelectedEvent;
 use Application\Revisionable\Event\TransactionEndedEvent;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\Storage\BaseDBCollectionStorage;
-use Application\Revisionable\Storage\BaseRevisionStorage;
-use Application\Revisionable\Storage\Event\Application_RevisionStorage_Event_RevisionAdded;
-use Application\Revisionable\Storage\Event\RevisionSelectedEvent;
+use Application\Revisionable\Storage\Event\StorageRevisionAddedEvent;
+use Application\Revisionable\Storage\Event\StorageRevisionSelectedEvent;
 use Application\Revisionable\Storage\RevisionableStorageException;
 use Application\Revisionable\Storage\RevisionStorageException;
 use Application\Revisionable\Storage\StubDBRevisionStorage;
@@ -49,7 +51,7 @@ abstract class BaseRevisionable implements RevisionableInterface
 {
     use Application_Traits_LockableWithManager;
     use DisposableTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use Application_Traits_Loggable;
     use Application_Traits_Simulatable;
     use RevisionableChangelogTrait;
@@ -1301,9 +1303,9 @@ abstract class BaseRevisionable implements RevisionableInterface
      * be ignored.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onKeyModified(callable $callback): Application_EventHandler_EventableListener
+    public function onKeyModified(callable $callback): EventableListener
     {
         return $this->addEventListener('void', $callback);
     }
@@ -2375,18 +2377,18 @@ abstract class BaseRevisionable implements RevisionableInterface
         $this->_registerEvents();
     }
 
-    private function callback_revisionSelected(RevisionSelectedEvent $event) : void
+    private function callback_revisionSelected(StorageRevisionSelectedEvent $event) : void
     {
         $this->selectedRevision = $event->getRevision();
 
         $this->triggerEvent(
-            \Application\Revisionable\Event\RevisionSelectedEvent::EVENT_NAME,
+            RevisionSelectedEvent::EVENT_NAME,
             array($this, $event->getRevision()),
-            \Application\Revisionable\Event\RevisionSelectedEvent::class
+            RevisionSelectedEvent::class
         );
     }
 
-    private function callback_revisionAdded(Application_RevisionStorage_Event_RevisionAdded $event) : void
+    private function callback_revisionAdded(StorageRevisionAddedEvent $event) : void
     {
         $this->triggerEvent(
             self::EVENT_REVISION_ADDED,
@@ -2398,7 +2400,7 @@ abstract class BaseRevisionable implements RevisionableInterface
     abstract protected function _registerEvents() : void;
 
     /**
-     * Registers the name of an event that is not revision-specific,
+     * Registers the name of an event that is not revision-specific
      * and can be triggered regardless of the currently selected revision.
      *
      * @param string $name
@@ -2444,10 +2446,10 @@ abstract class BaseRevisionable implements RevisionableInterface
      *
      * - The event object {@see BeforeSaveEvent}.
      *
-     * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @param callable(BeforeSaveEvent):void $callback
+     * @return EventableListener
      */
-    public function onBeforeSave(callable $callback) : Application_EventHandler_EventableListener
+    public function onBeforeSave(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_BEFORE_SAVE, $callback);
     }
@@ -2458,14 +2460,14 @@ abstract class BaseRevisionable implements RevisionableInterface
      *
      * This gets a single parameter:
      *
-     * - The event object {@see \Application\Revisionable\Event\RevisionSelectedEvent}.
+     * - The event object {@see RevisionSelectedEvent}.
      *
-     * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @param callable(RevisionSelectedEvent):void $callback
+     * @return EventableListener
      */
-    public function onRevisionSelected(callable $callback) : Application_EventHandler_EventableListener
+    public function onRevisionSelected(callable $callback) : EventableListener
     {
-        return $this->addEventListener(\Application\Revisionable\Event\RevisionSelectedEvent::EVENT_NAME, $callback);
+        return $this->addEventListener(RevisionSelectedEvent::EVENT_NAME, $callback);
     }
 
     /**
@@ -2473,14 +2475,13 @@ abstract class BaseRevisionable implements RevisionableInterface
      *
      * The callback gets the following parameters:
      *
-     * 1) The revisionable instance {@see RevisionableInterface}.
-     * 2) The event instance {@see RevisionAddedEvent}.
+     * 1) The event instance {@see RevisionAddedEvent}.
      *
-     * @param callable $callback
-     * @return Application_EventHandler_EventableListener
-     * @see RevisionAddedEvent
+     * @param callable(RevisionAddedEvent):void $callback
+     * @return EventableListener
+     * @see StorageRevisionAddedEvent
      */
-    public function onRevisionAdded(callable $callback) : Application_EventHandler_EventableListener
+    public function onRevisionAdded(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_REVISION_ADDED, $callback);
     }
@@ -2494,9 +2495,9 @@ abstract class BaseRevisionable implements RevisionableInterface
      * 2) The event instance {@see Application_Revisionable_Event_TransactionEnded}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onTransactionEnded(callable $callback) : Application_EventHandler_EventableListener
+    public function onTransactionEnded(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_TRANSACTION_ENDED, $callback);
     }

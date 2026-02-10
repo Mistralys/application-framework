@@ -21,14 +21,14 @@ use DBHelper;
  */
 class TagSortTypes extends BaseStringPrimaryCollection
 {
-    public const SORT_ALPHA_ASC = 'alpha_asc';
-    public const SORT_ALPHA_DESC = 'alpha_desc';
-    public const SORT_WEIGHT_ASC = 'weight_asc';
-    public const SORT_WEIGHT_DESC = 'weight_desc';
-    public const SORT_INHERIT = 'inherit';
+    public const string SORT_ALPHA_ASC = 'alpha_asc';
+    public const string SORT_ALPHA_DESC = 'alpha_desc';
+    public const string SORT_WEIGHT_ASC = 'weight_asc';
+    public const string SORT_WEIGHT_DESC = 'weight_desc';
+    public const string SORT_INHERIT = 'inherit';
 
-    public const SORT_DEFAULT = self::SORT_INHERIT;
-    public const SORT_DEFAULT_ROOT = self::SORT_ALPHA_ASC;
+    public const string SORT_DEFAULT = self::SORT_INHERIT;
+    public const string SORT_DEFAULT_ROOT = self::SORT_ALPHA_ASC;
 
     public static ?TagSortTypes $instance = null;
 

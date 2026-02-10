@@ -2,11 +2,18 @@
 
 declare(strict_types=1);
 
-/**
- * @method DBHelper_DataTable getSubject()
- */
-class DBHelper_DataTable_Events_KeysDeleted extends Application_EventHandler_EventableEvent
+use Application\EventHandler\Eventables\BaseEventableEvent;
+use AppUtils\ClassHelper;
+
+class DBHelper_DataTable_Events_KeysDeleted extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'KeysDeleted';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function getKeyNames() : array
     {
         return $this->getArgumentArray(1);
@@ -15,5 +22,13 @@ class DBHelper_DataTable_Events_KeysDeleted extends Application_EventHandler_Eve
     public function getDataTable() : DBHelper_DataTable
     {
         return $this->getSubject();
+    }
+
+    public function getSubject(): object
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            DBHelper_DataTable::class,
+            parent::getSubject()
+        );
     }
 }

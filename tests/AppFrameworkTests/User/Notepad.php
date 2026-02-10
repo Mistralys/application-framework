@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use Application\MarkdownRenderer;
-use AppUtils\ConvertHelper;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
 
 /**

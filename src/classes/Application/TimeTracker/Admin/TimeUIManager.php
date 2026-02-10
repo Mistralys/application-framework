@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin;
 
 use Application\AppFactory;
-use Application\TimeTracker\Admin\Screens\BaseAutoFillScreen;
+use Application\TimeTracker\Admin\Screens\Mode\AutoFillMode;
 use AppUtils\ArrayDataCollection;
 use AppUtils\Microtime;
 use UI\AdminURLs\AdminURLInterface;
 
 class TimeUIManager
 {
-    public const LIST_SCREEN_GLOBAL = 'global';
-    public const LIST_SCREEN_DAY = 'day';
-    public const SETTING_PREFIX = 'time_tracker_';
-    public const SETTING_LAST_USED_LIST = self::SETTING_PREFIX.'last_used_list';
-    public const SETTING_LAST_USED_DATE = self::SETTING_PREFIX.'last_used_date';
-    public const SETTING_BASE_TICKET_URL = self::SETTING_PREFIX.'base_ticket_url';
+    public const string LIST_SCREEN_GLOBAL = 'global';
+    public const string LIST_SCREEN_DAY = 'day';
+    public const string SETTING_PREFIX = 'time_tracker_';
+    public const string SETTING_LAST_USED_LIST = self::SETTING_PREFIX.'last_used_list';
+    public const string SETTING_LAST_USED_DATE = self::SETTING_PREFIX.'last_used_date';
+    public const string SETTING_BASE_TICKET_URL = self::SETTING_PREFIX.'base_ticket_url';
     public const string SETTING_AUTOFILL_PREFERENCES = self::SETTING_PREFIX . 'autofill_prefs';
 
     public static function setLastUsedList(string $listType) : void
@@ -53,7 +53,7 @@ class TimeUIManager
     public static function getAutoFillPreferences() : ArrayDataCollection
     {
         $prefs = AppFactory::createDriver()->getSettings()->getArray(self::SETTING_AUTOFILL_PREFERENCES);
-        $defaults = BaseAutoFillScreen::getDefaultPreferences();
+        $defaults = AutoFillMode::getDefaultPreferences();
 
         foreach($defaults as $key => $value) {
             if(!array_key_exists($key, $prefs)) {
@@ -88,7 +88,7 @@ class TimeUIManager
     public static function getBaseTicketURL() : string
     {
         if(!isset(self::$baseTicketURL)) {
-            self::$baseTicketURL = AppFactory::createDriver()->getSettings()->get(self::SETTING_BASE_TICKET_URL);
+            self::$baseTicketURL = (string)AppFactory::createDriver()->getSettings()->get(self::SETTING_BASE_TICKET_URL);
         }
 
         return self::$baseTicketURL;

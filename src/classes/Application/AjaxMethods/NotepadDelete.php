@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 class Application_AjaxMethods_NotepadDelete extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'NotepadDelete';
+    public const string METHOD_NAME = 'NotepadDelete';
 
     public function getMethodName(): string
     {

@@ -10,15 +10,13 @@ namespace Connectors\Connector;
 
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
-use Connectors_Connector;
 use Connectors\Connector\Stub\Method\StubFailureMethod;
-use Connectors_Exception;
 
 /**
  * @package Connectors
  * @subpackage Stub
  */
-class StubConnector extends Connectors_Connector
+class StubConnector extends BaseConnector
 {
     protected function checkRequirements(): void
     {
@@ -33,7 +31,7 @@ class StubConnector extends Connectors_Connector
     /**
      * @return never
      * @throws BaseClassHelperException
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function executeFailRequest()
     {

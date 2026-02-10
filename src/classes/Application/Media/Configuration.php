@@ -1,5 +1,7 @@
 <?php
 
+use Application\Application;
+
 abstract class Application_Media_Configuration
 {
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 690001;

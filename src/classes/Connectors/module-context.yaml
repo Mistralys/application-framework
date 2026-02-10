@@ -1,0 +1,49 @@
+## ---------------------------------------------------------------
+## CONNECTORS MODULE
+## ---------------------------------------------------------------
+
+documents:
+  - description: 'Connectors - Overview'
+    outputPath: 'modules/connectors/overview.md'
+    sources:
+      - type: file
+        description: "Connectors Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  - description: 'Connectors - Architecture'
+    outputPath: 'modules/connectors/architecture.md'
+    sources:
+      - type: file
+        description: "Public Interfaces and APIs"
+        sourcePaths:
+          - ./
+        filePattern: "*.php"
+        contains:
+          - "interface"
+          - "abstract class"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  - description: 'Connectors - Class File Structure'
+    outputPath: 'modules/connectors/class-tree.md'
+    overwrite: true
+    sources:
+      -
+        type: tree
+        description: 'Tree of PHP Class Files'
+        sourcePaths:
+          - ./
+        filePattern: '*'
+        renderFormat: ascii
+        enabled: true
+        showCharCount: true
+        maxDepth: 6

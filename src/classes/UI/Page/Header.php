@@ -6,8 +6,8 @@ class UI_Page_Header implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
-    public const ERROR_NAVIGATION_ALREADY_EXISTS = 108901;
-    public const NAVIGATION_ID_MAIN = 'main';
+    public const int ERROR_NAVIGATION_ALREADY_EXISTS = 108901;
+    public const string NAVIGATION_ID_MAIN = 'main';
 
     private UI_Page $page;
 

@@ -9,6 +9,10 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableListener;
 use AppUtils\ConvertHelper;
 use AppUtils\Microtime;
 
@@ -40,21 +44,21 @@ use AppUtils\Microtime;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @author Emre Celebi <emre.celebi@ionos.com>
  */
-class DBHelper_DataTable implements Application_Interfaces_Loggable, Application_Interfaces_Eventable
+class DBHelper_DataTable implements Application_Interfaces_Loggable, EventableInterface
 {
     use Application_Traits_Loggable;
-    use Application_Traits_Eventable;
+    use EventableTrait;
 
-    public const EVENT_KEYS_SAVED = 'KeysSaved';
-    public const EVENT_KEYS_DELETED = 'KeysDeleted';
+    public const string EVENT_KEYS_SAVED = 'KeysSaved';
+    public const string EVENT_KEYS_DELETED = 'KeysDeleted';
 
-    public const ERROR_INVALID_MAX_KEY_NAME_LENGTH = 97301;
+    public const int ERROR_INVALID_MAX_KEY_NAME_LENGTH = 97301;
 
     /**
      * The max key length may not be smaller than this.
      * @see DBHelper_DataTable::setMaxKeyNameLength()
      */
-    public const MIN_MAX_KEY_NAME_LENGTH = 32;
+    public const int MIN_MAX_KEY_NAME_LENGTH = 32;
 
     /**
      * @var array<string,string>
@@ -395,9 +399,9 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
      * 2. `string[]` The names of the keys that were saved
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function addKeysSavedListener(callable $callback) : Application_EventHandler_EventableListener
+    public function addKeysSavedListener(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_KEYS_SAVED, $callback);
     }
@@ -411,9 +415,9 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
      * 2. `string[]` The names of the keys that were deleted
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function addKeysDeletedListener(callable $callback) : Application_EventHandler_EventableListener
+    public function addKeysDeletedListener(callable $callback) : EventableListener
     {
         return $this->addEventListener(self::EVENT_KEYS_DELETED, $callback);
     }

@@ -31,14 +31,14 @@ class SystemHint extends UI_Renderable
     use OptionableTrait;
     use ClassableTrait;
 
-    public const LAYOUT_SYSTEM = 'system';
-    public const LAYOUT_SUCCESS = 'success';
-    public const LAYOUT_DEVELOPER = 'developer';
-    public const DEFAULT_LAYOUT = self::LAYOUT_SYSTEM;
+    public const string LAYOUT_SYSTEM = 'system';
+    public const string LAYOUT_SUCCESS = 'success';
+    public const string LAYOUT_DEVELOPER = 'developer';
+    public const string DEFAULT_LAYOUT = self::LAYOUT_SYSTEM;
 
-    public const OPTION_LAYOUT = 'layout';
-    public const OPTION_CLASSES = 'classes';
-    public const OPTION_CONTENT = 'content';
+    public const string OPTION_LAYOUT = 'layout';
+    public const string OPTION_CLASSES = 'classes';
+    public const string OPTION_CONTENT = 'content';
 
     /**
      * @return string
@@ -75,12 +75,12 @@ class SystemHint extends UI_Renderable
     }
 
     /**
-     * @param string|number|StringableInterface|NULL $content
+     * @param string|int|float|StringableInterface|NULL $content
      * @return $this
      */
-    public function setContent($content) : self
+    public function setContent(string|int|float|StringableInterface|NULL $content) : self
     {
-        return $this->setOption(self::OPTION_CONTENT, $content);
+        return $this->setOption(self::OPTION_CONTENT, (string)$content);
     }
 
     public function getDefaultOptions(): array

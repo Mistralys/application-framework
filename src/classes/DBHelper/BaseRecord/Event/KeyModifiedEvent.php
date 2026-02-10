@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace DBHelper\BaseRecord\Event;
 
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
-class KeyModifiedEvent extends Application_EventHandler_EventableEvent
+class KeyModifiedEvent extends BaseEventableEvent
 {
     public const string EVENT_NAME = 'KeyModified';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
 
     public function getRecord() : DBHelperRecordInterface
     {

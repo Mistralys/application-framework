@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Forms;
 
+use AppFrameworkTestClasses\ApplicationTestCase;
 use Application_Exception;
 use AppUtils\BaseException;
-use AppFrameworkTestClasses\ApplicationTestCase;
 use HTML_QuickForm2;
 use HTML_QuickForm2_DataSource_Array;
 use UI;

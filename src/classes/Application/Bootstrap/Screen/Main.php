@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 class Application_Bootstrap_Screen_Main extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public function getDispatcher() : string
     {
         return '';
     }
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->createEnvironment();
         

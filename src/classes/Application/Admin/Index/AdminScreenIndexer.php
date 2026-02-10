@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Application\Admin\Index;
 
-use Application\AppFactory;
+use Application\Admin\AdminScreenStubInterface;
 use Application\Interfaces\Admin\AdminActionInterface;
 use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminModeInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\Admin\AdminSubmodeInterface;
-use Application\OfflineEvents\RegisterAdminScreenFoldersEvent;
-use Application_Admin_Area;
 use Application_Admin_Wizard_Step;
 use Application_Driver;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseClassLoaderCollectionMulti;
-use AppUtils\FileHelper\FolderInfo;
+use Mistralys\AppFramework\AppFramework;
 use ReflectionClass;
 
 /**
- * @method AdminScreenInterface[] getAll()
+ * @method AdminScreenInfoCollector[] getAll()
  */
 class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 {
@@ -40,26 +38,11 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
     private StubMode $stubMode;
     private StubSubmode $stubSubmode;
     private bool $indexed = false;
+    private int $countContentScreens;
 
     public function __construct(Application_Driver $driver)
     {
         $this->driver = $driver;
-
-        AppFactory::createOfflineEvents()->triggerEvent(
-            RegisterAdminScreenFoldersEvent::EVENT_NAME,
-            array(),
-            RegisterAdminScreenFoldersEvent::class
-        );
-    }
-
-    /**
-     * @var array<string,FolderInfo>
-     */
-    private static array $folders = array();
-
-    public static function registerFolder(FolderInfo $folder) : void
-    {
-        self::$folders[$folder->getPath()] = $folder;
     }
 
     public function index() : self
@@ -78,12 +61,18 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
         $this->infos = array();
         $this->roots = array();
+        $this->countContentScreens = 0;
         foreach($this->getAll() as $item) {
-            $info = new AdminScreenInfoCollector($item);
-            $this->infos[] = $info;
+            $this->infos[] = $item;
 
-            if($info->getScreen() instanceof Application_Admin_Area) {
-                $this->roots[] = $info;
+            if($item->getScreen() instanceof AdminAreaInterface) {
+                $this->roots[] = $item;
+            }
+
+            // Only screens without subscreens actually generate
+            // content.
+            if(!$item->getScreen()->hasSubscreens()) {
+                $this->countContentScreens++;
             }
         }
 
@@ -97,6 +86,11 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
     public function countScreens() : int
     {
         return count($this->infos);
+    }
+
+    public function countContentScreens() : int
+    {
+        return $this->countContentScreens;
     }
 
     public function serialize() : array
@@ -141,12 +135,15 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
         }
     }
 
-    protected function createItemInstance(string $class): ?AdminScreenInterface
+    protected function createItemInstance(string $class): ?AdminScreenInfoCollector
     {
         $reflect = new ReflectionClass($class);
         if(
             // Wizard steps are not part of the sitemap
             is_a($class, Application_Admin_Wizard_Step::class, true)
+            ||
+            // Stubs used for testing purposes only
+            is_a($class, AdminScreenStubInterface::class, true)
             ||
             $reflect->isAbstract()
             ||
@@ -156,38 +153,34 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
         }
 
         if(is_a($class, AdminAreaInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
+            $screen = ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, false)
             );
-        }
-
-        if(is_a($class, AdminModeInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
+        } else if(is_a($class, AdminModeInterface::class, true)) {
+            $screen = ClassHelper::requireObjectInstanceOf(
+                AdminScreenInterface::class,
+                new $class($this->driver, $this->stubArea)
+            );
+        } else if(is_a($class, AdminSubmodeInterface::class, true)) {
+            $screen = ClassHelper::requireObjectInstanceOf(
+                AdminScreenInterface::class,
+                new $class($this->driver, $this->stubMode)
+            );
+        } else if(is_a($class, AdminActionInterface::class, true)) {
+            $screen = ClassHelper::requireObjectInstanceOf(
+                AdminScreenInterface::class,
+                new $class($this->driver, $this->stubSubmode)
+            );
+        } else {
+            // Fall back to the skeleton constructor
+            $screen = ClassHelper::requireObjectInstanceOf(
                 AdminScreenInterface::class,
                 new $class($this->driver, $this->stubArea)
             );
         }
 
-        if(is_a($class, AdminSubmodeInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
-                AdminScreenInterface::class,
-                new $class($this->driver, $this->stubMode)
-            );
-        }
-
-        if(is_a($class, AdminActionInterface::class, true)) {
-            return ClassHelper::requireObjectInstanceOf(
-                AdminScreenInterface::class,
-                new $class($this->driver, $this->stubSubmode)
-            );
-        }
-
-        // Fall back to the skeleton constructor
-        return ClassHelper::requireObjectInstanceOf(
-            AdminScreenInterface::class,
-            new $class($this->driver, $this->stubArea)
-        );
+        return new AdminScreenInfoCollector($screen);
     }
 
     public function getInstanceOfClassName(): string
@@ -197,11 +190,7 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
     public function getClassFolders(): array
     {
-        $folders = array_values(self::$folders);
-        $folders[] = FolderInfo::factory(__DIR__.'/../Area');
-        $folders[] = FolderInfo::factory($this->driver->getClassesFolder().'/Area');
-
-        return $folders;
+        return AppFramework::getInstance()->getClassFolders();
     }
 
     public function isRecursive(): bool

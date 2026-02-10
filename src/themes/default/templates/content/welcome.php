@@ -9,7 +9,9 @@
 
 declare(strict_types=1);
 
+use Application\Admin\Welcome\Screens\OverviewMode;
 use AppUtils\ConvertHelper;
+use Utilities\TimeOfDay;
 
 /**
  * Renders the content of the welcome screen, with the user's
@@ -19,7 +21,7 @@ use AppUtils\ConvertHelper;
  * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see Application_Admin_Area_Welcome_Overview
+ * @see OverviewMode
  */
 class template_default_content_welcome extends UI_Page_Template_Custom
 {

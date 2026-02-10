@@ -26,7 +26,8 @@
   "autoload-dev": {
     "classmap": [
       "tests/application/assets/classes",
-      "tests/AppFrameworkTestClasses"
+      "tests/AppFrameworkTestClasses",
+      "vendor/apereo/phpcas/source"
     ]
   },
   "repositories": [
@@ -75,7 +76,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "psr/log": ">=1.1.0",
+    "psr/log": "^1.1.4",
     "mistralys/application-framework-docs": ">=1.0.1",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
     "mistralys/application-utils": ">=3.1.10",
@@ -113,12 +114,14 @@
     "ext-ldap": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",
-    "ext-simplexml": "*"
+    "ext-simplexml": "*",
+    "php-mcp/server": ">=3.3.0"
   },
   "require-dev": {
     "phpunit/phpunit": ">=9.6",
     "phpstan/phpstan": ">=1.10",
-    "css-crush/css-crush": ">=v4.1.3"
+    "css-crush/css-crush": ">=v4.1.3",
+    "rector/rector": ">=2.3"
   },
   "config": {
     "allow-plugins": {

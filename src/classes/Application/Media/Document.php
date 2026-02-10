@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Application;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\DocumentTrait;
 use Application\Media\MediaException;

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 

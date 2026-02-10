@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Admin\Index;
 
+use Application\Admin\AdminScreenStubInterface;
 use Application\Admin\Area\BaseMode;
 
-class StubMode extends BaseMode
+class StubMode extends BaseMode implements AdminScreenStubInterface
 {
     public function getURLName(): string
     {

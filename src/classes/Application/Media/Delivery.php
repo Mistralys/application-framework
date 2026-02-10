@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Media\Collection\MediaCollection;
 
 class Application_Media_Delivery implements Application_Interfaces_Loggable

@@ -28,7 +28,7 @@ class SettingDef implements RuntimePropertizableInterface
 {
     use RuntimePropertizableTrait;
 
-    public const ERROR_NO_INJECT_CALLBACK = 149201;
+    public const int ERROR_NO_INJECT_CALLBACK = 149201;
 
     private string $name;
     private string $label;

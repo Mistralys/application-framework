@@ -6,6 +6,8 @@ use Application\Ajax\AjaxException;
 use Application\Ajax\AjaxMethodInterface;
 use Application\AjaxMethods\NoAjaxHandlerFoundMethod;
 use Application\AppFactory;
+use Application\Application;
+use Application\EventHandler\EventManager;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FolderInfo;
@@ -13,10 +15,10 @@ use AppUtils\Interfaces\StringableInterface;
 
 class Application_AjaxHandler
 {
-    public const ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
-    public const ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
-    public const ERROR_NO_SUCH_METHOD = 17995003;
-    public const REQUEST_PARAM_METHOD = 'method';
+    public const int ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
+    public const int ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
+    public const int ERROR_NO_SUCH_METHOD = 17995003;
+    public const string REQUEST_PARAM_METHOD = 'method';
 
     protected Application_Driver $driver;
     protected Application_Request $request;
@@ -126,7 +128,7 @@ class Application_AjaxHandler
         $method = $this->getMethod();
         if(!$method) {
             // allow for fallback handlers if no method was found.
-            Application_EventHandler::trigger('NoAjaxHandlerFound', array());
+            EventManager::trigger('NoAjaxHandlerFound', array());
             
             $method = $this->getErrorMethod();
         }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation\MetaNavigation;
 
-use Application;
+use Application\Application;
 use Application_Bootstrap_Screen;
 use Application_Driver;
 use Application_Request;
@@ -13,7 +13,6 @@ use Application_User_Notepad;
 use UI;
 use UI_Bootstrap_DropdownMenu;
 use UI_Page_Navigation_Item_DropdownMenu;
-use UI_Themes;
 
 class UserMenu
 {

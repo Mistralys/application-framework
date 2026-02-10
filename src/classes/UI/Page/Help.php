@@ -28,8 +28,8 @@ use UI\Page\Help\Item\UnorderedListItem;
  */
 class UI_Page_Help extends UI_Renderable
 {
-    public const ERROR_CANNOT_FIND_HELPER_CLASS = 132701;
-    public const ERROR_INVALID_HELPER_INSTANCE_CREATED = 132702;
+    public const int ERROR_CANNOT_FIND_HELPER_CLASS = 132701;
+    public const int ERROR_INVALID_HELPER_INSTANCE_CREATED = 132702;
 
     /**
     * @var string

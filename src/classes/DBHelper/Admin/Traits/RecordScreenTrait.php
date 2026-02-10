@@ -8,12 +8,13 @@ use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI_DataGrid;
 
+/**
+ * @see RecordScreenInterface
+ */
 trait RecordScreenTrait
 {
     protected DBHelperCollectionInterface $collection;
-    protected ?DBHelperRecordInterface $record = null;
-
-    abstract protected function createCollection() : DBHelperCollectionInterface;
+    protected DBHelperRecordInterface $record;
 
     protected function init() : void
     {
@@ -34,6 +35,8 @@ trait RecordScreenTrait
 
         $this->validateRequest();
     }
+
+    abstract protected function createCollection() : DBHelperCollectionInterface;
 
     /**
      * Called after the screen's `init()` method. Can be overwritten

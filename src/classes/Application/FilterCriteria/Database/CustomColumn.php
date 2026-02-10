@@ -1,15 +1,11 @@
 <?php
 /**
- * File containing the class {@see Application_FilterCriteria_Database_CustomColumn}.
- *
  * @package Application
  * @subpackage FilterCriteria
- * @see Application_FilterCriteria_Database_CustomColumn
  */
 
 declare(strict_types=1);
 
-use AppUtils\NamedClosure;
 
 /**
  * Container for the configuration of individual custom columns
@@ -23,49 +19,35 @@ use AppUtils\NamedClosure;
  */
 class Application_FilterCriteria_Database_CustomColumn
 {
-    public const ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
+    public const int ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
 
     /**
-     * @var NamedClosure|NULL
+     * @var callable|NULL
      */
-    private $closure = null;
+    private $callback = null;
 
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var Application_FilterCriteria_DatabaseExtended
-     */
-    private $filters;
-
-    /**
-     * @var bool
-     */
-    private $enabled = false;
+    private string $name;
+    private Application_FilterCriteria_DatabaseExtended $filters;
+    private bool $enabled = false;
 
     /**
      * @var string[]
      */
-    private $requiredJoinIDs = array();
+    private array $requiredJoinIDs = array();
 
     /**
      * @var array<string,mixed>
      */
-    private $placeholders = array();
+    private array $placeholders = array();
 
-    /**
-     * @var string
-     */
-    private $statement = '';
+    private string $statement = '';
 
     /**
      * @param Application_FilterCriteria_DatabaseExtended $filters
      * @param string $name
-     * @param NamedClosure|DBHelper_StatementBuilder $source
+     * @param callable|DBHelper_StatementBuilder $source
      */
-    public function __construct(Application_FilterCriteria_DatabaseExtended $filters, string $name, $source)
+    public function __construct(Application_FilterCriteria_DatabaseExtended $filters, string $name, callable|DBHelper_StatementBuilder $source)
     {
         $this->filters = $filters;
         $this->name = $name;
@@ -76,13 +58,10 @@ class Application_FilterCriteria_Database_CustomColumn
         }
         else
         {
-            $this->closure = $source;
+            $this->callback = $source;
         }
     }
 
-    /**
-     * @return string
-     */
     public function getName() : string
     {
         return $this->name;
@@ -197,12 +176,12 @@ class Application_FilterCriteria_Database_CustomColumn
      */
     private function renderStatement() : string
     {
-        if(!isset($this->closure))
+        if(!isset($this->callback))
         {
             return $this->statement;
         }
 
-        $result = call_user_func($this->closure, $this);
+        $result = call_user_func($this->callback, $this);
 
         if(is_string($result))
         {
@@ -298,14 +277,14 @@ class Application_FilterCriteria_Database_CustomColumn
 
     // region: Managing markers
 
-    public const COMPONENT_WHERE = 'where';
-    public const COMPONENT_ORDER_BY = 'order_by';
-    public const COMPONENT_GROUP_BY = 'group_by';
-    public const COMPONENT_SELECT_PRIMARY = 'select_primary';
-    public const COMPONENT_SELECT_SECONDARY = 'select_secondary';
-    public const COMPONENT_JOIN = 'join';
+    public const string COMPONENT_WHERE = 'where';
+    public const string COMPONENT_ORDER_BY = 'order_by';
+    public const string COMPONENT_GROUP_BY = 'group_by';
+    public const string COMPONENT_SELECT_PRIMARY = 'select_primary';
+    public const string COMPONENT_SELECT_SECONDARY = 'select_secondary';
+    public const string COMPONENT_JOIN = 'join';
 
-    public const MARKER_SUFFIX = '$$';
+    public const string MARKER_SUFFIX = '$$';
 
     /**
      * @var string

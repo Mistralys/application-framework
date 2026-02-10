@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Application;
 
-use Application;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;
+use Application\AppSets\AppSetsCollection;
 use Application\AppSettings\AppSettingsRegistry;
 use Application\CacheControl\CacheManager;
 use Application\DeploymentRegistry\DeploymentRegistry;
@@ -20,6 +20,8 @@ use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Driver\VersionInfo;
+use Application\EventHandler\OfflineEvents\OfflineEventsManager;
+use Application\Languages\Languages;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
 use Application\SourceFolders\SourceFoldersManager;
@@ -31,8 +33,7 @@ use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
 use Application_ErrorLog;
-use Application_EventHandler;
-use Application_EventHandler_OfflineEvents;
+use Application\EventHandler\EventManager;
 use Application_Logger;
 use Application_LookupItems;
 use Application_Maintenance;
@@ -42,7 +43,6 @@ use Application_Ratings;
 use Application_Request;
 use Application_RequestLog;
 use Application_Session;
-use Application_Sets;
 use Application_Uploads;
 use Application_User;
 use Application_Users;
@@ -113,9 +113,9 @@ class AppFactory
         return self::createClassInstance(Application_Logger::class);
     }
 
-    public static function createAppSets() : Application_Sets
+    public static function createAppSets() : AppSetsCollection
     {
-        return Application_Sets::getInstance();
+        return AppSetsCollection::getInstance();
     }
 
     public static function createDBDumps() : Application_DBDumps
@@ -257,9 +257,9 @@ class AppFactory
         return self::createClassInstance(Application_LookupItems::class, Application_Driver::getInstance());
     }
 
-    public static function createOfflineEvents() : Application_EventHandler_OfflineEvents
+    public static function createOfflineEvents() : OfflineEventsManager
     {
-        return Application_EventHandler::createOfflineEvents();
+        return EventManager::createOfflineEvents();
     }
 
     public static function createSystemMailer() : SystemMailer

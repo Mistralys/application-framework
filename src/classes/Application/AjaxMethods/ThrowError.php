@@ -2,7 +2,7 @@
 
 class Application_AjaxMethods_ThrowError extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'ThrowError';
+    public const string METHOD_NAME = 'ThrowError';
 
     public function getMethodName(): string
     {

@@ -261,4 +261,11 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
         
         return null;
     }
+
+    public function makeHeightLimited(string $heightStyle='200px') : self
+    {
+        $this->addClass('height-fixed');
+        $this->setStyle('max-height', $heightStyle);
+        return $this;
+    }
 }

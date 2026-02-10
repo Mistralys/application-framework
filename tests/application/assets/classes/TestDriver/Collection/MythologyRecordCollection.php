@@ -11,7 +11,7 @@ namespace TestDriver\Collection;
 use Application\Collection\StringCollectionInterface;
 use Application\Collection\StringCollectionItemInterface;
 use Application\Disposables\DisposableTrait;
-use Application_Traits_Eventable;
+use Application\EventHandler\Eventables\EventableTrait;
 use Application_Traits_Loggable;
 
 /**
@@ -25,7 +25,7 @@ class MythologyRecordCollection implements StringCollectionInterface
 {
     use DisposableTrait;
     use Application_Traits_Loggable;
-    use Application_Traits_Eventable;
+    use EventableTrait;
 
     public const RECORD_ATHENA = 'Athena';
     public const RECORD_ZEUS = 'Zeus';

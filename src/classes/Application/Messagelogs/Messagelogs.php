@@ -5,13 +5,14 @@
  */
 
 use Application\AppFactory;
-use AppUtils\FileHelper\FolderInfo;
+use Application\Application;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 /**
- * Used to add and retrieve messages stored stored in the
- * database, in the `app_messagelog` table. This is intended
- * to be used to messages that need to be persisted.
+ * Used to add and retrieve messages stored in the
+ * database, in the {@see self::TABLE_NAME} table.
+ * This is intended to be used to messages that need
+ * to be persisted.
  * 
  * The messages can be viewed in the UI.
  * 
@@ -26,23 +27,18 @@ use DBHelper\BaseCollection\DBHelperCollectionInterface;
  */
 class Application_Messagelogs extends DBHelper_BaseCollection
 {
-    public const MESSAGELOG_INFORMATION = 'info';
-    public const MESSAGELOG_ERROR = 'error';
-    public const MESSAGELOG_WARNING = 'warning';
-    public const MESSAGE_TYPES = array(
+    public const string MESSAGELOG_INFORMATION = 'info';
+    public const string MESSAGELOG_ERROR = 'error';
+    public const string MESSAGELOG_WARNING = 'warning';
+    public const array MESSAGE_TYPES = array(
         self::MESSAGELOG_INFORMATION,
         self::MESSAGELOG_ERROR,
         self::MESSAGELOG_WARNING
     );
-    public const COL_MESSAGE = 'message';
-    public const COL_CATEGORY = 'category';
-    public const TABLE_NAME = 'app_messagelog';
-    public const PRIMARY_NAME = 'log_id';
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__ . '/Admin/Screens')->requireExists();
-    }
+    public const string COL_MESSAGE = 'message';
+    public const string COL_CATEGORY = 'category';
+    public const string TABLE_NAME = 'app_messagelog';
+    public const string PRIMARY_NAME = 'log_id';
 
     public function getRecordClassName() : string
     {
@@ -161,7 +157,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
     * @param string $type Identifier string for the operation, any alphanumerical string.
     * @param string $message The log message.
     * @param string $category Used to categorize messages in the UI.
-    * @param Application_User $user
+    * @param Application_User|NULL $user
     * @return Application_Messagelogs_Log
     */
     private function logMessage(string $type, string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
@@ -171,7 +167,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
             $category = '';
         }
         
-        if(empty($user)) 
+        if($user === null)
         {
             $user = Application::getUser();
         }

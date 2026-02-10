@@ -37,7 +37,6 @@ class AppSettingsDevelMode extends BaseMode implements DevelModeInterface
     use DevelModeTrait;
 
     public const string URL_NAME = 'appsettings';
-    public const string SETTING_TYPE_STRING = 'string';
 
     protected string $formName = 'devel_app_settings';
     protected UI_DataGrid $datagrid;
@@ -81,6 +80,8 @@ class AppSettingsDevelMode extends BaseMode implements DevelModeInterface
     {
         $this->filterSettings = new AppSettingsFilterSettings(self::URL_NAME);
         $this->filterCriteria = new AppSettingsFilterCriteria();
+
+        $this->filterSettings->addHiddenScreenVars();
 
         $this->createEditForm();
 

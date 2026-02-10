@@ -8,8 +8,7 @@ declare(strict_types=1);
 
 namespace UI\DataGrid;
 
-use Application\ApplicationException;
-use Application\FilterSettingsInterface;
+use Application\Exception\ApplicationException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application_Driver;
@@ -19,8 +18,8 @@ use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Microtime;
 use AppUtils\Traits\OptionableTrait;
 use DateTime;
-use DBHelper\DBHelperFilterSettingsInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
+use Application\FilterSettings\FilterSettingsInterface;
 use UI;
 use UI\Interfaces\ListBuilderInterface;
 use UI_DataGrid;
@@ -305,7 +304,7 @@ abstract class BaseListBuilder
 
     /**
      * @return array<int,array<string,mixed>|UI_DataGrid_Entry>
-     * @throws ApplicationException
+     * @throws \Application\Exception\ApplicationException
      */
     protected function collectEntries(): array
     {

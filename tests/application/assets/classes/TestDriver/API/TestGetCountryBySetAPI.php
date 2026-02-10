@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace application\assets\classes\TestDriver\API;
 
-use AppFrameworkTests\Countries\CountryAPITests;
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\JSONResponseInterface;
@@ -88,7 +87,7 @@ class TestGetCountryBySetAPI
 
     public function getCountry() : ?Application_Countries_Country
     {
-        return $this->manageAppCountryParams()->manageAllParamsRule()?->resolveValue();
+        return $this->manageAppCountryParams()->manageAllParamsRule()->resolveValue();
     }
 
     protected function collectRequestData(string $version): void

@@ -31,7 +31,7 @@ use AppUtils\FileHelper\FolderInfo;
  */
 class RoleCollection extends BaseStringPrimaryCollection
 {
-    public const ERROR_ROLES_NOT_INITIALIZED = 159401;
+    public const int ERROR_ROLES_NOT_INITIALIZED = 159401;
     private Application_User_Rights $rightsManager;
 
     private static ?self $instance = null;

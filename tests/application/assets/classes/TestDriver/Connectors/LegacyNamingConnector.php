@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-class Connectors_Connector_LegacyNamingConnector extends Connectors_Connector
+use Connectors\Connector\BaseConnector;
+
+class Connectors_Connector_LegacyNamingConnector extends BaseConnector
 {
     protected function checkRequirements(): void
     {

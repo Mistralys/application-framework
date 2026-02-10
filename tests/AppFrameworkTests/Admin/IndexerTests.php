@@ -8,8 +8,8 @@ use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\Admin\Index\AdminScreenIndex;
 use Application\Admin\Index\AdminScreenIndexer;
 use Application\Admin\Index\ScreenDataInterface;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeysListAction;
 use Application\AppFactory;
-use TestDriver\Area\APIClientsArea\ViewAPIClientMode\APIKeysSubmode\APIKeysListAction;
 
 final class IndexerTests extends ApplicationTestCase
 {

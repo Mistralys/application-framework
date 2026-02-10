@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use Application\AppFactory;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use Closure;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Element_InputText;
@@ -25,7 +25,7 @@ class TagSettingsManager extends Application_Formable_RecordSettings_Extended
 
     private ?TagRecord $parentTag = null;
 
-    public function __construct(Application_Formable $formable, TagCollection $collection, ?TagRecord $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, TagCollection $collection, ?TagRecord $record = null)
     {
         parent::__construct($formable, $collection, $record);
 

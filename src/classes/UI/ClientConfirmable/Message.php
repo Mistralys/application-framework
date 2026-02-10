@@ -19,7 +19,7 @@ declare(strict_types=1);
  */
 class UI_ClientConfirmable_Message
 {
-    public const ERROR_UNSUPPORTED_ELEMENT_MODE = 54401;
+    public const int ERROR_UNSUPPORTED_ELEMENT_MODE = 54401;
 
     protected string $commentsRequestVar = 'confirm_comments';
     protected UI_Interfaces_ClientConfirmable $uiElement;

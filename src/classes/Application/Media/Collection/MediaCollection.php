@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Media\Collection;
 
-use Application;
-use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\AppFactory;
+use Application\Application;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\Media\MediaAdminURLs;
+use Application\Media\Admin\MediaAdminURLs;
+use Application\Media\Admin\Screens\MediaLibraryArea;
+use Application\Media\Events\RegisterMediaTagsListener;
 use Application\Media\MediaTagConnector;
-use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
 use Application\Tags\TagCollection;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
@@ -32,19 +32,19 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 
     use TagCollectionTrait;
 
-    public const RECENT_ITEMS_CATEGORY = 'recent_media';
-    public const TABLE_NAME = 'media';
-    public const PRIMARY_NAME = 'media_id';
-    public const MEDIA_TYPE = 'media';
+    public const string RECENT_ITEMS_CATEGORY = 'recent_media';
+    public const string TABLE_NAME = 'media';
+    public const string PRIMARY_NAME = 'media_id';
+    public const string MEDIA_TYPE = 'media';
 
-    public const COL_USER_ID = 'user_id';
-    public const COL_DATE_ADDED = 'media_date_added';
-    public const COL_TYPE = 'media_type';
-    public const COL_NAME = 'media_name';
-    public const COL_EXTENSION = 'media_extension';
-    public const COL_SIZE = 'file_size';
-    public const COL_KEYWORDS = 'keywords';
-    public const COL_DESCRIPTION = 'description';
+    public const string COL_USER_ID = 'user_id';
+    public const string COL_DATE_ADDED = 'media_date_added';
+    public const string COL_TYPE = 'media_type';
+    public const string COL_NAME = 'media_name';
+    public const string COL_EXTENSION = 'media_extension';
+    public const string COL_SIZE = 'file_size';
+    public const string COL_KEYWORDS = 'keywords';
+    public const string COL_DESCRIPTION = 'description';
 
     public function getCollectionID(): string
     {
@@ -149,7 +149,7 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseMediaLibraryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = MediaLibraryArea::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);

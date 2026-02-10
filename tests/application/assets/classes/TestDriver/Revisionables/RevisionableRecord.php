@@ -11,7 +11,7 @@ use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
 use Application\Revisionable\Storage\BaseDBCollectionStorage;
 use Application\Traits\ChangelogViaHandlerTrait;
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use BaseRevisionable;
 
 class RevisionableRecord
@@ -102,11 +102,15 @@ class RevisionableRecord
     // region: C - Saving data
     public function createTestRevision() : int
     {
+        $this->logHeader('Creating test revision');
+
         $this->startCurrentUserTransaction();
 
-        $this->setStructuralDataKey('some_structural_key');
+        $this->setStructuralDataKey('structural_key_value_' . uniqid('', true));
 
         $this->endTransaction();
+
+        $this->log('Test revision created: v' . $this->getRevision());
 
         return $this->getRevision();
     }
@@ -157,7 +161,7 @@ class RevisionableRecord
     {
     }
 
-    public function onTestEvent(callable $callback): Application_EventHandler_EventableListener
+    public function onTestEvent(callable $callback): EventableListener
     {
         return $this->addEventListener(self::EVENT_TEST_EVENT, $callback);
     }

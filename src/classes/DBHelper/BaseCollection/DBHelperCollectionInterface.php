@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace DBHelper\BaseCollection;
 
 use Application\Collection\IntegerCollectionInterface;
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use AppUtils\Request;
 use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
 use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent;
@@ -213,10 +213,10 @@ interface DBHelperCollectionInterface
      * > for details.
      *
      * @param callable(BeforeCreateRecordEvent) : void $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      * @see BeforeCreateRecordEvent
      */
-    public function onBeforeCreateRecord(callable $callback) : Application_EventHandler_EventableListener;
+    public function onBeforeCreateRecord(callable $callback) : EventableListener;
 
     /**
      * Listens to any new records created in the collection.
@@ -225,10 +225,10 @@ interface DBHelperCollectionInterface
      * own created event handled via {@see DBHelperRecordInterface::onCreated()}.
      *
      * @param callable(AfterCreateRecordEvent) : void $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      * @see AfterCreateRecordEvent
      */
-    public function onAfterCreateRecord(callable $callback) : Application_EventHandler_EventableListener;
+    public function onAfterCreateRecord(callable $callback) : EventableListener;
 
     /**
      * Listens to any records deleted from the collection.
@@ -237,10 +237,10 @@ interface DBHelperCollectionInterface
      * {@see AfterDeleteRecordEvent}
      *
      * @param callable(AfterDeleteRecordEvent) : void $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      * @see AfterDeleteRecordEvent
      */
-    public function onAfterDeleteRecord(callable $callback) : Application_EventHandler_EventableListener;
+    public function onAfterDeleteRecord(callable $callback) : EventableListener;
 
     /**
      * Deletes a record from the collection.

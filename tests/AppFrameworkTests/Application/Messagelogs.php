@@ -1,6 +1,7 @@
 <?php
 
 use Application\AppFactory;
+use Application\Application;
 use PHPUnit\Framework\TestCase;
 
 final class Application_MessagelogsTest extends TestCase

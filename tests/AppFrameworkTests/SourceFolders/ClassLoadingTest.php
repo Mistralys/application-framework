@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AppFrameworkTests\SourceFolders;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
+use Application\Admin\Index\API\Methods\DescribeAdminAreasAPI;
 use Application\API\APIManager;
-use Application\API\Method\DescribeAdminAreasAPI;
 use Application\AppFactory;
 use Application\DeploymentRegistry\Tasks\ClearClassCacheTask;
 use Application_AjaxMethods_GetWhatsnew;

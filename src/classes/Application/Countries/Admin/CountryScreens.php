@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Application\Countries\Admin;
 
 use Application\Admin\BaseScreenRights;
-use Application\Countries\Admin\Screens\BaseAreaScreen;
-use Application\Countries\Admin\Screens\BaseCreateScreen;
-use Application\Countries\Admin\Screens\BaseListScreen;
+use Application\Countries\Admin\Screens\CountriesArea;
+use Application\Countries\Admin\Screens\Mode\CreateScreen;
+use Application\Countries\Admin\Screens\Mode\ListScreen;
 use Application\Countries\Rights\CountryScreenRights;
 
 class CountryScreens extends BaseScreenRights
 {
-    public const SCREEN_AREA = BaseAreaScreen::class;
-    public const SCREEN_LIST = BaseListScreen::class;
-    public const SCREEN_CREATE = BaseCreateScreen::class;
-    public const SCREEN_VIEW = '';
+    public const string SCREEN_AREA = CountriesArea::class;
+    public const string SCREEN_LIST = ListScreen::class;
+    public const string SCREEN_CREATE = CreateScreen::class;
+    public const string SCREEN_VIEW = '';
 
-    public const SCREEN_RIGHTS = array(
+    public const array SCREEN_RIGHTS = array(
         self::SCREEN_LIST => CountryScreenRights::SCREEN_LIST,
         self::SCREEN_CREATE => CountryScreenRights::SCREEN_CREATE,
         self::SCREEN_VIEW => CountryScreenRights::SCREEN_VIEW,

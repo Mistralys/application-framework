@@ -1,7 +1,6 @@
 <?php
 
 use AppLocalize\Localization;
-use AppUtils\FileHelper\FolderInfo;
 
 class Application_Maintenance
 {
@@ -50,15 +49,10 @@ class Application_Maintenance
         }
     }
 
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
-    }
-    
    /**
     * @return Application_Maintenance_Plan[]
     */
-    public function getPlans()
+    public function getPlans() : array
     {
         return $this->plans;
     }

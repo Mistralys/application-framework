@@ -13,9 +13,10 @@ use Application\Disposables\DisposableDisposedException;
 use Application\Disposables\DisposableInterface;
 use Application\Revisionable\Changelog\RevisionableChangelogInterface;
 use Application\Revisionable\Collection\RevisionableCollectionInterface;
+use Application\Revisionable\Storage\Event\StorageRevisionAddedEvent;
 use Application\Revisionable\Storage\RevisionStorageException;
 use Application\StateHandler\StateHandlerException;
-use Application_EventHandler_EventableListener;
+use Application\EventHandler\Eventables\EventableListener;
 use Application_FilterCriteria_RevisionableRevisions;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
@@ -496,22 +497,22 @@ interface RevisionableInterface
      * 1. The event object {@see TransactionEndedEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onTransactionEnded(callable $callback) : Application_EventHandler_EventableListener;
+    public function onTransactionEnded(callable $callback) : EventableListener;
 
     /**
      * Adds a callback for when a new revision is added to the revisionable.
      *
      * The callback gets a single parameter:
      *
-     * 1. The event object {@see RevisionAddedEvent}.
+     * 1. The event object {@see StorageRevisionAddedEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
-     * @see RevisionAddedEvent
+     * @return EventableListener
+     * @see StorageRevisionAddedEvent
      */
-    public function onRevisionAdded(callable $callback) : Application_EventHandler_EventableListener;
+    public function onRevisionAdded(callable $callback) : EventableListener;
 
     /**
      * Adds a callback to call before the revisionable is saved.
@@ -521,9 +522,9 @@ interface RevisionableInterface
      * - The event object {@see \Application\Revisionable\Event\BeforeSaveEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onBeforeSave(callable $callback) : Application_EventHandler_EventableListener;
+    public function onBeforeSave(callable $callback) : EventableListener;
 
     /**
      * Adds a callback to whenever a different revisionable revision
@@ -534,7 +535,7 @@ interface RevisionableInterface
      * - The event object {@see \Application\Revisionable\Event\RevisionSelectedEvent}.
      *
      * @param callable $callback
-     * @return Application_EventHandler_EventableListener
+     * @return EventableListener
      */
-    public function onRevisionSelected(callable $callback) : Application_EventHandler_EventableListener;
+    public function onRevisionSelected(callable $callback) : EventableListener;
 }

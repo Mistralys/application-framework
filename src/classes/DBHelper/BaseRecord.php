@@ -7,8 +7,10 @@
 declare(strict_types=1);
 
 use Application\Disposables\Attributes\DisposedAware;
-use Application\Disposables\DisposableTrait;
 use Application\Disposables\DisposableDisposedException;
+use Application\Disposables\DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\EventHandler\Eventables\EventableListener;
 use AppUtils\ConvertHelper;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\BaseRecord\BaseRecordException;
@@ -29,7 +31,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
 {
     use Application_Traits_Loggable;
     use DisposableTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
     use RecordKeyHandlersTrait;
 
     public const int ERROR_RECORD_DOES_NOT_EXIST = 13301;
@@ -108,10 +110,26 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     }
 
     #[DisposedAware]
-    public function refreshData() : void
+    final public function refreshData() : void
     {
         $this->requireNotDisposed('Refreshing the record\'s data from DB.');
 
+        $initial = !isset($this->recordData);
+
+        if(!$initial) {
+            $this->log('Refreshing the internal data.');
+        }
+
+        $this->recordData = $this->loadData();
+
+        if(!$initial)
+        {
+            $this->_onDataRefreshed();
+        }
+    }
+
+    protected function loadData() : array
+    {
         $where = $this->collection->getForeignKeys();
         $where[$this->recordPrimaryName] = $this->recordID;
 
@@ -126,34 +144,25 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
             DBHelper::buildWhereFieldsStatement($where)
         );
 
-        $initial = !isset($this->recordData);
-
-        if(!$initial) {
-            $this->log('Refreshing the internal data.');
-        }
-
-        $this->recordData = DBHelper::fetch(
+        $data = DBHelper::fetch(
             $query,
             $where
         );
 
-        if(empty($this->recordData)) {
-            throw new BaseRecordException(
-                'Record not found',
-                sprintf(
-                    'Tried to retrieve a [%s] with primary id [%s] from table [%s].',
-                    $this->recordTypeName,
-                    $this->recordID,
-                    $this->recordTable
-                ),
-                self::ERROR_RECORD_DOES_NOT_EXIST
-            );
+        if(!empty($data)) {
+            return $data;
         }
 
-        if(!$initial)
-        {
-            $this->_onDataRefreshed();
-        }
+        throw new BaseRecordException(
+            'Record data not found',
+            sprintf(
+                'Tried to retrieve a [%s] with primary id [%s] from table [%s].',
+                $this->recordTypeName,
+                $this->recordID,
+                $this->recordTable
+            ),
+            self::ERROR_RECORD_DOES_NOT_EXIST
+        );
     }
 
     protected function init() : void
@@ -568,7 +577,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
         );
     }
 
-    public function onKeyModified(callable $callback) : Application_EventHandler_EventableListener
+    public function onKeyModified(callable $callback) : EventableListener
     {
         return $this->addEventListener(KeyModifiedEvent::EVENT_NAME, $callback);
     }
@@ -577,12 +586,19 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     {
         $this->_onCreated($context);
     }
-    
+
+    /**
+     * Override to run any tasks needed after the record has
+     * been successfully created in the database.
+     *
+     * @param DBHelper_BaseCollection_OperationContext_Create $context
+     * @return void
+     */
     protected function _onCreated(DBHelper_BaseCollection_OperationContext_Create $context) : void
     {
         
     }
-    
+
     final public function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         $this->_onDeleted($context);
@@ -592,17 +608,27 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     {
         $this->_onBeforeDelete($context);
     }
-    
-   /**
-    * Can be extended to run any cleanup
-    * tasks that may be needed when the record
-    * has been deleted.
-    */
+
+    /**
+     * Override to run any tasks needed after the record has
+     * been successfully deleted from the database.
+     *
+     * @param DBHelper_BaseCollection_OperationContext_Delete $context
+     * @return void
+     */
     protected function _onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         
     }
 
+    /**
+     * Override to run any tasks needed before the record is
+     * deleted from the database, or to abort the deletion by
+     * throwing an exception.
+     *
+     * @param DBHelper_BaseCollection_OperationContext_Delete $context
+     * @return void
+     */
     protected function _onBeforeDelete(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
 

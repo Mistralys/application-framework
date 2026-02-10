@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Application\API\Clients;
 
 use Application\AppFactory;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use UI;
@@ -19,7 +19,7 @@ class APIClientRecordSettings extends Application_Formable_RecordSettings_Extend
     public const string SETTING_LABEL = 'label';
     const string SETTING_FOREIGN_ID = 'foreign_id';
 
-    public function __construct(Application_Formable $formable, ?APIClientRecord $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, ?APIClientRecord $record = null)
     {
         parent::__construct($formable, AppFactory::createAPIClients(), $record);
 

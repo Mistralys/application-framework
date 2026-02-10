@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace testsuites\RequestLogTests;
 
-use Application;
 use Application\AppFactory;
 use AppUtils\FileHelper;
 use Mistralys\AppFrameworkTests\TestClasses\RequestLogTestCase;

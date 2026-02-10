@@ -18,5 +18,5 @@ use Application_Exception_UnexpectedInstanceType;
  */
 class UnexpectedInstanceException extends Application_Exception_UnexpectedInstanceType
 {
-    public const ERROR_UNEXPECTED_INSTANCE_TYPE = 63801;
+    public const int ERROR_UNEXPECTED_INSTANCE_TYPE = 63801;
 }

@@ -8,6 +8,11 @@ use AppUtils\Interfaces\StringPrimaryRecordInterface;
 
 class AppSettingDef implements StringPrimaryRecordInterface
 {
+    public const string SETTING_TYPE_STRING = 'string';
+    public const string SETTING_TYPE_BOOLEAN = 'boolean';
+    public const string SETTING_TYPE_INTEGER = 'integer';
+    public const string SETTING_TYPE_FLOAT = 'float';
+
     public string $name;
     public string $type;
     public string $description;

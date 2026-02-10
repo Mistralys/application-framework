@@ -243,4 +243,10 @@ abstract class UI_Bootstrap_BaseDropdown
     {
         return $this->menu->render();
     }
+
+    public function makeHeightLimited(string $heightStyle='200px') : self
+    {
+        $this->menu->makeHeightLimited($heightStyle);
+        return $this;
+    }
 }

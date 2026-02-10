@@ -16,7 +16,7 @@ use Application\TimeTracker\TimeTrackerException;
  */
 class TimeExportException extends TimeTrackerException
 {
-    public const ERROR_MISSING_COLUMN_VALUE_CALLBACK = 176301;
-    public const ERROR_PARSE_FILE_FAILED = 176302;
-    public const ERROR_UNKNOWN_IMPORT_COLUMN = 176303;
+    public const int ERROR_MISSING_COLUMN_VALUE_CALLBACK = 176301;
+    public const int ERROR_PARSE_FILE_FAILED = 176302;
+    public const int ERROR_UNKNOWN_IMPORT_COLUMN = 176303;
 }

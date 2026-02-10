@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Maintenance\Admin\Screens;
 
-use Application;
 use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
+use Application\Application;
 use Application\Maintenance\Admin\MaintenanceScreenRights;
 use Application\Maintenance\Admin\Traits\MaintenanceSubmodeInterface;
 use Application\Maintenance\Admin\Traits\MaintenanceSubmodeTrait;

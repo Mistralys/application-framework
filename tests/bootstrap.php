@@ -8,6 +8,8 @@
  * @see TestSuiteBootstrap
  */
 
+declare(strict_types=1);
+
 use Application\Bootstrap\Screen\TestSuiteBootstrap;
 
 /**
@@ -42,7 +44,7 @@ const APP_FRAMEWORK_TESTS = true;
  * application environment.
  * @see Application_Bootstrap
  */
-require_once APP_INSTALL_FOLDER.'/classes/Application/Bootstrap.php';
+require_once APP_INSTALL_FOLDER.'/classes/Application/Bootstrap/Bootstrap.php';
 
 // The initialization includes the local configuration files,
 // and defines all global application settings.
@@ -52,7 +54,7 @@ try
     Application_Bootstrap::init();
     Application_Bootstrap::bootClass(TestSuiteBootstrap::class);
 }
-catch(Exception $e)
+catch(Throwable $e)
 {
     testsuite_dumpException($e);
     exit;
@@ -63,9 +65,9 @@ catch(Exception $e)
 * Used to display an exception's details before the framework
 * error handling is loaded.
 *
-* @param Exception $e
+* @param Throwable $e
 */
-function testsuite_dumpException($e)
+function testsuite_dumpException(Throwable $e) : void
 {
     $trace = $e->getTrace();
 
@@ -113,6 +115,12 @@ function testsuite_dumpException($e)
         }
 
         echo PHP_EOL;
+    }
+
+    $previous = $e->getPrevious();
+    if($previous !== null) {
+        echo 'Caused by:' . PHP_EOL;
+        testsuite_dumpException($previous);
     }
 }
 

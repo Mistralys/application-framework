@@ -1,0 +1,286 @@
+{
+  "version": "7.0.0",
+  "created": "2026-02-09",
+  "description": "Class mappings for Application Framework v7.0.0 upgrade",
+  "mappings": {
+    "Application_Exception": {
+      "newClass": "ApplicationException",
+      "fullNamespace": "Application\\Exception\\ApplicationException",
+      "namespace": "Application\\Exception",
+      "type": "class",
+      "category": "Core",
+      "priority": "HIGH",
+      "usage": ["throw new", "extends"],
+      "notes": "Primary exception class - most commonly used"
+    },
+    "Application_Exception_DisposableDisposed": {
+      "newClass": "DisposableDisposedException",
+      "fullNamespace": "Application\\Disposables\\DisposableDisposedException",
+      "namespace": "Application\\Disposables",
+      "type": "class",
+      "category": "Core",
+      "priority": "MEDIUM",
+      "usage": ["throw new", "catch"],
+      "notes": "Exception for disposed objects"
+    },
+    "Application_Exception_UnexpectedInstanceType": {
+      "newClass": null,
+      "fullNamespace": null,
+      "namespace": null,
+      "type": "class",
+      "category": "Core",
+      "priority": "MEDIUM",
+      "usage": [],
+      "notes": "Removed - use \\AppUtils\\ClassHelper methods instead",
+      "replacement": "Use ClassHelper::requireInstanceOf() or similar methods"
+    },
+    "Application_Interfaces_Admin_CollectionCreate": {
+      "newClass": "RecordCreateScreenInterface",
+      "fullNamespace": "DBHelper\\Admin\\Traits\\RecordCreateScreenInterface",
+      "namespace": "DBHelper\\Admin\\Traits",
+      "type": "interface",
+      "category": "Admin",
+      "priority": "HIGH",
+      "usage": ["implements"],
+      "notes": "Interface for record creation screens"
+    },
+    "CollectionSettingsExtendedInterface": {
+      "newClass": "RecordEditScreenInterface",
+      "fullNamespace": "DBHelper\\Admin\\Traits\\RecordEditScreenInterface",
+      "namespace": "DBHelper\\Admin\\Traits",
+      "type": "interface",
+      "category": "Admin",
+      "priority": "HIGH",
+      "usage": ["implements"],
+      "notes": "Interface for record editing screens"
+    },
+    "Application_Admin_ScreenInterface": {
+      "newClass": "AdminScreenInterface",
+      "fullNamespace": "Application\\Interfaces\\Admin\\AdminScreenInterface",
+      "namespace": "Application\\Interfaces\\Admin",
+      "type": "interface",
+      "category": "Admin",
+      "priority": "HIGH",
+      "usage": ["implements"],
+      "notes": "Base interface for all admin screens"
+    },
+    "Application_Admin_Area": {
+      "newClass": "BaseArea",
+      "fullNamespace": "Application\\Admin\\BaseArea",
+      "namespace": "Application\\Admin",
+      "type": "class",
+      "category": "Admin-Area",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Base class for admin areas - top level screens"
+    },
+    "Application_Admin_Area_Mode": {
+      "newClass": "BaseMode",
+      "fullNamespace": "Application\\Admin\\Area\\BaseMode",
+      "namespace": "Application\\Admin\\Area",
+      "type": "class",
+      "category": "Admin-Mode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Base class for mode screens - second level"
+    },
+    "Application_Admin_Area_Mode_CollectionCreate": {
+      "newClass": "BaseRecordCreateMode",
+      "fullNamespace": "Application\\Admin\\Area\\BaseRecordCreateMode",
+      "namespace": "Application\\Admin\\Area",
+      "type": "class",
+      "category": "Admin-Mode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Mode for creating database records"
+    },
+    "Application_Admin_Area_Mode_CollectionList": {
+      "newClass": "BaseRecordListMode",
+      "fullNamespace": "Application\\Admin\\Area\\BaseRecordListMode",
+      "namespace": "Application\\Admin\\Area",
+      "type": "class",
+      "category": "Admin-Mode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Mode for listing database records"
+    },
+    "Application_Admin_Area_Mode_CollectionRecord": {
+      "newClass": "BaseRecordMode",
+      "fullNamespace": "Application\\Admin\\Area\\BaseRecordMode",
+      "namespace": "Application\\Admin\\Area",
+      "type": "class",
+      "category": "Admin-Mode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Mode for viewing a single database record"
+    },
+    "Application_Admin_Wizard": {
+      "newClass": "BaseWizardMode",
+      "fullNamespace": "Application\\Admin\\Area\\BaseWizardMode",
+      "namespace": "Application\\Admin\\Area",
+      "type": "class",
+      "category": "Admin-Mode",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Mode for wizard-style multi-step processes"
+    },
+    "Application_Admin_Area_Mode_Submode": {
+      "newClass": "BaseSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Base class for submode screens - third level"
+    },
+    "Application_Admin_Area_Mode_Submode_CollectionCreate": {
+      "newClass": "BaseRecordCreateSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseRecordCreateSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Submode for creating database records"
+    },
+    "Application_Admin_Area_Mode_Submode_CollectionDelete": {
+      "newClass": "BaseRecordDeleteSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseRecordDeleteSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Submode for deleting database records"
+    },
+    "Application_Admin_Area_Mode_Submode_CollectionEdit": {
+      "newClass": "BaseRecordSettingsSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseRecordSettingsSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Submode for editing database record settings"
+    },
+    "Application_Admin_Area_Mode_Submode_CollectionList": {
+      "newClass": "BaseRecordListSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseRecordListSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Submode for listing database records"
+    },
+    "Application_Admin_Area_Mode_Submode_CollectionRecord": {
+      "newClass": "BaseRecordSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseRecordSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "HIGH",
+      "usage": ["extends"],
+      "notes": "Submode for viewing a single database record"
+    },
+    "BaseCollectionCreateExtended": {
+      "newClass": "BaseRecordCreateSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseRecordCreateSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Deprecated extended create screen - use BaseRecordCreateSubmode"
+    },
+    "BaseCollectionEditExtended": {
+      "newClass": "BaseRecordSettingsSubmode",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\BaseRecordSettingsSubmode",
+      "namespace": "Application\\Admin\\Area\\Mode",
+      "type": "class",
+      "category": "Admin-Submode",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Deprecated extended edit screen - use BaseRecordSettingsSubmode"
+    },
+    "Application_Admin_Area_Mode_Submode_Action": {
+      "newClass": "BaseAction",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\Submode\\BaseAction",
+      "namespace": "Application\\Admin\\Area\\Mode\\Submode",
+      "type": "class",
+      "category": "Admin-Action",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Base class for action screens - fourth level"
+    },
+    "Application_Admin_Area_Mode_Submode_Action_CollectionCreate": {
+      "newClass": "BaseRecordCreateAction",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\Submode\\BaseRecordCreateAction",
+      "namespace": "Application\\Admin\\Area\\Mode\\Submode",
+      "type": "class",
+      "category": "Admin-Action",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Action for creating database records"
+    },
+    "Application_Admin_Area_Mode_Submode_Action_CollectionDelete": {
+      "newClass": "BaseRecordDeleteAction",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\Submode\\BaseRecordDeleteAction",
+      "namespace": "Application\\Admin\\Area\\Mode\\Submode",
+      "type": "class",
+      "category": "Admin-Action",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Action for deleting database records"
+    },
+    "Application_Admin_Area_Mode_Submode_Action_CollectionEdit": {
+      "newClass": "BaseRecordSettingsAction",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\Submode\\BaseRecordSettingsAction",
+      "namespace": "Application\\Admin\\Area\\Mode\\Submode",
+      "type": "class",
+      "category": "Admin-Action",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Action for editing database record settings"
+    },
+    "Application_Admin_Area_Mode_Submode_Action_CollectionList": {
+      "newClass": "BaseRecordListAction",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\Submode\\BaseRecordListAction",
+      "namespace": "Application\\Admin\\Area\\Mode\\Submode",
+      "type": "class",
+      "category": "Admin-Action",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Action for listing database records"
+    },
+    "Application_Admin_Area_Mode_Submode_Action_CollectionRecord": {
+      "newClass": "BaseRecordAction",
+      "fullNamespace": "Application\\Admin\\Area\\Mode\\Submode\\BaseRecordAction",
+      "namespace": "Application\\Admin\\Area\\Mode\\Submode",
+      "type": "class",
+      "category": "Admin-Action",
+      "priority": "MEDIUM",
+      "usage": ["extends"],
+      "notes": "Action for viewing a single database record"
+    }
+  },
+  "categories": {
+    "Core": "Core framework classes (exceptions, interfaces, utilities)",
+    "Admin": "Admin screen interfaces and base classes",
+    "Admin-Area": "Top-level admin screen areas",
+    "Admin-Mode": "Second-level admin screen modes",
+    "Admin-Submode": "Third-level admin screen submodes",
+    "Admin-Action": "Fourth-level admin screen actions"
+  },
+  "priorities": {
+    "HIGH": "Frequently used classes - migrate immediately",
+    "MEDIUM": "Moderately used classes - migrate during normal development",
+    "LOW": "Rarely used classes - migrate when encountered"
+  },
+  "deprecationTimeline": {
+    "v7.0.0": "Deprecated classes available with @deprecated warnings",
+    "v7.1.0": "Deprecated classes still available (Q2 2026)",
+    "v8.0.0": "Deprecated classes REMOVED (Q3 2026)"
+  }
+}

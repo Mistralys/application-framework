@@ -27,7 +27,7 @@ use UI\Form\FormException;
  */
 class UI_Form_Validator_Float extends UI_Form_Validator
 {
-    public const ERROR_INVALID_FLOAT_CONFIGURATION = 74801;
+    public const int ERROR_INVALID_FLOAT_CONFIGURATION = 74801;
 
     protected float $min = 0.0;
     protected float $max = 0.0;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Messaging;
 
-use Application;
+use Application\Application;
 use Application_Messaging_Message;
 use Application_User;
 use AppUtils\ConvertHelper;

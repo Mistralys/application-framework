@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 class Application_AjaxMethods_NotepadGetIDs extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'NotepadGetIDs';
+    public const string METHOD_NAME = 'NotepadGetIDs';
 
     public function getMethodName(): string
     {

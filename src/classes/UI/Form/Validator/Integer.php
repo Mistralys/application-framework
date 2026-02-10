@@ -26,7 +26,7 @@ use AppUtils\RegexHelper;
  */
 class UI_Form_Validator_Integer extends UI_Form_Validator
 {
-    public const ERROR_INVALID_CONFIGURATION = 74901;
+    public const int ERROR_INVALID_CONFIGURATION = 74901;
 
     protected int $min = 0;
     protected int $max = 0;

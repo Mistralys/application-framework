@@ -1,0 +1,247 @@
+<?php
+/**
+ * @package Application
+ * @subpackage Environments
+ */
+
+declare(strict_types=1);
+
+namespace Application;
+
+use Application\ConfigSettings\BaseConfigRegistry;
+use Application\Environments\Environment;
+use Application\Environments\EnvironmentException;
+use Application\Environments\Events\EnvironmentDetected;
+use Application\EventHandler\Eventables\EventableListener;
+use Application\EventHandler\Eventables\EventableInterface;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application_Traits_Loggable;
+use AppUtils\BaseException;
+use Throwable;
+
+/**
+ * AEnvironment manager: handles detecting the environment
+ * in which the application runs. This is used in the
+ * configuration to determine the settings to use based
+ * on the environment (local, dev, prod).
+ *
+ * @package Application
+ * @subpackage Environments
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class Environments implements EventableInterface
+{
+    use EventableTrait;
+    use Application_Traits_Loggable;
+
+    public const int ERROR_NO_ENVIRONMENTS_REGISTERED = 47601;
+    public const int ERROR_ENVIRONMENT_ALREADY_REGISTERED = 47602;
+    public const int ERROR_UNREGISTERED_ENVIRONMENT = 47603;
+
+    public const string TYPE_DEV = 'dev';
+    public const string TYPE_PROD = 'prod';
+    public const string EVENT_ENVIRONMENT_ACTIVATED = 'Activated';
+    public const string EVENT_ENVIRONMENT_DETECTED = 'EnvironmentDetected';
+    public const string EVENT_INCLUDES_LOADED = 'IncludesLoaded';
+
+    /**
+     * @var array<string,Environment>
+     */
+    protected array $environments = array();
+
+    protected static ?Environments $instance = null;
+    protected ?Environment $detected = null;
+
+    protected function __construct()
+    {
+    }
+
+    public static function getInstance(): Environments
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new Environments();
+        }
+
+        return self::$instance;
+    }
+
+    public function register(string $id, string $type, ?callable $configCallback=null): Environment
+    {
+        if (isset($this->environments[$id])) {
+            throw new EnvironmentException(
+                'Cannot register the same environment twice',
+                sprintf(
+                    'Tried registering the environment [%s] although it has already been registered.',
+                    $id
+                ),
+                self::ERROR_ENVIRONMENT_ALREADY_REGISTERED
+            );
+        }
+
+
+        $env = new Environment($this, $id, $type, $configCallback);
+
+        $this->environments[$id] = $env;
+
+        $this->log(sprintf('Registered environment [%s].', $id));
+
+        return $env;
+    }
+
+    public function registerDev(string $id, ?callable $configCallback=null): Environment
+    {
+        return $this->register($id, self::TYPE_DEV, $configCallback);
+    }
+
+    public function registerProd(string $id, ?callable $configCallback=null): Environment
+    {
+        return $this->register($id, self::TYPE_PROD, $configCallback);
+    }
+
+    public function getDetected(): ?Environment
+    {
+        return $this->detected;
+    }
+
+    public function detect(string $defaultID): Environment
+    {
+        if (isset($this->detected)) {
+            return $this->detected;
+        }
+
+        $this->detected = $this->_detect($defaultID);
+
+        boot_define(BaseConfigRegistry::ENVIRONMENT, $this->detected->getID());
+
+        $this->triggerEvent(
+            self::EVENT_ENVIRONMENT_DETECTED,
+            array($this->detected),
+            EnvironmentDetected::class
+        );
+
+        return $this->detected;
+    }
+
+    /**
+     * Adds a listener to the {@see Environments::EVENT_ENVIRONMENT_DETECTED}
+     * event, which is triggered when a specific environment has been detected.
+     *
+     * NOTE: This is not the same as the {@see Environments::EVENT_ENVIRONMENT_ACTIVATED}
+     * event, which can be listened to via the {@see Environment::onActivated()}
+     * method.
+     *
+     * @param callable $callback Gets an instance of {@see EnvironmentDetected} as sole parameter.
+     * @return EventableListener
+     */
+    public function onEnvironmentDetected(callable $callback): EventableListener
+    {
+        return $this->addEventListener(self::EVENT_ENVIRONMENT_DETECTED, $callback);
+    }
+
+    protected function _detect(string $defaultID): Environment
+    {
+        $this->log('Detecting current environment.');
+
+        if (empty($this->environments)) {
+            throw new EnvironmentException(
+                'No environments registered',
+                '',
+                self::ERROR_NO_ENVIRONMENTS_REGISTERED
+            );
+        }
+
+        foreach ($this->environments as $environment) {
+            if ($environment->isMatch()) {
+                $this->log(sprintf('Current environment matches [%s].', $environment->getID()));
+
+                return $environment;
+            }
+        }
+
+        $this->log(sprintf('None of the environments matched, using default [%s].', $defaultID));
+
+        return $this->getByID($defaultID);
+    }
+
+    public function getByID(string $id): Environment
+    {
+        if (isset($this->environments[$id])) {
+            return $this->environments[$id];
+        }
+
+        throw new EnvironmentException(
+            'No such environment registered.',
+            sprintf(
+                'The environment [%s] has not been registered.',
+                $id
+            ),
+            self::ERROR_UNREGISTERED_ENVIRONMENT
+        );
+    }
+
+    public static function getEnvironment(): Environment
+    {
+        return self::getInstance()->detect('');
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return 'Environments';
+    }
+
+    /**
+     * @return Environment[]
+     */
+    public function getAll(): array
+    {
+        return array_values($this->environments);
+    }
+
+    /**
+     * @param Throwable $e
+     * @return never
+     */
+    public static function displayException(Throwable $e)
+    {
+        header('Content-Type: text/html; charset=utf-8');
+
+        ?><!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <title>Environment configuration failure</title>
+                <style>
+                    BODY{
+                        font-family: monospace;
+                    }
+                </style>
+            </head>
+            <body>
+                <p>
+                    An exception occurred while trying to configure the application environment.
+                </p>
+                <p>
+                    Message: <?php echo $e->getMessage() ?><br>
+                    Code: <?php echo $e->getCode() ?><br>
+                    <?php
+                    if ($e instanceof BaseException) {
+                        ?>
+                        Details: <?php echo $e->getDetails() ?><br>
+                        <?php
+                    }
+                    ?>
+                </p>
+                <p>
+                    Trace:
+                </p>
+                <pre><?php echo $e->getTraceAsString() ?></pre>
+                <p>
+                    App log:
+                </p>
+                <pre><?php echo implode(PHP_EOL, AppFactory::createLogger()->getLog()) ?></pre>
+            </body>
+        </html>
+        <?php
+
+        Application::exit('Environment configuration failure.');
+    }
+}

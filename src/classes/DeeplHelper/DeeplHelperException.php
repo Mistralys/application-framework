@@ -17,4 +17,6 @@ use Application_Exception;
 class DeeplHelperException extends Application_Exception
 {
 
+    public const int ERROR_DEEPL_PROXY_URL_EMPTY = 109602;
+    public const int ERROR_DEEPL_API_KEY_NOT_SET = 109601;
 }

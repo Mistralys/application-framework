@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Feedback\FeedbackCollection;
 use Application\Feedback\FeedbackRecord;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;

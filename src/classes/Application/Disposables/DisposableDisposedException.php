@@ -8,8 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Disposables;
 
-use Application\ApplicationException;
-use Application\Disposables\DisposableInterface;
+use Application\Exception\ApplicationException;
 
 /**
  * @package Application

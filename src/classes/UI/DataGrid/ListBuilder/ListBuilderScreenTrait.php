@@ -76,14 +76,4 @@ trait ListBuilderScreenTrait
     {
         return '';
     }
-
-    public function getDefaultAction(): string
-    {
-        return '';
-    }
-
-    public function getDefaultSubmode() : string
-    {
-        return '';
-    }
 }

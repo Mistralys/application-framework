@@ -4,7 +4,7 @@ use Application\AppFactory;
 
 class Application_AjaxMethods_RatingSetComments extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'RatingSetComments';
+    public const string METHOD_NAME = 'RatingSetComments';
 
     public function getMethodName(): string
     {

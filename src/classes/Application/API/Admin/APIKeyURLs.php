@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\API\Admin;
 
-use Application\API\Admin\Screens\APIKeys\BaseAPIKeySettingsAction;
-use Application\API\Admin\Screens\APIKeys\BaseAPIKeyStatusAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeySettingsAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyStatusAction;
 use Application\API\Clients\Keys\APIKeyRecord;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -21,7 +21,7 @@ class APIKeyURLs
     public function status() : AdminURLInterface
     {
         return $this->base()
-            ->action(BaseAPIKeyStatusAction::URL_NAME);
+            ->action(APIKeyStatusAction::URL_NAME);
     }
 
     public function base() : AdminURLInterface
@@ -36,6 +36,6 @@ class APIKeyURLs
     public function settings() : AdminURLInterface
     {
         return $this->base()
-            ->action(BaseAPIKeySettingsAction::URL_NAME);
+            ->action(APIKeySettingsAction::URL_NAME);
     }
 }

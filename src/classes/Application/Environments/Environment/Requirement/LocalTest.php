@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Application;
+
 /**
  * Check defined APP_TEST_RUNNING constant in config files
  * If it is set as true, this requirement returns true.

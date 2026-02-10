@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Revisionable\RevisionableInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use AppUtils\ConvertHelper;
@@ -32,9 +33,9 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     use OptionableTrait;
     use UI_Traits_Conditional;
 
-    public const ERROR_ONLY_NUMERIC_VALUES_ALLOWED = 599502;
-    public const OPTION_LABEL_WIDTH = 'label-width-percent';
-    public const DEFAULT_LABEL_WIDTH = 20; // percent
+    public const int ERROR_ONLY_NUMERIC_VALUES_ALLOWED = 599502;
+    public const string OPTION_LABEL_WIDTH = 'label-width-percent';
+    public const int DEFAULT_LABEL_WIDTH = 20; // percent
 
     protected string $id;
 
@@ -72,12 +73,12 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Adds a new property to the grid, and returns the new property instance.
      *
-     * @param string|number|UI_Renderable_Interface $label
-     * @param string|number|UI_Renderable_Interface $text
+     * @param string|int|float|bool|StringableInterface $label
+     * @param string|int|float|bool|StringableInterface $text
      * @return UI_PropertiesGrid_Property_Regular
      * @throws UI_Exception
      */
-    public function add($label, $text) : UI_PropertiesGrid_Property_Regular
+    public function add(string|int|float|bool|StringableInterface $label, string|int|float|bool|StringableInterface $text) : UI_PropertiesGrid_Property_Regular
     {
         $property = new UI_PropertiesGrid_Property_Regular(
             $this,

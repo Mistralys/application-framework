@@ -1,11 +1,10 @@
 <?php
 /**
- * File containing the {@link UI_Page} class.
  * @package Application
  * @subpackage UserInterface
- * @see UI_page
  */
 
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;
 use AppUtils\ClassHelper;
@@ -32,8 +31,8 @@ use AppUtils\ConvertHelper;
  */
 class UI_Page extends UI_Renderable
 {
-    public const ERROR_UNKNOWN_NAVIGATION = 45001;
-    public const ERROR_PAGE_TITLE_CONTAINS_HTML = 45002;
+    public const int ERROR_UNKNOWN_NAVIGATION = 45001;
+    public const int ERROR_PAGE_TITLE_CONTAINS_HTML = 45002;
     
     private string $id;
     private string $title = '';
@@ -558,10 +557,9 @@ class UI_Page extends UI_Renderable
     }
 
     /**
-     * @return Application_Admin_Area
-     * @throws Application_Exception
+     * @return AdminAreaInterface
      */
-    public function getActiveArea() : Application_Admin_Area
+    public function getActiveArea() : AdminAreaInterface
     {
         return $this->driver->getActiveArea();
     }

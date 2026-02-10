@@ -9,11 +9,10 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use Application\AppFactory;
-use Application\Area\BaseTagsScreen;
-use Application\Area\Tags\BaseCreateTagScreen;
-use Application\Area\Tags\BaseTagListScreen;
-use Application\Disposables\DisposableDisposedException;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Tags\Admin\Screens\Area\TagsArea;
+use Application\Tags\Admin\Screens\Mode\CreateMode;
+use Application\Tags\Admin\Screens\Mode\ListMode;
 use Application\Tags\Taggables\TaggableInterface;
 use Application_Formable;
 use AppUtils\ClassHelper;
@@ -33,16 +32,16 @@ use UI;
  */
 class TagCollection extends DBHelper_BaseCollection
 {
-    public const ERROR_CANNOT_CREATE_ROOT_WITH_INHERIT_SORTING = 152201;
+    public const int ERROR_CANNOT_CREATE_ROOT_WITH_INHERIT_SORTING = 152201;
 
-    public const TABLE_NAME = 'tags';
-    public const TABLE_REGISTRY = 'tags_registry';
-    public const PRIMARY_NAME = 'tag_id';
-    public const COL_LABEL = 'label';
-    public const COL_PARENT_TAG_ID = 'parent_tag_id';
-    public const COL_SORT_TYPE = 'sort_type';
-    public const COL_SORT_WEIGHT = 'sort_weight';
-    public const COL_WEIGHT = 'weight';
+    public const string TABLE_NAME = 'tags';
+    public const string TABLE_REGISTRY = 'tags_registry';
+    public const string PRIMARY_NAME = 'tag_id';
+    public const string COL_LABEL = 'label';
+    public const string COL_PARENT_TAG_ID = 'parent_tag_id';
+    public const string COL_SORT_TYPE = 'sort_type';
+    public const string COL_SORT_WEIGHT = 'sort_weight';
+    public const string COL_WEIGHT = 'weight';
 
     // region: X - Interface methods
 
@@ -169,7 +168,7 @@ class TagCollection extends DBHelper_BaseCollection
 
     public function getAdminCreateSubTagURL(TagRecord $parentTag, array $params=array()) : string
     {
-        $params[BaseCreateTagScreen::REQUEST_PARAM_PARENT_TAG] = $parentTag->getID();
+        $params[CreateMode::REQUEST_PARAM_PARENT_TAG] = $parentTag->getID();
 
         return $this->getAdminCreateURL($params);
     }
@@ -205,7 +204,7 @@ class TagCollection extends DBHelper_BaseCollection
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseTagsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = TagsArea::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);
@@ -213,14 +212,14 @@ class TagCollection extends DBHelper_BaseCollection
 
     public function getAdminListURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseTagListScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = ListMode::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminCreateURL(array $params=array()) : string
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateTagScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Admin\Screens\Mode\CreateMode::URL_NAME;
 
         return $this->getAdminURL($params);
     }

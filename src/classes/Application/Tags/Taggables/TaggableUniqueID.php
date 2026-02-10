@@ -33,13 +33,13 @@ use AppUtils\OperationResult;
  */
 class TaggableUniqueID extends OperationResult
 {
-    public const ID_SEPARATOR_CHAR = '.';
+    public const string ID_SEPARATOR_CHAR = '.';
 
-    public const VALIDATION_UNKNOWN_COLLECTION = 167701;
-    public const VALIDATION_INCORRECT_AMOUNT_OF_TOKENS = 167702;
-    public const VALIDATION_MISSING_SEPARATOR = 167703;
-    public const VALIDATION_NON_NUMERIC_RECORD_ID = 167704;
-    public const VALIDATION_ZERO_OR_NEGATIVE_RECORD_ID = 167705;
+    public const int VALIDATION_UNKNOWN_COLLECTION = 167701;
+    public const int VALIDATION_INCORRECT_AMOUNT_OF_TOKENS = 167702;
+    public const int VALIDATION_MISSING_SEPARATOR = 167703;
+    public const int VALIDATION_NON_NUMERIC_RECORD_ID = 167704;
+    public const int VALIDATION_ZERO_OR_NEGATIVE_RECORD_ID = 167705;
 
     /**
      * @var array<string, TaggableUniqueID>

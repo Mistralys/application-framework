@@ -1,11 +1,12 @@
 <?php
 
+use Application\Application;
 use AppUtils\ConvertHelper;
 
 class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 {
-    public const ERROR_INVALID_CALLBACK = 22101;
-    public const ERROR_INVALID_SCOPE = 22102;
+    public const int ERROR_INVALID_CALLBACK = 22101;
+    public const int ERROR_INVALID_SCOPE = 22102;
 
     /**
      * @var callable

@@ -10,6 +10,7 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use Closure;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
@@ -19,7 +20,7 @@ class CountrySettingsManager extends Application_Formable_RecordSettings_Extende
 {
     public const string SETTING_LABEL = 'label';
 
-    public function __construct(Application_Formable $formable, ?Application_Countries_Country $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, ?Application_Countries_Country $record = null)
     {
         parent::__construct($formable, AppFactory::createCountries(), $record);
 

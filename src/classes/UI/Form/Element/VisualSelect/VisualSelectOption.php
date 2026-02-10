@@ -8,8 +8,8 @@ use HTML\QuickForm2\Element\Select\SelectOption;
 
 class VisualSelectOption extends SelectOption
 {
-    public const ATTRIBUTE_IMAGE_URL = 'image-url';
-    public const ATTRIBUTE_PLEASE_SELECT = 'data-please-select';
+    public const string ATTRIBUTE_IMAGE_URL = 'image-url';
+    public const string ATTRIBUTE_PLEASE_SELECT = 'data-please-select';
 
     public function getImageURL() : string
     {

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 use AppUtils\ArrayDataCollection;
 use AppUtils\ThrowableInfo;
+use Connectors\Connector\ConnectorException;
+use Connectors\Connector\ConnectorInterface;
 use Connectors\Response\ResponseEndpointError;
 use Connectors\Response\ResponseError;
 use Connectors\Response\ResponseSerializer;
@@ -27,30 +29,30 @@ class Connectors_Response implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_INVALID_SERIALIZED_DATA = 80001;
-    public const ERROR_DATA_SET_IS_MISSING = 80002;
+    public const int ERROR_INVALID_SERIALIZED_DATA = 80001;
+    public const int ERROR_DATA_SET_IS_MISSING = 80002;
 
-    public const STATE_ERROR = 'error';
-    public const STATE_SUCCESS = 'success';
+    public const string STATE_ERROR = 'error';
+    public const string STATE_SUCCESS = 'success';
 
-    public const JSON_PLACEHOLDER_START = '{RESPONSE}';
-    public const JSON_PLACEHOLDER_END = '{/RESPONSE}';
+    public const string JSON_PLACEHOLDER_START = '{RESPONSE}';
+    public const string JSON_PLACEHOLDER_END = '{/RESPONSE}';
 
-    public const KEY_STATE = 'state';
-    public const KEY_DETAILS = 'details';
-    public const KEY_MESSAGE = 'message';
-    public const KEY_DATA = 'data';
-    public const KEY_CODE = 'code';
-    public const KEY_EXCEPTION = 'exception';
+    public const string KEY_STATE = 'state';
+    public const string KEY_DETAILS = 'details';
+    public const string KEY_MESSAGE = 'message';
+    public const string KEY_DATA = 'data';
+    public const string KEY_CODE = 'code';
+    public const string KEY_EXCEPTION = 'exception';
 
-    public const RETURNCODE_JSON_NOT_PARSEABLE = 400001;
-    public const RETURNCODE_UNEXPECTED_FORMAT = 400002;
-    public const RETURNCODE_ERROR_RESPONSE = 400003;
-    public const RETURNCODE_WRONG_STATUSCODE = 400004;
+    public const int RETURNCODE_JSON_NOT_PARSEABLE = 400001;
+    public const int RETURNCODE_UNEXPECTED_FORMAT = 400002;
+    public const int RETURNCODE_ERROR_RESPONSE = 400003;
+    public const int RETURNCODE_WRONG_STATUSCODE = 400004;
 
     protected Connectors_Request $request;
     protected HTTP_Request2_Response $result;
-    protected Connectors_Connector $connector;
+    protected ConnectorInterface $connector;
     private ?ThrowableInfo $exception = null;
     protected string $json = '';
 
@@ -451,7 +453,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
             return $data;
         }
 
-        throw new Connectors_Exception(
+        throw new ConnectorException(
             $this->connector,
             'No data specified in the response',
             'A data set is required to be sent with the response, but it is empty.',
@@ -464,14 +466,14 @@ class Connectors_Response implements Application_Interfaces_Loggable
     * 
     * @param string $message
     * @param int $code
-    * @throws Connectors_Exception
+    * @throws ConnectorException
     */
     public function throwException(string $message='', int $code=0) : void
     {
         throw $this->createException($message, $code);
     }
     
-    public function createException(string $message='', int $code=0) : Connectors_Exception
+    public function createException(string $message='', int $code=0) : ConnectorException
     {
         $error = $this->getError();
         $details = '';
@@ -493,7 +495,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
             }
         }
 
-        $ex = new Connectors_Exception(
+        $ex = new ConnectorException(
             $this->request->getConnector(),
             $eMessage,
             $details,

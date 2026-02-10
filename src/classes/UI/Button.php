@@ -13,7 +13,6 @@ use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURLInterface;
 use UI\Bootstrap\ButtonGroup\ButtonGroupItemInterface;
 use UI\Interfaces\ButtonLayoutInterface;
-use UI\Interfaces\ButtonSizeInterface;
 use UI\Traits\ActivatableTrait;
 use UI\Traits\ButtonLayoutTrait;
 use UI\Traits\ButtonSizeTrait;
@@ -43,9 +42,9 @@ class UI_Button
     use ActivatableTrait;
     use ButtonLayoutTrait;
 
-    public const MODE_CLICKABLE = 'clickable';
-    public const MODE_LINKED = 'linked';
-    public const MODE_SUBMIT = 'submit';
+    public const string MODE_CLICKABLE = 'clickable';
+    public const string MODE_LINKED = 'linked';
+    public const string MODE_SUBMIT = 'submit';
 
     protected string $label = '';
     protected string $id;

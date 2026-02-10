@@ -25,8 +25,8 @@ use function AppUtils\parseVariable;
  */
 class Application_Formable_RecordSettings_ValueSet
 {
-    public const ERROR_EMPTY_KEY_VALUE = 146601;
-    public const ERROR_KEY_VALUE_MISMATCH = 146602;
+    public const int ERROR_EMPTY_KEY_VALUE = 146601;
+    public const int ERROR_KEY_VALUE_MISMATCH = 146602;
 
     /**
      * @var array<string,mixed>

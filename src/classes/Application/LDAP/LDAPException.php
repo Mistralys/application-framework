@@ -8,5 +8,5 @@ use Application_Exception;
 
 class LDAPException extends Application_Exception
 {
-    public const ERROR_INVALID_HOST = 178801;
+    public const int ERROR_INVALID_HOST = 178801;
 }

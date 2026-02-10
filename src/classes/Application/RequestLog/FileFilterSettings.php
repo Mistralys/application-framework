@@ -7,11 +7,11 @@ declare(strict_types=1);
  */
 class Application_RequestLog_FileFilterSettings extends Application_FilterSettings
 {
-    public const SETTING_DISPATCHER = 'dispatcher';
-    public const SETTING_SCREEN = 'screen';
-    public const SETTING_USER_NAME = 'user_name';
-    public const SETTING_SESSION_ID = 'session_id';
-    public const SETTING_DURATION = 'duration';
+    public const string SETTING_DISPATCHER = 'dispatcher';
+    public const string SETTING_SCREEN = 'screen';
+    public const string SETTING_USER_NAME = 'user_name';
+    public const string SETTING_SESSION_ID = 'session_id';
+    public const string SETTING_DURATION = 'duration';
 
     public function __construct()
     {

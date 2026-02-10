@@ -17,7 +17,7 @@ abstract class BaseDBRecordRequestType extends BaseRequestType
 {
     abstract public function getCollection() : DBHelperCollectionInterface;
 
-    public function getRecord() : DBHelperRecordInterface
+    public function getRecord() : ?DBHelperRecordInterface
     {
         return $this->getCollection()->getByRequest();
     }

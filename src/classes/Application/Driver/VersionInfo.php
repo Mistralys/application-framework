@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Application\Driver;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\DeploymentRegistry\Tasks\StoreCurrentVersionTask;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
@@ -37,7 +37,7 @@ class VersionInfo implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    public const FILE_NAME = 'version';
+    public const string FILE_NAME = 'version';
 
     private static ?self $instance = null;
     private string $logIdentifier;

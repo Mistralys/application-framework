@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation;
 
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_Admin_Area;
 use Application_Driver;
 use UI\Page\Navigation\NavConfigurator\MenuConfigurator;
 use UI_Page_Navigation;
@@ -13,13 +13,13 @@ use UI_Page_Navigation_Item;
 
 abstract class NavConfigurator
 {
-    public const DRIVER_CONFIGURATOR_CLASS_NAME = 'MainNavConfigurator';
+    public const string DRIVER_CONFIGURATOR_CLASS_NAME = 'MainNavConfigurator';
 
     protected UI_Page_Navigation $navigation;
     protected Application_Driver $driver;
 
     /**
-     * @var Application_Admin_Area[]
+     * @var AdminAreaInterface[]
      */
     protected array $areas;
 
@@ -62,17 +62,12 @@ abstract class NavConfigurator
         return $item;
     }
 
-    public function getAreaByURLName(string $urlName) : ?Application_Admin_Area
+    public function getAreaByURLName(string $urlName) : ?AdminAreaInterface
     {
-        foreach($this->areas as $area)
-        {
-            if($area->getURLName() === $urlName)
-            {
-                return $area;
-            }
-        }
-
-        return null;
+        return array_find(
+            $this->areas,
+            fn($area) => $area->getURLName() === $urlName
+        );
     }
 
     /**

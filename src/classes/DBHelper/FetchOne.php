@@ -59,6 +59,9 @@ class DBHelper_FetchOne extends DBHelper_FetchBase
         return $this;
     }
     
+    /**
+     * @return array<int|string,string|int|float|NULL>
+     */
     public function fetch() : array
     {
         $result = DBHelper::fetch($this->renderQuery(), $this->data);

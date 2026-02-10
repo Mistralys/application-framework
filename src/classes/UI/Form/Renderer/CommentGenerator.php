@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use Application\MarkdownRenderer;
+use Application\Application;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use AppUtils\ClassHelper;
 
 class UI_Form_Renderer_CommentGenerator

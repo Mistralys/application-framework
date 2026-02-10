@@ -20,4 +20,9 @@ $sel->addHeader('Heading to separate items');
 $sel->addItem('JavaScript clickable item')
     ->makeClickable("alert('Item has been clicked.');");
 
+$sel->addSeparator();
+
+$sel->addItem('Regular linked item')
+    ->makeLinked('#');
+
 echo $sel;

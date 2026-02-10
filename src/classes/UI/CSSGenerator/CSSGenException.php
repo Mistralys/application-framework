@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UI\CSSGenerator;
 
-use Application\ApplicationException;
+use Application\Exception\ApplicationException;
 
 class CSSGenException extends ApplicationException
 {

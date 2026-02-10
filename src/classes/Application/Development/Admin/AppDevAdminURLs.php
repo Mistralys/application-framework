@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Development\Admin;
 
 use Application\Development\Admin\Screens\DevelArea;
+use Application\Environments\Admin\Screens\AppConfigMode;
 use Application\ErrorLog\Admin\Screens\ErrorLogMode;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
@@ -32,5 +33,12 @@ class AppDevAdminURLs
     {
         return AdminURL::create()
             ->area(DevelArea::URL_NAME);
+    }
+
+    public function appConfiguration() : AdminURLInterface
+    {
+        return $this
+            ->base()
+            ->mode(AppConfigMode::URL_NAME);
     }
 }

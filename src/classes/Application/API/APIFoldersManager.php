@@ -8,9 +8,11 @@ declare(strict_types=1);
 
 namespace Application\API;
 
+use Application\Admin\Index\AdminScreenIndex;
 use Application\Countries\CountriesCollection;
 use Application\Locales;
 use Application\SourceFolders\Sources\APISourceFolders;
+use DBHelper;
 
 /**
  * Utility class used to register framework-internal API method folders.
@@ -31,6 +33,8 @@ class APIFoldersManager
     {
         $this->folders
             ->addFolder(Locales::getAPIMethodsFolder())
-            ->addFolder(CountriesCollection::getAPIMethodsFolder());
+            ->addFolder(CountriesCollection::getAPIMethodsFolder())
+            ->addFolder(AdminScreenIndex::getAPIMethodsFolder())
+            ->addFolder(DBHelper::getAPIMethodsFolder());
     }
 }

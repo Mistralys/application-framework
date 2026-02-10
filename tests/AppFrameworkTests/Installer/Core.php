@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppFrameworkTestClasses\ApplicationTestCase;
+use Application\Application;
 
 final class Installer_CoreTest extends ApplicationTestCase
 {

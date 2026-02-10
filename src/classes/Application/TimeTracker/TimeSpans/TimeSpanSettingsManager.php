@@ -7,10 +7,10 @@ namespace Application\TimeTracker\TimeSpans;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSpans\SpanTypes\TimeSpanTypes;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use Closure;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
@@ -24,7 +24,7 @@ class TimeSpanSettingsManager extends Application_Formable_RecordSettings_Extend
     public const string SETTING_COMMENTS = 'comments';
     public const string SETTING_DAYS = 'days';
 
-    public function __construct(Application_Formable $formable, ?TimeSpanRecord $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, ?TimeSpanRecord $record = null)
     {
         parent::__construct($formable, AppFactory::createTimeTracker()->createTimeSpans(), $record);
 

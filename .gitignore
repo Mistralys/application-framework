@@ -42,8 +42,10 @@ tests/application/config/test-ui.php
 tests/application/config/test-ui-config.php
 VERSION
 /tests/application/storage/class-cache/
+/tests/application/storage/cache/
 .idea/php-test-framework.xml
 .idea/copilot.data.migration.ask.xml
 .idea/copilot.data.migration.ask2agent.xml
 .idea/copilot.data.migration.edit.xml
 .idea/copilot.data.migration.agent.xml
+/.context/

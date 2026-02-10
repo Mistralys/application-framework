@@ -21,12 +21,12 @@ use DBHelper\StatementBuilder\ValueDefinition;
  */
 class DBHelper_StatementBuilder_ValuesContainer
 {
-    public const ERROR_UNKNOWN_PLACEHOLDER_NAME = 95501;
+    public const int ERROR_UNKNOWN_PLACEHOLDER_NAME = 95501;
 
-    public const VALUE_TYPE_SYMBOL = 1;
-    public const VALUE_TYPE_INTEGER = 2;
-    public const VALUE_TYPE_STRING_LITERAL = 3;
-    public const VALUE_TYPE_RAW = 4;
+    public const int VALUE_TYPE_SYMBOL = 1;
+    public const int VALUE_TYPE_INTEGER = 2;
+    public const int VALUE_TYPE_STRING_LITERAL = 3;
+    public const int VALUE_TYPE_RAW = 4;
 
     /**
      * @var array<string,ValueDefinition>

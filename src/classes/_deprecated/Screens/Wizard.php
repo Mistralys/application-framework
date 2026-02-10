@@ -22,6 +22,11 @@ abstract class Application_Admin_Wizard extends Application_Admin_Area_Mode impl
     {
         return '';
     }
+
+    public function getDefaultSubscreenClass() : null
+    {
+        return null;
+    }
     
     public function getLogIdentifier() : string
     {

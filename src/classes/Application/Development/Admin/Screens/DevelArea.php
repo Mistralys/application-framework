@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\Development\Admin\Screens;
 
 use Application\Admin\BaseArea;
-use Application\Admin\ClassLoaderScreenInterface;
 use Application\Admin\Traits\DevelModeInterface;
 use Application\Development\Admin\DevScreenRights;
 use Application\Interfaces\Admin\AdminScreenInterface;
@@ -22,7 +21,7 @@ use UI_Page_Navigation;
  *
  * @package
  */
-class DevelArea extends BaseArea implements ClassLoaderScreenInterface
+class DevelArea extends BaseArea
 {
     public const string URL_NAME = 'devel';
 
@@ -158,5 +157,10 @@ class DevelArea extends BaseArea implements ClassLoaderScreenInterface
 
             $subnav->addURL($title, $this->getURL(array(AdminScreenInterface::REQUEST_PARAM_MODE => $mode)));
         }
+    }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendArea($this);
     }
 }

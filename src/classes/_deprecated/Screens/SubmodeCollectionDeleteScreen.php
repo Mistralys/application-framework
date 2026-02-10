@@ -1,5 +1,7 @@
 <?php
 
+use DBHelper\Admin\Screens\Submode\BaseRecordDeleteSubmode;
+
 /**
  * @deprecated Use {@see BaseRecordDeleteSubmode} instead.
  */

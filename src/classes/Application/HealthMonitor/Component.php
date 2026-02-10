@@ -1,6 +1,5 @@
 <?php
 /**
- * File containing the {@link Application_HealthMonitor_Component} class.
  * @package Application
  * @subpackage HealthMonitor
  */
@@ -17,10 +16,10 @@
 abstract class Application_HealthMonitor_Component
 {
     /**
-     * Application is completely not usable
+     * The Application is completely not usable
      * @var string
      */
-    const SEVERITY_BLOCKER = 'BLOCKER';
+    public const string SEVERITY_BLOCKER = 'BLOCKER';
 
     /**
      * Most features are not usable
@@ -35,7 +34,7 @@ abstract class Application_HealthMonitor_Component
     const SEVERITY_MAJOR = 'MAJOR';
 
     /**
-     * Application can handle with the failure
+     * Application\Application can handle with the failure
      * @var string
      */
     const SEVERITY_MINOR = 'MINOR';

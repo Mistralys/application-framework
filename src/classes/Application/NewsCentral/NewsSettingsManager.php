@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Application\NewsCentral;
 
 use Application\NewsCentral\Categories\CategorySelector;
-use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
+use Application_Interfaces_Formable;
 use AppLocalize\Localization;
 use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
@@ -20,6 +20,8 @@ use HTML_QuickForm2_Element_InputText;
 use HTML_QuickForm2_Element_Select;
 use HTML_QuickForm2_Element_Switch;
 use HTML_QuickForm2_Element_Textarea;
+use NewsCentral\Entries\Criticalities\NewsEntryCriticalities;
+use NewsCentral\Entries\NewsEntry;
 use UI;
 
 /**
@@ -28,15 +30,15 @@ use UI;
  */
 class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_LOCALE = 'locale';
-    public const SETTING_CATEGORIES = 'categories';
+    public const string SETTING_LOCALE = 'locale';
+    public const string SETTING_CATEGORIES = 'categories';
     private bool $isAlert = false;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elToDate;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elFromDate;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elDateModified;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elDateCreated;
 
-    public function __construct(Application_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
+    public function __construct(Application_Interfaces_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
     {
         parent::__construct($formable, $collection, $record);
 
@@ -92,15 +94,15 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
     // region: Settings
 
-    public const SETTING_TITLE = 'label';
-    public const SETTING_SYNOPSIS = 'synopsis';
-    public const SETTING_ARTICLE = 'article';
-    public const SETTING_FROM_DATE = 'from_date';
-    public const SETTING_TO_DATE = 'to_date';
-    public const SETTING_CRITICALITY = 'criticality';
-    public const SETTING_REQUIRES_RECEIPT = 'receipt';
-    public const SETTING_DATE_CREATED = 'date_created';
-    public const SETTING_DATE_MODIFIED = 'date_modified';
+    public const string SETTING_TITLE = 'label';
+    public const string SETTING_SYNOPSIS = 'synopsis';
+    public const string SETTING_ARTICLE = 'article';
+    public const string SETTING_FROM_DATE = 'from_date';
+    public const string SETTING_TO_DATE = 'to_date';
+    public const string SETTING_CRITICALITY = 'criticality';
+    public const string SETTING_REQUIRES_RECEIPT = 'receipt';
+    public const string SETTING_DATE_CREATED = 'date_created';
+    public const string SETTING_DATE_MODIFIED = 'date_modified';
 
     protected function registerSettings(): void
     {
@@ -391,7 +393,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
     private function injectCategories() : HTML_QuickForm2_Element
     {
-        return (new CategorySelector($this))
+        return new CategorySelector($this)
             ->setName(self::SETTING_CATEGORIES)
             ->setComment(sb()
                 ->t('Use this to select in which categories this news entry should be included.')

@@ -75,7 +75,7 @@ trait SetAppConfigSettingTrait
      * @param bool $enabled
      * @return $this
      *
-     * @see \Application::isDatabaseEnabled()
+     * @see \Application\Application::isDatabaseEnabled()
      */
     public function setDBEnabled(bool $enabled) : self
     {
@@ -133,8 +133,8 @@ trait SetAppConfigSettingTrait
      * @param string $runMode
      * @return $this
      *
-     * @see \Application::RUN_MODE_SCRIPT
-     * @see \Application::RUN_MODE_UI
+     * @see \Application\Application::RUN_MODE_SCRIPT
+     * @see \Application\Application::RUN_MODE_UI
      */
     public function setRunMode(string $runMode) : self
     {
@@ -169,15 +169,6 @@ trait SetAppConfigSettingTrait
     public function setAutomaticDeletionDelay(int $delay) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::AUTOMATIC_DELETION_DELAY, $delay);
-    }
-
-    /**
-     * @param string $appSetID
-     * @return $this
-     */
-    public function setAppSet(string $appSetID) : self
-    {
-        return $this->setBootDefine(BaseConfigRegistry::APPSET, $appSetID);
     }
 
     /**

@@ -7,8 +7,10 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\User\LayoutWidths;use AppUtils\ClassHelper;
+use Application\EventHandler\EventManager;use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\User\LayoutWidths;
+use Application\Users\Admin\Screens\UserSettingsArea;
+use AppUtils\ClassHelper;
 use AppUtils\OutputBuffering;
 use UI\Event\PageRendered;
 use UI\Page\Navigation\QuickNavigation;
@@ -25,10 +27,10 @@ use UI\Page\Navigation\QuickNavigation;
  */
 class template_default_frame extends UI_Page_Template_Custom
 {
-    public const BODY_CLASS_WITH_QUICKNAV = 'with-quicknav';
-    public const BODY_CLASS_LOCKING_LOCKABLE = 'locking-lockable';
-    public const BODY_CLASS_LOCKING_LOCKED = 'locking-locked';
-    public const BODY_CLASS_LOCKING_UNLOCKED = 'locking-unlocked';
+    public const string BODY_CLASS_WITH_QUICKNAV = 'with-quicknav';
+    public const string BODY_CLASS_LOCKING_LOCKABLE = 'locking-lockable';
+    public const string BODY_CLASS_LOCKING_LOCKED = 'locking-locked';
+    public const string BODY_CLASS_LOCKING_UNLOCKED = 'locking-unlocked';
 
     protected function generateOutput() : void
     {
@@ -208,7 +210,7 @@ SAME SQL STATEMENT: (<?php echo count($duplicates) ?>)
     private function getBodyClasses() : array
     {
         $bodyClasses = array();
-        $bodyClasses[] = 'layout-'.$this->user->getSetting(Application_Admin_Area_Settings::SETTING_LAYOUT_WIDTH, LayoutWidths::DEFAULT_WIDTH);
+        $bodyClasses[] = 'layout-'.$this->user->getSetting(UserSettingsArea::SETTING_LAYOUT_WIDTH, LayoutWidths::DEFAULT_WIDTH);
         $bodyClasses[] = 'fontsize-'.$this->user->getSetting('layout_fontsize', 'standard');
 
         if($this->user->isDeveloper()) {
@@ -258,11 +260,11 @@ SAME SQL STATEMENT: (<?php echo count($duplicates) ?>)
             $output
         );
 
-        if(!Application_EventHandler::hasListener(UI::EVENT_PAGE_RENDERED)) {
+        if(!EventManager::hasListener(UI::EVENT_PAGE_RENDERED)) {
             return $html;
         }
 
-        $event = Application_EventHandler::trigger(
+        $event = EventManager::trigger(
             UI::EVENT_PAGE_RENDERED,
             array(
                 $this->page,

@@ -19,7 +19,7 @@ use Application\UI\Form\Element\DateTimePicker\BasicTime;
  */
 class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element_Input
 {
-    public const REGEX_GROUP_TIME = '([0-9]{2}):([0-9]{2})';
+    public const string REGEX_GROUP_TIME = '([0-9]{2}):([0-9]{2})';
 
     protected array $attributes = array(
         'type' => 'time'

@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace TestDriver\OfflineEvents\PriorityTest;
 
-use Application_EventHandler_Event;
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\Event\EventInterface;
+use Application\EventHandler\Event\StandardEvent;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
+use TestDriver\OfflineEvents\PriorityTestEvent;
 use TestDriver\OfflineEvents\TestEvent;
 
-class PriorityListenerB extends Application_EventHandler_OfflineEvents_OfflineListener
+class PriorityListenerB extends BaseOfflineListener
 {
-    public const PRIORITY = 500;
+    public const int PRIORITY = 500;
+
+    public function getEventName(): string
+    {
+        return PriorityTestEvent::EVENT_NAME;
+    }
 
     public function getPriority(): int
     {
@@ -22,7 +29,7 @@ class PriorityListenerB extends Application_EventHandler_OfflineEvents_OfflineLi
      * @param mixed ...$args
      * @return void
      */
-    protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
+    protected function handleEvent(EventInterface $event, ...$args): void
     {
     }
 }

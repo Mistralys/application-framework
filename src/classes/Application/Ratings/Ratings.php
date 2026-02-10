@@ -1,5 +1,6 @@
 <?php
 
+use Application\Application;
 use Application\Ratings\Screens\RatingScreensCollection;
 use AppUtils\ClassHelper;
 

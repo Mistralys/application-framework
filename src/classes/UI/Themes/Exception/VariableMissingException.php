@@ -9,7 +9,7 @@ use UI_Themes_Exception;
 
 class VariableMissingException extends UI_Themes_Exception
 {
-    public const ERROR_CODE = 104301;
+    public const int ERROR_CODE = 104301;
 
     public function __construct(string $varName, PageTemplateInterface $template)
     {

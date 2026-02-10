@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace UI;
 
 use Application\Interfaces\FilterCriteriaInterface;
-use Application_FilterCriteria;
 use AppUtils\Interfaces\RenderableInterface;
 use AppUtils\PaginationHelper;
 use AppUtils\Traits\RenderableTrait;

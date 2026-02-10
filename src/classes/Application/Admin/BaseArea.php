@@ -8,7 +8,8 @@ use Application\Interfaces\AllowableMigrationInterface;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area;
 
-abstract class BaseArea extends Application_Admin_Area implements AllowableMigrationInterface
+abstract class BaseArea extends Application_Admin_Area implements AllowableMigrationInterface, ClassLoaderScreenInterface
 {
     use AllowableMigrationTrait;
+    use ClassLoaderScreenTrait;
 }

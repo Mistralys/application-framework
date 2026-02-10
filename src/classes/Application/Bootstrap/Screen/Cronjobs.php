@@ -6,7 +6,7 @@ use Application\AppFactory;
 
 class Application_Bootstrap_Screen_Cronjobs extends Application_Bootstrap_Screen
 {
-    public const DISPATCHER = 'cronjobs.php';
+    public const string DISPATCHER = 'cronjobs.php';
 
     public function getDispatcher() : string
     {

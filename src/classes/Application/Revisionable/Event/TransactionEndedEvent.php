@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Event;
 
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\TransactionInfo;
-use Application_EventHandler_EventableEvent;
 
-class TransactionEndedEvent extends Application_EventHandler_EventableEvent
+class TransactionEndedEvent extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'TransactionEnded';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function getRevisionable() : RevisionableInterface
     {
         return $this->getTransactionInfo()->getRevisionable();

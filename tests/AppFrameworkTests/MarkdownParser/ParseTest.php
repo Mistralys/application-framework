@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\MarkdownParser;
 
-use Application\MarkdownRenderer;
 use Application\MarkdownRenderer\CustomTags\APIMethodDocTag;
 use Application\MarkdownRenderer\CustomTags\MediaTag;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application_Media_Document_Image;
 use Mistralys\AppFrameworkTests\TestClasses\MediaTestCase;
 

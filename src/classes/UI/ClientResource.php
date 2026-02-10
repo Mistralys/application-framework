@@ -8,8 +8,8 @@
 
 declare(strict_types=1);
 
-use function AppUtils\parseURL;
 use AppUtils\FileHelper;
+use function AppUtils\parseURL;
 
 /**
  * Abstract base class for clientside resource files.

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Application\Admin\Wizard\InvalidationHandler;
 use Application\AppFactory;
+use Application\Application;
 use Application\ConfigSettings\BaseConfigRegistry;
 use UI\AdminURLs\AdminURLInterface;
 

@@ -6,22 +6,22 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
 {
     use UI_Traits_Conditional;
 
-    public const ERROR_SORT_DATA_COLUMN_MISSING = 17903;
-    public const ERROR_UNKNOWN_OPTION_NAME = 17904;
+    public const int ERROR_SORT_DATA_COLUMN_MISSING = 17903;
+    public const int ERROR_UNKNOWN_OPTION_NAME = 17904;
 
-    public const OPTION_HIDDEN = 'hidden';
-    public const OPTION_SORT_CALLBACK = 'sortCallback';
-    public const OPTION_SORT_DATA_COLUMN = 'sortDataColumn';
-    public const OPTION_SORTABLE = 'sortable';
-    public const OPTION_SORT_KEY = 'sortKey';
-    public const OPTION_NOWRAP = 'nowrap';
-    public const OPTION_WIDTH = 'width';
-    public const OPTION_WIDTH_TYPE = 'width-type';
-    public const OPTION_TOOLTIP = 'tooltip';
-    public const OPTION_ALIGN = 'align';
-    public const ROLE_ACTIONS = 'actions';
-    public const ROLE_HEADING = 'heading';
-    public const ROLE_CELL = 'cell';
+    public const string OPTION_HIDDEN = 'hidden';
+    public const string OPTION_SORT_CALLBACK = 'sortCallback';
+    public const string OPTION_SORT_DATA_COLUMN = 'sortDataColumn';
+    public const string OPTION_SORTABLE = 'sortable';
+    public const string OPTION_SORT_KEY = 'sortKey';
+    public const string OPTION_NOWRAP = 'nowrap';
+    public const string OPTION_WIDTH = 'width';
+    public const string OPTION_WIDTH_TYPE = 'width-type';
+    public const string OPTION_TOOLTIP = 'tooltip';
+    public const string OPTION_ALIGN = 'align';
+    public const string ROLE_ACTIONS = 'actions';
+    public const string ROLE_HEADING = 'heading';
+    public const string ROLE_CELL = 'cell';
 
     protected UI_DataGrid $grid;
     protected string $dataKey;

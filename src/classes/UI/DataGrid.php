@@ -5,8 +5,9 @@
  */
 
 use Application\AppFactory;
+use Application\Application;
 use Application\Driver\DriverException;
-use Application\FilterSettingsInterface;
+use Application\FilterSettings\FilterSettingsInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
@@ -30,24 +31,24 @@ class UI_DataGrid implements HiddenVariablesInterface
 {
     use HiddenVariablesTrait;
 
-    public const ERROR_MISSING_PRIMARY_KEY_NAME = 599901;
-    public const ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING = 599903;
-    public const ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
-    public const ERROR_DUPLICATE_DATAGRID_ID = 599905;
-    public const ERROR_UNKNOWN_OPTION = 599907;
-    public const ERROR_COLUMN_NAME_DOES_NOT_EXIST = 599908;
-    public const ERROR_ACTION_NOT_FOUND = 599909;
-    public const ERROR_ACTION_ALREADY_ADDED = 599910;
+    public const int ERROR_MISSING_PRIMARY_KEY_NAME = 599901;
+    public const int ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING = 599903;
+    public const int ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
+    public const int ERROR_DUPLICATE_DATAGRID_ID = 599905;
+    public const int ERROR_UNKNOWN_OPTION = 599907;
+    public const int ERROR_COLUMN_NAME_DOES_NOT_EXIST = 599908;
+    public const int ERROR_ACTION_NOT_FOUND = 599909;
+    public const int ERROR_ACTION_ALREADY_ADDED = 599910;
 
-    public const REQUEST_PARAM_ORDERBY = 'datagrid_orderby';
-    public const REQUEST_PARAM_ORDERDIR = 'datagrid_orderdir';
-    public const REQUEST_PARAM_ACTION = 'datagrid_action';
-    public const REQUEST_PARAM_SUBMITTED = 'datagrid_submitted';
-    public const REQUEST_PARAM_PERPAGE = 'datagrid_perpage';
-    public const REQUEST_PARAM_PAGE = 'datagrid_page';
-    public const REQUEST_PARAM_CONFIGURE_GRID = 'configure_data_grid';
-    public const COLUMN_START_INDEX = 1;
-    public const SETTING_SEPARATOR = '_';
+    public const string REQUEST_PARAM_ORDERBY = 'datagrid_orderby';
+    public const string REQUEST_PARAM_ORDERDIR = 'datagrid_orderdir';
+    public const string REQUEST_PARAM_ACTION = 'datagrid_action';
+    public const string REQUEST_PARAM_SUBMITTED = 'datagrid_submitted';
+    public const string REQUEST_PARAM_PERPAGE = 'datagrid_perpage';
+    public const string REQUEST_PARAM_PAGE = 'datagrid_page';
+    public const string REQUEST_PARAM_CONFIGURE_GRID = 'configure_data_grid';
+    public const int COLUMN_START_INDEX = 1;
+    public const string SETTING_SEPARATOR = '_';
 
 
     protected string $id;
@@ -978,7 +979,7 @@ class UI_DataGrid implements HiddenVariablesInterface
 
     protected int $limitCurrent = 0;
 
-    public const DEFAULT_LIMIT_CHOICES = array(10, 20, 40, 60, 120);
+    public const array DEFAULT_LIMIT_CHOICES = array(10, 20, 40, 60, 120);
 
     /**
      * Enables the multiple choice selector for choosing the

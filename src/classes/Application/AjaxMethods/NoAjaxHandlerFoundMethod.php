@@ -8,8 +8,8 @@ use Application_AjaxMethod;
 
 class NoAjaxHandlerFoundMethod extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'NoAJAXHandlerFound';
-    public const ERROR_NO_SUCH_METHOD = 14501;
+    public const string METHOD_NAME = 'NoAJAXHandlerFound';
+    public const int ERROR_NO_SUCH_METHOD = 14501;
 
     public function getMethodName(): string
     {

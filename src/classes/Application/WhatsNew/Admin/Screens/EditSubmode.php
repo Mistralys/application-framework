@@ -10,7 +10,7 @@ namespace Application\WhatsNew\Admin\Screens;
 
 use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application\WhatsNew\Admin\Traits\WhatsNewSubmodeInterface;
 use Application\WhatsNew\Admin\Traits\WhatsNewSubmodeTrait;
 use Application\WhatsNew\Admin\WhatsNewScreenRights;

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin;
 
 use Application\AppFactory;
-use Application\FilterSettingsInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\TimeTracker\Admin\ListBuilder\TicketSummaryRenderer;
+use Application\TimeTracker\Admin\Screens\Mode\ListScreen\DayListSubmode;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeFilterCriteria;
 use Application\TimeTracker\TimeTrackerCollection;
@@ -16,8 +16,7 @@ use AppUtils\ConvertHelper;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\Microtime;
 use DBHelper\Admin\BaseCollectionListBuilder;
-use DBHelper_BaseCollection;
-use TestDriver\Area\TimeTrackerScreen\ListScreen\DayListScreen;
+use Application\FilterSettings\FilterSettingsInterface;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 use UI_DataGrid;
@@ -227,7 +226,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
     {
         $collection = AppFactory::createTimeTracker();
 
-        if($this->screen instanceof DayListScreen) {
+        if($this->screen instanceof DayListSubmode) {
             return $collection->adminURL()->dayList();
         }
 

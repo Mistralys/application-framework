@@ -7,10 +7,10 @@ namespace AppFrameworkTestClasses;
 use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\NewsCollection;
-use Application\NewsCentral\NewsEntry;
 use AppUtils\Microtime;
 use DBHelper;
 use NewsCentral\Entries\NewsArticle;
+use NewsCentral\Entries\NewsEntry;
 
 abstract class NewsTestCase extends ApplicationTestCase
 {

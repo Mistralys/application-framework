@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace TestDriver\Connectors;
 
 use Application_Bootstrap_Screen_Ajax;
-use Connectors_Connector;
+use Connectors\Connector\BaseConnector;
 
 /**
  * Test connector used to make calls to the application's
@@ -18,7 +18,7 @@ use Connectors_Connector;
  * @package TestDriver
  * @subpackage AJAX
  */
-class InternalAjaxConnector extends Connectors_Connector
+class InternalAjaxConnector extends BaseConnector
 {
     protected function checkRequirements(): void
     {

@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace DBHelper\BaseCollection\Event;
 
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseCollection_OperationContext_Delete;
 
-class AfterDeleteRecordEvent extends Application_EventHandler_EventableEvent
+class AfterDeleteRecordEvent extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'AfterDeleteRecord';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     public function getCollection() : DBHelperCollectionInterface
     {
         return $this->getArgumentObject(0, DBHelperCollectionInterface::class);

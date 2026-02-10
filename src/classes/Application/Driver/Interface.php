@@ -7,7 +7,10 @@
  * @see Application_Driver_Interface
  */
 
+use Application\Application;
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use AppUtils\Interfaces\StringableInterface;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -42,11 +45,16 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function getTheme() : UI_Themes_Theme;
 
+    public function getRootFolder() : string;
     public function getClassesFolder() : string;
 
     public function getConfigFolder() : string;
 
-    public function getActiveArea() : Application_Admin_Area;
+    /**
+     * Retrieves the instance of the currently active administration area.
+     * @return AdminAreaInterface
+     */
+    public function getActiveArea() : AdminAreaInterface;
 
     /**
      * Gets the active admin screen, if any.
@@ -108,9 +116,14 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * Must return an associative array with page name => administration class name
      * pairs to generate the main administration tree.
      *
-     * @return array<string|class-string>
+     * @return array<string|class-string<AdminAreaInterface>>
      */
     public function getAdminAreas() : array;
+
+    /**
+     * @param string|class-string<AdminAreaInterface> $name Screen ID, URL name or class name.
+     * @return bool
+     */
     public function areaExists(string $name) : bool;
 
     public function getAllowedAreas() : array;
@@ -123,11 +136,9 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function configureAdminUIFramework() : void;
 
-    public function describeAdminAreas() : Application_Driver_AdminInfo;
-
     public function createOAuth() : Application_OAuth;
 
-    public function createArea(string $id) : Application_Admin_Area;
+    public function createArea(string $idOrClass) : AdminAreaInterface;
 
     /**
      * @param array<string,string|number> $params
@@ -145,31 +156,31 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * Adds an informational message and redirects to the target URL.
      * The message is displayed on the target page.
      *
-     * @param string|number|UI_Renderable_Interface $message
-     * @param string|array $paramsOrURL Target URL or parameters for an internal page
+     * @param string|int|float|StringableInterface $message
+     * @param string|array<string,string|int|float|null>|AdminURLInterface $paramsOrURL Target URL or parameters for an internal page
      * @return never
      */
-    public function redirectWithInfoMessage($message, $paramsOrURL = null);
+    public function redirectWithInfoMessage(string|int|float|StringableInterface $message, string|array|AdminURLInterface|null $paramsOrURL = null) : never;
 
     /**
      * Adds an error message and redirects to the target URL.
      * The message is displayed on the target page.
      *
-     * @param string|number|UI_Renderable_Interface $message
-     * @param string|array $paramsOrURL Target URL or parameters for an internal page
+     * @param string|int|float|StringableInterface $message
+     * @param string|array<string,string|int|float|null>|AdminURLInterface $paramsOrURL Target URL or parameters for an internal page
      * @return never
      */
-    public function redirectWithErrorMessage($message, $paramsOrURL = null);
+    public function redirectWithErrorMessage(string|int|float|StringableInterface $message, string|array|AdminURLInterface|null $paramsOrURL = null) : never;
 
     /**
      * Adds a success message and redirects to the target URL.
      * The message is displayed on the target page.
      *
-     * @param string|number|UI_Renderable_Interface $message
-     * @param string|array $paramsOrURL Target URL or parameters for an internal page
+     * @param string|int|float|StringableInterface $message
+     * @param string|array<string,string|int|float|null>|AdminURLInterface|null $paramsOrURL Target URL or parameters for an internal page
      * @return never
      */
-    public function redirectWithSuccessMessage($message, $paramsOrURL = null);
+    public function redirectWithSuccessMessage(string|int|float|StringableInterface $message, string|array|AdminURLInterface|null $paramsOrURL = null) : never;
 
     public function resolveURLParam(AdminScreenInterface $screen) : string;
 }

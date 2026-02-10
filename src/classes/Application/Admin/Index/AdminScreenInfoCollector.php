@@ -6,6 +6,7 @@ namespace Application\Admin\Index;
 
 use Application\Admin\ClassLoaderScreenInterface;
 use Application\AppFactory;
+use Application\Framework\AppFolder;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\AllowableMigrationInterface;
 use AdminException;
@@ -13,21 +14,29 @@ use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\PHPFile;
+use AppUtils\Interfaces\StringPrimaryRecordInterface;
 
-class AdminScreenInfoCollector
+class AdminScreenInfoCollector implements StringPrimaryRecordInterface
 {
     private AdminScreenInterface $screen;
     private PHPFile $classPath;
     private FolderInfo $subscreensPath;
     private string $class;
     private AdminScreenInfoCollector $parentScreen;
+    private string $id;
 
     public function __construct(AdminScreenInterface $screen)
     {
         $this->screen = $screen;
         $this->class = get_class($screen);
+        $this->id = md5($this->class);
         $this->classPath = $this->findSourceFile();
         $this->subscreensPath = FolderInfo::factory($this->classPath->getFolder().'/'.getClassTypeName($screen));
+    }
+
+    public function getID(): string
+    {
+        return $this->id;
     }
 
     public function getScreen() : AdminScreenInterface
@@ -143,7 +152,7 @@ class AdminScreenInfoCollector
             ScreenDataInterface::KEY_SCREEN_REQUIRED_RIGHT => null,
             ScreenDataInterface::KEY_SCREEN_FEATURE_RIGHTS => null,
             ScreenDataInterface::KEY_SCREEN_CLASS => $this->getClass(),
-            ScreenDataInterface::KEY_SCREEN_PATH => FileHelper::relativizePath($this->getFolder()->getPath(), AppFactory::createDriver()->getClassesFolder()),
+            ScreenDataInterface::KEY_SCREEN_PATH => AppFolder::create($this->getFolder())->getIdentifier(),
             ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES => $this->getSubscreenClasses()
         );
 
@@ -162,9 +171,9 @@ class AdminScreenInfoCollector
     {
         $array = $this->toArray();
 
-        $array['subscreens'] = array();
+        $array[ScreenDataInterface::KEY_SCREEN_SUBSCREENS] = array();
         foreach($this->subscreens as $subscreen) {
-            $array['subscreens'] = array_merge($array['subscreens'], $subscreen->toTreeArray());
+            $array[ScreenDataInterface::KEY_SCREEN_SUBSCREENS] = array_merge($array[ScreenDataInterface::KEY_SCREEN_SUBSCREENS], $subscreen->toTreeArray());
         }
 
         return array(

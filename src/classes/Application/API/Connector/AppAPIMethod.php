@@ -7,9 +7,9 @@ namespace Application\API\Connector;
 use Application\API\APIMethodInterface;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter;
+use Connectors\Connector\ConnectorException;
 use Connectors\Headers\HTTPHeadersBasket;
 use Connectors_Connector_Method_Post;
-use Connectors_Exception;
 use Throwable;
 
 class AppAPIMethod extends Connectors_Connector_Method_Post
@@ -19,7 +19,7 @@ class AppAPIMethod extends Connectors_Connector_Method_Post
      * @param ArrayDataCollection $params
      * @param HTTPHeadersBasket|NULL $headers
      * @return ArrayDataCollection
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public function fetchJSON(string $methodName, ArrayDataCollection $params, ?HTTPHeadersBasket $headers=null) : ArrayDataCollection
     {
@@ -36,7 +36,7 @@ class AppAPIMethod extends Connectors_Connector_Method_Post
         }
         catch (Throwable $e)
         {
-            if($e instanceof Connectors_Exception) {
+            if($e instanceof ConnectorException) {
                 $response = $e->getResponse();
             }
 

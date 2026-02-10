@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\Interfaces\StringableInterface;
 
@@ -71,13 +72,13 @@ class Application_Countries_Navigator extends UI_Renderable
         return $this->countries;
     }
     
-    public function setAutoSelect(bool $enabled=true) : Application_Countries_Navigator
+    public function setAutoSelect(bool $enabled=true) : self
     {
         $this->autoSelect = $enabled;
         return $this;
     }
     
-    public function setActiveCountry(Application_Countries_Country $country) : Application_Countries_Navigator
+    public function setActiveCountry(Application_Countries_Country $country) : self
     {
         $this->activeCountry = $country;
         return $this;
@@ -102,7 +103,7 @@ class Application_Countries_Navigator extends UI_Renderable
      * @param string|int|float|bool|StringableInterface|NULL $value
      * @return $this
      */
-    public function setURLParam(string $name, string|int|float|bool|StringableInterface|NULL $value) : Application_Countries_Navigator
+    public function setURLParam(string $name, string|int|float|bool|StringableInterface|NULL $value) : self
     {
         $param = (string)$value;
 
@@ -114,12 +115,12 @@ class Application_Countries_Navigator extends UI_Renderable
         return $this;
     }
     
-    public function setURLParamsByArea(Application_Admin_Skeleton $area) : Application_Countries_Navigator
+    public function setURLParamsByScreen(AdminScreenInterface $area) : self
     {
         return $this->setURLParams($area->getPageParams());
     }
 
-    public function setURLParamByRequest(string $varName) : Application_Countries_Navigator
+    public function setURLParamByRequest(string $varName) : self
     {
         return $this->setURLParam(
             $varName,
@@ -129,17 +130,17 @@ class Application_Countries_Navigator extends UI_Renderable
         );
     }
 
-    public function setURLParamMode() : Application_Countries_Navigator
+    public function setURLParamMode() : self
     {
         return $this->setURLParamByRequest(AdminScreenInterface::REQUEST_PARAM_MODE);
     }
 
-    public function setURLParamSubmode() : Application_Countries_Navigator
+    public function setURLParamSubmode() : self
     {
         return $this->setURLParamByRequest(AdminScreenInterface::REQUEST_PARAM_SUBMODE);
     }
 
-    public function setURLParamAction() : Application_Countries_Navigator
+    public function setURLParamAction() : self
     {
         return $this->setURLParamByRequest(AdminScreenInterface::REQUEST_PARAM_ACTION);
     }
@@ -148,7 +149,7 @@ class Application_Countries_Navigator extends UI_Renderable
      * @param array<string,string|int|float|bool|StringableInterface|NULL> $params
      * @return $this
      */
-    public function setURLParams(array $params)  : Application_Countries_Navigator
+    public function setURLParams(array $params) : self
     {
         foreach($params as $name => $value)
         {
@@ -181,7 +182,7 @@ class Application_Countries_Navigator extends UI_Renderable
             return;
         }
 
-        // Use the first country in the list as final fallback.
+        // Use the first country in the list as a final fallback.
         $countries = $this->getCountries();
         $this->activeCountry = array_shift($countries);
     }
@@ -260,14 +261,14 @@ class Application_Countries_Navigator extends UI_Renderable
     }
 
     /**
-     * Enables storing the active country ID, to restore it
+     * Enables storing the active country ID to restore it
      * automatically if no country is specifically selected
      * in the request parameters.
      *
      * @param string|NULL $storageName Used to identify the navigator: all instances using the same name share the stored country setting. Set to NULL to disable storage again.
      * @return $this
      */
-    public function enableCountryStorage(?string $storageName) : Application_Countries_Navigator
+    public function enableCountryStorage(?string $storageName) : self
     {
         if($storageName !== null) {
             $this->storageName = 'countries_navigator_'.$storageName;

@@ -6,8 +6,8 @@ namespace AppFrameworkTests\News;
 
 use AppFrameworkTestClasses\NewsTestCase;
 use Application\AppFactory;
-use Application\NewsCentral\NewsEntryCriticalities;
 use AppLocalize\Localization\Locale\en_GB;
+use NewsCentral\Entries\Criticalities\NewsEntryCriticalities;
 
 final class AlertTest extends NewsTestCase
 {

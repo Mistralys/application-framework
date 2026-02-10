@@ -9,12 +9,12 @@ declare(strict_types=1);
 namespace Application\CacheControl;
 
 use Application\AppFactory;
-use Application\OfflineEvents\RegisterCacheLocationsEvent;
-use Application_EventHandler;
+use Application\CacheControl\Events\RegisterCacheLocationsEvent;
+use Application\EventHandler\EventManager;
+use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
-use AppUtils\FileHelper\FolderInfo;
 use Mistralys\AppFrameworkDocs\DocumentationPages;
 
 /**
@@ -43,7 +43,7 @@ use Mistralys\AppFrameworkDocs\DocumentationPages;
  *
  * @see self::DOCUMENTATION_URL
  */
-class CacheManager extends BaseStringPrimaryCollection implements \Application_Interfaces_Loggable
+class CacheManager extends BaseStringPrimaryCollection implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
@@ -55,11 +55,6 @@ class CacheManager extends BaseStringPrimaryCollection implements \Application_I
     private function __construct()
     {
         $this->logIdentifier = 'CacheManager';
-    }
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__ . '/Admin/Screens')->requireExists();
     }
 
     public function getLogIdentifier(): string
@@ -83,7 +78,13 @@ class CacheManager extends BaseStringPrimaryCollection implements \Application_I
 
     protected function registerItems(): void
     {
-        foreach($this->triggerRegisterEvent()->getLocations() as $location) {
+        $event = $this->triggerRegisterEvent();
+
+        if($event === null) {
+            return;
+        }
+
+        foreach($event->getLocations() as $location) {
             $this->registerItem($location);
         }
     }
@@ -110,17 +111,20 @@ class CacheManager extends BaseStringPrimaryCollection implements \Application_I
         return $this;
     }
 
-    private function triggerRegisterEvent() : RegisterCacheLocationsEvent
+    private function triggerRegisterEvent() : ?RegisterCacheLocationsEvent
     {
-        $event = Application_EventHandler::createOfflineEvents()->triggerEvent(
-            RegisterCacheLocationsEvent::EVENT_NAME,
-            array(),
-            RegisterCacheLocationsEvent::class
-        );
+        $event = EventManager::createOfflineEvents()->triggerEvent(
+            RegisterCacheLocationsEvent::EVENT_NAME
+        )
+            ->getTriggeredEvent();
+
+        if($event === null) {
+            return null;
+        }
 
         return ClassHelper::requireObjectInstanceOf(
             RegisterCacheLocationsEvent::class,
-            $event->getTriggeredEvent()
+            $event
         );
     }
 }

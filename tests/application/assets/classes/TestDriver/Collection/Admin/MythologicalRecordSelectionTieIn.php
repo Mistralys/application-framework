@@ -11,7 +11,7 @@ namespace TestDriver\Collection\Admin;
 use Application\Collection\Admin\BaseRecordSelectionTieIn;
 use Application\Collection\CollectionItemInterface;
 use TestDriver\Collection\MythologyRecordCollection;
-use UI_Bootstrap_BigSelection_Item_Regular;
+use UI\Bootstrap\BigSelection\Item\RegularItem;
 
 /**
  * Admin screen tie-in for selecting a collection record
@@ -51,7 +51,7 @@ class MythologicalRecordSelectionTieIn extends BaseRecordSelectionTieIn
         return $this->collection->getByID((string)$id);
     }
 
-    protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, CollectionItemInterface $record): void
+    protected function adjustEntry(RegularItem $entry, CollectionItemInterface $record): void
     {
 
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\API\Admin;
 
-use Application\API\Admin\Screens\APIKeys\BaseAPIKeysListAction;
-use Application\API\Admin\Screens\APIKeys\BaseCreateAPIKeyAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeysListAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\CreateAPIKeyAction;
 use Application\API\Clients\Keys\APIKeysCollection;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -22,7 +22,7 @@ class APIKeyCollectionURLs
     {
         return $this
             ->base()
-            ->action(BaseAPIKeysListAction::URL_NAME);
+            ->action(APIKeysListAction::URL_NAME);
     }
 
     public function base() : AdminURLInterface
@@ -34,6 +34,6 @@ class APIKeyCollectionURLs
     {
         return $this
             ->base()
-            ->action(BaseCreateAPIKeyAction::URL_NAME);
+            ->action(CreateAPIKeyAction::URL_NAME);
     }
 }

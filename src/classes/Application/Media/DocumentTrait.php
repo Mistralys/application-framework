@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Media;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application_Exception;
 use Application_Media_Delivery;
 use Application_Media_Document;
@@ -185,7 +185,7 @@ trait DocumentTrait
      */
     public function renderThumbnail(?int $preferredSize=null) : string
     {
-        return (new ThumbnailRenderer($this))
+        return new ThumbnailRenderer($this)
             ->setPreferredSize($preferredSize)
             ->render();
     }
@@ -222,7 +222,13 @@ trait DocumentTrait
      */
     public function getFilesize() : int
     {
-        $size = filesize($this->getPath());
+        $path = $this->getPath();
+
+        if(!file_exists($path)) {
+            return 0;
+        }
+
+        $size = filesize($path);
         if($size !== false) {
             return $size;
         }

@@ -8,7 +8,7 @@ use Application\TimeTracker\TimeSpans\SpanTypes\BaseTimeSpanType;
 
 class VacationTimeSpan extends BaseTimeSpanType
 {
-    public const TYPE_ID = 'vacation';
+    public const string TYPE_ID = 'vacation';
 
     public function getID(): string
     {

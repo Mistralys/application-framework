@@ -26,9 +26,9 @@ trait ButtonLayoutTrait
     /**
      * @return $this
      */
-    public function makeInfo() : self
+    public function makeInfo(bool $enabled=true) : self
     {
-        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_INFO);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_INFO, $enabled);
     }
 
     /**
@@ -36,9 +36,9 @@ trait ButtonLayoutTrait
      *
      * @return $this
      */
-    public function makeSuccess() : self
+    public function makeSuccess(bool $enabled=true) : self
     {
-        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_SUCCESS);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_SUCCESS, $enabled);
     }
 
     /**
@@ -46,9 +46,9 @@ trait ButtonLayoutTrait
      *
      * @return $this
      */
-    public function makeWarning() : self
+    public function makeWarning(bool $enabled=true) : self
     {
-        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_WARNING);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_WARNING, $enabled);
     }
 
     /**
@@ -56,20 +56,23 @@ trait ButtonLayoutTrait
      *
      * @return $this
      */
-    public function makeInverse() : self
+    public function makeInverse(bool $enabled=true) : self
     {
-        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_INVERSE);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_INVERSE, $enabled);
     }
 
     /**
      * Sets the button's layout to the specified type.
      *
      * @param string $layoutID
+     * @param bool $enabled If set to false, the layout will not be applied.
      * @return $this
      */
-    public function makeLayout(string $layoutID) : self
+    public function makeLayout(string $layoutID, bool $enabled=true) : self
     {
-        $this->layout = $layoutID;
+        if($enabled) {
+            $this->layout = $layoutID;
+        }
 
         return $this;
     }
@@ -91,9 +94,9 @@ trait ButtonLayoutTrait
      *
      * @return $this
      */
-    public function makePrimary() : self
+    public function makePrimary(bool $enabled=true) : self
     {
-        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_PRIMARY);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_PRIMARY, $enabled);
     }
 
     /**
@@ -101,9 +104,9 @@ trait ButtonLayoutTrait
      *
      * @return $this
      */
-    public function makeDangerous() : self
+    public function makeDangerous(bool $enabled=true) : self
     {
-        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_DANGER);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_DANGER, $enabled);
     }
 
     /**
@@ -111,9 +114,9 @@ trait ButtonLayoutTrait
      *
      * @return $this
      */
-    public function makeDeveloper() : self
+    public function makeDeveloper(bool $enabled=true) : self
     {
-        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_DEVELOPER);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_DEVELOPER, $enabled);
     }
 
     /**

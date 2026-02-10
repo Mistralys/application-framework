@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Countries\Admin;
 
-use Application\Countries\Admin\Screens\BaseAreaScreen;
-use Application\Countries\Admin\Screens\BaseViewScreen;
-use Application\Countries\Admin\Screens\View\BaseSettingsScreen;
-use Application\Countries\Admin\Screens\View\BaseStatusScreen;
+use Application\Countries\Admin\Screens\CountriesArea;
+use Application\Countries\Admin\Screens\Mode\ViewScreen;
+use Application\Countries\Admin\Screens\Mode\View\SettingsScreen;
+use Application\Countries\Admin\Screens\Mode\View\StatusScreen;
 use Application_Countries;
 use Application_Countries_Country;
 use UI\AdminURLs\AdminURL;
@@ -26,21 +26,21 @@ class CountryAdminURLs
     {
         return $this
             ->view()
-            ->submode(BaseStatusScreen::URL_NAME);
+            ->submode(StatusScreen::URL_NAME);
     }
 
     public function settings() : AdminURLInterface
     {
         return $this
             ->view()
-            ->submode(BaseSettingsScreen::URL_NAME);
+            ->submode(SettingsScreen::URL_NAME);
     }
 
     public function view() : AdminURLInterface
     {
         return AdminURL::create()
-            ->area(BaseAreaScreen::URL_NAME)
-            ->mode(BaseViewScreen::URL_NAME)
+            ->area(CountriesArea::URL_NAME)
+            ->mode(ViewScreen::URL_NAME)
             ->int(Application_Countries::REQUEST_PARAM_ID, $this->country->getID());
     }
 }

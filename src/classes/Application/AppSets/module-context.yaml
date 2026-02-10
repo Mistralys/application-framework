@@ -1,0 +1,54 @@
+## ---------------------------------------------------------------
+## APPLICATION SETS
+## ---------------------------------------------------------------
+
+documents:
+-
+  description: 'Application Sets - Overview'
+  outputPath: 'modules/application-sets/overview.md'
+  sources:
+    - type: file
+      description: "Application Sets Overview"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'Application Sets - Architecture'
+  outputPath: 'modules/application-sets/architecture.md'
+  sources:
+    - type: file
+      description: "Public Class Signatures"
+      sourcePaths:
+        - ./
+      excludePatterns:
+        - 'Admin/'
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'Application Sets - Administration Interface'
+  outputPath: 'modules/application-sets/admin-interface.md'
+  sources:
+    - type: file
+      description: "Public Class Signatures"
+      sourcePaths:
+        - Admin
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Countries\Admin;
 
-use Application\Countries\Admin\Screens\BaseAreaScreen;
-use Application\Countries\Admin\Screens\BaseCreateScreen;
-use Application\Countries\Admin\Screens\BaseListScreen;
+use Application\Countries\Admin\Screens\CountriesArea;
+use Application\Countries\Admin\Screens\Mode\CreateScreen;
+use Application\Countries\Admin\Screens\Mode\ListScreen;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -16,19 +16,19 @@ class MainAdminURLs
     {
         return $this
             ->area()
-            ->mode(BaseListScreen::URL_NAME);
+            ->mode(ListScreen::URL_NAME);
     }
 
     public function create() : AdminURLInterface
     {
         return $this
             ->area()
-            ->mode(BaseCreateScreen::URL_NAME);
+            ->mode(CreateScreen::URL_NAME);
     }
 
     public function area() : AdminURLInterface
     {
         return AdminURL::create()
-            ->area(BaseAreaScreen::URL_NAME);
+            ->area(CountriesArea::URL_NAME);
     }
 }

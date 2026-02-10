@@ -1,15 +1,8 @@
 <?php
 /**
- * File containing the {@link Application_HealthMonitor_Component_Database} class.
  * @package Application
  * @subpackage HealthMonitor
  */
-
-/**
- * The base component class.
- * @see Application_HealthMonitor_Component
- */
-require_once 'Application/HealthMonitor/Component.php';
 
 /**
  * Checks the database connectivity and speed.
@@ -20,27 +13,27 @@ require_once 'Application/HealthMonitor/Component.php';
  */
 class Application_HealthMonitor_Component_Filesystem extends Application_HealthMonitor_Component
 {
-    public function getName()
+    public function getName() : string
     {
         return 'Filesystem';
     }
 
-    public function getDescription()
+    public function getDescription() : string
     {
         return sprintf('Underlying %1$s file system access.', $this->driver->getAppNameShort());
     }
 
-    public function getYellowPagesURL()
+    public function getYellowPagesURL() : string
     {
         return '';
     }
 
-    public function getSeverity()
+    public function getSeverity() : string
     {
         return self::SEVERITY_MAJOR;
     }
 
-    public function getFolders()
+    public function getFolders() : array
     {
         return array(
             array(
@@ -66,7 +59,7 @@ class Application_HealthMonitor_Component_Filesystem extends Application_HealthM
         );
     }
     
-    public function collectData()
+    public function collectData() : void
     {
         $folders = $this->getFolders();
         

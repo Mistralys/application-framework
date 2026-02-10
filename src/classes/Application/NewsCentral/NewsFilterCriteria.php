@@ -6,6 +6,7 @@ namespace Application\NewsCentral;
 
 use DBHelper_BaseFilterCriteria;
 use DBHelper_StatementBuilder_ValuesContainer;
+use NewsCentral\Entries\NewsEntry;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
 
@@ -14,8 +15,8 @@ use NewsCentral\NewsEntryType;
  */
 class NewsFilterCriteria extends DBHelper_BaseFilterCriteria
 {
-    public const FILTER_TYPES = 'types';
-    public const FILTER_STATUSES = 'statuses';
+    public const string FILTER_TYPES = 'types';
+    public const string FILTER_STATUSES = 'statuses';
     private bool $schedulingEnabled = true;
 
     /**

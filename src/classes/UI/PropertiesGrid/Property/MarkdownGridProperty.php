@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace UI\PropertiesGrid\Property;
 
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use UI_PropertiesGrid_Property_Merged;
 use UI_StringBuilder;
 

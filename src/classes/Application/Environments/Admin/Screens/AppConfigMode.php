@@ -12,12 +12,14 @@ use Application\Admin\Area\BaseMode;
 use Application\Admin\Traits\DevelModeInterface;
 use Application\Admin\Traits\DevelModeTrait;
 use Application\AppFactory;
+use Application\AppSets\AppSetsCollection;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Development\Admin\DevScreenRights;
-use Application\OfflineEvents\DisplayAppConfigEvent;
+use Application\Development\Events\DisplayAppConfigEvent;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\StringableInterface;
 use UI_PropertiesGrid;
+use UI_PropertiesGrid_Property;
 use UI_PropertiesGrid_Property_Boolean;
 use UI_PropertiesGrid_Property_Regular;
 use UI_Themes_Theme_ContentRenderer;
@@ -113,8 +115,7 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
         // Let the application add its own settings as needed
         AppFactory::createOfflineEvents()->triggerEvent(
             DisplayAppConfigEvent::EVENT_NAME,
-            array($this),
-            DisplayAppConfigEvent::class
+            array($this)
         );
 
         return (string)$this->grid;
@@ -148,9 +149,11 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
     {
         $this->addHeader(t('Environment'));
 
+        $appSet = AppSetsCollection::getInstance()->getActive();
+
         $this->addConstant(t('Name'), BaseConfigRegistry::ENVIRONMENT);
         $this->addConstant(t('Instance ID'), BaseConfigRegistry::INSTANCE_ID);
-        $this->addConstant(t('Appset'), BaseConfigRegistry::APPSET);
+        $this->addValue(t('Appset'), sb()->code($appSet->getAlias())->add('-')->add($appSet->getLabel()));
         $this->addConstant(t('Install URL'), BaseConfigRegistry::URL);
         $this->addConstant(t('Install folder'), BaseConfigRegistry::ROOT);
         $this->addConstant(t('Framework folder'), BaseConfigRegistry::INSTALL_FOLDER);
@@ -207,6 +210,18 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
         $this->addConstant(t('Content locales'), BaseConfigRegistry::CONTENT_LOCALES);
     }
 
+    // region: Add helpers
+
+    public function getGrid() : UI_PropertiesGrid
+    {
+        return $this->grid;
+    }
+
+    public function addValue(string $label, string|int|float|bool|StringableInterface $value) : UI_PropertiesGrid_Property
+    {
+        return $this->grid->add($label, $value);
+    }
+
     public function addConstant(string $label, string $name) : UI_PropertiesGrid_Property_Regular
     {
         return $this->grid->add($label, boot_constant($name));
@@ -236,4 +251,6 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
             $label
         ));
     }
+
+    // endregion
 }

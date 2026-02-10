@@ -20,4 +20,5 @@ class DevScreenRights
     public const string SCREEN_CSS_GENERATOR = Application_User::RIGHT_DEVELOPER;
     public const string SCREEN_DEPLOYMENT_HISTORY = Application_User::RIGHT_DEVELOPER;
     public const string SCREEN_DATABASE_DUMPS = Application_User::RIGHT_DEVELOPER;
+    public const string SCREEN_TRANSLATIONS = Application_User::RIGHT_DEVELOPER;
 }

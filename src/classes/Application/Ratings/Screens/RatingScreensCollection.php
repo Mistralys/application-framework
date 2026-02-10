@@ -10,9 +10,9 @@ namespace Application\Ratings\Screens;
 
 use Application_Driver;
 use AppUtils\ConvertHelper\JSONConverter;
-use RatingScreenRecord;
 use DBHelper;
 use DBHelper_BaseCollection;
+use RatingScreenRecord;
 
 /**
  * Collection manager for the rating screens that users have accessed:

@@ -31,7 +31,7 @@ class GroupControls implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
-    public const CONTROLS_PREFIX = 'GROUP_CONTROLS_';
+    public const string CONTROLS_PREFIX = 'GROUP_CONTROLS_';
 
     private ?string $group;
     private UI_Button $btnExpand;

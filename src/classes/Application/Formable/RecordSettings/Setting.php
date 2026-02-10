@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use AppUtils\BaseException;
 use AppUtils\Interfaces\RuntimePropertizableInterface;
 use AppUtils\Traits\RuntimePropertizableTrait;
@@ -24,9 +25,9 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
 {
     use RuntimePropertizableTrait;
 
-    public const ERROR_INVALID_CALLBACK = 45301;
-    public const ERROR_NO_CALLBACK_EXECUTABLE = 45302;
-    public const ERROR_STORAGE_FILTER_CALLBACK_FAILED = 45303;
+    public const int ERROR_INVALID_CALLBACK = 45301;
+    public const int ERROR_NO_CALLBACK_EXECUTABLE = 45302;
+    public const int ERROR_STORAGE_FILTER_CALLBACK_FAILED = 45303;
     
     protected Application_Formable_RecordSettings $settings;
     

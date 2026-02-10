@@ -10,7 +10,9 @@ namespace Application\WhatsNew\AppVersion;
 
 use Application\WhatsNew\WhatsNew;
 use Application_Driver;
+use AppUtils\AttributeCollection;
 use AppUtils\ConvertHelper;
+use AppUtils\HTMLTag;
 use SimpleXMLElement;
 use function AppUtils\parseNumber;
 use const APP_URL;
@@ -180,65 +182,88 @@ class CategoryItem
         }
     }
 
-    protected function renderImages() : void
+    /**
+     * @return LinkedImage[]
+     */
+    public function detectImages() : array
     {
-        if (!str_contains($this->text, '{'))
-        {
-            return;
+        if (!str_contains($this->rawText, '{')) {
+            return array();
         }
 
         $result = array();
-        preg_match_all('/{image:[ ]*(.+)}|{image[ ]*([0-9]+)(%|px):[ ]*(.+)}/U', $this->text, $result, PREG_PATTERN_ORDER);
+        preg_match_all('/{image:[ ]*(.+)}|{image[ ]*([0-9]+)(%|px):[ ]*(.+)}/U', $this->rawText, $result, PREG_PATTERN_ORDER);
 
-        if (empty($result[1]) && !empty($result[1][0]))
-        {
-            return;
+        if (empty($result[0][0])) {
+            return array();
         }
 
-        $theme = Application_Driver::getInstance()->getTheme();
-
         $indexes = array_keys($result[0]);
+        $results = array();
 
         foreach ($indexes as $index)
         {
             $match = $result[0][$index];
-
-            $width = '';
+            $width = null;
             $imageName = null;
+
             // Image without width specified
-            if(!empty($result[1][$index]))
-            {
+            if (!empty($result[1][$index])) {
                 $imageName = $result[1][$index];
-            }
-            else if(!empty($result[2][$index]))
-            {
-                $percent = parseNumber($result[2][$index].$result[3][$index]);
-                if(!$percent->isEmpty()) {
-                    $width = sprintf(
-                        ' style="width:%s"',
-                        $percent->toCSS()
-                    );
+            } else if (!empty($result[2][$index])) {
+                $percent = parseNumber($result[2][$index] . $result[3][$index]);
+                if (!$percent->isEmpty()) {
+                    $width = $percent;
                 }
 
                 $imageName = $result[4][$index];
             }
 
-            if($imageName === null) {
+            if ($imageName === null) {
                 continue;
             }
 
-            $imgURL = $theme->getImageURL('whatsnew/' . $imageName);
-
-            $replace = '<a href="' . $imgURL . '" target="_blank" class="whatsnew-image"><img src="' . $imgURL . '" alt=""'.$width.'/></a>';
-
-            $this->text = str_replace($match, $replace, $this->text);
+            $results[] = new LinkedImage(
+                $imageName,
+                $width,
+                $match
+            );
         }
+
+        return $results;
+    }
+
+    protected function renderImages() : void
+    {
+        foreach ($this->detectImages() as $image) {
+            $this->renderImage($image);
+        }
+    }
+
+    protected function renderImage(LinkedImage $image) : void
+    {
+        $linkAttr = AttributeCollection::create()
+            ->attr('href', $image->getURL())
+            ->attr('target', '_blank')
+            ->addClass('whatsnew-image');
+
+        $imgAttr = AttributeCollection::create()
+            ->setKeepIfEmpty('alt')
+            ->attr('src', $image->getURL())
+            ->attr('alt', '')
+            ->style('width', $image->renderWidth(), false);
+
+        $replace = (string)HTMLTag::create('a', $linkAttr)
+            ->setContent(HTMLTag::create('img', $imgAttr));
+
+        $this->text = str_replace($image->getMatchedText(), $replace, $this->text);
     }
 
     public function getPlainText() : string
     {
         $text = str_replace(array("\n", "\t"), ' ', $this->rawText);
-        while (strpos($text, '  ') !== false)
+
+        while (str_contains($text, '  '))
         {
             $text = str_replace('  ', ' ', $text);
         }

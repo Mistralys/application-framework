@@ -17,8 +17,8 @@
  */
 class UI_Themes
 {
-    public const ERROR_THEME_CLASS_FILE_NOT_FOUND = 28401;
-    public const ERROR_THEME_CLASS_NOT_FOUND = 28402;
+    public const int ERROR_THEME_CLASS_FILE_NOT_FOUND = 28401;
+    public const int ERROR_THEME_CLASS_NOT_FOUND = 28402;
 
     protected UI $ui;
     protected string $defaultTheme = 'default';

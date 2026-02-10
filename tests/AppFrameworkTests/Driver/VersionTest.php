@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AppFrameworkTests\Driver;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\Driver\VersionInfo;
 
 final class VersionTest extends ApplicationTestCase

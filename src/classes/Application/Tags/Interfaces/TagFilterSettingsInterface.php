@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Application\Tags\Interfaces;
 
 use Application\FilterSettings\SettingDef;
-use Application\FilterSettingsInterface;
 use Application\Tags\Taggables\FilterCriteria\TaggableFilterCriteriaInterface;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\TagRecord;
+use Application\FilterSettings\FilterSettingsInterface;
 
 interface TagFilterSettingsInterface extends FilterSettingsInterface
 {

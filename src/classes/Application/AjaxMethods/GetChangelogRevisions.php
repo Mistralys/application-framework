@@ -6,7 +6,7 @@ use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'GetChangelogRevisions';
+    public const string METHOD_NAME = 'GetChangelogRevisions';
 
     public function getMethodName() : string
     {

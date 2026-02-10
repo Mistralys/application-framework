@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API;
 
-use Application;
+use Application\Application;
 use AppUtils\ArrayDataCollection;
 use Connectors_ResponseCode;
 

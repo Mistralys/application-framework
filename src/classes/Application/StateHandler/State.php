@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Revisionable\RevisionableInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\Interfaces\StringableInterface;

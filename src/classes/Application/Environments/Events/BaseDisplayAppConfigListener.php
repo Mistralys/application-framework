@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Application\Environments\Events;
 
+use Application\Development\Events\DisplayAppConfigEvent;
 use Application\Environments\Admin\Screens\AppConfigMode;
-use Application\OfflineEvents\DisplayAppConfigEvent;
-use Application_EventHandler_Event;
-use Application_EventHandler_OfflineEvents_OfflineListener;
+use Application\EventHandler\Event\EventInterface;
+use Application\EventHandler\Event\StandardEvent;
+use Application\EventHandler\OfflineEvents\BaseOfflineListener;
 use AppUtils\ClassHelper;
 
-abstract class BaseDisplayAppConfigListener extends Application_EventHandler_OfflineEvents_OfflineListener
+abstract class BaseDisplayAppConfigListener extends BaseOfflineListener
 {
-    protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
+    public function getEventName(): string
+    {
+        return DisplayAppConfigEvent::EVENT_NAME;
+    }
+
+    protected function handleEvent(EventInterface $event, ...$args): void
     {
         $this->addGridEntries(
             ClassHelper::requireObjectInstanceOf(

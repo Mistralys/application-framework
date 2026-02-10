@@ -30,7 +30,7 @@ class Application_Formable_Header
     use Application_Traits_Iconizable;
     use UI_Traits_StatusElementContainer;
 
-    public const PROPERTY_HEADER_INSTANCE = 'header-instance';
+    public const string PROPERTY_HEADER_INSTANCE = 'header-instance';
 
     /**
     * @var Application_Formable

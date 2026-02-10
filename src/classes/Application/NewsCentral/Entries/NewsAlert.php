@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace NewsCentral\Entries;
 
 use Application\NewsCentral\NewsCollection;
-use Application\NewsCentral\NewsEntry;
-use Application\NewsCentral\NewsEntryCriticality;
+use NewsCentral\Entries\Criticalities\NewsEntryCriticality;
 
 class NewsAlert extends NewsEntry
 {

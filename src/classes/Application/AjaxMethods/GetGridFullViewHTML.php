@@ -28,7 +28,7 @@ declare(strict_types=1);
  */
 class Application_AjaxMethods_GetGridFullViewHTML extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'GetGridFullViewHTML';
+    public const string METHOD_NAME = 'GetGridFullViewHTML';
 
     /**
      * @var Application_AjaxMethods_GetGridFullViewHTML_Grid[]

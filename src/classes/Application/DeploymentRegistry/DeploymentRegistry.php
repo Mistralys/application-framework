@@ -38,9 +38,7 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
 {
     use Application_Traits_Loggable;
 
-    public const SETTING_DEPLOYMENT_HISTORY = 'deployment_history';
-
-    public const ERROR_VERSION_DOES_NOT_EXIST = 123901;
+    public const string SETTING_DEPLOYMENT_HISTORY = 'deployment_history';
 
     /**
      * @var DeploymentInfo[]|null
@@ -69,11 +67,6 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
         $this->historyCache = $result;
 
         return $result;
-    }
-
-    public static function getAdminScreensFolder() : FolderInfo
-    {
-        return FolderInfo::factory(__DIR__.'/Admin/Screens')->requireExists();
     }
 
     public function getDefaultID(): string
@@ -249,13 +242,13 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
             }
         }
 
-        throw new Application_Exception(
+        throw new DeploymentRegistryException(
             'Deployment version not found.',
             sprintf(
                 'The version [%s] was not found in the deployment history.',
                 $version
             ),
-            self::ERROR_VERSION_DOES_NOT_EXIST
+            DeploymentRegistryException::ERROR_VERSION_DOES_NOT_EXIST
         );
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
+use Application\Application;
+
 class UI_Page_Sidebar_Item_DeveloperPanel extends UI_Page_Sidebar_Item
 {
-    public const ERROR_SOURCE_BUTTON_NOT_LINKED = 20601;
+    public const int ERROR_SOURCE_BUTTON_NOT_LINKED = 20601;
     
    /**
     * @var UI_Page_Section_Type_Developer

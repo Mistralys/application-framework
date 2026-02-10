@@ -12,16 +12,13 @@ use Application\AppFactory;
 use Application\Exception\UnexpectedInstanceException;
 use Application_Exception;
 use AppUtils\ArrayDataCollection;
-use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use Connectors;
-use Connectors_Connector;
-use Connectors_Exception;
+use Connectors\Connector\ConnectorException;
 use Connectors_Request;
 use Connectors_Request_Method;
 use Connectors_Request_URL;
-use Connectors_Response;
 use Mistralys\AppFramework\Helpers\JSONUnserializer;
 
 /**
@@ -34,25 +31,25 @@ use Mistralys\AppFramework\Helpers\JSONUnserializer;
  */
 class RequestSerializer
 {
-    public const ERROR_UNKNOWN_REQUEST_TYPE = 124101;
+    public const int ERROR_UNKNOWN_REQUEST_TYPE = 124101;
 
-    public const KEY_CONNECTOR_ID = 'connectorID';
-    public const KEY_URL = 'url';
-    public const KEY_ID = 'id';
-    public const KEY_POST_DATA = 'postData';
-    public const KEY_GET_DATA = 'getData';
-    public const KEY_HEADERS = 'headers';
-    public const KEY_TIMEOUT = 'timeout';
-    public const KEY_HTTP_METHOD = 'HTTPMethod';
-    public const REQUEST_TYPE_URL = 'URL';
-    public const KEY_REQUEST_TYPE = 'requestType';
-    public const REQUEST_TYPE_METHOD = 'Method';
+    public const string KEY_CONNECTOR_ID = 'connectorID';
+    public const string KEY_URL = 'url';
+    public const string KEY_ID = 'id';
+    public const string KEY_POST_DATA = 'postData';
+    public const string KEY_GET_DATA = 'getData';
+    public const string KEY_HEADERS = 'headers';
+    public const string KEY_TIMEOUT = 'timeout';
+    public const string KEY_HTTP_METHOD = 'HTTPMethod';
+    public const string REQUEST_TYPE_URL = 'URL';
+    public const string KEY_REQUEST_TYPE = 'requestType';
+    public const string REQUEST_TYPE_METHOD = 'Method';
 
     /**
      * @param Connectors_Request $request
      * @return string
      *
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      * @throws JSONConverterException
      */
     public static function serialize(Connectors_Request $request) : string
@@ -82,7 +79,7 @@ class RequestSerializer
             return self::REQUEST_TYPE_METHOD;
         }
 
-        throw new Connectors_Exception(
+        throw new ConnectorException(
             $request->getConnector(),
             'Unknown request type.',
             sprintf(
@@ -100,7 +97,7 @@ class RequestSerializer
      * @throws JSONConverterException
      * @throws UnexpectedInstanceException
      * @throws Application_Exception
-     * @throws Connectors_Exception
+     * @throws ConnectorException
      */
     public static function unserialize(string $json) : ?Connectors_Request
     {
@@ -158,7 +155,7 @@ class RequestSerializer
         }
         else
         {
-            throw new Connectors_Exception(
+            throw new ConnectorException(
                 $connector,
                 'Unknown request type.',
                 sprintf(

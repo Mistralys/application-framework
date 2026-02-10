@@ -31,10 +31,10 @@ use AppUtils\FileHelper;
  */
 class UI_ResourceManager
 {
-    public const ERROR_INVALID_RESOURCE_TYPE_PRIORITY = 62201;
-    public const ERROR_UNKNOWN_RESOURCE_EXTENSION = 62202; 
+    public const int ERROR_INVALID_RESOURCE_TYPE_PRIORITY = 62201;
+    public const int ERROR_UNKNOWN_RESOURCE_EXTENSION = 62202; 
 
-    const LOADKEYS_REQUEST_VARIABLE = '_loadkeys';
+    const string LOADKEYS_REQUEST_VARIABLE = '_loadkeys';
     
    /**
     * @var UI

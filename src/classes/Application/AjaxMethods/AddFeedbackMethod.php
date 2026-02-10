@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Application\AjaxMethods;
 
-use Application;
-use Application_AjaxMethod;
+use Application\Application;
 use Application\Feedback\FeedbackCollection;
+use Application_AjaxMethod;
 
 class AddFeedbackMethod extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'AddFeedback';
+    public const string METHOD_NAME = 'AddFeedback';
 
     public function getMethodName(): string
     {

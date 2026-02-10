@@ -8,16 +8,13 @@ declare(strict_types=1);
 
 namespace Application\Composer;
 
-use Application;
 use Application\Admin\Index\AdminScreenIndexer;
 use Application\API\APIManager;
 use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
-use Application\ApplicationException;
-use Application\Bootstrap\ComposerScriptBootstrap;
 use Application\CacheControl\CacheManager;
-use Application_Bootstrap;
-use Application_Exception;
+use Application\EventHandler\OfflineEvents\Index\EventIndexer;
+use Application\Exception\ApplicationException;
 use AppUtils\FileHelper\FileInfo;
 
 /**
@@ -37,8 +34,9 @@ class ComposerScripts
         self::init();
 
         self::clearCaches();
-        self::apiMethodIndex();
+        self::indexOfflineEvents();
         self::indexAdminScreens();
+        self::apiMethodIndex();
     }
 
     public static function clearCaches() : void
@@ -51,7 +49,14 @@ class ComposerScripts
     public static function doClearCaches() : void
     {
         echo 'Clearing all caches...'.PHP_EOL;
+
+        // Do this manually first, because the cache manager
+        // depends on offline events being registered, and
+        // which may not exist at this point.
+        ClassCacheHandler::clearClassCache();
+
         CacheManager::getInstance()->clearAll();
+
         echo 'DONE.'.PHP_EOL;
     }
 
@@ -69,14 +74,39 @@ class ComposerScripts
         self::doIndexAdminScreens();
     }
 
-    private static function doIndexAdminScreens() : void
+    public static function doIndexAdminScreens() : void
     {
         echo 'Indexing admin screens...'.PHP_EOL;
 
         $indexer = new AdminScreenIndexer(AppFactory::createDriver());
         $indexer->index();
 
-        echo '- Found '.$indexer->countScreens().' screens.'.PHP_EOL;
+        echo sprintf(
+            '- Found %s screens total (%s content screens).'.PHP_EOL,
+            $indexer->countScreens(),
+            $indexer->countContentScreens()
+        );
+    }
+
+    public static function indexOfflineEvents() : void
+    {
+        self::init();
+
+        self::doIndexOfflineEvents();
+    }
+
+    public static function doIndexOfflineEvents() : void
+    {
+        echo 'Indexing offline event listeners...'.PHP_EOL;
+
+        $indexer = EventIndexer::getInstance();
+        $indexer->index();
+
+        echo sprintf(
+            '- Found [%s] offline events and [%s] listeners total.'.PHP_EOL,
+            $indexer->countEvents(),
+            $indexer->countListeners()
+        );
     }
 
     public static function doApiMethodIndex() : void

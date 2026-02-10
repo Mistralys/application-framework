@@ -19,7 +19,7 @@
  */
 class Application_AjaxMethods_LockingKeepAlive extends Application_LockManager_AjaxMethod
 {
-    public const METHOD_NAME = 'LockingKeepAlive';
+    public const string METHOD_NAME = 'LockingKeepAlive';
 
     public function getMethodName() : string
     {

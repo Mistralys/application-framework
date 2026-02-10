@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral\Categories;
 
-use Application\Admin\Area\News\BaseViewCategoryScreen;
-use Application\Admin\Area\News\ViewCategory\BaseCategorySettingsScreen;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\NewsCentral\Admin\CategoryAdminURLs;
+use Application\NewsCentral\Admin\Screens\Mode\ViewCategoryMode;
+use Application\NewsCentral\Admin\Screens\Mode\ViewCategory\CategorySettingsSubmode;
 use DBHelper_BaseRecord;
 
 /**
@@ -23,23 +24,13 @@ class Category extends DBHelper_BaseRecord
     {
         return (string)sb()->link(
             $this->getLabel(),
-            $this->getAdminURL()
+            $this->adminURL()->base()
         );
     }
 
-    public function getAdminURL(array $params=array()) : string
+    public function adminURL() : CategoryAdminURLs
     {
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseViewCategoryScreen::URL_NAME;
-        $params[CategoriesCollection::PRIMARY_NAME] = $this->getID();
-
-        return $this->getCollection()->getAdminURL($params);
-    }
-
-    public function getAdminSettingsURL(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseCategorySettingsScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
+        return new CategoryAdminURLs($this);
     }
 
     public function getLiveURL(array $params=array()) : string

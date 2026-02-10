@@ -15,4 +15,7 @@ class MediaScreenRights
     public const string SCREEN_VIEW_SETTINGS = MediaRightsInterface::RIGHT_VIEW_MEDIA;
     public const string SCREEN_VIEW_SETTINGS_EDIT = MediaRightsInterface::RIGHT_EDIT_MEDIA;
     public const string SCREEN_VIEW_STATUS = MediaRightsInterface::RIGHT_VIEW_MEDIA;
+    public const string SCREEN_MAIN = MediaRightsInterface::RIGHT_VIEW_MEDIA;
+    public const string SCREEN_MEDIA_SETTINGS = MediaRightsInterface::RIGHT_ADMIN_MEDIA;
+    public const string SCREEN_IMAGE_GALLERY = MediaRightsInterface::RIGHT_VIEW_MEDIA;
 }

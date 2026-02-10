@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Countries;
 
-use Application;
+use Application\Application;
 use Application_Countries;
 use Application_Countries_ButtonBar;
 use Application_Countries_Country;

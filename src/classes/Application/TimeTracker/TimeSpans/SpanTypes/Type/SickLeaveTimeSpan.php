@@ -8,7 +8,7 @@ use Application\TimeTracker\TimeSpans\SpanTypes\BaseTimeSpanType;
 
 class SickLeaveTimeSpan extends BaseTimeSpanType
 {
-    public const TYPE_ID = 'sick_leave';
+    public const string TYPE_ID = 'sick_leave';
 
     public function getID(): string
     {

@@ -11,7 +11,7 @@ use UI\AdminURLs\AdminURLInterface;
  */
 class UI_Page_Sidebar_Item_DropdownButton extends UI_Page_Sidebar_Item_Button
 {
-    public const MODE_DROPDOWN_MENU = 'dropmenu';
+    public const string MODE_DROPDOWN_MENU = 'dropmenu';
     protected UI_Bootstrap_DropdownMenu $menu;
     protected bool $caret = true;
 

@@ -6,6 +6,8 @@
 
 declare(strict_types=1);
 
+use Application\EventHandler\Eventables\EventableListener;
+use Application\Interfaces\Admin\AdminAreaInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\Interfaces\StringableInterface;
@@ -697,7 +699,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->wizard->getLogIdentifier().' | '.sprintf('Step [%s]', $this->getID());
     }
 
-    public function getArea() : Application_Admin_Area
+    public function getArea() : AdminAreaInterface
     {
         return $this->wizard->getArea();
     }
@@ -739,7 +741,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onBeforeActionsHandled(callable $listener): Application_EventHandler_EventableListener
+    public function onBeforeActionsHandled(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }
@@ -749,7 +751,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onSidebarHandled(callable $listener): Application_EventHandler_EventableListener
+    public function onSidebarHandled(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }
@@ -759,7 +761,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onBeforeSidebarHandled(callable $listener): Application_EventHandler_EventableListener
+    public function onBeforeSidebarHandled(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }
@@ -769,7 +771,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onBreadcrumbHandled(callable $listener): Application_EventHandler_EventableListener
+    public function onBreadcrumbHandled(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }
@@ -779,7 +781,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onBeforeBreadcrumbHandled(callable $listener): Application_EventHandler_EventableListener
+    public function onBeforeBreadcrumbHandled(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }
@@ -789,7 +791,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onActionsHandled(callable $listener): Application_EventHandler_EventableListener
+    public function onActionsHandled(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }
@@ -799,7 +801,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onContentRendered(callable $listener): Application_EventHandler_EventableListener
+    public function onContentRendered(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }
@@ -809,7 +811,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * @return never
      * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
      */
-    public function onBeforeContentRendered(callable $listener): Application_EventHandler_EventableListener
+    public function onBeforeContentRendered(callable $listener): EventableListener
     {
         $this->unsupportedWizardStepAction();
     }

@@ -1,16 +1,16 @@
 <?php 
 
-/* @var $error Application_ErrorDetails */
+/* @var $error ExceptionPageRenderer */
 
 use Application\AppFactory;
-use AppUtils\ClassHelper;
+use Application\ErrorDetails\ExceptionPageRenderer;use AppUtils\ClassHelper;
 
 if(!isset($error))
 {
     return;
 }
 
-$error = ClassHelper::requireObjectInstanceOf(Application_ErrorDetails::class, $error);
+$error = ClassHelper::requireObjectInstanceOf(ExceptionPageRenderer::class, $error);
 
 $themeURL = $error->getThemeURL();
     

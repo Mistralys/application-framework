@@ -8,10 +8,14 @@
  */
 
 use Application\AppFactory;
+use Application\Application;
+use Application\EventHandler\Eventables\EventableTrait;
+use Application\Framework\AppFolder;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ArrayDataCollection;
+use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\StringableInterface;
@@ -45,7 +49,7 @@ abstract class Application_Admin_Skeleton
 {
     use Application_Traits_Loggable;
     use ScreenAccessTrait;
-    use Application_Traits_Eventable;
+    use EventableTrait;
 
     public const ERROR_NO_LOCKING_PRIMARY = 13001;
     public const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
@@ -946,5 +950,10 @@ abstract class Application_Admin_Skeleton
     public function getActiveScreen() : AdminScreenInterface
     {
         return $this->driver->requireActiveScreen();
+    }
+
+    public function isLocatedInApp(): bool
+    {
+        return AppFolder::create(ClassHelper::getClassSourceFile($this))->isDriver();
     }
 }

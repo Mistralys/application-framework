@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use Application\ApplicationException;
+use Application\Application;
 use AppUtils\BaseException;
 
 /**
@@ -18,7 +18,7 @@ use AppUtils\BaseException;
  * @package Application
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * @deprecated Use {@see ApplicationException} instead.
+ * @deprecated Use {@see \Application\Exception\ApplicationException} instead.
  */
 class Application_Exception extends BaseException
 {

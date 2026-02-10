@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use AppLocalize\Localization\Locales\LocaleInterface;
 use AppLocalize\Localization;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\ConvertHelper;
 
 class Application_Maintenance_Plan

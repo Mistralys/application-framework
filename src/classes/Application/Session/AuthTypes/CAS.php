@@ -1,14 +1,12 @@
 <?php
 /**
- * File containing the trait {@see Application_Session_AuthTypes_CAS}.
- *
  * @package Application
  * @subpackage Session
- * @see Application_Session_AuthTypes_CAS
  */
 
 declare(strict_types=1);
 
+use Application\Application;
 use Application\Logger\PSRLogger;
 use function AppUtils\parseURL;
 
@@ -93,7 +91,7 @@ trait Application_Session_AuthTypes_CAS
         }
         catch (Throwable $e)
         {
-            throw new Application_Exception(
+            throw new Application_Session_Exception(
                 'CAS client initialization failed',
                 sprintf(
                     'Failed to initialize the CAS client. The error was: %s',
@@ -135,7 +133,7 @@ trait Application_Session_AuthTypes_CAS
 
         if (empty($email))
         {
-            throw new Application_Exception(
+            throw new Application_Session_Exception(
                 'Empty user information',
                 sprintf(
                     'Empty user email. The field [%s] was empty.',

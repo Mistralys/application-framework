@@ -18,7 +18,12 @@ namespace Application\Admin\Screens\Events;
 
 class ContentRenderedEvent extends BaseScreenEvent
 {
-    public const EVENT_NAME = 'ContentRendered';
+    public const string EVENT_NAME = 'ContentRendered';
+
+    public function getName(): string
+    {
+        return self::EVENT_NAME;
+    }
 
     /**
      * Whether the screen rendered any content.

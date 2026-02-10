@@ -21,6 +21,13 @@ use TestDriver\AjaxMethods\AjaxGetTestJSON;
  */
 class GetTestJSONMethod extends Connectors_Connector_Method_Get
 {
+    public const string REQUEST_METHOD_NAME = 'GetTestJSON';
+
+    public function getID(): string
+    {
+        return self::REQUEST_METHOD_NAME;
+    }
+
     public function unknownMethod() : Connectors_Response
     {
         return $this->createMethodRequest('UnknownMethod')->getData();

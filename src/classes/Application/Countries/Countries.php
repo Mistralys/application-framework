@@ -15,7 +15,6 @@ use Application\Languages\Language;
 use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Countries\CountryInterface;
 use AppLocalize\Localization\Country\CountryGB;
-use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
 /**
@@ -34,15 +33,15 @@ use function AppUtils\parseVariable;
  */
 class Application_Countries extends DBHelper_BaseCollection
 {
-    public const ERROR_UNKNOWN_ISO_CODE = 21901;
-    public const ERROR_INVALID_COUNTRY_ID = 21902;
-    public const ERROR_CANNOT_USE_ALIAS_FOR_CREATION = 21903;
-    public const ERROR_ISO_ALREADY_EXISTS = 21904;
+    public const int ERROR_UNKNOWN_ISO_CODE = 21901;
+    public const int ERROR_INVALID_COUNTRY_ID = 21902;
+    public const int ERROR_CANNOT_USE_ALIAS_FOR_CREATION = 21903;
+    public const int ERROR_ISO_ALREADY_EXISTS = 21904;
 
-    public const PRIMARY_NAME = 'country_id';
-    public const TABLE_NAME = 'countries';
-    public const REQUEST_PARAM_ID = self::PRIMARY_NAME;
-    public const RECORD_TYPE_NAME = 'country';
+    public const string PRIMARY_NAME = 'country_id';
+    public const string TABLE_NAME = 'countries';
+    public const string REQUEST_PARAM_ID = self::PRIMARY_NAME;
+    public const string RECORD_TYPE_NAME = 'country';
 
     protected static ?Application_Countries $instance = null;
 

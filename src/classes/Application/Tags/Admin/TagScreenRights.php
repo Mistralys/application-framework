@@ -14,4 +14,6 @@ class TagScreenRights
     public const string SCREEN_VIEW = TagsRightsInterface::RIGHT_VIEW_TAGS;
     public const string SCREEN_VIEW_SETTINGS = TagsRightsInterface::RIGHT_VIEW_TAGS;
     public const string SCREEN_VIEW_SETTINGS_EDIT = TagsRightsInterface::RIGHT_EDIT_TAGS;
+    public const string SCREEN_MAIN = TagsRightsInterface::RIGHT_VIEW_TAGS;
+    public const string SCREEN_LIST_DELETE = TagsRightsInterface::RIGHT_DELETE_TAGS;
 }

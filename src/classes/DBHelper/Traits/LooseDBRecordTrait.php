@@ -30,7 +30,7 @@ use DBHelper\Traits\LooseDBRecordInterface;
 trait LooseDBRecordTrait
 {
    /**
-    * @var array<string,string|int|float|bool>
+    * @var array<string,string|int|float|NULL>
     */
     protected array $recordData;
     protected int $recordID;

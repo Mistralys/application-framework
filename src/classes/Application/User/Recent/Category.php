@@ -7,6 +7,7 @@ use Application\LookupItems\BaseLookupItem;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
+use UI\AdminURLs\AdminURLInterface;
 
 class Application_User_Recent_Category implements OptionableInterface, Application_Interfaces_Loggable, Application_Interfaces_Iconizable
 {
@@ -14,17 +15,17 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
     use Application_Traits_Loggable;
     use Application_Traits_Iconizable;
 
-    public const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
+    public const int ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
 
-    public const OPTION_MAX_ITEMS = 'max-items';
-    public const MAX_ITEMS_DEFAULT = 10;
+    public const string OPTION_MAX_ITEMS = 'max-items';
+    public const int MAX_ITEMS_DEFAULT = 10;
 
     /**
      * Maximum number of entries to keep in storage
      */
-    public const STORAGE_MAX_ITEMS = 60;
+    public const int STORAGE_MAX_ITEMS = 60;
 
-    public const REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
+    public const string REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
 
     private string $label;
     private string $alias;
@@ -79,12 +80,12 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
      *
      * @param string $id The unique ID of the item, which can be used to retrieve it again later.
      * @param string $label The item label to show in the UI.
-     * @param string $url A URL to open to view the item.
+     * @param string|AdminURLInterface $url A URL to open to view the item.
      * @param DateTime|null $date A specific date and time, or null to use the current time.
      * @return Application_User_Recent_Entry
      * @throws Application_Exception
      */
-    public function addEntry(string $id, string $label, string $url, ?DateTime $date=null) : Application_User_Recent_Entry
+    public function addEntry(string $id, string $label, string|AdminURLInterface $url, ?DateTime $date=null) : Application_User_Recent_Entry
     {
         $this->log('Entry [%s] | Adding as new entry.', $id, $label);
 
@@ -99,7 +100,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
             $this->unregisterEntry($this->getEntryByID($id));
         }
 
-        $entry = $this->registerEntry($id,$label, $url, $date);
+        $entry = $this->registerEntry($id,$label, (string)$url, $date);
 
         $this->save();
 

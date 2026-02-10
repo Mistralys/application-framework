@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
+use Application\Application;
 use AppUtils\Microtime;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 

@@ -1,0 +1,52 @@
+$schema: 'https://raw.githubusercontent.com/context-hub/generator/refs/heads/main/json-schema.json'
+
+# CTX Utility Server - To access CTX-specific tools
+mcp:
+  name: "Framework MCP"
+  version: "1.0.0"
+  autoload: "vendor/autoload.php"
+  directories:
+    - src/classes # Scans all sub-modules for #[McpTool]
+
+# MCP SERVER - To access the framework's tools
+#
+# > This is what actually discovers and serves the tools defined
+# > in the codebase.
+servers:
+  php-mcp:
+    command: ["php", "mcp-server.php"]
+    env:
+      MCP_AUTOLOAD: "vendor/autoload.php"
+      MCP_DIRECTORIES: "src/classes"
+
+# Import all module context files
+import:
+  - path: "src/classes/**/module-context.yaml"
+
+# DOCUMENT GENERATION - To create documentation from codebase
+documents:
+  -
+    description: 'Application Framework - Class File Structure'
+    outputPath: framework-file-structure.md
+    overwrite: true
+    sources:
+      -
+        type: tree
+        description: 'Tree of PHP Class Files'
+        sourcePaths:
+          - src/classes
+        filePattern: '*'
+        renderFormat: ascii
+        enabled: true
+        showCharCount: true
+        maxDepth: 6
+
+  -
+    description: 'Application Framework - Core System Overview'
+    outputPath: 'framework-core-system-overview.md'
+    sources:
+      - type: file
+        description: "Framework Documentation"
+        sourcePaths:
+          - docs/agents
+        filePattern: "*.md"

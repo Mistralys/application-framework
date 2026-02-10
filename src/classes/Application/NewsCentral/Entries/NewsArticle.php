@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 namespace NewsCentral\Entries;
 
-use Application\Admin\Area\BaseNewsScreen;
-use Application\Admin\Area\News\BaseReadNewsScreen;
-use Application\Admin\Area\News\ReadNews\BaseReadArticleScreen;
-use Application\AppFactory;
-use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\MarkdownRenderer;
 use Application\NewsCentral\NewsCollection;
-use Application\NewsCentral\NewsEntry;
 
 class NewsArticle extends NewsEntry
 {
@@ -43,16 +37,5 @@ class NewsArticle extends NewsEntry
     public function renderSynopsis() : string
     {
         return MarkdownRenderer::create()->render($this->getSynopsis());
-    }
-
-    public function getLiveURLRead(array $params=array()) : string
-    {
-        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
-        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseReadArticleScreen::URL_NAME;
-        $params[BaseReadArticleScreen::REQUEST_PARAM_ARTICLE] = $this->getID();
-
-        return AppFactory::createRequest()
-            ->buildURL($params);
     }
 }

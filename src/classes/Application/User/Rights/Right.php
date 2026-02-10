@@ -3,17 +3,16 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
-use function PHPUnit\Framework\callback;
 
 class Application_User_Rights_Right
 {
-    public const ACTION_VIEW = 'view';
-    public const ACTION_EDIT = 'edit';
-    public const ACTION_CREATE = 'create';
-    public const ACTION_DELETE = 'delete';
-    public const ACTION_ADMINISTRATE = 'administrate';
-    public const ACTION_AUTHENTICATE = 'authenticate';
-    public const ACTION_ALL = 'all';
+    public const string ACTION_VIEW = 'view';
+    public const string ACTION_EDIT = 'edit';
+    public const string ACTION_CREATE = 'create';
+    public const string ACTION_DELETE = 'delete';
+    public const string ACTION_ADMINISTRATE = 'administrate';
+    public const string ACTION_AUTHENTICATE = 'authenticate';
+    public const string ACTION_ALL = 'all';
 
     private string $id;
 

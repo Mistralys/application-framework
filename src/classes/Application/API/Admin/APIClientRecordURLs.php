@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Application\API\Admin;
 
-use Application\API\Admin\Screens\APIKeys\BaseAPIKeysSubmode;
-use Application\API\Admin\Screens\BaseAPIClientsArea;
-use Application\API\Admin\Screens\BaseAPIClientSettingsScreen;
-use Application\API\Admin\Screens\BaseAPIClientStatusScreen;
-use Application\API\Admin\Screens\BaseViewAPIClientMode;
+use Application\API\Admin\Screens\APIClientsArea;
+use Application\API\Admin\Screens\Mode\View\APIKeysSubmode;
+use Application\API\Admin\Screens\Mode\View\ClientSettingsSubmode;
+use Application\API\Admin\Screens\Mode\ViewClientMode;
 use Application\API\Clients\APIClientRecord;
 use DBHelper\Admin\Traits\RecordStatusScreenInterface;
 use TestDriver\ClassFactory;
@@ -34,8 +33,8 @@ class APIClientRecordURLs
     public function base() : AdminURLInterface
     {
         return AdminURL::create()
-            ->area(BaseAPIClientsArea::URL_NAME)
-            ->mode(BaseViewAPIClientMode::URL_NAME)
+            ->area(APIClientsArea::URL_NAME)
+            ->mode(ViewClientMode::URL_NAME)
             ->int(ClassFactory::createAPIClients()->getRecordRequestPrimaryName(), $this->record->getID());
     }
 
@@ -43,13 +42,13 @@ class APIClientRecordURLs
     {
         return $this
             ->base()
-            ->submode(BaseAPIClientSettingsScreen::URL_NAME);
+            ->submode(ClientSettingsSubmode::URL_NAME);
     }
 
     public function apiKeys() : AdminURLInterface
     {
         return $this
             ->base()
-            ->submode(BaseAPIKeysSubmode::URL_NAME);
+            ->submode(APIKeysSubmode::URL_NAME);
     }
 }

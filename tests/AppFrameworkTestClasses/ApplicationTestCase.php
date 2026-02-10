@@ -7,21 +7,20 @@ namespace AppFrameworkTestClasses;
 use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
 use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
 use AppFrameworkTestClasses\Traits\MythologyTestInterface;
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application\Interfaces\ChangelogableInterface;
 use Application_Countries_Country;
-use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
 use Application_RequestLog;
 use Application_Session_Base;
 use Application_User;
+use AppLocalize\Localization;
 use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\FileHelper\FolderInfo;
 use DBHelper;
 use Mistralys\AppFrameworkTests\TestClasses\TestOutputFile;
 use PHPUnit\Framework\TestCase;
-use AppLocalize\Localization;
 use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBRecord;
 use UI;
@@ -201,6 +200,7 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     {
         Localization::selectAppLocale(Localization::BUILTIN_LOCALE_NAME);
         AppFactory::createLogger()->reset();
+        AppFactory::createOfflineEvents()->clearEventHistory();
         Application_Session_Base::setRedirectsEnabled(true);
         UI::selectDefaultInstance();
 

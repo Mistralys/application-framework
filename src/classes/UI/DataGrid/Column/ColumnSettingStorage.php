@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Application;
 use AppUtils\ConvertHelper;
 
 /**
@@ -20,8 +21,8 @@ use AppUtils\ConvertHelper;
  */
 class ColumnSettingStorage
 {
-    public const SETTING_HIDDEN = 'hidden';
-    public const SETTING_ORDER = 'order';
+    public const string SETTING_HIDDEN = 'hidden';
+    public const string SETTING_ORDER = 'order';
 
     private UI_DataGrid_Column $column;
 

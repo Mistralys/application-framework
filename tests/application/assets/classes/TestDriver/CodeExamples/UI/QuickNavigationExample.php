@@ -10,11 +10,7 @@ declare(strict_types=1);
 namespace tests\TestDriver\CodeExamples\UI;
 
 use Application_Admin_Area;
-use Application_Admin_Area_Settings;
-use TestDriver_Area_Settings;
-use tests\TestDriver\Admin\BaseArea;
-use UI\Page\Navigation\QuickNavigation;
-use UI_Page_Navigation;
+use Application\Users\Admin\Screens\UserSettingsArea;
 
 /**
  * @package TestDriver
@@ -31,7 +27,7 @@ abstract class QuickNavigationExample extends Application_Admin_Area
             ->makeNewTab();
 
         $this->quickNav->addScreen(t('User settings'))
-            ->setAreaID(Application_Admin_Area_Settings::URL_NAME);
+            ->setAreaID(UserSettingsArea::URL_NAME);
     }
 }
 // EndExample

@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Application\Environments\Events;
 
 use Application\Environments\Environment;
-use Application_EventHandler_EventableEvent;
+use Application\EventHandler\Eventables\BaseEventableEvent;
 
 /**
  * Class for the {@see \Application\Environments::EVENT_INCLUDES_LOADED} event.
@@ -19,10 +19,17 @@ use Application_EventHandler_EventableEvent;
  * @subpackage Environments
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see \Application\Environments\Environment::onIncludesLoaded()
+ * @see Environment::onIncludesLoaded
  */
-class IncludesLoaded extends Application_EventHandler_EventableEvent
+class IncludesLoaded extends BaseEventableEvent
 {
+    public const string EVENT_NAME = 'IncludesLoaded';
+
+    public function getName() : string
+    {
+        return self::EVENT_NAME;
+    }
+
     private Environment $environment;
 
     public function __construct(string $name, Environment $subject, array $args = array())

@@ -24,7 +24,7 @@ use Application\Driver\VersionInfo;
  */
 class StoreCurrentVersionTask extends BaseDeployTask
 {
-    public const TASK_NAME = 'StoreCurrentVersion';
+    public const string TASK_NAME = 'StoreCurrentVersion';
 
     protected function _process(): void
     {

@@ -30,12 +30,12 @@ declare(strict_types=1);
  */
 class Application_Bootstrap_Screen_LoggedOut extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public function getDispatcher() : string
     {
         return 'logged-out.php';
     }
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->disableAuthentication();
         $this->createEnvironment();

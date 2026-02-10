@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Admin\Index;
 
-use Application;
-use Application\Interfaces\Admin\AdminScreenInterface;
 use AdminException;
+use Application\Application;
+use Application\Interfaces\Admin\AdminAreaInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ArrayDataCollection;
+use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\PHPFile;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -39,19 +42,21 @@ class AdminScreenIndex
         return self::$instance;
     }
 
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/API/Methods')->requireExists();
+    }
+
     private function __construct()
     {
         $file = self::getIndexFile();
 
+        $this->paths = array();
+        $this->flat = array();
+        $this->tree = array();
+
         if(!$file->exists()) {
-            throw new AdminException(
-                'Admin screen index file not found.',
-                sprintf(
-                    'The admin screen index file was not found at expected location [%s].',
-                    $file->getPath()
-                ),
-                AdminException::ERROR_SCREEN_INDEX_NOT_FOUND
-            );
+            return;
         }
 
         $info = include $file->getPath();
@@ -118,7 +123,13 @@ class AdminScreenIndex
     {
         $className = $this->subject2class($subject);
 
-        return $this->flat[$className][ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES];
+        $list = $this->flat[$className][ScreenDataInterface::KEY_SCREEN_SUBSCREEN_CLASSES] ?? null;
+
+        if(is_array($list)) {
+            return $list;
+        }
+
+        return array();
     }
 
     /**
@@ -160,5 +171,106 @@ class AdminScreenIndex
         }
 
         return $subject;
+    }
+
+    public function getTree() : array
+    {
+        return $this->tree;
+    }
+
+    public function countScreens() : int
+    {
+        return count($this->flat);
+    }
+
+    /**
+     * @return array<string,class-string<AdminAreaInterface>>
+     */
+    public function getAdminAreas() : array
+    {
+        $areas = array();
+        foreach($this->tree as $area) {
+            $areas[$area[ScreenDataInterface::KEY_SCREEN_URL_NAME]] = $area[ScreenDataInterface::KEY_SCREEN_CLASS];
+        }
+
+        return $areas;
+    }
+
+    /**
+     * @param string $name Screen ID, URL name or class name.
+     * @return class-string<AdminAreaInterface>|null
+     */
+    public function getAreaByName(string $name) : ?string
+    {
+        if(isset($this->tree[$name])) {
+            return $this->tree[$name][ScreenDataInterface::KEY_SCREEN_CLASS];
+        }
+
+        foreach($this->tree as $area) {
+            if($area[ScreenDataInterface::KEY_SCREEN_CLASS] === $name || $area[ScreenDataInterface::KEY_SCREEN_ID] === $name) {
+                return $area[ScreenDataInterface::KEY_SCREEN_CLASS];
+            }
+        }
+
+        return null;
+    }
+
+    public function requireAreaByName(string $name) : string
+    {
+        $class = $this->getAreaByName($name);
+
+        if($class !== null) {
+            return $class;
+        }
+
+        throw new AdminException(
+            'Admin area not found.',
+            sprintf(
+                'The admin area [%s] was not found in the admin screen index. '.PHP_EOL.
+                'Known areas are available by: '.PHP_EOL.
+                '%s',
+                $name,
+                $this->renderAreaSummary()
+            ),
+            AdminException::ERROR_ADMIN_AREA_NOT_FOUND
+        );
+    }
+
+    private function renderAreaSummary() : string
+    {
+        $entries = array();
+        foreach($this->tree as $area) {
+            $entries[] = array(
+                'ID' => $area[ScreenDataInterface::KEY_SCREEN_ID],
+                'Class' => $area[ScreenDataInterface::KEY_SCREEN_CLASS],
+                'URL Name' => $area[ScreenDataInterface::KEY_SCREEN_URL_NAME],
+            );
+        }
+
+        return JSONConverter::var2json($entries, JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * @param string|class-string<AdminAreaInterface> $name Screen ID, URL name or class name.
+     * @return bool
+     */
+    public function areaExists(string $name) : bool
+    {
+        return $this->getAreaByName($name) !== null;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAdminAreaURLNames() : array
+    {
+        $result = array();
+        foreach($this->tree as $area) {
+            $result[] = $area[ScreenDataInterface::KEY_SCREEN_URL_NAME];
+        }
+
+        sort($result);
+
+        return $result;
     }
 }

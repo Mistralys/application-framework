@@ -4,8 +4,8 @@
  * These are all settings that do not change between
  * servers (those should be added to the config-local.php).
  *
- * NOTE: This is now typically handled by the configuration
- * helper classes, see {@see \application\assets\classes\TestDriver\Environments\EnvironmentsConfig}.
+ * > NOTE: This is now typically handled by the configuration
+ * > helper classes, see {@see \application\assets\classes\TestDriver\Environments\EnvironmentsConfig}.
  *
  * @package TestDriver
  * @subpackage Config
@@ -23,7 +23,7 @@ if(!function_exists('boot_define')) {
 
 try
 {
-    (new EnvironmentsConfig(FolderInfo::factory(__DIR__)))
+    new EnvironmentsConfig(FolderInfo::factory(__DIR__))
         ->detect();
 }
 catch (Throwable $e)

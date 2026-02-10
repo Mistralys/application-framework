@@ -16,5 +16,5 @@ use Application_Exception;
  */
 class DBHelperAdminException extends Application_Exception
 {
-    public const ERROR_NO_RECORD_IN_REQUEST = 169701;
+    public const int ERROR_NO_RECORD_IN_REQUEST = 169701;
 }

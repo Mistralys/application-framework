@@ -8,8 +8,12 @@ use Application_AjaxMethod;
 
 class AjaxGetTestJSON extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'GetTestJSON';
-    public const RESPONSE_PAYLOAD = array('success' => 'yes');
+    public const string METHOD_NAME = 'GetTestJSON';
+
+    /**
+     * @var array<string, string>
+     */
+    public const array RESPONSE_PAYLOAD = array('success' => 'yes');
 
     public function getMethodName(): string
     {

@@ -5,13 +5,13 @@ use AppUtils\ConvertHelper_Exception;
 
 class UI_PropertiesGrid_Property_Boolean extends UI_PropertiesGrid_Property
 {
-    const TYPE_TRUEFALSE = 'truefalse';
-    const TYPE_YESNO = 'yesno';
-    const TYPE_ENABLEDDISABLED = 'enableddisabled';
-    const TYPE_ACTIVEINACTIVE = 'activeinactive';
+    const string TYPE_TRUEFALSE = 'truefalse';
+    const string TYPE_YESNO = 'yesno';
+    const string TYPE_ENABLEDDISABLED = 'enableddisabled';
+    const string TYPE_ACTIVEINACTIVE = 'activeinactive';
     
-    const COLORS_DEFAULT = 'default';
-    const COLORS_NEUTRAL = 'neutral';
+    const string COLORS_DEFAULT = 'default';
+    const string COLORS_NEUTRAL = 'neutral';
 
     /**
      * @var string

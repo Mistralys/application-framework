@@ -24,9 +24,9 @@ declare(strict_types=1);
  */
 class UI_Form_Renderer_Element extends UI_Renderable
 {
-    const HTML_BELOW_COMMENT = 'below_comment';
-    const HTML_ABOVE_CONTROL = 'above_control';
-    const HTML_BELOW_CONTROL = 'below_control';
+    const string HTML_BELOW_COMMENT = 'below_comment';
+    const string HTML_ABOVE_CONTROL = 'above_control';
+    const string HTML_BELOW_CONTROL = 'below_control';
     
     protected $injectHTML = array();
     

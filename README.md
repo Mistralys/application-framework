@@ -89,6 +89,37 @@ class cache.
 composer clear-caches
 ```
 
+## CTX Integration
+
+The project uses CTX to generate context files for AI-assisted development,
+and to provide an MCP server for integration with IDEs like PHPStorm to 
+access the framework's AI tools.
+
+### Related commands
+
+#### Start the MCP Server
+
+```bash
+ctx server
+```
+
+#### Generate all files
+
+```bash
+ctx generate 
+```
+
+#### Server information
+
+This fetches a JSON-lines list of configurations and tools available 
+in the server.
+
+```bash
+(echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test-client","version":"1.0.0"}}}'; \
+ echo '{"jsonrpc":"2.0","method":"notifications/initialized"}'; \
+ echo '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}') | ctx server -c context.yaml
+```
+
 ## Documentation
 
 The framework's documentation is available locally by pointing a browser to 
@@ -98,6 +129,13 @@ package.
 > It is ideally viewed through the framework's documentation screen, as there
 > are some features that are only available there (like code samples that are
 > included dynamically). 
+
+### Vendor Package
+
+For convenience, a copy of the documentation is automatically checked out into 
+the vendor folder during the Composer install process.
+
+It can be found at [mistralys/application-framework-docs](/vendor/mistralys/application-framework-docs/README.md).
 
 ## History
 

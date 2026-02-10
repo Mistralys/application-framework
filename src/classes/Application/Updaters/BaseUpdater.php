@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Application\Updaters;
 
-use Application;
 use Application\AppFactory;
+use Application\Application;
 use Application_Driver;
 use Application_Exception;
 use Application_Interfaces_Loggable;

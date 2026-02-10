@@ -23,7 +23,7 @@ declare(strict_types=1);
  */
 class UI_MarkupEditorInfo
 {
-    public const SETTING_NAME_MARKUP_EDITOR_ID = 'MarkupEditorID';
+    public const string SETTING_NAME_MARKUP_EDITOR_ID = 'MarkupEditorID';
 
     /**
     * @var string

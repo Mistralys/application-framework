@@ -28,15 +28,15 @@ class UI_Page_Sidebar_Item_Button
     extends UI_Page_Sidebar_LockableItem
     implements UI_Interfaces_Button
 {
-    public const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
+    public const int ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
 
-    public const STATE_DISABLED = 'disabled';
-    public const STATE_ENABLED = 'enabled';
+    public const string STATE_DISABLED = 'disabled';
+    public const string STATE_ENABLED = 'enabled';
 
-    public const MODE_SUBMIT = 'submit';
-    public const MODE_NONE = 'none';
-    public const MODE_LINKED = 'linked';
-    public const MODE_CLICKABLE = 'clickable';
+    public const string MODE_SUBMIT = 'submit';
+    public const string MODE_NONE = 'none';
+    public const string MODE_LINKED = 'linked';
+    public const string MODE_CLICKABLE = 'clickable';
 
     use Application_Traits_Iconizable;
     use ClassableTrait;

@@ -8,12 +8,12 @@
  */
 
 use Application\Media\Collection\MediaCollection;
-use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper;
-use AppUtils\OutputBuffering;
-use function AppUtils\parseNumber;
+use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper_Size;
 use AppUtils\NumberInfo;
+use AppUtils\OutputBuffering;
+use function AppUtils\parseNumber;
 
 /**
  * Element that is used to handle SPIN image uploads: handles an image upload
@@ -25,8 +25,8 @@ use AppUtils\NumberInfo;
  */
 class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Input
 {
-    public const THUMBNAIL_WIDTH = 75;
-    public const THUMBNAIL_HEIGHT = 75;
+    public const int THUMBNAIL_WIDTH = 75;
+    public const int THUMBNAIL_HEIGHT = 75;
 
     protected bool $persistent = true;
 

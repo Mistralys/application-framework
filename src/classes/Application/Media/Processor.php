@@ -7,6 +7,8 @@
  * @see Application_Media_Processor
  */
 
+use Application\Application;
+
 /**
  * The Media Processor is a helper class for the clientside
  * product media preparation scripts. It adds all the required
@@ -20,7 +22,7 @@
  */
 class Application_Media_Processor
 {
-    public const ERROR_MISSING_MEDIA_CONFIGURATION = 660001;
+    public const int ERROR_MISSING_MEDIA_CONFIGURATION = 660001;
     
     protected UI $ui;
     protected string $redirectURL;
