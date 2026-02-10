@@ -1,159 +1,125 @@
 # Application Framework Changelog
 
-## v6.3.0 - Admin Screen Loading overhaul
-- Admin: Screens can now be connected by class names to disconnect them from the fixed folder structure.
-- Admin: Screens can now be loaded from external source folders.
-- Admin: Use the new offline event `RegisterAdminScreenFolders` to register locations.
-- Admin: The entire admin screen sitemap is now indexed and cached on build.
-- Admin: Added a developer screen to review the sitemap.
-- Admin: The developer screens now use the new screen loading system.
-- Admin: The "Welcome" screen is now loaded via the new system.
-- Admin: The "User Settings" screen is now loaded via the new system.
-- Admin: All admin areas are now enabled by default. Use the AppSets feature to disable any as needed.
-- UI: Added separators to the big selection widget.
-- Attributes: Added the `UncachedQuery` attribute to mark methods that run uncached queries.
-- AppSets: Refactored to use database storage.
-- AppSets: Improved administration screens.
-- AppSets: Converted to use a DBHelper collection structure.
-- OfflineEvents: All event and listener classes are now auto-discovered.
-- OfflineEvents: Classes can now be freely stored, the special `OfflineEvents` folder is no longer required.
-- OfflineEvents: Events must now extend the `BaseOfflineEvent` base class.
-- OfflineEvents: Listeners must now provide the name of the event they listen to.
-- Upgraded to the new admin screen loading system:
-    - Users management
-    - News central
-    - Media library
-    - Countries management
-    - Tags management
-    - UI translation screen
+## v7.0.0 - Screen Loading and Agent Support (Breaking-XXL)
+
+This major release paves the way for agentic coding and a more
+flexible way to structure applications. Admin screens can now
+be placed alongside their modules, a sitemap generator with
+auto-discovery will register them automatically on build.
 
 ### Database update
 
 - The SQL file [2025-12-19-app-sets.sql](/docs/sql/2025-12-19-app-sets.sql) must be imported 
   to create the necessary tables for the updated application sets feature.
 
-## v6.2.0 - API improvements
-- API: Added support for optional rules in API method parameters.
-- API: Added `selectValue()` to parameter containers.
-- API: Handlers now send an error response if required parameters are missing.
-- API: Methods can now be linked in documentation with the `{api: MethodName}` tag.
-- API: Added the `GetAppLocales` method.
-- API: Now loading internal framework methods from thematic source folders.
-- AdminScreens: `getRequiredRight()` can now return `null` when no right is required.
-- FilterCriteria: Fixed a legacy callable causing a PHP error.
-- DBHelper: Fixed `getByRequest()` causing a type error with null values.
-- DBHelper: Added `addWhereColumnNOT_LIKE()` to the filter criteria.
-- DBHelper: Added `getRecordUserKey()` and `requireRecordUserKey()`.
-- UI: Lots of small fixes and improvements.
-- UI: The footer now always sticks to the bottom in short content pages.
-- Core: Started adding an agent guide for common practices.
+### Detailed commit summary
 
-## v6.1.1 - Renamer Performance
-- Renamer: Improved memory usage when processing large amounts of data.
-- Renamer: Clearing the index when clearing the configuration.
-- Renamer: Fixed results not being correctly grouped by hash.
-- Renamer: Columns can now provide custom `WHERE` conditions.
+#### Admin Screen System
+- Added sitemap rendering and developer screen for reviewing the sitemap
+- Screen index now stores subscreen classes with getter methods
+- Admin screens now support relative folder paths and folder location logging
+- Added `RegisterAdminScreenFolders` event listener to register screen folders
+- Areas do not have parent screens
+- Fixed non-unique screen IDs and added counting for content screens
+- Added `getAdminScreensFolder()` and admin URL instances support
+- Admin index now uses the `AppFolder` class for media screens
+- Updated admin screens for dynamic loading (users, news, media, time tracker, translations)
+- Removed obsolete admin screen registry events and legacy screen classes
 
-## v6.1.0 - DB Renamer dev tool (DB-Update-XS)
-- Renamer: Added a tool to search for and rename text in database columns.
-- Renamer: Place `DataColumnInterface` column defs into the application's `RenamerColumns` folder.
-- DBHelper: Added `getDriverName()` to get the PDO driver's name (e.g. `mariadb`).
-- DBHelper: Added `buildLIKEStatement()` with driver-aware case sensitivity handling.
-- DBHelper: Optimized `UPDATE` statements to remove unnecessary assignments.
-- Core: Updated the `pristine.sql` file.
-- Core: Added a `pristine-data.sql` file with default data for new installations.
+#### MCP Server & AI Integration
+- Added MCP server script and classes for AI integration
+- Added CTX (Context as Code) integration with context YAML generation
+- Added AI tools for Countries module
+- Added HTTP MCP server plan and agent documentation
+- Integrated `php-mcp/server` dependency
+- Added cache event listener for AI system
+- Fixed exception when cache folder not present and `getSize()` throwing exception
 
-### Database Update
+#### Events System Refactoring
+- Events and listener classes moved thematically
+- Added offline event indexing with auto-discovery of event/listener classes
+- Events must extend `BaseOfflineEvent`, listeners provide event name
+- Added event names where applicable and removed unused event parameters
+- Added clearing of event history
+- Updated offline event handling in Bootstrap and CacheManager
 
-The new renamer tool requires importing the update script 
-[2025-11-26-renamer-tool.sql](/docs/sql/2025-11-26-renamer-tool.sql) 
-to add the necessary tables. This is entirely optional if you do not plan 
-to use the renamer tool.
+#### AppSets Feature Enhancement
+- Converted to database storage with DBHelper collection structure
+- Updated admin screens with improved value display
+- Added comprehensive tests and `final` class keywords
+- Added `hasFilterSettings()` method
+- Fixed value compilation and wrong return values
+- Added README documentation
 
-## v6.0.0 - DBHelper, Revisionables and APIs (Breaking-XL)
-- DBHelper: Added a base record status screen trait.
-- DBHelper: Added `getRecordMicrotimeKey()` to base records.
-- DBHelper: Added validations to registered collection keys like `setRegexValidation()`.
-- DBHelper: Deprecated and refactored DBHelper base screens.
-- DBHelper: Added a dedicated `BaseChildCollection` class to handle parent relations.
-- DBHelper: Added an interface for the DBHelper collection.
-- DBHelper: Moved parent record handling to a separate child collection class.
-- DBHelper: Added the request type base class `BaseDBRecordRequestType`.
-- DBHelper: Added more interfaces for DBHelper collections and records.
-- DBHelper: Added a formalized DB record decorator system.
-- DBHelper: Added a minimal collection interface for filter criteria collection instances to facilitate decorators.
-- Revisionables: Now fully interchangeable with DBHelper collections.
-- Revisionables: Added more interfaces for revisionable collections and records.
-- Revisionables: Retired the old plain revisionable class. Now all revisionables use the DB system.
-- Revisionables: Improved the base revisionable admin screen classes with interfaces.
-- Disposables: Added the attribute `DisposedAware` to mark methods that check disposed state.
-- Revisionables: Retired the stateless revisionables, which were never used in practice.
-- Revisionables: Removed the memory revisionables, which were also never used in practice.
-- API: Added the API client collection classes.
-- API: Added the API management screens.
-- API: Added user rights to manage the API.
-- API: Added API client test support classes.
-- API: Added API grouping support, organized all APIs into groups.
-- API: Added flat and grouped overviews with filtering in the documentation.
-- API: Added links back to the application from the documentation.
-- API: Parameters now support manually selecting a value via `selectValue()`.
-- API: Using SourceFolders to load methods from external locations.
-- API: Added API key parameter handling.
-- API: Added header-based API parameters.
-- AJAX: Using SourceFolders to load AJAX handlers from external locations.
-- TimeTracker: Added autofill feature.
-- TimeTracker: Added flavored entry creation methods.
-- Admin: Added a base class and interface for request types.
-- Admin: Allowing AdminURLInterface as return type in some URL methods.
-- Admin: Screens are now aware of their own location on disk.
-- Admin: Screens now use their location to detect subscreens.
-- Admin: Starting to prepare for disconnecting screens from the fixed `Area` folder structure.
-- SourceFolders: Added the possibility to add external class loading folders for dynamic class locations.
-- SourceFolders: Added a dynamic class configuration method in the environment configuration.
-- DataGrid: Heading rows now support an optional subline text.
-- DataGrid: Better heading row styling.
-- DataGrid: Added the method `attr()` to grid entries to set row attributes.
-- UI: Added a text link style for navigations with `TextLinkNavigation`.
-- Formable: Added `addRuleURL()`.
-- Formable: Fixed the enabled status of the form registry not being used.
-- Forms: Using SourceFolders to load Form elements from external locations.
-- Ratings: Refactored and modernized, added filter classes.
-- LockManager: Refactored and modernized, added filter classes.
-- Messaging: Refactored and modernized, added filter classes.
-- Feedback: Refactored and modernized, added filter classes.
-- FilterCriteria: Added integer and string item classes that can be used for object results.
-- AppSettings: Refactored and modernized, added filter classes.
-- Core: Deprecated `Application_Exception` in favor of `ApplicationException`.
-- Core: Removed PHPStan ignored type errors from the configuration.
-- Core: Modernized a number of classes to improve static code analysis.
-- Core: Added stub classes for unused classes and traits to improve static code analysis.
-- Deployment: Using SourceFolders to load deployment tasks from external locations.
-- Countries: Added an interface for country API parameters to declare the `getCountry()` method.
-- Dependencies: Updated AppUtils Core to [v2.3.17](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.17).
-- Dependencies: Bumped up AppUtils Core to [v2.4.0](https://github.com/Mistralys/application-utils-core/releases/tag/2.4.0).
+#### Database & DBHelper Improvements
+- Added base record settings class with README
+- Added PDO primitive type return values
+- Added checking parent record functionality
+- Fixed WHERE clause with empty primaries
+- Moved record data loading to dedicated method
+- Added `idExists()` without final flag
+- Added `UncachedQuery` attribute for marking uncached queries
 
-### Breaking Changes
+#### Code Organization & Structure
+- Moved numerous classes into thematically related folders
+- Moved `ApplicationException`, `FilterSettingsInterface`, `UI`, `Environments`, `Connectors` classes
+- Moved API method classes to dedicated folders
+- Added `AppFolder` utility class for path management
+- Added `getRootFolder()` and `getRootClassesFolder()` to Driver
+- Moved `AppFramework` class file to new location
+- Split agent guide into subdocuments
 
-- LooseRecords: Renamed the loose record trait and interface.
-- DBHelper: Refactored a majority of classes.
-- Revisionables: Completely revamped, modernized and namespaced the
-  revisionables system. Migration is required.
-- Environment configuration: The abstract method `_registerClassSourceFolders()`
-  must now be implemented to register class source folders, if any.
+#### UI & User Interface
+- Added big selection separators
+- Buttons: Added conditional make layout methods
+- Added interface for admin URL containers
+- Welcome screen refactored with manager class and quick nav event
+- Added `adminURL()` and `appConfiguration()` helper methods
+- Metanav: Updated read news link
 
-### Database Changes
+#### Exception Handling & Error Management
+- Added static utility methods to Exceptions
+- More useful exception rendering
+- CLI now shows previous exception output
+- Added multiple error codes and constants
+- Fixed error check when file does not exist on disk
 
-1. The update script [2025-11-05-api-management.sql](/docs/sql/2025-11-05-api-management.sql) must be run to
-    add the necessary tables for API management.
-2. The update script [2025-10-29-users-post-update.sql](/docs/sql/2025-10-29-users-post-update.sql) should be run
-   to finish the user table migration (if the email hashes have been updated).
+#### Type Safety & Code Quality
+- Added extensive type hints across codebase
+- Added PHPDocs throughout
+- Added Rector for code quality
+- PHPStan fixes and typing enhancements
+- Added constant type hints
+- Strict typing enabled in multiple classes
+- Added return types and fixed return type declarations
 
-### Deprecations
+#### Dependencies & Build
+- Updated dependencies including `Psr\Log` downgrade
+- Added framework docs as DEV dependency
+- Manually added PHPCAS classmap to Composer
+- Fixed tests and added various new test cases
+- Added JSON handling details
+- Updated project files
 
-- All DBHelper base admin screen classes have been deprecated. Replacement classes
-  are documented for each to make migration straightforward.
-- DBHelper collections with a parent collection must now extend `BaseChildCollection`.
-- `Application_Exception` => use `ApplicationException` instead.
+#### Media Library
+- Upgraded screens to use admin index
+- Renamed media library classes
+- Added `getAdminScreensFolder()` with listener registration
+- Improved image handling in WhatsNew feature
+
+#### Miscellaneous
+- FilterSettings: Added type-specific setting methods and `addValue()`, `getGrid()`
+- WhatsNew: Improved image handling
+- Fixed filter hidden variables
+- Fixed and future-proofed paths
+- Deepl: Added testing screen and moved helper class
+- Countries: Made `collectCountry()` public
+- Removed deprecated exception usages and obsolete test cases
+- TimeTracker: Fixed collection mixup and updated screens
+- Added global folder structure documentation
+- Fixed bootstrap path after moving files
+- Wording improvements and documentation updates
+
 
 
 ---
