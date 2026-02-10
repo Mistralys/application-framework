@@ -7,6 +7,11 @@ flexible way to structure applications. Admin screens can now
 be placed alongside their modules, a sitemap generator with
 auto-discovery will register them automatically on build.
 
+### Breaking Changes
+
+Many core classes have been renamed and namespaced. Major adjustments will be necessary to upgrade to this version of
+the framework.
+
 ### Database update
 
 - The SQL file [2025-12-19-app-sets.sql](/docs/sql/2025-12-19-app-sets.sql) must be imported 
