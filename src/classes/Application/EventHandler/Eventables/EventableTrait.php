@@ -230,8 +230,8 @@ trait EventableTrait
     /**
      * @param string $eventName
      * @param array<int,mixed> $args Indexed array with arguments for the event.
-     * @param class-string<EventableEventInterface>|NULL $eventClass
-     * @return StandardEventableEvent
+     * @param class-string<EventableEventInterface>|string|NULL $eventClass
+     * @return EventableEventInterface
      * @throws EventableException
      */
     protected function createEvent(string $eventName, array $args, ?string $eventClass = null): EventableEventInterface

@@ -71,7 +71,6 @@ final class AppSetsTest extends ApplicationTestCase
 
         // Check what getEnabledAreaURLNames returns
         $urlNames = $defaultSet->getEnabledAreaURLNames();
-        $this->assertIsArray($urlNames, 'getEnabledAreaURLNames should return an array');
 
         // Check the raw data from loadData
         $reflection = new \ReflectionClass($defaultSet);
@@ -225,7 +224,6 @@ final class AppSetsTest extends ApplicationTestCase
 
         $urlNames = $set->getEnabledURLNames();
 
-        $this->assertIsArray($urlNames);
         $this->assertContains(ManageNewsArea::URL_NAME, $urlNames);
     }
 
@@ -243,7 +241,6 @@ final class AppSetsTest extends ApplicationTestCase
 
         $labels = $set->getEnabledAreaLabels();
 
-        $this->assertIsArray($labels);
         $this->assertContains($newsArea->getTitle(), $labels);
     }
 
