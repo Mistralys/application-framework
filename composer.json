@@ -137,8 +137,14 @@
       "@composer dumpautoload",
       "Application\\Composer\\ComposerScripts::build"
     ],
-    "analyze": "phpstan analyze --configuration=phpstan.neon",
-    "analyze-write": "phpstan analyze --configuration=phpstan.neon --memory-limit 900M > phpstan.result.txt",
+    "analyze": [
+      "@composer dumpautoload",
+      "phpstan analyze --configuration=phpstan.neon"
+    ],
+    "analyze-write": [
+      "@composer dumpautoload",
+      "phpstan analyze --configuration=phpstan.neon --memory-limit 900M > phpstan.result.txt"
+    ],
     "clear-phpstan-cache": "phpstan clear-result-cache"
   }
 }
