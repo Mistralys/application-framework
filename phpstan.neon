@@ -1,0 +1,27 @@
+parameters:
+    level: 5
+    bootstrapFiles:
+        - ./tests/phpstan/constants.php
+        - ./tests/bootstrap.php
+    paths:
+        - ./src
+        - ./tests/AppFrameworkTestClasses
+        - ./tests/AppFrameworkTests
+        - ./tests/application/assets
+        - ./tests/application/ajax
+        - ./tests/application/api
+        - ./tests/application/themes/default/templates
+        - ./tests/application/xml
+    dynamicConstantNames:
+        - APP_ROOT
+        - APP_TESTS_RUNNING
+        - APP_FRAMEWORK_TESTS
+        - TESTSUITE_DB_PORT
+    ignoreErrors:
+        -
+            message: '#this might not be defined.#'
+            path: ./src/themes/default*
+        -
+            identifier: nullCoalesce.expr
+            paths:
+                - ./tests/application/assets/classes/TestDriver/Environments/EnvironmentsConfig.php

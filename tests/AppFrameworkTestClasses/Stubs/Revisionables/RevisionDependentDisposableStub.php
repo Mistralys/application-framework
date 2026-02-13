@@ -24,7 +24,7 @@ use Application_Traits_Loggable;
  *
  * @see RevisionDependentInterface
  * @see RevisionDependentTrait
- * @see \Application\Disposables\DisposableInterface
+ * @see DisposableInterface
  * @see DisposableTrait
  */
 class RevisionDependentDisposableStub

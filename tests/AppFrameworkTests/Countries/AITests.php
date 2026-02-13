@@ -18,7 +18,6 @@ final class AITests extends CountriesTestCase
 
         $countries = $class->listCountries();
 
-        $this->assertIsArray($countries);
         $this->assertNotEmpty($countries);
     }
 

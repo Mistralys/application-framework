@@ -50,7 +50,7 @@ final class CreateSetSubmode extends BaseRecordCreateSubmode implements SubmodeI
         return new AppSetSettingsManager($this, null);
     }
 
-    public function getBackOrCancelURL(): string|AdminURLInterface
+    public function getBackOrCancelURL(): string
     {
         return $this->createCollection()->getAdminListURL();
     }
