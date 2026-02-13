@@ -19,6 +19,10 @@ the framework.
 
 ### Detailed commit summary
 
+#### PHPStan Support
+- Removed PHPStan batch files.
+- Added PHPStan Composer commands: `analyze` and `analyze-write`.
+
 #### Admin Screen System
 - Added sitemap rendering and developer screen for reviewing the sitemap
 - Screen index now stores subscreen classes with getter methods
