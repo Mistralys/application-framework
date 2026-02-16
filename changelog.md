@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v7.0.2 - Minor Enhancements
+- PropertiesGrid: Added null support for all column values.
+
 ## v7.0.1 - Bug Fix
 - Exceptions: Fixed an error while rendering the exception screen.
 
