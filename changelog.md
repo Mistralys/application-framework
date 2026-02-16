@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v7.0.1 - Bug Fix
+- Exceptions: Fixed an error while rendering the exception screen.
+
 ## v7.0.0 - Screen Loading and Agent Support (Breaking-XXL)
 
 This major release paves the way for agentic coding and a more
