@@ -64,7 +64,7 @@ class ExceptionPageRenderer extends ExceptionRenderer
         $contentType = $this->getContentType();
 
         foreach ($this->getThemeLocations() as $location) {
-            $file = $location['path'] . '/templates/error/' . $contentType . '.php';
+            $file = $location->getPath() . '/templates/error/' . $contentType . '.php';
 
             if (file_exists($file)) {
                 $this->templateFile = $file;
