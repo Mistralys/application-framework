@@ -6,6 +6,10 @@ class UI_PropertiesGrid_Property_Amount extends UI_PropertiesGrid_Property
 {
     protected function filterValue($value) : UI_StringBuilder
     {
-        return sb()->code($value);
+        if(is_numeric($value)) {
+            return sb()->code($value);
+        }
+
+        return sb();
     }
 }

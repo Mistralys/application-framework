@@ -8,8 +8,10 @@ class UI_PropertiesGrid_Property_ByteSize extends UI_PropertiesGrid_Property_Reg
 {
     protected function filterValue($value) : UI_StringBuilder
     {
-        $bytes = (int)$value;
-        
-        return sb()->add(ConvertHelper::bytes2readable($bytes));
+        if (!is_numeric($value)) {
+            return sb();
+        }
+
+        return sb()->add(ConvertHelper::bytes2readable((int)$value));
     }
 }

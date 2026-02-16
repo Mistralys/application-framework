@@ -74,11 +74,11 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
      * Adds a new property to the grid, and returns the new property instance.
      *
      * @param string|int|float|bool|StringableInterface $label
-     * @param string|int|float|bool|StringableInterface $text
+     * @param string|int|float|bool|StringableInterface|null $text
      * @return UI_PropertiesGrid_Property_Regular
      * @throws UI_Exception
      */
-    public function add(string|int|float|bool|StringableInterface $label, string|int|float|bool|StringableInterface $text) : UI_PropertiesGrid_Property_Regular
+    public function add(string|int|float|bool|StringableInterface $label, string|int|float|bool|StringableInterface|null $text) : UI_PropertiesGrid_Property_Regular
     {
         $property = new UI_PropertiesGrid_Property_Regular(
             $this,
@@ -92,14 +92,14 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     }
 
     /**
-     * Adds a property without label, with all cells merged to be
+     * Adds a property without a label, with all cells merged to be
      * able to use the full width of the table.
      *
-     * @param string|number|UI_Renderable_Interface $content
+     * @param string|int|float|StringableInterface $content
      * @return UI_PropertiesGrid_Property_Merged
      * @throws UI_Exception
      */
-    public function addMerged($content) : UI_PropertiesGrid_Property_Merged
+    public function addMerged(string|int|float|StringableInterface $content) : UI_PropertiesGrid_Property_Merged
     {
         $prop =  new UI_PropertiesGrid_Property_Merged($this, '', $content);
         $this->addProperty($prop);
@@ -107,11 +107,11 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|int|float|StringableInterface $message
      * @return UI_PropertiesGrid_Property_Message
      * @throws UI_Exception
      */
-    public function addMessage($message) : UI_PropertiesGrid_Property_Message
+    public function addMessage(string|int|float|StringableInterface $message) : UI_PropertiesGrid_Property_Message
     {
         $prop = new UI_PropertiesGrid_Property_Message($this, '', toString($message));
         $this->addProperty($prop);
@@ -119,12 +119,12 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface $label
+     * @param string|int|float|StringableInterface $label
      * @param DateTime|null $date
      * @return UI_PropertiesGrid_Property_DateTime
      * @throws UI_Exception
      */
-    public function addDate($label, ?DateTime $date=null) : UI_PropertiesGrid_Property_DateTime
+    public function addDate(string|int|float|StringableInterface $label, ?DateTime $date=null) : UI_PropertiesGrid_Property_DateTime
     {
         $prop = new UI_PropertiesGrid_Property_DateTime(
             $this,
@@ -141,12 +141,12 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
      * Displays a list of all tags associated with the taggable item.
      * If tagging is disabled, the property will not be displayed.
      *
-     * @param string|StringableInterface $label
+     * @param string|int|float|StringableInterface $label
      * @param TaggableInterface|NULL $taggable The taggable item to display tags for.
      * @return TagsGridProperty
      * @throws UI_Exception
      */
-    public function addTags($label, ?TaggableInterface $taggable) : TagsGridProperty
+    public function addTags(string|int|float|StringableInterface $label, ?TaggableInterface $taggable) : TagsGridProperty
     {
         $prop = new TagsGridProperty($this, $label, $taggable);
 
@@ -159,12 +159,12 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
      * Adds a property for an amount of something.
      * The empty text is added automatically.
      *
-     * @param string|number|UI_Renderable_Interface $label
-     * @param number $amount
+     * @param string|int|float|StringableInterface $label
+     * @param int|float|null $amount
      * @return UI_PropertiesGrid_Property_Amount
      * @throws UI_Exception
      */
-    public function addAmount($label, $amount) : UI_PropertiesGrid_Property_Amount
+    public function addAmount(string|int|float|StringableInterface $label, int|float|null $amount) : UI_PropertiesGrid_Property_Amount
     {
         $prop = new UI_PropertiesGrid_Property_Amount(
             $this,
@@ -180,11 +180,11 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Adds a text that will be rendered as Markdown formatted text.
      *
-     * @param string|number|UI_Renderable_Interface|NULL $markdownText
+     * @param string|int|float|StringableInterface|NULL $markdownText
      * @return MarkdownGridProperty
      * @throws UI_Exception
      */
-    public function addMarkdown($markdownText) : MarkdownGridProperty
+    public function addMarkdown(string|int|float|StringableInterface|null $markdownText) : MarkdownGridProperty
     {
         $prop = new MarkdownGridProperty($this, '', toString($markdownText));
         $this->addProperty($prop);
@@ -194,12 +194,12 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Adds a number of bytes, which are converted to a readable human format.
      *
-     * @param string|number|UI_Renderable_Interface $label
-     * @param int $bytes
+     * @param string|int|float|StringableInterface $label
+     * @param int|null $bytes
      * @return UI_PropertiesGrid_Property_ByteSize
      * @throws UI_Exception
      */
-    public function addByteSize($label, int $bytes) : UI_PropertiesGrid_Property_ByteSize
+    public function addByteSize(string|int|float|StringableInterface $label, int|null $bytes) : UI_PropertiesGrid_Property_ByteSize
     {
         $prop = new UI_PropertiesGrid_Property_ByteSize(
             $this,
@@ -215,12 +215,12 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Adds a boolean value, which is visually styled.
      *
-     * @param string|number|UI_Renderable_Interface $label
-     * @param bool $bool
+     * @param string|int|float|StringableInterface $label
+     * @param bool|null $bool
      * @return UI_PropertiesGrid_Property_Boolean
      * @throws UI_Exception
      */
-    public function addBoolean($label, bool $bool) : UI_PropertiesGrid_Property_Boolean
+    public function addBoolean(string|int|float|StringableInterface $label, bool|null $bool) : UI_PropertiesGrid_Property_Boolean
     {
         $prop = new UI_PropertiesGrid_Property_Boolean(
             $this,
@@ -236,11 +236,11 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Adds a header to divide sets of properties.
      *
-     * @param string|number|UI_Renderable_Interface $label
+     * @param string|int|float|StringableInterface $label
      * @return UI_PropertiesGrid_Property_Header
      * @throws UI_Exception
      */
-    public function addHeader($label) : UI_PropertiesGrid_Property_Header
+    public function addHeader(string|int|float|StringableInterface $label) : UI_PropertiesGrid_Property_Header
     {
         $prop = new UI_PropertiesGrid_Property_Header(
             $this,
@@ -443,22 +443,32 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
      *
      * @return int|float
      */
-    public function getLabelWidth()
+    public function getLabelWidth() : int|float
     {
-        return $this->getOption(self::OPTION_LABEL_WIDTH);
+        $value = $this->getOption(self::OPTION_LABEL_WIDTH);
+
+        if(is_numeric($value)) {
+            $value = (float)$value;
+        }
+
+        if(is_int($value) || is_float($value)) {
+            return $value;
+        }
+
+        return self::DEFAULT_LABEL_WIDTH;
     }
 
     /**
      * Sets the percentual width of the label column.
      *
      * @param int|float|string $percent
-     * @throws Application_Exception
-     * @return UI_PropertiesGrid
+     * @throws UI_Exception
+     * @return $this
      */
-    public function setLabelWidth($percent) : UI_PropertiesGrid
+    public function setLabelWidth(int|float|string $percent) : self
     {
         if (!is_numeric($percent)) {
-            throw new Application_Exception(
+            throw new UI_Exception(
                 'Only numeric values allowed',
                 sprintf(
                     'Tried setting the label width to [%s], but only numeric values are allowed.',
@@ -489,13 +499,13 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
    /**
     * Configures the grid to display in a content section.
     * 
-    * @param string|number|UI_Renderable_Interface $title
-    * @return UI_PropertiesGrid
+    * @param string|int|float|StringableInterface $title
+    * @return $this
     * @see collapse()
     */
-    public function makeSection($title='') : UI_PropertiesGrid
+    public function makeSection(string|int|float|StringableInterface $title='') : self
     {
-        $this->section = Application_Driver::getInstance()->getPage()->createSection();
+        $this->section = UI::getInstance()->createSection();
         
         if(!empty($title)) {
             $this->section->setTitle($title);
@@ -528,10 +538,10 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     * unless the grid is configured as a content section.
     * 
     * @param boolean $collapse
-    * @return UI_PropertiesGrid
+    * @return $this
     * @see makeSection()
     */
-    public function collapse(bool $collapse=true) : UI_PropertiesGrid
+    public function collapse(bool $collapse=true) : self
     {
         $this->collapsed = $collapse;
         return $this;
