@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v7.0.3 - Bug Fix
+- Exceptions: Fixed the exception page displaying a blank page.
+- Exceptions: Added a DEV "Display exception page" button in the error log screen.
+
 ## v7.0.2 - Minor Enhancements
 - PropertiesGrid: Added null support for all column values.
 
