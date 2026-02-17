@@ -6,6 +6,7 @@ namespace Application\ErrorLog\Admin\Screens;
 
 use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
+use Application\ErrorDetails\ExceptionPageRenderer;
 use Application\ErrorLog\Admin\ErrorLogScreenRights;
 use Application\ErrorLog\Admin\Traits\ErrorLogSubmodeInterface;
 use Application\ErrorLog\Admin\Traits\ErrorLogSubmodeTrait;
@@ -119,6 +120,8 @@ class ListSubmode extends BaseSubmode implements ErrorLogSubmodeInterface
 
         $panel = $this->sidebar->addDeveloperPanel();
 
+        $panel->addHeading(t('Send errors into the log'));
+
         $panel->addButton(
             UI::button(t('%1$s exception', 'PHP'))
                 ->link($this->errorlog->getAdminTriggerExceptionURL())
@@ -161,10 +164,20 @@ class ListSubmode extends BaseSubmode implements ErrorLogSubmodeInterface
 
         $panel->addSeparator();
 
+        $panel->addHeading(t('Display an exception page'));
+
+        $panel->addButton(
+            UI::button(t('%1$s exception', 'PHP'))
+                ->link($this->errorlog->getAdminTriggerExceptionURL(array('prev' => 'yes', 'display' => 'yes')))
+        );
+
+        $panel->addSeparator();
+
         $reporting = (int)ini_get('error_reporting');
 
+        $panel->addHeading(t('PHP error reporting'));
+
         $panel->addHTML(sb()
-            ->para(sb()->bold(t('PHP error reporting')))
             ->ul(array(
                 'Display errors: ' . bool2string(ini_get('display_errors')),
                 'Error reporting: ' . $reporting,
@@ -276,6 +289,11 @@ class ListSubmode extends BaseSubmode implements ErrorLogSubmodeInterface
                 $prev
             );
         } catch (Throwable $e) {
+            /* @see ExceptionPageRenderer */
+            if($this->request->getBool('display')) {
+                throw $e;
+            }
+
             $e = Application_Bootstrap::convertException($e);
             $e->log();
         }
