@@ -185,6 +185,8 @@ class ExceptionPageRenderer extends ExceptionRenderer
             );
         }
 
+        $error = $this;
+
         require_once $templateFile;
 
         Application::exit();
