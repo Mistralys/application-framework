@@ -163,7 +163,7 @@ class ExceptionPageRenderer extends ExceptionRenderer
             if (file_exists($path)) {
                 return new Application_ErrorDetails_ThemeFile(
                     $path,
-                    $location[0] . '/' . $file
+                    $location->getURL() . '/' . $file
                 );
             }
         }
