@@ -25,7 +25,9 @@ use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\Interfaces\StringableInterface;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use TestDriver\ClassFactory;
 use UI\AdminURLs\AdminURLInterface;
+use UI\CSSClasses;
 use UI\Page\Navigation\NavConfigurator;
 
 /**
@@ -1123,6 +1125,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         '_deprecated/base_renderable.js',
         'ui/renderable/base.js',
         'ui/renderable/html.js',
+        'ui/css-classes.js',
         'application/ajax.js',
         'application/ajax-error.js',
         'sidebar.js',
