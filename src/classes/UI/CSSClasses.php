@@ -79,4 +79,5 @@ class CSSClasses
     public const string INPUT_XSMALL = 'input-mini';
     public const string INPUT_SMALL = 'input-small';
     public const string INPUT_MEDIUM = 'input-medium';
+    public const string INPUT_SELECT_FILTERABLE = 'filterable';
 }

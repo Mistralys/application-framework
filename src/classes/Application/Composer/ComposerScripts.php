@@ -37,6 +37,7 @@ class ComposerScripts
         self::indexOfflineEvents();
         self::indexAdminScreens();
         self::apiMethodIndex();
+        self::generateCSSClassesJS();
     }
 
     public static function clearCaches() : void
@@ -116,6 +117,22 @@ class ComposerScripts
         AppFactory::createLogger()->logModeEcho();
 
         APIManager::getInstance()->getMethodIndex()->build();
+    }
+
+    public static function generateCSSClassesJS() : void
+    {
+        self::init();
+
+        self::doGenerateCSSClassesJS();
+    }
+
+    public static function doGenerateCSSClassesJS() : void
+    {
+        echo 'Generating clientside CSS classes reference...'.PHP_EOL;
+
+        (new CSSClassesGenerator())->generate();
+
+        echo 'DONE.'.PHP_EOL;
     }
 
     private static bool $initialized = false;
