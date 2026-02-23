@@ -692,8 +692,8 @@ var FormHelper =
    /**
     * Retrieves a form element by its name or ID.
     * 
-    * @param {String|DOMElement} nameIDOrObject The field name, ID or an existing element instance
-    * @returns {DOMElement|NULL}
+    * @param {String|jQuery|HTMLElement} nameIDOrObject The field name, ID or an existing element instance
+    * @returns {jQuery|NULL}
     */
 	getElement:function(nameIDOrObject)
 	{
@@ -736,8 +736,8 @@ var FormHelper =
     * Retrieves a form element by its name or ID, and throws
     * an exception if it does not exist.
     * 
-    * @param {String|DOMElement} nameIDOrObject The field name, ID or an existing element instance
-    * @returns {DOMElement}
+    * @param {String|jQuery|HTMLElement} nameIDOrObject The field name, ID or an existing element instance
+    * @returns {jQuery}
     * @throws {ApplicationException}
     */
 	requireElement:function(name)
@@ -1346,6 +1346,32 @@ var FormHelper =
             el.focus();
         });
     },
+
+	/**
+	 * Makes the target select element filterable, by applying the select2 plugin to it.
+	 *
+	 * @param {String|jQuery|HTMLElement} selectorOrElement
+	 */
+	makeSelectFilterable:function(selectorOrElement)
+	{
+		const el = this.getElement(selectorOrElement);
+
+		// verify that it exists
+		if(el === null) {
+			this.log('Cannot find element ['+selectorOrElement+'] to make it filterable.', 'error');
+			return;
+		}
+
+		// verify that it is a select element
+		if(el.prop('tagName') === 'SELECT') {
+			this.log('Making select element [#'+el.attr('id')+'] filterable.', 'ui');
+			el.select2();
+			el.addClass(CSSClasses.INPUT_SELECT_FILTERABLE);
+			return;
+		}
+
+		this.log('Cannot make element ['+el.attr('id')+'] filterable, because it is not a select element.', 'error');
+	},
     
    /**
     * Submits the specified form. Automatically checks whether
