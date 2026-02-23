@@ -1,5 +1,11 @@
 # Application Framework Changelog
 
+## v7.0.5 - Minor Enhancements
+- UI: Added the clientside class `CSSClasses` that mirrors the server-side class.
+- UI: Added support for `select2` filterable selects via element classes and FormHelper method.
+- Composer: Added the CSS classes file generation to the build process.
+- Dependencies: Added `select2/select2` as a dependency for the filterable select feature.
+
 ## v7.0.4 - Bug Fix
 - Exceptions: Fixed a leftover type error.
 
