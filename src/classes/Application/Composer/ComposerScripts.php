@@ -130,7 +130,7 @@ class ComposerScripts
     {
         echo 'Generating clientside CSS classes reference...'.PHP_EOL;
 
-        (new CSSClassesGenerator())->generate();
+        new CSSClassesGenerator()->generate();
 
         echo 'DONE.'.PHP_EOL;
     }
