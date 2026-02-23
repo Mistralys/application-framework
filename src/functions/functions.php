@@ -476,7 +476,7 @@ function renderTrace(Throwable $e) : string
 		}
 		
 		$args = array();
-		if(empty($entry['args']))
+		if(!empty($entry['args']))
 		{
 			foreach($entry['args'] as $arg) {
 				switch(gettype($arg)) {
