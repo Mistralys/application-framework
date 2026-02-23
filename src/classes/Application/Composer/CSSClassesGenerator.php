@@ -62,7 +62,10 @@ class CSSClassesGenerator
         $lines[] = ' * @generated '.date('Y-m-d H:i:s');
         $lines[] = ' * @see src/classes/UI/CSSClasses.php';
         $lines[] = ' */';
-        $lines[] = 'class CSSClasses {';
+
+        // Use concatenation to prevent the string from being recognized by the
+        // class loader as a reference to an actual PHP class.
+        $lines[] = 'class'.' CSSClasses {';
 
         foreach ($constants as $name => $value) {
             $lines[] = sprintf(
