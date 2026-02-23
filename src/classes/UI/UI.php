@@ -1191,6 +1191,13 @@ class UI
         $this->addJavascript('bootstrap.min.js', 8800);
         return $this;
     }
+
+    public function addSelect2() : self
+    {
+        $this->addVendorJavascript('select2/select2', 'dist/js/select2.full.min.js');
+        $this->addVendorStylesheet('select2/select2', 'dist/css/select2.min.css');
+        return $this;
+    }
     
     public const string FONT_AWESOME_URL = 'https://use.fontawesome.com/releases/v5.15.4/css/all.css';
     

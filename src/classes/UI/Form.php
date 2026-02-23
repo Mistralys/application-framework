@@ -431,6 +431,11 @@ class UI_Form extends UI_Renderable
         return $element;
     }
 
+    public function renderJSSelectFilterable(string $selector) : string
+    {
+        return sprintf("FormHelper.makeSelectFilterable('%s');", $selector);
+    }
+
     /**
     * Adds a class to the form tag itself.
     *

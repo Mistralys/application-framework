@@ -576,6 +576,9 @@ var UI =
 		$('form').submit(function() {
 			UI.formSubmitting = true;
 		});
+
+		// Apply select2 to all filterable selects by the related class name.
+		$(sprintf('.%s', CSSClasses.INPUT_SELECT_FILTERABLE)).select2();
 		
 		$.each(this.sections, function(idx, section) {
 			section.Start();
