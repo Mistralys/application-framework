@@ -2,6 +2,13 @@
 ## APPLICATION SETS
 ## ---------------------------------------------------------------
 
+moduleMetaData:
+  id: "application-sets"
+  label: "Application Sets"
+  description: "Configuration-level system to control which administration areas are enabled per application instance, supporting multiple feature configurations."
+  relatedModules:
+    - db-helper
+
 documents:
 -
   description: 'Application Sets - Overview'

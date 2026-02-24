@@ -2,6 +2,13 @@
 ## DBHELPER
 ## ---------------------------------------------------------------
 
+moduleMetaData:
+  id: "db-helper"
+  label: "DBHelper"
+  description: "Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations."
+  relatedModules:
+    - event-handler
+
 documents:
 -
   description: 'DBHelper - Overview'
@@ -20,17 +27,26 @@ documents:
       filePattern: "*.md"
 
 -
-  description: 'DBHelper - Architecture'
-  outputPath: 'modules/db-helper/architecture.md'
+  description: 'DBHelper - Core Architecture'
+  outputPath: 'modules/db-helper/architecture-core.md'
   sources:
     - type: file
-      description: "Public Interfaces and DTOs"
+      description: "Core public class signatures"
       sourcePaths:
         - ./
+        - ./BaseCollection
+        - ./BaseRecord
+        - ./BaseFilterCriteria
+        - ./DataTable
+        - ./StatementBuilder
+        - ./Interfaces
+        - ./Traits
+        - ./Attributes
+        - ./Exception
+      excludePatterns:
+        - 'Admin/'
+        - 'API/'
       filePattern: "*.php"
-      contains:
-        - "interface"
-        - "abstract class"
       modifiers:
         - name: php-content-filter
           options:
@@ -40,3 +56,56 @@ documents:
             constant_visibility: [ "public" ]
             keep_method_bodies: false
             keep_doc_comments: true
+
+-
+  description: 'DBHelper - Admin UI Architecture'
+  outputPath: 'modules/db-helper/architecture-ui.md'
+  sources:
+    - type: file
+      description: "Admin UI layer public class signatures"
+      sourcePaths:
+        - ./Admin
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'DBHelper - API Methods'
+  outputPath: 'modules/db-helper/architecture-api-methods.md'
+  sources:
+    - type: file
+      description: "API method class signatures"
+      sourcePaths:
+        - ./API
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'DBHelper - File Structure'
+  outputPath: 'modules/db-helper/file-structure.md'
+  overwrite: true
+  sources:
+    - type: tree
+      description: 'PHP class file tree'
+      sourcePaths:
+        - ./
+      filePattern: '*'
+      renderFormat: ascii
+      enabled: true
+      showCharCount: true
+      maxDepth: 6

@@ -2,6 +2,11 @@
 ## EVENT HANDLING
 ## ---------------------------------------------------------------
 
+moduleMetaData:
+  id: "event-handler"
+  label: "Event Handling"
+  description: "Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners."
+
 documents:
 -
   description: 'Event Handler - Overview'
@@ -21,7 +26,8 @@ documents:
       description: "Public APIs"
       sourcePaths:
         - ./EventManager.php
-      filePattern: "EventManager.php"
+        - ./Traits
+      filePattern: "*.php"
       modifiers:
         - name: php-content-filter
           options:

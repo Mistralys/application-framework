@@ -2,6 +2,11 @@
 ## CONNECTORS MODULE
 ## ---------------------------------------------------------------
 
+moduleMetaData:
+  id: "connectors"
+  label: "Connectors"
+  description: "Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods."
+
 documents:
   - description: 'Connectors - Overview'
     outputPath: 'modules/connectors/overview.md'
@@ -12,17 +17,40 @@ documents:
           - README.md
         filePattern: "README.md"
 
-  - description: 'Connectors - Architecture'
-    outputPath: 'modules/connectors/architecture.md'
+  - description: 'Connectors - Core Architecture'
+    outputPath: 'modules/connectors/architecture-core.md'
     sources:
       - type: file
-        description: "Public Interfaces and APIs"
+        description: "Connector base classes and method signatures"
         sourcePaths:
           - ./
+          - ./Connector
+        excludePatterns:
+          - 'Request/'
+          - 'Response/'
+          - 'Headers/'
+          - 'Cache/'
         filePattern: "*.php"
-        contains:
-          - "interface"
-          - "abstract class"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  - description: 'Connectors - Request & Response Architecture'
+    outputPath: 'modules/connectors/architecture-request-response.md'
+    sources:
+      - type: file
+        description: "HTTP request, response, and header class signatures"
+        sourcePaths:
+          - ./Request
+          - ./Response
+          - ./Headers
+        filePattern: "*.php"
         modifiers:
           - name: php-content-filter
             options:
