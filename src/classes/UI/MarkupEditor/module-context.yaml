@@ -1,0 +1,44 @@
+## ---------------------------------------------------------------
+## UI - MARKUP EDITOR SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-markup-editor"
+  label: "UI Markup Editor"
+  description: "Integrates WYSIWYG rich-text editors (CKEditor 5 and Redactor) into forms through a unified abstract API with configurable toolbar composition."
+  relatedModules:
+    - ui
+    - ui-form
+    - ui-themes
+
+documents:
+-
+  description: 'UI Markup Editor - Overview'
+  outputPath: 'modules/ui/markup-editor/overview.md'
+  sources:
+    - type: file
+      description: "MarkupEditor README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI Markup Editor - Architecture'
+  outputPath: 'modules/ui/markup-editor/architecture.md'
+  sources:
+    - type: file
+      description: "Public class signatures for all editor backends"
+      sourcePaths:
+        - ./
+        - ../MarkupEditor.php
+        - ../MarkupEditorInfo.php
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

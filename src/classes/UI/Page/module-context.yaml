@@ -1,0 +1,49 @@
+## ---------------------------------------------------------------
+## UI - PAGE SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-page"
+  label: "UI Page"
+  description: "Orchestrates full-page composition by aggregating the header, sidebar, footer, breadcrumb trail, and named navigations, delegating rendering to the active theme's frame template."
+  relatedModules:
+    - ui
+    - ui-themes
+
+documents:
+-
+  description: 'UI Page - Overview'
+  outputPath: 'modules/ui/page/overview.md'
+  sources:
+    - type: file
+      description: "Page README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI Page - Architecture'
+  outputPath: 'modules/ui/page/architecture.md'
+  sources:
+    - type: file
+      description: "Public class signatures for page regions and helpers"
+      sourcePaths:
+        - ./
+        - ./Breadcrumb
+        - ./Help
+        - ./Navigation
+        - ./Section
+        - ./Sidebar
+        - ./StepsNavigator
+        - ./Template
+        - ../Page.php
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

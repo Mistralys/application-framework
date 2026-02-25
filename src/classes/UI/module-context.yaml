@@ -1,0 +1,99 @@
+## ---------------------------------------------------------------
+## USER INTERFACE MODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui"
+  label: "User Interface"
+  description: "Central rendering layer of the framework: the UI singleton, Bootstrap component abstractions, page composition, client-side resource management, and the PHP-based theming engine."
+  relatedModules:
+    - event-handler
+    - db-helper
+
+documents:
+-
+  description: 'UI Module - Overview'
+  outputPath: 'modules/ui/overview.md'
+  sources:
+    - type: file
+      description: "UI Module README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+    - type: file
+      description: "Cross-cutting documentation"
+      sourcePaths:
+        - Docs
+      filePattern: "*.md"
+
+-
+  description: 'UI Module - Core Architecture'
+  outputPath: 'modules/ui/architecture-core.md'
+  sources:
+    - type: file
+      description: "UI singleton, root-level components, interfaces and traits"
+      sourcePaths:
+        - ./
+        - ./Interfaces
+        - ./Traits
+        - ./Event
+        - ./Targets
+        - ./Statuses
+        - ./CSSGenerator
+        - ./ClientConfirmable
+      excludePatterns:
+        - 'Admin/'
+        - 'AdminURLs/'
+        - 'Bootstrap/'
+        - 'ClientResource/'
+        - 'DataGrid/'
+        - 'Form/'
+        - 'MarkupEditor/'
+        - 'Page/'
+        - 'PropertiesGrid/'
+        - 'QuickSelector/'
+        - 'Themes/'
+        - 'Tree/'
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'UI Module - Admin Screens Architecture'
+  outputPath: 'modules/ui/architecture-admin.md'
+  sources:
+    - type: file
+      description: "Admin screen class signatures"
+      sourcePaths:
+        - ./Admin
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'UI Module - File Structure'
+  outputPath: 'modules/ui/file-structure.md'
+  sources:
+    - type: tree
+      description: 'UI Module File Structure'
+      sourcePaths:
+        - ./
+      filePattern: '*'
+      renderFormat: ascii
+      showCharCount: false
+      maxDepth: 3

@@ -1,0 +1,49 @@
+## ---------------------------------------------------------------
+## UI - THEMES SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-themes"
+  label: "UI Themes"
+  description: "PHP-based template and theming engine where templates are PHP classes; framework templates can be transparently overridden by application-level themes without copying the entire theme."
+  relatedModules:
+    - ui
+
+documents:
+-
+  description: 'UI Themes - Overview'
+  outputPath: 'modules/ui/themes/overview.md'
+  sources:
+    - type: file
+      description: "Themes README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+    - type: file
+      description: "Themes and templates deep-dive"
+      sourcePaths:
+        - ../Docs/themes-and-templates.md
+      filePattern: "*.md"
+
+-
+  description: 'UI Themes - Architecture'
+  outputPath: 'modules/ui/themes/architecture.md'
+  sources:
+    - type: file
+      description: "Public class signatures for the theme manager and theme"
+      sourcePaths:
+        - ./
+        - ./BaseTemplates
+        - ./Theme
+        - ../Themes.php
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

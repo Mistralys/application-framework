@@ -1,0 +1,41 @@
+## ---------------------------------------------------------------
+## UI - TREE SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-tree"
+  label: "UI Tree"
+  description: "Hierarchical tree widget composed of nestable nodes that support icons, URL or JavaScript link targets, active/selected states, and per-node action buttons."
+  relatedModules:
+    - ui
+    - ui-admin-urls
+
+documents:
+-
+  description: 'UI Tree - Overview'
+  outputPath: 'modules/ui/tree/overview.md'
+  sources:
+    - type: file
+      description: "Tree README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI Tree - Architecture'
+  outputPath: 'modules/ui/tree/architecture.md'
+  sources:
+    - type: file
+      description: "Public class signatures for TreeNode and TreeRenderer"
+      sourcePaths:
+        - ./
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

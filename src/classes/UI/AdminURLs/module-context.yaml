@@ -1,0 +1,40 @@
+## ---------------------------------------------------------------
+## UI - ADMIN URLS SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-admin-urls"
+  label: "UI Admin URLs"
+  description: "Type-safe fluent URL builder for constructing admin-screen navigation links using the framework's area/mode/submode/action routing scheme."
+  relatedModules:
+    - ui
+
+documents:
+-
+  description: 'UI AdminURLs - Overview'
+  outputPath: 'modules/ui/admin-urls/overview.md'
+  sources:
+    - type: file
+      description: "AdminURLs README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI AdminURLs - Architecture'
+  outputPath: 'modules/ui/admin-urls/architecture.md'
+  sources:
+    - type: file
+      description: "Public class and interface signatures"
+      sourcePaths:
+        - ./
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

@@ -1,0 +1,47 @@
+## ---------------------------------------------------------------
+## UI - DATAGRID SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-datagrid"
+  label: "UI DataGrid"
+  description: "Renders tabular data with built-in column sorting, pagination, per-user column configuration, row selection, and bulk actions driven by a pluggable list-builder source."
+  relatedModules:
+    - ui
+    - db-helper
+
+documents:
+-
+  description: 'UI DataGrid - Overview'
+  outputPath: 'modules/ui/datagrid/overview.md'
+  sources:
+    - type: file
+      description: "DataGrid README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI DataGrid - Architecture'
+  outputPath: 'modules/ui/datagrid/architecture.md'
+  sources:
+    - type: file
+      description: "Public class signatures for grid, columns, rows, actions, and list builders"
+      sourcePaths:
+        - ./
+        - ./Action
+        - ./Column
+        - ./Entry
+        - ./ListBuilder
+        - ./Row
+        - ../DataGrid.php
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

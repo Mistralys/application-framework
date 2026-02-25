@@ -1,0 +1,43 @@
+## ---------------------------------------------------------------
+## UI - CLIENT RESOURCE SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-client-resources"
+  label: "UI Client Resources"
+  description: "Manages client-side JS and CSS resource registration with load-key deduplication, ensuring each asset is injected into the page exactly once across both full-page loads and AJAX requests."
+  relatedModules:
+    - ui
+
+documents:
+-
+  description: 'UI Client Resources - Overview'
+  outputPath: 'modules/ui/client-resources/overview.md'
+  sources:
+    - type: file
+      description: "ClientResource README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI Client Resources - Architecture'
+  outputPath: 'modules/ui/client-resources/architecture.md'
+  sources:
+    - type: file
+      description: "Public class signatures"
+      sourcePaths:
+        - ./
+        - ../ResourceManager.php
+        - ../ClientResource.php
+        - ../ClientResourceCollection.php
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

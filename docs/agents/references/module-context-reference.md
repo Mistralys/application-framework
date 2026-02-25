@@ -329,6 +329,17 @@ Current modules with `module-context.yaml` files in the framework:
 | DBHelper | `src/classes/DBHelper/` |
 | Event Handler | `src/classes/Application/EventHandler/` |
 | Application Sets | `src/classes/Application/AppSets/` |
+| UI | `src/classes/UI/` |
+| UI - Admin URLs | `src/classes/UI/AdminURLs/` |
+| UI - Bootstrap Components | `src/classes/UI/Bootstrap/` |
+| UI - Client Resources | `src/classes/UI/ClientResource/` |
+| UI - DataGrid | `src/classes/UI/DataGrid/` |
+| UI - Form | `src/classes/UI/Form/` |
+| UI - Markup Editor | `src/classes/UI/MarkupEditor/` |
+| UI - Page | `src/classes/UI/Page/` |
+| UI - Properties Grid | `src/classes/UI/PropertiesGrid/` |
+| UI - Themes | `src/classes/UI/Themes/` |
+| UI - Tree | `src/classes/UI/Tree/` |
 
 ---
 

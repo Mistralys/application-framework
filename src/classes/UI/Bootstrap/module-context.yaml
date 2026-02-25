@@ -1,0 +1,44 @@
+## ---------------------------------------------------------------
+## UI - BOOTSTRAP SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-bootstrap"
+  label: "UI Bootstrap Components"
+  description: "PHP abstractions for Bootstrap v2 UI components — dropdowns, tabs, button groups, popovers, and the BigSelection widget — each exposing a fluent builder API."
+  relatedModules:
+    - ui
+
+documents:
+-
+  description: 'UI Bootstrap - Overview'
+  outputPath: 'modules/ui/bootstrap/overview.md'
+  sources:
+    - type: file
+      description: "Bootstrap README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI Bootstrap - Architecture'
+  outputPath: 'modules/ui/bootstrap/architecture.md'
+  sources:
+    - type: file
+      description: "Public class signatures for all Bootstrap components"
+      sourcePaths:
+        - ./
+        - ./BigSelection
+        - ./ButtonGroup
+        - ./Dropdown
+        - ./Tab
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

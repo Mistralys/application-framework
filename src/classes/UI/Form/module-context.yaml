@@ -1,0 +1,46 @@
+## ---------------------------------------------------------------
+## UI - FORM SUBMODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ui-form"
+  label: "UI Form"
+  description: "Handles form creation, element composition, pluggable rendering, and server-side validation, built on HTML_QuickForm2 with framework-layer conventions for AJAX submit and typed rules."
+  relatedModules:
+    - ui
+    - event-handler
+
+documents:
+-
+  description: 'UI Form - Overview'
+  outputPath: 'modules/ui/form/overview.md'
+  sources:
+    - type: file
+      description: "Form README"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'UI Form - Core Architecture'
+  outputPath: 'modules/ui/form/architecture-core.md'
+  sources:
+    - type: file
+      description: "Public class signatures for the form, elements, renderers, validators, and rules"
+      sourcePaths:
+        - ./
+        - ./Element
+        - ./Renderer
+        - ./Rule
+        - ./Validator
+        - ../Form.php
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true

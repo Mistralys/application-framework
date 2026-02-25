@@ -1,22 +1,36 @@
 # User Interface Module
 
-This folder contains all classes relating to the user interface.
+The UI module is the **central rendering layer** of the framework. It owns the `UI` singleton, all HTML component abstractions, the page composition system, client-side resource management, and the PHP-based theming engine.
 
-## Libraries and Frameworks
+## Client-Side Stack
 
-The UI is entirely built on Bootstrap, with custom styling for
-some elements and the page layout.
+| Library | Version |
+|---|---|
+| **Bootstrap** | v2 |
+| **jQuery** | – |
+| **jQuery UI** | – |
+| **FontAwesome** | v5 |
 
-Primary libraries used:
+## Submodules
 
-- **Bootstrap**: v2
-- **jQuery**
-- **jQuery UI**
-- **FontAwesome**: v5
+| Submodule | Summary |
+|---|---|
+| [AdminURLs](AdminURLs/README.md) | Type-safe URL builder for navigating admin screens |
+| [Bootstrap](Bootstrap/README.md) | PHP abstractions for Bootstrap UI components |
+| [ClientResource](ClientResource/README.md) | JS/CSS client-side resource loading with load-key deduplication |
+| [DataGrid](DataGrid/README.md) | Tabular data display with sorting, pagination, and bulk actions |
+| [Form](Form/README.md) | Form creation, rendering, and server-side validation |
+| [MarkupEditor](MarkupEditor/README.md) | WYSIWYG rich-text editor integration (CKEditor5 / Redactor) |
+| [Page](Page/README.md) | Page composition — header, sidebar, footer, breadcrumb, navigation |
+| [PropertiesGrid](PropertiesGrid/README.md) | Key/value property display for detail views |
+| [Themes](Themes/README.md) | PHP-based template and theming engine |
+| [Tree](Tree/README.md) | Hierarchical tree widget with node actions |
 
-## The Working Principle
+## Cross-Cutting Topics
 
-There are two main aspects to the UI system:
+- [UI Helper Classes](Docs/ui-helper-classes.md) — overview of the helper-class pattern  
+- [Themes and Templates](Docs/themes-and-templates.md) — PHP-based template inheritance
 
-- [The UI helper classes](Docs/ui-helper-classes.md) - A helper class for each Bootstrap UI element
-- [The Theming layer](Docs/themes-and-templates.md) - Themes with PHP-Based templates
+## Primary Entry Point
+
+`UI` (`UI.php`) is the framework singleton. It owns the current `UI_Page`, the `UI_Themes` manager, and the `UI_ResourceManager`. All component creation flows through this class or through the active page.
