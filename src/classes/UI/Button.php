@@ -316,18 +316,15 @@ class UI_Button
             $attribs['style'] = compileStyles($this->styles);
         }
         
-        $title = '';
-        if(isset($this->title)) {
-            $title = $this->title;
-        }
-    
+        $title = $this->getAttribute('title');
+
         if(isset($this->tooltipText)) 
         {
             $tooltip = null;
             
             if($this->disabled && $this->disabledTooltip) {
                 $tooltip = $this->disabledTooltip;
-            } else if(!$this->locked) {
+            } else if(!$this->disabled && !$this->locked) {
                 $tooltip = $this->tooltipText;
             }
             
@@ -376,6 +373,7 @@ class UI_Button
                 $attribs['type'],
                 $attribs['target']
             );
+            $attribs['disabled'] = 'disabled';
         }
         
         return $attribs;
