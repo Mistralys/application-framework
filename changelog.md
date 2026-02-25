@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v7.0.6 - UI Agent Docs
+## v7.0.7 - UI Agent Docs
 - CTX: Fully documented the UI layer.
 - UI: Added a test app reference for disabled buttons.
 
