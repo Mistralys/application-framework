@@ -1,6 +1,10 @@
 # Application Framework Changelog
 
 ## v7.0.6 - Agent Docs
+- CTX: Fully documented the UI layer.
+- UI: Added a test app reference for disabled buttons.
+
+## v7.0.6 - Agent Docs
 - CTX: Improved `module-context.yaml` with module metadata.
 - CTX: Reviewed and fixed missing module docs (DBHelper, Connectors).
 
