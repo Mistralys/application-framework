@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v7.0.8 - Button Fix
+- UI: Buttons: Fixed `disable()` not having any effect without specifying a reason.
+- UI: Buttons: Fixed `disable()` allowing the button to act as submit when within a form.
+- UI: Buttons: Fixed `setTitle()` not working as expected.
+
 ## v7.0.7 - UI Agent Docs
 - CTX: Fully documented the UI layer.
 - UI: Added a test app reference for disabled buttons.
