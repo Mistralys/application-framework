@@ -16,6 +16,7 @@ use Application\CacheControl\CacheManager;
 use Application\EventHandler\OfflineEvents\Index\EventIndexer;
 use Application\Exception\ApplicationException;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\Microtime;
 
 /**
  * Class with static methods that are used as Composer scripts.
@@ -38,6 +39,17 @@ class ComposerScripts
         self::indexAdminScreens();
         self::apiMethodIndex();
         self::generateCSSClassesJS();
+        self::updateContextGenerateDate();
+    }
+
+    private static function updateContextGenerateDate() : void
+    {
+        echo '- Updating context generate date...'.PHP_EOL;
+
+        FileInfo::factory(__DIR__.'/../../../../.context/generated-at.txt')
+            ->putContents(Microtime::createNow()->getISODate(true));
+
+        echo '  DONE.'.PHP_EOL;
     }
 
     public static function clearCaches() : void
@@ -49,7 +61,7 @@ class ComposerScripts
 
     public static function doClearCaches() : void
     {
-        echo 'Clearing all caches...'.PHP_EOL;
+        echo '- Clearing all caches...'.PHP_EOL;
 
         // Do this manually first, because the cache manager
         // depends on offline events being registered, and
@@ -58,7 +70,7 @@ class ComposerScripts
 
         CacheManager::getInstance()->clearAll();
 
-        echo 'DONE.'.PHP_EOL;
+        echo '  DONE.'.PHP_EOL;
     }
 
     public static function apiMethodIndex() : void
@@ -77,16 +89,18 @@ class ComposerScripts
 
     public static function doIndexAdminScreens() : void
     {
-        echo 'Indexing admin screens...'.PHP_EOL;
+        echo '- Indexing admin screens...'.PHP_EOL;
 
         $indexer = new AdminScreenIndexer(AppFactory::createDriver());
         $indexer->index();
 
         echo sprintf(
-            '- Found %s screens total (%s content screens).'.PHP_EOL,
+            '  Found %s screens total (%s content screens).'.PHP_EOL,
             $indexer->countScreens(),
             $indexer->countContentScreens()
         );
+
+        echo '  DONE.'.PHP_EOL;
     }
 
     public static function indexOfflineEvents() : void
@@ -98,16 +112,18 @@ class ComposerScripts
 
     public static function doIndexOfflineEvents() : void
     {
-        echo 'Indexing offline event listeners...'.PHP_EOL;
+        echo '- Indexing offline event listeners...'.PHP_EOL;
 
         $indexer = EventIndexer::getInstance();
         $indexer->index();
 
         echo sprintf(
-            '- Found [%s] offline events and [%s] listeners total.'.PHP_EOL,
+            '  Found [%s] offline events and [%s] listeners total.'.PHP_EOL,
             $indexer->countEvents(),
             $indexer->countListeners()
         );
+
+        echo '  DONE.'.PHP_EOL;
     }
 
     public static function doApiMethodIndex() : void
@@ -128,11 +144,11 @@ class ComposerScripts
 
     public static function doGenerateCSSClassesJS() : void
     {
-        echo 'Generating clientside CSS classes reference...'.PHP_EOL;
+        echo '- Generating clientside CSS classes reference...'.PHP_EOL;
 
         new CSSClassesGenerator()->generate();
 
-        echo 'DONE.'.PHP_EOL;
+        echo '  DONE.'.PHP_EOL;
     }
 
     private static bool $initialized = false;
