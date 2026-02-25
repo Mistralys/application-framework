@@ -136,7 +136,8 @@
     "clear-caches": "Application\\Composer\\ComposerScripts::clearCaches",
     "build": [
       "@composer dumpautoload",
-      "Application\\Composer\\ComposerScripts::build"
+      "Application\\Composer\\ComposerScripts::build",
+      "ctx generate"
     ],
     "analyze": [
       "@composer dumpautoload",
