@@ -8,6 +8,8 @@ moduleMetaData:
   description: "PHP-based template and theming engine where templates are PHP classes; framework templates can be transparently overridden by application-level themes without copying the entire theme."
   relatedModules:
     - ui
+    - ui-markup-editor
+    - ui-page
 
 documents:
 -

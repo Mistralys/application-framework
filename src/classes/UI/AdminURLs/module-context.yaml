@@ -8,6 +8,7 @@ moduleMetaData:
   description: "Type-safe fluent URL builder for constructing admin-screen navigation links using the framework's area/mode/submode/action routing scheme."
   relatedModules:
     - ui
+    - ui-tree
 
 documents:
 -

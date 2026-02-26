@@ -21,7 +21,7 @@ servers:
 
 # Import all module context files
 import:
-  - path: "src/classes/**/module-context.yaml"
+  - path: "./src/classes/**/module-context.yaml"
 
 # DOCUMENT GENERATION - To create documentation from codebase
 documents:
@@ -34,7 +34,7 @@ documents:
         type: tree
         description: 'Tree of PHP Class Files'
         sourcePaths:
-          - src/classes
+          - ./src/classes
         filePattern: '*'
         renderFormat: ascii
         enabled: true
@@ -48,5 +48,5 @@ documents:
       - type: file
         description: "Framework Documentation"
         sourcePaths:
-          - docs/agents
+          - ./docs/agents
         filePattern: "*.md"

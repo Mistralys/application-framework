@@ -8,6 +8,9 @@ moduleMetaData:
   description: "Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations."
   relatedModules:
     - event-handler
+    - ui
+    - ui-datagrid
+    - application-sets
 
 documents:
 -

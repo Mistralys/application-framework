@@ -6,6 +6,10 @@ moduleMetaData:
   id: "event-handler"
   label: "Event Handling"
   description: "Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners."
+  relatedModules:
+    - ui
+    - ui-form
+    - db-helper
 
 documents:
 -

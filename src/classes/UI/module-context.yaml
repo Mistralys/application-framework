@@ -9,6 +9,16 @@ moduleMetaData:
   relatedModules:
     - event-handler
     - db-helper
+    - ui-datagrid
+    - ui-tree
+    - ui-markup-editor
+    - ui-page
+    - ui-form
+    - ui-admin-urls
+    - ui-bootstrap
+    - ui-client-resources
+    - ui-properties-grid
+    - ui-themes
 
 documents:
 -

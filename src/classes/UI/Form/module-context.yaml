@@ -9,6 +9,7 @@ moduleMetaData:
   relatedModules:
     - ui
     - event-handler
+    - ui-markup-editor
 
 documents:
 -
