@@ -79,8 +79,8 @@
     "psr/log": "^1.1.4",
     "mistralys/application-framework-docs": ">=1.0.1",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
-    "mistralys/application-utils": ">=3.1.10",
-    "mistralys/application-utils-core": ">=2.4.1",
+    "mistralys/application-utils": ">=3.2.0",
+    "mistralys/application-utils-core": ">=2.5.0",
     "mistralys/application-utils-collections": ">=1.1.6",
     "mistralys/application-utils-image": ">=1.2.0",
     "mistralys/application-localization": ">=2.1.2",
@@ -106,7 +106,6 @@
     "league/commonmark": "^2.6.0",
     "zenorocha/clipboardjs": "v2.0.8",
     "apereo/phpcas": ">=1.6.2",
-    "roave/security-advisories": "dev-latest",
     "select2/select2": "^4.1.0-rc.0",
     "php": "^8.4",
     "ext-curl": "*",
@@ -119,8 +118,10 @@
     "php-mcp/server": ">=3.3.0"
   },
   "require-dev": {
-    "phpunit/phpunit": ">=9.6",
-    "phpstan/phpstan": ">=1.10",
+    "phpunit/phpunit": ">=13.0",
+    "phpstan/phpstan": ">=2.1",
+    "phpstan/phpstan-phpunit": ">=2.0",
+    "roave/security-advisories": "dev-latest",
     "css-crush/css-crush": ">=v4.1.3",
     "rector/rector": ">=2.3"
   },
@@ -139,14 +140,13 @@
       "Application\\Composer\\ComposerScripts::build",
       "ctx generate"
     ],
-    "analyze": [
-      "@composer dumpautoload",
-      "phpstan analyze --configuration=phpstan.neon"
-    ],
-    "analyze-write": [
-      "@composer dumpautoload",
-      "phpstan analyze --configuration=phpstan.neon --memory-limit 900M > phpstan.result.txt"
-    ],
-    "clear-phpstan-cache": "phpstan clear-result-cache"
+    "analyze": "php vendor/bin/phpstan analyse --configuration phpstan.neon --memory-limit=900M",
+    "analyze-save": "php vendor/bin/phpstan analyse --configuration phpstan.neon --memory-limit=900M > phpstan-result.txt || true",
+    "analyze-clear": "php vendor/bin/phpstan clear-result-cache",
+    "test": "php vendor/bin/phpunit",
+    "test-file": "php vendor/bin/phpunit --no-progress",
+    "test-suite": "php vendor/bin/phpunit --no-progress --testsuite",
+    "test-filter": "php vendor/bin/phpunit --no-progress --filter",
+    "test-group": "php vendor/bin/phpunit --no-progress --group"
   }
 }
