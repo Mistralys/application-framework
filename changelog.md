@@ -2,6 +2,9 @@
 
 ## v7.0.9 - Agent Docs
 - CTX: Added related modules for all known modules.
+- Composer: Added test and analysis scripts.
+- Dependencies: Updated AppUtils Core to [v2.5.0](https://github.com/Mistralys/application-utils-core/releases/tag/2.5.0).
+- Dependencies: Updated AppUtils to [v3.2.0](https://github.com/Mistralys/application-utils/releases/tag/3.2.0).
 
 ## v7.0.8 - Button Fix
 - UI: Buttons: Fixed `disable()` not having any effect without specifying a reason.
