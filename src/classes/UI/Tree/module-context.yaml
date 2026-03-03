@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-tree"
   label: "UI Tree"
   description: "Hierarchical tree widget composed of nestable nodes that support icons, URL or JavaScript link targets, active/selected states, and per-node action buttons."
+  keywords:
+    - Tree widget (hierarchical navigation component with nestable nodes supporting icons and action buttons)
   relatedModules:
     - ui
     - ui-admin-urls

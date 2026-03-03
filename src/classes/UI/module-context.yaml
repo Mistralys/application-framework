@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui"
   label: "User Interface"
   description: "Central rendering layer of the framework: the UI singleton, Bootstrap component abstractions, page composition, client-side resource management, and the PHP-based theming engine."
+  keywords:
+    - UI singleton (central access point for all framework rendering components)
   relatedModules:
     - event-handler
     - db-helper

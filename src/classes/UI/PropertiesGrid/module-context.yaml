@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-properties-grid"
   label: "UI Properties Grid"
   description: "Renders a key/value property table for detail views, supporting typed property variants, inline action buttons, and conditional row visibility."
+  keywords:
+    - Properties Grid (key/value table component for rendering record detail views)
   relatedModules:
     - ui
 

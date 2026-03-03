@@ -6,6 +6,8 @@ moduleMetaData:
   id: "connectors"
   label: "Connectors"
   description: "Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods."
+  keywords:
+    - HTTP connector (base class for building typed REST API clients with GET/POST/PUT/DELETE support)
 
 documents:
   - description: 'Connectors - Overview'

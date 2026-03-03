@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-client-resources"
   label: "UI Client Resources"
   description: "Manages client-side JS and CSS resource registration with load-key deduplication, ensuring each asset is injected into the page exactly once across both full-page loads and AJAX requests."
+  keywords:
+    - load key (deduplication token ensuring each JS/CSS asset is injected once per page)
   relatedModules:
     - ui
 

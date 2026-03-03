@@ -6,6 +6,9 @@ moduleMetaData:
   id: "ui-markup-editor"
   label: "UI Markup Editor"
   description: "Integrates WYSIWYG rich-text editors (CKEditor 5 and Redactor) into forms through a unified abstract API with configurable toolbar composition."
+  keywords:
+    - CKEditor 5 (WYSIWYG rich-text editor integrated through the Markup Editor abstraction)
+    - Redactor (alternative WYSIWYG rich-text editor available through the Markup Editor)
   relatedModules:
     - ui
     - ui-form

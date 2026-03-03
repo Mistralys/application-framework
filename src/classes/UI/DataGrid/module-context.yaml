@@ -6,6 +6,9 @@ moduleMetaData:
   id: "ui-datagrid"
   label: "UI DataGrid"
   description: "Renders tabular data with built-in column sorting, pagination, per-user column configuration, row selection, and bulk actions driven by a pluggable list-builder source."
+  keywords:
+    - DataGrid (tabular list component with column sorting, pagination, and bulk actions)
+    - list builder (pluggable data source implementation that populates a DataGrid)
   relatedModules:
     - ui
     - db-helper

@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-bootstrap"
   label: "UI Bootstrap Components"
   description: "PHP abstractions for Bootstrap v2 UI components — dropdowns, tabs, button groups, popovers, and the BigSelection widget — each exposing a fluent builder API."
+  keywords:
+    - BigSelection widget (scrollable multi-item selector component built on Bootstrap v2)
   relatedModules:
     - ui
 

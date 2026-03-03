@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-form"
   label: "UI Form"
   description: "Handles form creation, element composition, pluggable rendering, and server-side validation, built on HTML_QuickForm2 with framework-layer conventions for AJAX submit and typed rules."
+  keywords:
+    - HTML_QuickForm2 (underlying PHP form library wrapped and extended by the UI Form module)
   relatedModules:
     - ui
     - event-handler
