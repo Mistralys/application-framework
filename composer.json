@@ -123,7 +123,8 @@
     "phpstan/phpstan-phpunit": ">=2.0",
     "roave/security-advisories": "dev-latest",
     "css-crush/css-crush": ">=v4.1.3",
-    "rector/rector": ">=2.3"
+    "rector/rector": ">=2.3",
+    "symfony/yaml": "^8.0"
   },
   "config": {
     "allow-plugins": {
