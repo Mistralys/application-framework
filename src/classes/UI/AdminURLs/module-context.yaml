@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-admin-urls"
   label: "UI Admin URLs"
   description: "Type-safe fluent URL builder for constructing admin-screen navigation links using the framework's area/mode/submode/action routing scheme."
+  keywords:
+    - Admin URL (type-safe fluent builder for admin-screen navigation links using area/mode/submode routing)
   relatedModules:
     - ui
     - ui-tree

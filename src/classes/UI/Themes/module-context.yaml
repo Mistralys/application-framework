@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-themes"
   label: "UI Themes"
   description: "PHP-based template and theming engine where templates are PHP classes; framework templates can be transparently overridden by application-level themes without copying the entire theme."
+  keywords:
+    - theme override (mechanism for transparently replacing framework templates at the application level)
   relatedModules:
     - ui
     - ui-markup-editor

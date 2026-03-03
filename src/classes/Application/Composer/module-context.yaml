@@ -1,0 +1,97 @@
+## ---------------------------------------------------------------
+## APPLICATION COMPOSER — Build-Time Documentation Generators
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "composer"
+  label: "Application Composer"
+  description: "Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase. Includes a shared BuildMessages registry for build-time notices."
+  keywords:
+    - KeywordGlossaryGenerator (build-time tool that produces module-glossary.md from module keywords)
+    - ModulesOverviewGenerator (build-time tool that produces modules-overview.md from module-context.yaml files)
+  relatedModules:
+    - event-handler
+
+documents:
+  -
+    description: 'Application Composer - Overview'
+    outputPath: 'modules/composer/overview.md'
+    sources:
+      - type: file
+        description: "Application\\Composer Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'Application Composer - Core Architecture (Public API)'
+    outputPath: 'modules/composer/architecture-core.md'
+    sources:
+      - type: file
+        description: "BuildMessages, ComposerScripts, CSSClassesGenerator"
+        sourcePaths:
+          - ./
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Application Composer - ModulesOverview Subpackage'
+    outputPath: 'modules/composer/architecture-modules-overview.md'
+    sources:
+      - type: file
+        description: "ModulesOverview generator classes"
+        sourcePaths:
+          - ./ModulesOverview
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Application Composer - KeywordGlossary Subpackage'
+    outputPath: 'modules/composer/architecture-keyword-glossary.md'
+    sources:
+      - type: file
+        description: "KeywordGlossary generator classes and offline event"
+        sourcePaths:
+          - ./KeywordGlossary
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Application Composer - File Structure'
+    outputPath: 'modules/composer/file-structure.md'
+    overwrite: true
+    sources:
+      -
+        type: tree
+        description: 'Tree of PHP Class Files'
+        sourcePaths:
+          - ./
+        filePattern: '*'
+        renderFormat: ascii
+        enabled: true
+        showCharCount: true
+        maxDepth: 4

@@ -6,6 +6,9 @@ moduleMetaData:
   id: "event-handler"
   label: "Event Handling"
   description: "Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners."
+  keywords:
+    - Eventable (mixin trait that adds instance-level event emitter capabilities to any class)
+    - offline event listener (deferred JIT listener registered before its target class is instantiated)
   relatedModules:
     - ui
     - ui-form

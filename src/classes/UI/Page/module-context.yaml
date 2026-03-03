@@ -6,6 +6,8 @@ moduleMetaData:
   id: "ui-page"
   label: "UI Page"
   description: "Orchestrates full-page composition by aggregating the header, sidebar, footer, breadcrumb trail, and named navigations, delegating rendering to the active theme's frame template."
+  keywords:
+    - page frame (container template defining the overall admin page structure — header, sidebar, footer)
   relatedModules:
     - ui
     - ui-themes

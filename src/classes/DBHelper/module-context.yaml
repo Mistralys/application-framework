@@ -6,6 +6,13 @@ moduleMetaData:
   id: "db-helper"
   label: "DBHelper"
   description: "Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations."
+  keywords:
+    - Collection (ORM-like container of typed database records with CRUD, filtering, and events)
+    - Record (typed wrapper for a single database row with field accessors and lifecycle events)
+    - FilterCriteria (query filter builder defining SQL WHERE conditions for a collection)
+    - FilterSettings (persisted user-facing filter values for a collection's list view)
+    - DataTable (raw SQL result wrapper for manual query output)
+    - StatementBuilder (fluent SQL SELECT/INSERT/UPDATE/DELETE query builder)
   relatedModules:
     - event-handler
     - ui

@@ -5,6 +5,7 @@ declare(strict_types=1);
 return array (
   'events' => 
   array (
+    'DecorateGlossary' => 'Application\\Composer\\KeywordGlossary\\Events\\DecorateGlossaryEvent',
     'DisplayAppConfig' => 'Application\\Development\\Events\\DisplayAppConfigEvent',
     'PriorityTest' => 'TestDriver\\OfflineEvents\\PriorityTestEvent',
     'RegisterAppSettings' => 'Application\\AppSettings\\Events\\RegisterAppSettingsEvent',
