@@ -36,4 +36,4 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Application\AI\Server\FrameworkMCPServer;
 
 // Create and run the MCP server
-new FrameworkMCPServer(__DIR__, $argv ?? [])->run();
+new FrameworkMCPServer(__DIR__, array('src/classes'), $argv ?? [])->run();

@@ -38,12 +38,19 @@ class FrameworkMCPServer
     private Server $server;
 
     /**
-     * @param string $baseDir The base directory for discovery
+     * @var string[]
+     */
+    private array $sourceFolders;
+
+    /**
+     * @param string $baseDir The base directory for the server (used for discovery)
+     * @param string[] $sourceFolders The base directories for discovery
      * @param array<string> $argv Command line arguments
      */
-    public function __construct(string $baseDir, array $argv = [])
+    public function __construct(string $baseDir, array $sourceFolders, array $argv = [])
     {
         $this->baseDir = $baseDir;
+        $this->sourceFolders = $sourceFolders;
         $this->parseArguments($argv);
     }
 
@@ -92,7 +99,7 @@ class FrameworkMCPServer
     private function discoverTools(): void
     {
         $this->debugLog('Starting discovery in src/classes...');
-        $this->server->discover($this->baseDir, ['src/classes']);
+        $this->server->discover($this->baseDir, $this->sourceFolders);
         $toolCount = count($this->server->getRegistry()->getTools());
         $this->debugLog("Discovery complete. Found {$toolCount} tools");
     }
