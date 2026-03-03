@@ -56,6 +56,23 @@
 - `Changelog`: Changelog management classes.
 - `Collection`: Interfaces and base classes for the record collection system.
 - `Composer`: Composer dependency-loading integration classes.
+  - `ComposerScripts` — static methods bound to Composer scripts in `composer.json`. `build()` runs the full build sequence (caches, event indexing, admin screen indexing, API method index, CSS classes JS, context date, module documentation). `doUpdateModuleDocumentation()` is public and callable from application `ComposerScripts` subclasses to add documentation generation to an application's own build script — it does not call `init()` so no application bootstrap is required.
+  - `BuildMessages` — static registry that collects notices, warnings, and errors during a Composer build run and prints a highlighted summary at the end.
+  - `KeywordGlossary/` — classes for the keyword-glossary generator; includes value objects and an offline event system for custom sections:
+    - `KeywordGlossaryGenerator` — orchestrates keyword-glossary generation: parses YAML files, fires `DecorateGlossaryEvent` to collect `GlossarySection[]` from listeners, and passes them to `KeywordGlossaryRenderer` to write the output Markdown file. Requires a `symfony/yaml` dependency.
+    - `KeywordGlossaryRenderer` — renders the Markdown glossary document from keyword entries and any custom `GlossarySection[]` contributed by offline event listeners.
+    - `KeywordParser` — parses `"TERM (context)"` strings into structured entries.
+    - `KeywordEntry` — immutable value object for a single parsed keyword with its module associations.
+    - `GlossarySection` — immutable value object for a named glossary section with column headers and rows.
+    - `GlossarySectionEntry` — immutable value object for a single row in a `GlossarySection`.
+    - `Events/` — offline event system allowing application modules to contribute custom sections to the generated glossary:
+      - `DecorateGlossaryEvent` — fired after building the keyword table; listeners receive it and call `addSection()` to append `GlossarySection` instances.
+      - `BaseDecorateGlossaryListener` — abstract base class for glossary decoration listeners; extend and implement `handleGlossaryDecoration()`.
+  - `ModulesOverview/` — discovers `module-context.yaml` files, parses module metadata, and renders the Markdown modules-overview document (written to `docs/agents/project-manifest/modules-overview.md`):
+    - `ModulesOverviewGenerator` — orchestrates the full generation workflow: discovers files, parses metadata, renders and writes the output. Requires a `symfony/yaml` dependency.
+    - `ModuleContextFileFinder` — discovers `module-context.yaml` files by following `context.yaml` import chains.
+    - `ModuleInfo` — immutable value object for parsed module metadata (label, keywords, related modules, Composer package name).
+    - `ModulesOverviewRenderer` — renders the Markdown overview document from a list of `ModuleInfo` objects.
 - `ConfigSettings`: Configuration constant access and management classes.
 - `CORS`: Management classes for CORS headers.
 - `Countries`: Country collection classes.
