@@ -15,6 +15,7 @@ should follow these rules when implementing interfaces, traits, and classes.
 - [Framework Folder Structure](folder-structure.md)
 - [JSON Handling](json-handling.md)
 - [UI Localization](ui-localization.md)
+- [WHATSNEW XML Changelog Maintenance](whatsnew-editing.md)
 
 ## Individual Module Documentation
 
