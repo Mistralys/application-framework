@@ -1,5 +1,13 @@
 # Application Framework Changelog
 
+## v7.0.10 - Module Doc Generators
+- Docs: Added a generated modules overview.
+- Docs: Added a keyword glossary.
+- Composer: build now includes documentation generation.
+- Composer: Added a message collection system to summarize notices, warnings, and errors during build.
+- CTX: Now including all generated docs for agent discovery.
+- Dependencies: Added `symfony/yaml`.
+
 ## v7.0.9 - Agent Docs
 - CTX: Added related modules for all known modules.
 - Composer: Added test and analysis scripts.
