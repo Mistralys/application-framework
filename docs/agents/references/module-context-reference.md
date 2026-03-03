@@ -1,6 +1,6 @@
 # Module Context File Reference
 
-Reference guide for creating and maintaining `module-context.yaml` files.
+Reference guide for creating and maintaining `module-context.yaml` files in the Application Framework project.
 
 ---
 
@@ -18,11 +18,11 @@ Reference guide for creating and maintaining `module-context.yaml` files.
 Each `module-context.yaml` is placed **at the root of its module directory**, co-located with the source code it describes:
 
 ```
-assets/classes/Maileditor/Variables/module-context.yaml
-assets/classes/Maileditor/Mails/module-context.yaml
-assets/classes/Maileditor/Mails/Templates/module-context.yaml       # submodule
-assets/classes/Maileditor/Mails/Templates/ComGroups/module-context.yaml  # sub-submodule
-assets/classes/Hubspot/module-context.yaml
+src/classes/DBHelper/module-context.yaml
+src/classes/Connectors/module-context.yaml
+src/classes/UI/module-context.yaml
+src/classes/UI/DataGrid/module-context.yaml        # submodule
+src/classes/UI/Bootstrap/module-context.yaml       # submodule
 ```
 
 ### Discovery
@@ -31,7 +31,7 @@ The root `context.yaml` auto-discovers all module-context files via a glob impor
 
 ```yaml
 import:
-  - path: "assets/classes/**/module-context.yaml"
+  - path: "src/classes/**/module-context.yaml"
 ```
 
 This means new modules are picked up automatically — no registration step is needed.
@@ -40,11 +40,11 @@ This means new modules are picked up automatically — no registration step is n
 
 A module's subdirectory can have its own `module-context.yaml` when the submodule is large enough to warrant separate context documents. The parent-child relationship is implicit from the directory tree. Examples:
 
-- `Mails/` → parent module (`mailings`)
-  - `Mails/Templates/` → submodule (`layout-templates`)
-    - `Mails/Templates/ComGroups/` → sub-submodule (`com-groups`)
-  - `Mails/Links/` → submodule (`mailing-links`)
-  - `Mails/TextRenderer/` → submodule (`text-renderer`)
+- `UI/` → parent module (`ui`)
+  - `UI/DataGrid/` → submodule (`ui-datagrid`)
+  - `UI/Bootstrap/` → submodule (`ui-bootstrap`)
+  - `UI/Form/` → submodule (`ui-form`)
+  - `UI/Tree/` → submodule (`ui-tree`)
 
 ---
 
@@ -55,12 +55,12 @@ A `module-context.yaml` has two top-level sections:
 ```yaml
 # 1. Module metadata (custom, ignored by CTX schema)
 moduleMetaData:
-  id: "variables"
-  label: "Variable Management"
-  description: "Collects, caches, and annotates enrichment variables from the Pigeon API."
+  id: "db-helper"
+  label: "DBHelper"
+  description: "Provides database abstraction for manual SQL operations and an ORM-like record collection system."
   relatedModules:
-    - global-variables
-    - comtypes
+    - event-handler
+    - ui
 
 # 2. Document definitions (CTX schema)
 documents:
@@ -87,7 +87,7 @@ Custom metadata block. The CTX generator ignores unknown top-level keys, so this
 
 ### Conventions
 
-- **`id` format**: Lowercase, hyphen-separated. Examples: `variables`, `global-variables`, `layout-templates`, `com-groups`.
+- **`id` format**: Lowercase, hyphen-separated. Examples: `db-helper`, `event-handler`, `ui-datagrid`, `ui-admin-urls`.
 - **`description` length**: One sentence, ~10-25 words. Focus on the module's responsibility, not its implementation.
 - **`relatedModules`**: Only list modules with direct, significant relationships (data dependencies, shared domain concepts). Do not list every module that happens to import a class.
 
@@ -95,14 +95,14 @@ Custom metadata block. The CTX generator ignores unknown top-level keys, so this
 
 ```yaml
 moduleMetaData:
-  id: "comtypes"
-  label: "Communication Types"
-  description: "Frontend for managing communication configurations (Comtypes) in the Configuration Manager (CoMa) service."
+  id: "ui-datagrid"
+  label: "UI DataGrid"
+  description: "Renders tabular data with built-in column sorting, pagination, per-user column configuration, and bulk actions."
+  keywords:
+    - DataGrid (tabular list component with column sorting, pagination, and bulk actions)
   relatedModules:
-    - tenants
-    - variables
-    - global-variables
-    - mailings
+    - ui
+    - db-helper
 ```
 
 ---
@@ -123,20 +123,21 @@ Most modules should produce these document types (where applicable):
 | **API Methods** | `modules/{id}/architecture-api-methods.md` | Public API signatures from API method classes (`API/` folder). |
 | **File Structure** | `modules/{id}/file-structure.md` | Directory tree of the module's files. Useful for large modules. |
 
-Additional documents can be added when a module has distinct subdomains worth separating (e.g., `architecture-countries.md`, `architecture-variables.md` for the Comtypes module).
+Additional documents can be added when a module has distinct subdomains worth separating (e.g., `architecture-filters.md`, `architecture-events.md` for the DBHelper module).
 
 ### Document Entry Fields
 
 ```yaml
-- description: 'Variables Module - Core Architecture'
-  outputPath: 'modules/variables/architecture-core.md'
+- description: 'DBHelper - Core Architecture'
+  outputPath: 'modules/db-helper/architecture-core.md'
   overwrite: true                    # optional, default: true
   sources:
     - type: file
       description: "Interfaces and abstract classes"
       sourcePaths:
-        - ./Collection
-        - ./Events
+        - ./BaseCollection
+        - ./BaseRecord
+        - ./Interfaces
       excludePatterns:               # optional
         - 'Admin/'
       filePattern: "*.php"
@@ -239,11 +240,11 @@ modules/{parent-id}/{submodule-slug}/architecture-core.md
 
 | Module (id) | Parent | Output Folder |
 |---|---|---|
-| `mailings` | — | `modules/mailings/` |
-| `layout-templates` | mailings | `modules/mailings/templates/` |
-| `com-groups` | layout-templates | `modules/com-groups/` |
-| `mailing-links` | mailings | `modules/mailings/links/` |
-| `text-renderer` | mailings | `modules/mailings/text-renderer/` |
+| `ui` | — | `modules/ui/` |
+| `ui-datagrid` | ui | `modules/ui/datagrid/` |
+| `ui-bootstrap` | ui | `modules/ui/bootstrap/` |
+| `ui-form` | ui | `modules/ui/form/` |
+| `ui-tree` | ui | `modules/ui/tree/` |
 
 Note: The output folder slug does not have to match the `id` exactly. Use judgement for readability.
 
@@ -255,21 +256,24 @@ A typical module with overview, core architecture, and UI architecture:
 
 ```yaml
 ## ------------------------------------------------------------
-## TENANTS MODULE
+## DBHELPER MODULE
 ## ------------------------------------------------------------
 
 moduleMetaData:
-  id: "tenants"
-  label: "Tenants Management"
-  description: "Multi-tenant support allowing different IONOS brands to have isolated environments within the same system."
+  id: "db-helper"
+  label: "DBHelper"
+  description: "Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations."
+  keywords:
+    - Collection (ORM-like container of typed database records with CRUD, filtering, and events)
+    - Record (typed wrapper for a single database row with field accessors and lifecycle events)
   relatedModules:
-    - comtypes
-    - com-groups
+    - event-handler
+    - ui
 
 documents:
 
-- description: 'Tenants Module - Overview'
-  outputPath: 'modules/tenants/overview.md'
+- description: 'DBHelper - Overview'
+  outputPath: 'modules/db-helper/overview.md'
   sources:
     - type: file
       description: "Documentation"
@@ -277,16 +281,16 @@ documents:
         - README.md
       filePattern: "README.md"
 
-- description: 'Tenants Module - Core Architecture'
-  outputPath: 'modules/tenants/architecture-core.md'
+- description: 'DBHelper - Core Architecture'
+  outputPath: 'modules/db-helper/architecture-core.md'
   sources:
     - type: file
       description: "Public Interfaces and APIs"
       sourcePaths:
-        - ./Collection
-        - ./Properties
-        - ./User
-        - ./Utilities
+        - ./BaseCollection
+        - ./BaseRecord
+        - ./Interfaces
+        - ./Traits
       filePattern: "*.php"
       modifiers:
         - name: php-content-filter
@@ -298,8 +302,8 @@ documents:
             keep_method_bodies: false
             keep_doc_comments: true
 
-- description: 'Tenants Module - UI Architecture'
-  outputPath: 'modules/tenants/architecture-ui.md'
+- description: 'DBHelper - Admin UI Architecture'
+  outputPath: 'modules/db-helper/architecture-ui.md'
   sources:
     - type: file
       description: "Public Interfaces and APIs"
@@ -321,7 +325,7 @@ documents:
 
 ## Existing Modules Registry
 
-Current modules with `module-context.yaml` files in the framework:
+Current modules with `module-context.yaml` files in the Framework:
 
 | Module | Location |
 |---|---|
@@ -329,17 +333,6 @@ Current modules with `module-context.yaml` files in the framework:
 | DBHelper | `src/classes/DBHelper/` |
 | Event Handler | `src/classes/Application/EventHandler/` |
 | Application Sets | `src/classes/Application/AppSets/` |
-| UI | `src/classes/UI/` |
-| UI - Admin URLs | `src/classes/UI/AdminURLs/` |
-| UI - Bootstrap Components | `src/classes/UI/Bootstrap/` |
-| UI - Client Resources | `src/classes/UI/ClientResource/` |
-| UI - DataGrid | `src/classes/UI/DataGrid/` |
-| UI - Form | `src/classes/UI/Form/` |
-| UI - Markup Editor | `src/classes/UI/MarkupEditor/` |
-| UI - Page | `src/classes/UI/Page/` |
-| UI - Properties Grid | `src/classes/UI/PropertiesGrid/` |
-| UI - Themes | `src/classes/UI/Themes/` |
-| UI - Tree | `src/classes/UI/Tree/` |
 
 ---
 
