@@ -13,9 +13,12 @@ use Application\API\APIManager;
 use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
 use Application\CacheControl\CacheManager;
+use Application\Composer\KeywordGlossary\KeywordGlossaryGenerator;
+use Application\Composer\ModulesOverview\ModulesOverviewGenerator;
 use Application\EventHandler\OfflineEvents\Index\EventIndexer;
 use Application\Exception\ApplicationException;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Microtime;
 
 /**
@@ -40,6 +43,27 @@ class ComposerScripts
         self::apiMethodIndex();
         self::generateCSSClassesJS();
         self::updateContextGenerateDate();
+        self::updateModuleDocumentation();
+    }
+
+    private static function updateModuleDocumentation() : void
+    {
+        self::doUpdateModuleDocumentation();
+    }
+
+    public static function doUpdateModuleDocumentation() : void
+    {
+        echo '- Updating module documentation...'.PHP_EOL;
+
+        $rootFolder = FolderInfo::factory(__DIR__.'/../../../../');
+
+        (new ModulesOverviewGenerator($rootFolder))->generate();
+
+        $glossaryOutputPath = rtrim($rootFolder->getPath(), '/').'/docs/agents/project-manifest/module-glossary.md';
+
+        (new KeywordGlossaryGenerator($rootFolder))->generate($glossaryOutputPath);
+
+        echo '  DONE.'.PHP_EOL;
     }
 
     private static function updateContextGenerateDate() : void

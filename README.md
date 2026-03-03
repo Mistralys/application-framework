@@ -38,6 +38,7 @@ system with record state tracking (draft, published, etc.).
 - Disposables system for automated garbage collection
 - SSO via CAS
 - Interface Translations: English, German, French
+- Build-time module documentation generators (Modules Overview, Keyword Glossary)
 - Own ecology of supporting libraries
 
 ## Requirements
@@ -80,6 +81,22 @@ You will find it in the `tests/application` folder.
 These are custom Composer commands that are available 
 when developing locally.
 
+### Build
+
+The build step generates module documentation artefacts from `module-context.yaml`
+files discovered throughout the codebase, updates the CTX `generated-at.txt`
+timestamp, regenerates the API method index, and rebuilds offline event listeners.
+
+```bash
+composer build
+```
+
+For the full development build (includes module glossary and keyword index):
+
+```bash
+composer build-dev
+```
+
 ### Clear caches
 
 Clears all caches used by the framework, including the dynamic
@@ -88,6 +105,33 @@ class cache.
 ```bash
 composer clear-caches
 ```
+
+## Build-Time Documentation Generators
+
+The `Application\Composer` namespace provides build-time utilities that generate
+two Markdown documentation artefacts automatically on every `composer build`:
+
+- **Modules Overview** (`docs/agents/project-manifest/modules-overview.md`) — a
+  Markdown table of all modules, their source paths, context doc locations, and
+  inter-module dependencies. Discovered from `module-context.yaml` files.
+- **Keyword Glossary** (`docs/agents/project-manifest/module-glossary.md`) — a
+  Markdown glossary mapping opaque domain terms to the modules that define them.
+  Application modules can contribute custom sections via the `DecorateGlossaryEvent`
+  offline event.
+
+To register a module for discovery, add a `module-context.yaml` next to its classes:
+
+```yaml
+moduleMetaData:
+  id: "my-module"
+  label: "My Module"
+  description: "What this module does."
+  keywords:
+    - "Widget (the core UI component)"
+```
+
+See [`src/classes/Application/Composer/README.md`](src/classes/Application/Composer/README.md)
+for full API documentation and the offline-event integration guide.
 
 ## CTX Integration
 
