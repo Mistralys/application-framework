@@ -31,9 +31,12 @@ use AppUtils\FileHelper\FolderInfo;
  * ## Usage
  *
  * ```php
+ * // Works at any installation depth — no RewriteBase configuration needed.
  * $generator = new HtaccessGenerator('/path/to/application/api');
- * $generator->setRewriteBase('/myapp/api/');
  * $filePath = $generator->generate(); // returns path to generated .htaccess
+ *
+ * // Override only when a specific RewriteBase is explicitly required.
+ * $generator->setRewriteBase('/myapp/api/');
  * ```
  *
  * @package API
@@ -41,7 +44,7 @@ use AppUtils\FileHelper\FolderInfo;
  */
 class HtaccessGenerator
 {
-    public const string DEFAULT_REWRITE_BASE = '/api/';
+    public const string DEFAULT_REWRITE_BASE = '';
     public const string HTACCESS_FILENAME = '.htaccess';
 
     private string $outputDirectory;
@@ -60,9 +63,11 @@ class HtaccessGenerator
     /**
      * Sets the `RewriteBase` directive used in the generated `.htaccess`.
      *
-     * The value should include the full path from the server root to the api
-     * directory, e.g. `/myapp/api/` if the application is installed at `/myapp/`.
-     * Defaults to `/api/`.
+     * When set, the `RewriteBase` directive is included in the generated file.
+     * When left empty (the default), the directive is omitted and Apache resolves
+     * the relative substitution path from the directory containing the `.htaccess`,
+     * which works correctly at any installation depth without environment-specific
+     * configuration.
      *
      * @param string $rewriteBase The RewriteBase path, e.g. `/api/` or `/myapp/api/`.
      * @return $this
@@ -109,7 +114,13 @@ class HtaccessGenerator
             '',
             '<IfModule mod_rewrite.c>',
             '    RewriteEngine On',
-            '    RewriteBase '.$this->rewriteBase,
+        );
+
+        if($this->rewriteBase !== '') {
+            $lines[] = '    RewriteBase '.$this->rewriteBase;
+        }
+
+        $lines = array_merge($lines, array(
             '',
             '    # Skip existing files (index.php, documentation.php, openapi.json)',
             '    RewriteCond %{REQUEST_FILENAME} -f',
@@ -118,7 +129,7 @@ class HtaccessGenerator
             '    # Rewrite /api/{MethodName} → /api/index.php?method={MethodName}',
             '    RewriteRule ^([A-Za-z][A-Za-z0-9]*)$ index.php?method=$1 [QSA,L]',
             '</IfModule>',
-        );
+        ));
 
         return implode(PHP_EOL, $lines).PHP_EOL;
     }

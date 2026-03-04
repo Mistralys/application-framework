@@ -11,7 +11,6 @@ namespace Application\Themes\DefaultTemplate\API;
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use Application\API\Groups\APIGroupInterface;
-use Application\API\OpenAPI\GetOpenAPISpec;
 use AppUtils\OutputBuffering;
 use UI;
 use UI_DataGrid;
@@ -64,17 +63,6 @@ class APIMethodsOverviewTmpl extends UI_Page_Template_Custom
                 pts('Click on a method name to view detailed documentation.');
             ?>
             </p>
-            <?php
-            $specURL = GetOpenAPISpec::getSpecURL();
-            if(!empty($specURL)) {
-                echo '<p>';
-                echo UI::button(t('OpenAPI Specification (JSON)'))
-                    ->link($specURL)
-                    ->setTooltip(t('View the generated OpenAPI 3.1 specification for all API methods.'))
-                    ->setIcon(UI::icon()->download());
-                echo '</p>';
-            }
-            ?>
         </div>
         <?php
 

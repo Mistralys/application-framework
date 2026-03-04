@@ -45,7 +45,7 @@ use Throwable;
 class OpenAPIGenerator
 {
     public const string OPENAPI_VERSION = '3.1.0';
-    public const string DEFAULT_OUTPUT_RELATIVE = 'storage/api/openapi.json';
+    public const string DEFAULT_OUTPUT_RELATIVE = 'api/openapi.json';
 
     private APIMethodCollection $methodCollection;
     private string $appName;
@@ -68,7 +68,7 @@ class OpenAPIGenerator
      * @param string $description                    Optional `info.description`.
      * @param string $serverUrl                      Server URL for the `servers` entry. Default empty.
      * @param string $outputPath                     Absolute path the JSON file is written to.
-     *                                               Default: `APP_INSTALL_FOLDER/storage/api/openapi.json`.
+     *                                               Default: `APP_INSTALL_FOLDER/api/openapi.json`.
      */
     public function __construct(
         APIMethodCollection $methodCollection,

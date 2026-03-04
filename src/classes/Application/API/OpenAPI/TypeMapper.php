@@ -37,7 +37,9 @@ class TypeMapper
      * Maps a framework parameter type label to an OpenAPI 3.1 type/format pair.
      *
      * Returns an associative array with at minimum a `type` key. Where applicable,
-     * a `format` key is also present. For the `ID List` type, an `items` key
+     * a standard `format` key is also present. For the `MD5` type, the vendor extension
+     * key `x-format` is used instead of `format` (since `md5` is not a valid JSON Schema
+     * 2020-12 format value). For the `ID List` type, an `items` key
      * is included describing the array element type.
      *
      * Unknown type labels fall back to `{ "type": "string" }`.
@@ -88,7 +90,7 @@ class TypeMapper
             case self::TYPE_LABEL_MD5:
                 return array(
                     'type' => 'string',
-                    'format' => 'md5',
+                    'x-format' => 'md5',
                 );
 
             case self::TYPE_LABEL_STRING:

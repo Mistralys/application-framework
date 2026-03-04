@@ -199,7 +199,7 @@ class APIManager
      * {@see OpenAPIGenerator::generate()}.
      *
      * @param string $outputPath Optional absolute path for the generated JSON file.
-     *                           Defaults to `APP_INSTALL_FOLDER/storage/api/openapi.json`
+     *                           Defaults to `APP_INSTALL_FOLDER/api/openapi.json`
      *                           when the constant is defined.
      * @return string The absolute path to the generated file.
      */

@@ -93,7 +93,8 @@ final class TypeMapperTest extends TestCase
         $result = TypeMapper::mapType(TypeMapper::TYPE_LABEL_MD5);
 
         $this->assertSame('string', $result['type']);
-        $this->assertSame('md5', $result['format']);
+        $this->assertArrayNotHasKey('format', $result, 'MD5 type must not use the standard format key');
+        $this->assertSame('md5', $result['x-format']);
     }
 
     // -------------------------------------------------------------------------

@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API;
 
 use Application\Admin\Index\AdminScreenIndex;
+use Application\API\OpenAPI\GetOpenAPISpec;
 use Application\Countries\CountriesCollection;
 use Application\Locales;
 use Application\SourceFolders\Sources\APISourceFolders;
@@ -35,6 +36,7 @@ class APIFoldersManager
             ->addFolder(Locales::getAPIMethodsFolder())
             ->addFolder(CountriesCollection::getAPIMethodsFolder())
             ->addFolder(AdminScreenIndex::getAPIMethodsFolder())
-            ->addFolder(DBHelper::getAPIMethodsFolder());
+            ->addFolder(DBHelper::getAPIMethodsFolder())
+            ->addFolder(GetOpenAPISpec::getAPIMethodsFolder());
     }
 }

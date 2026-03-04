@@ -20,6 +20,7 @@ use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use Application\API\Utilities\KeyDescription;
 use AppUtils\ArrayDataCollection;
+use AppUtils\FileHelper\FolderInfo;
 
 /**
  * Framework-built-in API method that returns the pre-generated OpenAPI 3.1 specification
@@ -53,6 +54,11 @@ class GetOpenAPISpec extends BaseAPIMethod implements RequestRequestInterface, J
     use JSONResponseTrait;
 
     public const string METHOD_NAME = 'GetOpenAPISpec';
+
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__);
+    }
 
     public const int ERROR_SPEC_NOT_GENERATED = 1;
 
