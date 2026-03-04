@@ -10,6 +10,8 @@ namespace Application\API;
 
 use Application\API\Collection\APIMethodCollection;
 use Application\API\Collection\APIMethodIndex;
+use Application\API\OpenAPI\HtaccessGenerator;
+use Application\API\OpenAPI\OpenAPIGenerator;
 use Application_Driver;
 use Application_Request;
 use AppUtils\ClassHelper;
@@ -187,5 +189,50 @@ class APIManager
         }
 
         return $text;
+    }
+
+    /**
+     * Generates the OpenAPI 3.1 specification JSON file for all registered API methods.
+     *
+     * Instantiates {@see OpenAPIGenerator} with the current method collection, the
+     * application name and version from the running driver, and delegates to
+     * {@see OpenAPIGenerator::generate()}.
+     *
+     * @param string $outputPath Optional absolute path for the generated JSON file.
+     *                           Defaults to `APP_INSTALL_FOLDER/storage/api/openapi.json`
+     *                           when the constant is defined.
+     * @return string The absolute path to the generated file.
+     */
+    public function generateOpenAPISpec(string $outputPath = '') : string
+    {
+        $generator = new OpenAPIGenerator(
+            $this->getMethodCollection(),
+            $this->driver->getAppName(),
+            $this->driver->getVersion(),
+            '',
+            '',
+            $outputPath
+        );
+
+        return $generator->generate();
+    }
+
+    /**
+     * Generates the API `.htaccess` file that enables RESTful URL rewriting.
+     *
+     * @param string $outputDirectory Optional absolute path to the directory where the
+     *                                `.htaccess` file will be written. Defaults to
+     *                                `APP_INSTALL_FOLDER/api` when the constant is defined.
+     * @return string The absolute path to the generated `.htaccess` file.
+     */
+    public function generateHtaccess(string $outputDirectory = '') : string
+    {
+        if($outputDirectory === '' && defined('APP_INSTALL_FOLDER')) {
+            $outputDirectory = APP_INSTALL_FOLDER.'/api';
+        }
+
+        $generator = new HtaccessGenerator($outputDirectory);
+
+        return $generator->generate();
     }
 }

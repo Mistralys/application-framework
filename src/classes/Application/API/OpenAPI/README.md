@@ -1,0 +1,975 @@
+# Submodule: API / OpenAPI
+
+## Purpose
+
+Provides end-to-end support for generating [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0)
+specification documents from the framework's API system and serving them over HTTP. The submodule
+covers the complete pipeline: primitive type mapping and component schemas (`TypeMapper`,
+`OpenAPISchema`), parameter and response conversion (`ParameterConverter`,
+`ResponseConverter`, `MethodConverter`), RESTful URL rewriting
+(`HtaccessGenerator`), full spec assembly (`OpenAPIGenerator`), HTTP serving of the
+pre-generated spec (`GetOpenAPISpec`), and convenient application-level entry points via
+`APIManager`. The `composer build` pipeline calls all generation steps automatically.
+
+## Classes
+
+| Class | Role |
+|---|---|
+| `OpenAPIGenerator` | Main orchestrator: iterates all API methods, assembles the complete OpenAPI 3.1 document, and writes it as a JSON file. |
+| `TypeMapper` | Maps framework parameter type labels to OpenAPI 3.1 type/format pairs. |
+| `OpenAPISchema` | Provides reusable `components/schemas` definitions for the standard API response envelopes. |
+| `HtaccessGenerator` | Generates an Apache `.htaccess` that rewrites clean RESTful paths to the existing `?method=` dispatcher. |
+| `ParameterConverter` | Converts framework `APIParameterInterface` instances into OpenAPI 3.1 parameter objects or request body schema properties. |
+| `ResponseConverter` | Converts an API method's response metadata into OpenAPI 3.1 response objects (200, 400, 500). |
+| `MethodConverter` | Converts a single `APIMethodInterface` into a complete OpenAPI 3.1 path item entry (`/api/{MethodName}` + `post` operation). |
+| `SchemaInferrer` | Infers a JSON Schema from a PHP example response array, with optional merging of `KeyDescription` annotations. |
+| `GetOpenAPISpec` | Framework built-in API method that serves the pre-generated `openapi.json` as raw JSON over HTTP (`/api/GetOpenAPISpec`). |
+
+---
+
+## TypeMapper
+
+`Application\API\OpenAPI\TypeMapper`
+
+Maps parameter type labels (as returned by parameter classes in `Application\API\Parameters`)
+to their corresponding OpenAPI 3.1 `type`/`format` pair. The mapping covers all 13 framework
+parameter types. Unknown labels fall back to `{ "type": "string" }`.
+
+### Supported type labels
+
+All labels are exposed as class constants (`TypeMapper::TYPE_LABEL_*`).
+
+| Constant | Label | OpenAPI type | OpenAPI format |
+|---|---|---|---|
+| `TYPE_LABEL_STRING` | `String` | `string` | — |
+| `TYPE_LABEL_INTEGER` | `Integer` | `integer` | `int64` |
+| `TYPE_LABEL_BOOLEAN` | `Boolean` | `boolean` | — |
+| `TYPE_LABEL_ID_LIST` | `ID List` | `array` (items: `integer`) | — |
+| `TYPE_LABEL_JSON` | `JSON` | `object` | — |
+| `TYPE_LABEL_DATE` | `Date` | `string` | `date` |
+| `TYPE_LABEL_EMAIL` | `Email` | `string` | `email` |
+| `TYPE_LABEL_MD5` | `MD5` | `string` | `md5`* |
+| `TYPE_LABEL_ALIAS` | `Alias` | `string` | — |
+| `TYPE_LABEL_ALPHABETICAL` | `Alphabetical` | `string` | — |
+| `TYPE_LABEL_ALPHANUMERIC` | `Alphanumeric` | `string` | — |
+| `TYPE_LABEL_LABEL` | `Label` | `string` | — |
+| `TYPE_LABEL_NAME_OR_TITLE` | `Name or Title` | `string` | — |
+
+\* `md5` is a vendor-defined format — not a registered JSON Schema 2020-12 format.
+   Strict validators may warn. Consider migrating to `x-format: md5` in a future pass.
+
+### Usage
+
+```php
+use Application\API\OpenAPI\TypeMapper;
+
+$schema = TypeMapper::mapType(TypeMapper::TYPE_LABEL_INTEGER);
+// => ['type' => 'integer', 'format' => 'int64']
+
+$schema = TypeMapper::mapType(TypeMapper::TYPE_LABEL_ID_LIST);
+// => ['type' => 'array', 'items' => ['type' => 'integer']]
+
+$schema = TypeMapper::mapType('UnknownLabel');
+// => ['type' => 'string']
+```
+
+> **NOTE:** The `CommonTypes` classes (`AliasParameter`, `AlphabeticalParameter`, etc.)
+> all extend `StringParameter` and do not override `getTypeLabel()`, so they all return
+> the `String` label at runtime. `TypeMapper` maps these to the plain `string` type.
+> Consider adding explicit `getTypeLabel()` overrides to each `CommonType` class if
+> distinct labels are needed in the spec.
+
+---
+
+## OpenAPISchema
+
+`Application\API\OpenAPI\OpenAPISchema`
+
+Defines the shared `components/schemas` block for the three response envelope
+objects that every framework API method can return. The schema fields mirror
+the serialization performed by `Application\API\Response\JSONInfoSerializer`.
+
+### Schemas defined
+
+| Constant | Schema name | Description |
+|---|---|---|
+| `SCHEMA_API_ENVELOPE` | `APIEnvelope` | Standard success response: `state`, `data`, `api`. |
+| `SCHEMA_API_ERROR_ENVELOPE` | `APIErrorEnvelope` | Standard error response: `state`, `code`, `message`, `data`, `api`. |
+| `SCHEMA_API_INFO` | `APIInfo` | The `api` sub-object included in every JSON response. |
+
+### Security schemes
+
+| Constant | Scheme name | Type | Description |
+|---|---|---|---|
+| `SECURITY_SCHEME_API_KEY` | `apiKey` | HTTP Bearer | API key passed as a Bearer token in the `Authorization` header. Used for methods implementing `APIKeyMethodInterface`. |
+
+#### `getSecuritySchemes(): array`
+
+Returns the `components/securitySchemes` definitions for API authentication.
+The framework uses Bearer-token API keys passed in the `Authorization` header.
+
+```php
+use Application\API\OpenAPI\OpenAPISchema;
+
+$schemes = (new OpenAPISchema())->getSecuritySchemes();
+// => ['apiKey' => ['type' => 'http', 'scheme' => 'bearer', 'description' => '...']]
+```
+
+The returned array is keyed by scheme name (`SECURITY_SCHEME_API_KEY = 'apiKey'`) and
+embeds directly into `components.securitySchemes` in the OpenAPI document.
+
+### Component schema methods
+
+#### `getComponentSchemas(): array`
+
+```php
+use Application\API\OpenAPI\OpenAPISchema;
+
+$schemas = (new OpenAPISchema())->getComponentSchemas();
+// Returns a valid OpenAPI 3.1 components/schemas array.
+// Merge into your spec: $spec['components']['schemas'] = array_merge($existing, $schemas);
+```
+
+The returned array is keyed by schema name and ready to embed directly into
+the `components.schemas` section of an OpenAPI document.
+
+### Known limitations (future work)
+
+- `APIInfo.requestTime` uses `nullable: true` (OpenAPI 3.0 syntax). The strict
+  OpenAPI 3.1 form is `type: ['string', 'null']`. Update this — and the corresponding
+  test assertion — in a future OpenAPI 3.1 strictness cleanup pass.
+- `APIInfo` has no `required` array, making all 8 properties implicitly optional.
+  Based on `JSONInfoSerializer::toArray()`, at minimum `methodName`, `selectedVersion`,
+  `availableVersions`, `requestMime`, and `responseMime` are always present. Adding
+  a `required` array would improve client code-generation accuracy.
+- `getSecuritySchemes()` has no instance state dependency and could be declared `static`,
+  consistent with other pure-value methods. Currently non-static for symmetry with `getComponentSchemas()`.
+
+---
+
+## HtaccessGenerator
+
+`Application\API\OpenAPI\HtaccessGenerator`
+
+Generates an Apache `.htaccess` file in the application's `/api/` directory that
+enables RESTful URL rewriting. Clean paths like `/api/GetComtypes` are rewritten
+to `/api/index.php?method=GetComtypes`, making the OpenAPI spec paths callable
+without modifying the existing dispatcher.
+
+The legacy `?method=` query parameter dispatch is unaffected — `index.php` is
+still served directly for those requests.
+
+### Generated `.htaccess` structure
+
+```apacheconf
+# Auto-generated by OpenAPIGenerator — do not edit manually.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+
+    # Skip existing files (index.php, documentation.php, openapi.json)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Rewrite /api/{MethodName} → /api/index.php?method={MethodName}
+    RewriteRule ^([A-Za-z][A-Za-z0-9]*)$ index.php?method=$1 [QSA,L]
+</IfModule>
+```
+
+### Public API
+
+| Method | Returns | Description |
+|---|---|---|
+| `setRewriteBase(string $rewriteBase): self` | `$this` | Sets the `RewriteBase` directive (default: `/api/`). Fluent. |
+| `getRewriteBase(): string` | `string` | Returns the configured RewriteBase value. |
+| `getContent(): string` | `string` | Returns the full `.htaccess` content as a string without writing to disk. Useful for testing. |
+| `getFilePath(): string` | `string` | Returns the absolute path to the `.htaccess` file that would be generated. |
+| `generate(): string` | `string` | Writes the `.htaccess` file and returns its absolute path. |
+
+### Usage
+
+```php
+use Application\API\OpenAPI\HtaccessGenerator;
+
+$generator = new HtaccessGenerator('/path/to/application/api');
+$generator->setRewriteBase('/myapp/api/');
+
+// Preview content without writing:
+$content = $generator->getContent();
+
+// Write file and get its path:
+$filePath = $generator->generate();
+```
+
+- **Default rewrite base:** `/api/`
+- **Output file:** `.htaccess` in the supplied output directory.
+
+### Known limitations (future work)
+
+- `getContent()` uses `PHP_EOL` for line endings. On Windows this produces CRLF;
+  `.htaccess` files should use Unix LF for cross-platform Apache compatibility.
+  Hardcoding `"\n"` instead of `PHP_EOL` would fix this.
+- No validation on `$rewriteBase` — an empty string would produce `RewriteBase `
+  (trailing space) which Apache may reject.
+- The rewrite regex `^([A-Za-z][A-Za-z0-9]*)$` matches both PascalCase and
+  camelCase method names. If only PascalCase method names are used, tighten to
+  `^([A-Z][A-Za-z0-9]*)$` to prevent ambiguous matches.
+
+---
+
+## ParameterConverter
+
+`Application\API\OpenAPI\ParameterConverter`
+
+Converts `APIParameterInterface` instances from the framework's API parameter system into their
+OpenAPI 3.1 representations — either parameter objects (for query/header parameters) or request
+body schema properties (for JSON request methods).
+
+The converter is method-aware: the routing of each parameter to the correct OpenAPI location
+(query, header, or request body) depends on the method the converter is initialised with.
+
+### Parameter location rules
+
+| Location | Condition |
+|---|---|
+| `in: "header"` | Parameter implements `APIHeaderParameterInterface` |
+| `in: "query"` | Non-header parameter on a non-JSON request method |
+| Request body schema property | Non-header parameter on a method implementing `JSONRequestInterface` |
+
+### Reserved parameters
+
+The global `method` and `apiVersion` parameters are documented at the path level by
+`MethodConverter` and must not appear in per-method parameter lists:
+
+- `convertParameter()` returns `null` for reserved parameters.
+- `convertParameters()` silently skips them.
+
+### Public API
+
+| Method | Returns | Description |
+|---|---|---|
+| `convertParameter(APIParameterInterface $param)` | `array\|null` | Converts a single parameter to an OpenAPI parameter object or schema property. Returns `null` for reserved parameters. |
+| `convertParameters(APIParamManager $manager)` | `array` | Batch-converts all parameters from a param manager, split into query/header and JSON-body buckets. |
+
+#### `convertParameters()` return shape
+
+```php
+[
+    'parameters'             => [...],  // OpenAPI parameter objects (query + header)
+    'requestBodyProperties'  => [...],  // JSON Schema property definitions (JSON body methods)
+    'requiredBodyProperties' => [...],  // Names of required body properties
+]
+```
+
+### Enum / selectable values
+
+If a parameter implements `SelectableValueParamInterface`, its allowed values are collected
+and included as an OpenAPI `enum` list in the parameter's type schema.
+
+### Default values
+
+If a parameter has a default value (`getDefaultValue()` returns non-`null`), it is included
+as a `default` key in the type schema.
+
+### Usage
+
+```php
+use Application\API\OpenAPI\ParameterConverter;
+
+$converter = new ParameterConverter($apiMethod);
+
+// Convert a single parameter:
+$paramObject = $converter->convertParameter($param);
+// For query param:   ['name' => '...', 'in' => 'query', 'required' => true, 'schema' => [...]]
+// For header param:  ['name' => '...', 'in' => 'header', 'required' => true, 'schema' => [...]]
+// For JSON body:     ['type' => '...'] — a raw JSON Schema property definition
+// Reserved param:    null
+
+// Batch-convert all method parameters:
+$result = $converter->convertParameters($apiMethod->getParamManager());
+// $result['parameters']             — query/header parameter objects
+// $result['requestBodyProperties']  — request body schema properties (keyed by param name)
+// $result['requiredBodyProperties'] — required property names for the requestBody 'required' array
+```
+
+### Known limitations (future work)
+
+- If `getSelectableValues()` returns an empty array, `enum` is set to `[]` in the schema,
+  which is invalid per OpenAPI 3.1. A guard before assignment (`if ($enum !== [])`) would
+  be spec-safe.
+- The class-level docblock contains a misleading `{@see RequestRequestInterface}` reference;
+  the `query` fallback applies to all non-header, non-JSON-body parameters regardless.
+  To be corrected in a follow-up pass.
+
+---
+
+## ResponseConverter
+
+`Application\API\OpenAPI\ResponseConverter`
+
+Converts an API method's response metadata into OpenAPI 3.1 response objects for all standard
+HTTP status codes (200, 400, 500). The class is stateless — construct it once and reuse it
+across multiple methods.
+
+### Response structure
+
+| Status | Schema reference | Condition |
+|---|---|---|
+| `200` | `$ref: APIEnvelope` | All methods |
+| `200` + example | `$ref: APIEnvelope` + `example` | Method implements `JSONResponseInterface` and `getExampleJSONResponse()` returns non-empty data |
+| `200` + key descriptions | `allOf[$ref: APIEnvelope]` + `properties.data` | Method implements `JSONResponseInterface` and provides `getReponseKeyDescriptions()` |
+| `400` | `$ref: APIErrorEnvelope` | Always present |
+| `500` | `$ref: APIErrorEnvelope` | Always present |
+
+### Example and key descriptions
+
+For methods implementing `JSONResponseInterface`:
+
+- **Example responses** — if `getExampleJSONResponse()` returns non-empty data it is embedded
+  as an `example` value in the content entry. If the method throws (e.g. because it requires
+  database state), the exception is caught and the example is silently omitted.
+- **Key descriptions** — if `getReponseKeyDescriptions()` returns `KeyDescription` objects,
+  the success response schema is extended using `allOf` to annotate `data.*` property descriptions.
+  Root-level envelope keys (`state`, `code`, `message`, `api`) are excluded; only paths matching
+  `data.<propertyName>` are included.
+
+### Response MIME type
+
+The 200 response content key uses the method's `getResponseMime()` value, matching whatever the
+method actually returns. Error responses (400, 500) always use `application/json` — error
+envelopes are always JSON regardless of the method MIME type.
+
+### Public API
+
+| Method | Returns | Description |
+|---|---|---|
+| `convertResponses(APIMethodInterface $method)` | `array` | Returns a map of HTTP status strings to OpenAPI response objects. |
+
+#### `convertResponses()` return shape
+
+```php
+[
+    '200' => ['description' => 'Successful response.', 'content' => [...]],
+    '400' => ['description' => 'Validation error or invalid parameters.', 'content' => [...]],
+    '500' => ['description' => 'Internal server error.', 'content' => [...]],
+]
+```
+
+### Constants
+
+| Constant | Value | Description |
+|---|---|---|
+| `HTTP_200` | `'200'` | Key for the success response. |
+| `HTTP_400` | `'400'` | Key for the validation error response. |
+| `HTTP_500` | `'500'` | Key for the internal server error response. |
+
+### Usage
+
+```php
+use Application\API\OpenAPI\ResponseConverter;
+
+$converter = new ResponseConverter();
+
+$responses = $converter->convertResponses($apiMethod);
+// $responses['200'] — success response (with optional example and key descriptions)
+// $responses['400'] — validation error response
+// $responses['500'] — internal server error response
+```
+
+### Known limitations (future work)
+
+- Error responses (400, 500) hardcode `application/json` as the content MIME type. This is
+  correct per OpenAPI conventions (error envelopes are always JSON), but worth revisiting if
+  custom MIME support is added in future.
+- `SchemaInferrer` is instantiated inline inside `buildSuccessResponse()`. Constructor
+  injection of the inferrer would improve testability of `ResponseConverter` in isolation.
+- Key description merging only handles paths one level below `data` (e.g. `data.field`).
+  Paths deeper than one level (`data.nested.field`) are silently skipped — intentional
+  for the current use case but worth revisiting if nested key descriptions are needed.
+
+---
+
+## MethodConverter
+
+`Application\API\OpenAPI\MethodConverter`
+
+Converts a single `APIMethodInterface` instance into a complete OpenAPI 3.1 path item object.
+This is the central composition layer that combines parameter conversion, response conversion,
+and method-level metadata (tags, extensions, descriptions) into a single path entry.
+
+### Path and HTTP method
+
+All framework API endpoints are exposed as:
+
+```
+POST /api/{MethodName}
+```
+
+Every path item produced by `MethodConverter` contains exactly one `post` operation. This
+matches the `.htaccess` rewrite rules generated by `HtaccessGenerator`.
+
+### Composition
+
+`MethodConverter` delegates to two collaborators:
+
+| Collaborator | Scope | Lifecycle |
+|---|---|---|
+| `ParameterConverter` | Per-method parameter conversion | Instantiated fresh per `convertMethod()` call |
+| `ResponseConverter` | Response object conversion | Shared; injected at `MethodConverter` construction |
+
+The global `apiVersion` query parameter is **added manually** inside `MethodConverter`
+because `ParameterConverter` intentionally excludes reserved parameters (`method`,
+`apiVersion`) from per-method conversion.
+
+### Operation fields
+
+| OpenAPI field | Source | Notes |
+|---|---|---|
+| `operationId` | `getMethodName()` | Matches path segment |
+| `summary` | First non-empty line of `getDescription()` | Single-line synopsis |
+| `description` | `getDescription()` | Full markdown description |
+| `tags` | `[getGroup()->getLabel()]` | One tag per method |
+| `parameters` | `apiVersion` + `ParameterConverter::convertParameters()` | `apiVersion` prepended manually |
+| `responses` | `ResponseConverter::convertResponses()` | 200, 400, 500 |
+| `requestBody` | `ParameterConverter` result | Present only for `JSONRequestInterface` methods with body params |
+| `security` | `[{apiKey: []}]` | Present only for `APIKeyMethodInterface` methods |
+| `x-validation-rules` | `manageParams()->getRules()` | Present only when the method has parameter validation rules |
+| `x-changelog` | `getChangelog()` | Omitted when empty |
+| `x-related-methods` | `getRelatedMethodNames()` | Omitted when empty |
+| `externalDocs` | `getDocumentationURL()` | Omitted when URL is empty |
+
+### `apiVersion` parameter
+
+The `apiVersion` query parameter is injected as the first entry in `parameters` array:
+
+```json
+{
+  "name": "apiVersion",
+  "in": "query",
+  "required": false,
+  "description": "API version to use. Defaults to the current version when omitted.",
+  "schema": {
+    "type": "string",
+    "enum": ["1.0", "2.0"],
+    "default": "2.0"
+  }
+}
+```
+
+The `enum` list comes from `getVersions()` and `default` from `getCurrentVersion()`.
+
+### Authentication (`security` field)
+
+Methods implementing `Application\API\Clients\API\APIKeyMethodInterface` receive a `security`
+requirement in their operation object:
+
+```json
+{
+  "security": [{"apiKey": []}]
+}
+```
+
+The scheme name `apiKey` matches `OpenAPISchema::SECURITY_SCHEME_API_KEY`. The empty
+scope array `[]` follows the OpenAPI 3 convention (scope lists are used for OAuth2; Bearer
+schemes have no scopes). Methods that do not implement `APIKeyMethodInterface` omit the
+`security` field entirely, indicating no authentication is required.
+
+### Validation rules (`x-validation-rules`)
+
+Methods with inter-parameter validation rules (returned by `manageParams()->getRules()`)
+receive an `x-validation-rules` extension field. Each entry in the array describes one rule:
+
+```json
+{
+  "x-validation-rules": [
+    {
+      "id": "or_rule_id",
+      "label": "Or Rule",
+      "description": "At least one of the following parameters must be provided: email, username.",
+      "parameters": ["email", "username"]
+    },
+    {
+      "id": "required_if_other_set_id",
+      "label": "Required If Other Is Set",
+      "description": "If \"otherParam\" is set, \"thisParam\" is required.",
+      "parameters": ["thisParam", "otherParam"]
+    }
+  ]
+}
+```
+
+#### Rule description format
+
+| Rule type | Description template |
+|---|---|
+| `OrRule` | `At least one of the following parameters must be provided: {param1}, {param2}, ...` |
+| `RequiredIfOtherIsSetRule` | `If "{otherParam}" is set, "{targetParam}" is required.` |
+| Other rules | `getTypeDescription()` when non-empty, otherwise `getLabel()` |
+
+### Public API
+
+| Method | Returns | Description |
+|---|---|---|
+| `convertMethod(APIMethodInterface $method)` | `array` | Returns a single-key array: `['/api/{MethodName}' => ['post' => [...]]]` |
+
+### Usage
+
+```php
+use Application\API\OpenAPI\MethodConverter;
+
+$converter = new MethodConverter();
+$pathItem = $converter->convertMethod($apiMethod);
+// Result: ['/api/GetComtypes' => ['post' => ['operationId' => 'GetComtypes', ...]]]
+
+// Merge into an OpenAPI spec:
+$spec['paths'] = array_merge($spec['paths'], $pathItem);
+```
+
+To convert an entire API collection, iterate `APIMethodCollection::getAll()` and
+merge each result into `$spec['paths']`. `OpenAPIGenerator` does exactly this — use it
+when you need to generate the full OpenAPI document without writing the JSON assembly
+by hand.
+
+### Known limitations (future work)
+
+- `extractFirstLine()` falls back to the full `$description` string when every line is
+  blank/whitespace — technically correct but can produce a multi-line `summary` in that
+  pathological case. A doc-comment correction from "or the full string if no newlines" to
+  "or the original string if no non-empty line is found" would prevent confusion.
+- `buildParameters()` emits an empty `enum` array when `getVersions()` returns `[]`.
+  An OpenAPI 3.1 `enum` with zero values is valid but useless. A guard
+  (`if (!empty($versions))`) would produce a cleaner schema in that edge case.
+- `ParameterConverter` is instantiated directly inside `convertMethod()`. Constructor
+  injection of a factory would improve testability of `MethodConverter` in isolation.
+- `buildSingleRuleData()` for `RequiredIfOtherIsSetRule` reads `$params[0]` and `$params[1]`
+  directly without a length guard. The rule semantically guarantees 2 parameters, but a
+  defensive `count($params) >= 2` check would be more robust against future rule contract
+  violations.
+- The `instanceof` cascade in `buildSingleRuleData()` couples `MethodConverter` to specific
+  rule types. When new rule types need custom descriptions, this method must be extended.
+  A strategy pattern (e.g., a `toDocArray()` method on `RuleInterface`) would remove this
+  coupling long-term.
+
+---
+
+## SchemaInferrer
+
+`Application\API\OpenAPI\SchemaInferrer`
+
+Infers a JSON Schema (OpenAPI 3.1 compatible) from a PHP example response array.
+Used by `ResponseConverter` to produce structured `data` schemas for the 200 response,
+combined with property descriptions from `KeyDescription` objects.
+
+Requires **PHP 8.1+** for `array_is_list()` (the framework minimum is PHP 8.4+, so
+this is always satisfied).
+
+### Type mapping
+
+| PHP type | Inferred schema |
+|---|---|
+| `string` | `{ "type": "string" }` |
+| `int` | `{ "type": "integer" }` |
+| `float` | `{ "type": "number" }` |
+| `bool` | `{ "type": "boolean" }` |
+| `null` | `{ "nullable": true }` (OpenAPI 3.0 compatible) |
+| Sequential array (list) | `{ "type": "array", "items": <schema of first element> }` |
+| Associative array (map) | `{ "type": "object", "properties": { … } }` |
+| Unknown / object | `{ "type": "object" }` (graceful fallback) |
+
+> **Note:** `null` maps to `{ "nullable": true }` (OpenAPI 3.0 style) for consistency with
+> the rest of the module. The strict OpenAPI 3.1 form is `{ "type": ["string", "null"] }`.
+> Align in a future cleanup pass when OpenAPI 3.1 strictness is fully adopted.
+
+### Graceful degradation
+
+- Empty sequential arrays produce `{ "type": "array" }` without `items`.
+- Unknown types (objects, resources) fall back to `{ "type": "object" }`.
+- `inferDataSchema()` never throws — all failures are silently contained.
+
+### Key description merging
+
+`inferDataSchema()` merges `KeyDescription` property descriptions into the inferred
+schema's `properties`. Only paths matching `data.<field>` (one level below `data`) are
+processed. Deeper paths (`data.nested.field`) are silently skipped.
+
+If `keyDescriptions` contains a path whose property does not exist in the inferred schema,
+a new property entry is created automatically so the description is always recorded.
+
+### Public API
+
+| Method | Returns | Description |
+|---|---|---|
+| `inferDataSchema(array $fullExample, KeyDescription[] $keyDescriptions)` | `array` | Infers a schema for the `data` key of a full API example response and merges key descriptions. Returns `[]` when both inputs are empty. |
+| `inferSchema(mixed $value)` | `array` | Recursively infers a schema from any PHP value. Public to allow targeted use in tests or custom generators. |
+
+### Usage
+
+```php
+use Application\API\OpenAPI\SchemaInferrer;
+
+$inferrer = new SchemaInferrer();
+
+// Infer schema from a single value:
+$schema = $inferrer->inferSchema(['id' => 1, 'name' => 'Example']);
+// => ['type' => 'object', 'properties' => ['id' => ['type' => 'integer'], 'name' => ['type' => 'string']]]
+
+// Infer the data schema from a full API example response:
+$example = ['state' => 'success', 'data' => ['id' => 1, 'label' => 'Foo']];
+$schema = $inferrer->inferDataSchema($example, $keyDescriptions);
+// => ['type' => 'object', 'properties' => ['id' => ['type' => 'integer'], 'label' => ['type' => 'string', 'description' => '...']]]
+```
+
+`ResponseConverter` calls `inferDataSchema()` internally when building the 200 success
+response for a `JSONResponseInterface` method. You rarely need to use `SchemaInferrer`
+directly unless building a custom response schema layer.
+
+### Known limitations (future work)
+
+- `null` values produce `{ "nullable": true }` (OpenAPI 3.0 style). Migrate to the
+  OpenAPI 3.1 type-union form `{ "type": ["...", "null"] }` in a future spec-compliance pass.
+- An empty sequential array (`[]`) produces `{ "type": "array" }` without `items`. This
+  is valid OpenAPI but loses type specificity. The behavior is intentional and tested.
+- Key description paths deeper than `data.<field>` are skipped. A recursive merge would
+  be needed to support `data.nested.field` annotations.
+
+---
+
+## OpenAPIGenerator
+
+`Application\API\OpenAPI\OpenAPIGenerator`
+
+Main orchestrator for OpenAPI 3.1 specification generation. Iterates all methods in an
+`APIMethodCollection`, delegates per-method conversion to `MethodConverter`, and assembles
+the top-level document structure (`info`, `servers`, `paths`, `tags`, `components`).
+The result is serialised as a pretty-printed JSON file via `AppUtils\ConvertHelper\JSONConverter`.
+
+### Constants
+
+| Constant | Value | Description |
+|---|---|---|
+| `OPENAPI_VERSION` | `'3.1.0'` | OpenAPI specification version string used in the `openapi` root key. |
+| `DEFAULT_OUTPUT_RELATIVE` | `'storage/api/openapi.json'` | Default output path relative to `APP_INSTALL_FOLDER`. |
+
+### Constructor
+
+```php
+new OpenAPIGenerator(
+    APIMethodCollection $methodCollection,
+    string $appName,
+    string $appVersion,
+    string $description = '',
+    string $serverUrl  = '',
+    string $outputPath = ''
+)
+```
+
+| Parameter | Description |
+|---|---|
+| `$methodCollection` | Collection of API methods to introspect. |
+| `$appName` | Sets `info.title` in the generated spec. |
+| `$appVersion` | Sets `info.version` in the generated spec. |
+| `$description` | Optional `info.description`. Omitted from the spec when empty. |
+| `$serverUrl` | Sets the single entry in `servers`. Omitted when empty (empty `servers` array). |
+| `$outputPath` | Absolute path the JSON file is written to. Defaults to `APP_INSTALL_FOLDER/storage/api/openapi.json` when `APP_INSTALL_FOLDER` is defined, or empty string otherwise. |
+
+> **Warning:** If `APP_INSTALL_FOLDER` is not defined and no explicit `$outputPath` is
+> supplied, `$outputPath` will be an empty string and calling `generate()` will fail with
+> a cryptic low-level error from `FileInfo::factory()`. Always pass an explicit path
+> when using the generator outside the live application context.
+
+### Public API
+
+| Method | Returns | Description |
+|---|---|---|
+| `setOutputPath(string $path): self` | `$this` | Overrides the output path. Fluent. |
+| `setServerUrl(string $url): self` | `$this` | Overrides the server URL. Fluent. |
+| `generate(): string` | `string` | Assembles the spec, writes it as a pretty-printed JSON file, and returns the absolute output path. Throws `JSONConverterException` on serialisation failure. |
+| `toArray(): array` | `array<string, mixed>` | Assembles and returns the complete spec as a PHP array. **No filesystem I/O** — the primary entry point for testing. Resets `conversionErrors` on each call. |
+| `getConversionErrors(): array` | `array<string, string>` | Returns method-name → exception-message pairs for every method that failed during the last `toArray()` call. |
+
+### Generated document structure
+
+`toArray()` returns an array in this shape:
+
+```php
+[
+    'openapi'    => '3.1.0',
+    'info'       => ['title' => ..., 'version' => ..., 'description' => ...],
+    'servers'    => [['url' => ...]],   // empty array when serverUrl is not set
+    'tags'       => [['name' => ..., 'description' => ...]],
+    'paths'      => ['/api/MethodName' => ['post' => [...]]],
+    'components' => [
+        'schemas'         => [...],  // from OpenAPISchema::getComponentSchemas()
+        'securitySchemes' => [...],  // from OpenAPISchema::getSecuritySchemes()
+    ],
+]
+```
+
+Tags are derived from the unique `APIGroupInterface` objects returned by the methods.
+Deduplication is based on the group label string.
+
+### Error resilience
+
+Individual method conversion failures (e.g., methods whose example-data generation
+requires live database state) are caught, logged via `error_log()`, and skipped.
+Generation never aborts. Failed methods are accessible after the fact via
+`getConversionErrors()`:
+
+```php
+$generator->toArray();
+
+foreach ($generator->getConversionErrors() as $methodName => $message) {
+    echo "Skipped $methodName: $message\n";
+}
+```
+
+### Usage
+
+```php
+use Application\API\OpenAPI\OpenAPIGenerator;
+use Application\API\Collection\APIMethodCollection;
+
+$generator = new OpenAPIGenerator(
+    $apiMethodCollection,
+    'My Application',
+    '1.0.0',
+    'Public API for My Application.',
+    'https://example.com'
+);
+
+// Testing — no file I/O:
+$spec = $generator->toArray();
+// $spec['openapi'] === '3.1.0'
+// $spec['paths']   — one entry per successfully converted method
+
+// Production — write JSON file and return path:
+$outputPath = $generator->generate();
+// => '/var/www/html/storage/api/openapi.json'
+
+// Override output location fluently:
+$outputPath = $generator
+    ->setOutputPath('/tmp/api-spec.json')
+    ->generate();
+```
+
+### Known limitations (future work)
+
+- **No `createFromDefaults()` named constructor.** The class docblock references `createFromDefaults()` as
+  a convenience factory that pulls the method collection, app name, version, and server URL
+  from the running framework. This method is not yet implemented. Remove the docblock
+  reference or implement the factory in a follow-up.
+- **Silent failure on empty `outputPath`.** If `$outputPath` resolves to an empty string
+  (no `APP_INSTALL_FOLDER` constant and no explicit path), `generate()` will throw a
+  cryptic low-level error. Adding an explicit guard with a meaningful exception would
+  improve developer experience.
+- **Path-key collision on duplicate method paths.** `array_merge($paths, $pathItem)` silently
+  overwrites an earlier entry when two methods produce the same path key. This cannot
+  occur with the current API design (each method name is unique), but a defensive check
+  or comment documenting the assumption would be more robust.
+- **Group deduplication by label.** Unique tags are keyed by `$group->getLabel()`. Two
+  logically distinct group objects with the same label will be silently collapsed into one
+  tag. Acceptable for the current group design; worth noting for future group implementations.
+
+
+---
+
+## APIManager Convenience Methods
+
+`Application\API\APIManager`
+
+`APIManager` provides two convenience methods that wrap the low-level generator classes,
+pulling the app name, version, and method collection from the running framework driver.
+These are the preferred entry points for triggering generation from within the live
+application or from `ComposerScripts`.
+
+### `generateOpenAPISpec(string $outputPath = ''): string`
+
+Instantiates `OpenAPIGenerator` with the current method collection and the driver's app
+name and version, then delegates to `OpenAPIGenerator::generate()`.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `$outputPath` | `''` | Absolute path for the generated JSON file. When empty, the default is resolved inside `OpenAPIGenerator` as `APP_INSTALL_FOLDER/storage/api/openapi.json`. |
+
+Returns the absolute path to the generated file.
+
+> **Note:** Default-path resolution is delegated to `OpenAPIGenerator`. If `APP_INSTALL_FOLDER`
+> is not defined and no explicit path is passed, generation will fail with a low-level error.
+> See `OpenAPIGenerator` known limitations.
+
+### `generateHtaccess(string $outputDirectory = ''): string`
+
+Instantiates `HtaccessGenerator` for the given directory and delegates to
+`HtaccessGenerator::generate()`.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `$outputDirectory` | `''` | Absolute path to the directory where `.htaccess` is written. When empty, defaults to `APP_INSTALL_FOLDER/api` (resolved inside `APIManager`). |
+
+Returns the absolute path to the generated `.htaccess` file.
+
+> **Note:** Unlike `generateOpenAPISpec()`, default-path resolution for `generateHtaccess()` is
+> performed inside `APIManager` before constructing `HtaccessGenerator`. Applications serving
+> the API at a non-standard path must pass `$outputDirectory` explicitly.
+
+### Usage
+
+```php
+use Application\API\APIManager;
+
+$api = APIManager::getInstance();
+
+// Generate the OpenAPI spec to the default location:
+$specPath = $api->generateOpenAPISpec();
+// => APP_INSTALL_FOLDER . '/storage/api/openapi.json'
+
+// Generate to a custom location:
+$specPath = $api->generateOpenAPISpec('/var/www/html/public/api-spec.json');
+
+// Generate the .htaccess to the default api directory:
+$htaccessPath = $api->generateHtaccess();
+// => APP_INSTALL_FOLDER . '/api/.htaccess'
+
+// Generate to a custom api directory:
+$htaccessPath = $api->generateHtaccess('/var/www/html/public/api');
+```
+
+---
+
+## Build Integration (ComposerScripts)
+
+`Application\Composer\ComposerScripts`
+
+Since WP-007, `ComposerScripts::build()` runs OpenAPI spec and `.htaccess` generation as
+part of the standard `composer build` pipeline, immediately after the API method index step:
+
+```
+clearCaches → indexOfflineEvents → indexAdminScreens → apiMethodIndex
+  → generateOpenAPISpec → generateHtaccess → generateCSSClassesJS
+  → updateContextGenerateDate → updateModuleDocumentation
+```
+
+### Standalone invocation
+
+`generateOpenAPISpec()` and `generateHtaccess()` can also be invoked as standalone Composer
+scripts:
+
+```shell
+# Regenerate the OpenAPI spec only:
+composer run generateOpenAPISpec
+
+# Regenerate the .htaccess only:
+composer run generateHtaccess
+```
+
+Or in PHP:
+
+```php
+use Application\Composer\ComposerScripts;
+
+ComposerScripts::generateOpenAPISpec();
+ComposerScripts::generateHtaccess();
+```
+
+### Error resilience
+
+Both `doGenerateOpenAPISpec()` and `doGenerateHtaccess()` wrap generation in
+`try/catch(\Throwable)`. On failure:
+
+- A WARNING message is echoed to stdout.
+- The exception message is passed to `error_log()`.
+- The build continues — a generation failure does not abort `composer build`.
+
+> **Note:** If `APP_INSTALL_FOLDER` is not defined (e.g. when running outside the full
+> application bootstrap), both generators receive an empty path and will throw, which is
+> caught and reported as a WARNING. Generation is skipped gracefully in
+> minimal-bootstrap environments.
+
+
+---
+
+## GetOpenAPISpec
+
+`Application\API\OpenAPI\GetOpenAPISpec`
+
+Framework built-in API method that serves the pre-generated OpenAPI 3.1 specification
+(`storage/api/openapi.json`) as raw JSON over HTTP. This completes the OpenAPI pipeline by
+making the spec directly accessible to tools such as Swagger UI, Postman, and API clients
+without requiring filesystem access.
+
+### Constants
+
+| Constant | Value | Description |
+|---|---|---|
+| `METHOD_NAME` | `'GetOpenAPISpec'` | The API method name used in the URL and to identify the method in the framework. |
+| `ERROR_SPEC_NOT_GENERATED` | `1` | Error code returned when the spec file has not been generated yet. |
+| `VERSION_1_0` | `'1.0'` | Initial version string. |
+| `CURRENT_VERSION` | `self::VERSION_1_0` | Current version. |
+
+### URL
+
+The method is reachable at two equivalent URLs:
+
+| URL | Requires |
+|---|---|
+| `/api/GetOpenAPISpec` | Apache `.htaccess` generated by `HtaccessGenerator` |
+| `/api/index.php?method=GetOpenAPISpec` | No rewrite rules needed |
+
+The static helper `GetOpenAPISpec::getSpecURL()` returns the clean URL using `APP_URL`:
+
+```php
+use Application\API\OpenAPI\GetOpenAPISpec;
+
+$url = GetOpenAPISpec::getSpecURL();
+// => 'https://example.com/api/GetOpenAPISpec'
+// => '' (empty string) when APP_URL is not defined
+```
+
+This helper is used by `APIMethodsOverviewTmpl` to render the "OpenAPI Specification (JSON)"
+button on the API documentation overview page. The button is only rendered when `APP_URL` is
+defined — graceful degradation for environments without the constant.
+
+### Response
+
+Unlike standard framework API methods, `GetOpenAPISpec` **bypasses the JSON envelope** and
+returns the raw specification document:
+
+- **HTTP 200:** `Content-Type: application/json` + raw content of `storage/api/openapi.json`.
+- **HTTP 500:** Standard JSON error envelope when the spec file has not been generated.
+
+The raw-JSON bypass is implemented by overriding `_sendSuccessResponse()` from
+`JSONResponseTrait`. The standard HTTP and CORS headers are applied by the parent
+`BaseAPIMethod::sendSuccessResponse()` before this override is called.
+
+### Error handling
+
+If `storage/api/openapi.json` does not exist (i.e. `composer build` has not been run),
+the method returns a `500 Internal Server Error` with code `ERROR_SPEC_NOT_GENERATED` and
+an error message directing the developer to run `composer build` or `composer generateOpenAPISpec`.
+
+### Spec file resolution
+
+The spec path is resolved as:
+
+```
+APP_INSTALL_FOLDER . '/' . OpenAPIGenerator::DEFAULT_OUTPUT_RELATIVE
+// => APP_INSTALL_FOLDER . '/storage/api/openapi.json'
+```
+
+If `APP_INSTALL_FOLDER` is not defined the resolved path is an empty string, which will not
+match `is_file()` and triggers the 500 error response.
+
+### Group
+
+The method belongs to `FrameworkAPIGroup` and is registered automatically by the framework's
+API method collection alongside other built-in methods.
+
+### Known limitations (future work)
+
+- `getReponseKeyDescriptions()` contains a typo (`Reponse` instead of `Response`). This
+  mirrors a pre-existing typo in `JSONResponseInterface`. Fix the interface typo in a future
+  refactoring pass; fixing only this class would create an inconsistency.
+- There is no defensive `filesize()` guard after `is_file()`. A 0-byte spec file would produce
+  an empty response body with `Content-Type: application/json` — technically invalid JSON with
+  no error surfaced. A `filesize($path) > 0` check before reading would be more robust.
+

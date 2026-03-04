@@ -5,10 +5,13 @@
 moduleMetaData:
   id: "composer"
   label: "Application Composer"
-  description: "Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase. Includes a shared BuildMessages registry for build-time notices."
+  description: "Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase, generate the OpenAPI 3.1 specification JSON, and generate the API .htaccess for RESTful URL rewriting. Includes a shared BuildMessages registry for build-time notices. All steps are orchestrated by ComposerScripts::build()."
   keywords:
     - KeywordGlossaryGenerator (build-time tool that produces module-glossary.md from module keywords)
     - ModulesOverviewGenerator (build-time tool that produces modules-overview.md from module-context.yaml files)
+    - ComposerScripts (orchestrates all composer build steps: cache clearing, event/admin indexing, API method index, OpenAPI spec generation, .htaccess generation, CSS classes, context date, module docs)
+    - generateOpenAPISpec (ComposerScripts build step; generates the OpenAPI 3.1 spec JSON via APIManager; error-resilient)
+    - generateHtaccess (ComposerScripts build step; generates the API .htaccess via APIManager; error-resilient)
   relatedModules:
     - event-handler
 

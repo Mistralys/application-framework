@@ -1,13 +1,14 @@
 # Modules Overview
 
-> Auto-generated on 2026-03-03 08:11:39. Do not edit manually.
+> Auto-generated on 2026-03-03 22:07:06. Do not edit manually.
 
-Total: 16 modules across 1 package.
+Total: 17 modules across 1 package.
 
 ## mistralys/application_framework
 
 | ID | Label | Description | Source Path | Context Docs | Related Modules |
 |----|-------|-------------|-------------|--------------|-----------------|
+| `api-openapi` | API OpenAPI | Foundational support for generating OpenAPI 3.1 specifications from the framework API system. Covers parameter type mapping (TypeMapper), reusable component schemas for the standard API response envelopes (OpenAPISchema), and Apache .htaccess generation for RESTful URL rewriting (HtaccessGenerator). | `src/classes/Application/API/OpenAPI/` | `.context/modules/openapi/` | — |
 | `application-sets` | Application Sets | Configuration-level system to control which administration areas are enabled per application instance, supporting multiple feature configurations. | `src/classes/Application/AppSets/` | `.context/modules/application-sets/` | db-helper |
 | `composer` | Application Composer | Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase. Includes a shared BuildMessages registry for build-time notices. | `src/classes/Application/Composer/` | `.context/modules/composer/` | event-handler |
 | `connectors` | Connectors | Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods. | `src/classes/Connectors/` | `.context/modules/connectors/` | — |

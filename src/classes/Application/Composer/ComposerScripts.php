@@ -41,6 +41,8 @@ class ComposerScripts
         self::indexOfflineEvents();
         self::indexAdminScreens();
         self::apiMethodIndex();
+        self::generateOpenAPISpec();
+        self::generateHtaccess();
         self::generateCSSClassesJS();
         self::updateContextGenerateDate();
         self::updateModuleDocumentation();
@@ -157,6 +159,50 @@ class ComposerScripts
         AppFactory::createLogger()->logModeEcho();
 
         APIManager::getInstance()->getMethodIndex()->build();
+    }
+
+    public static function generateOpenAPISpec() : void
+    {
+        self::init();
+
+        self::doGenerateOpenAPISpec();
+    }
+
+    public static function doGenerateOpenAPISpec() : void
+    {
+        echo '- Generating OpenAPI specification...'.PHP_EOL;
+
+        try {
+            $path = APIManager::getInstance()->generateOpenAPISpec();
+            echo sprintf('  Written to: %s'.PHP_EOL, $path);
+        } catch (\Throwable $e) {
+            error_log('OpenAPI spec generation failed: '.$e->getMessage());
+            echo sprintf('  WARNING: OpenAPI spec generation failed: %s'.PHP_EOL, $e->getMessage());
+        }
+
+        echo '  DONE.'.PHP_EOL;
+    }
+
+    public static function generateHtaccess() : void
+    {
+        self::init();
+
+        self::doGenerateHtaccess();
+    }
+
+    public static function doGenerateHtaccess() : void
+    {
+        echo '- Generating API .htaccess...'.PHP_EOL;
+
+        try {
+            $path = APIManager::getInstance()->generateHtaccess();
+            echo sprintf('  Written to: %s'.PHP_EOL, $path);
+        } catch (\Throwable $e) {
+            error_log('API .htaccess generation failed: '.$e->getMessage());
+            echo sprintf('  WARNING: API .htaccess generation failed: %s'.PHP_EOL, $e->getMessage());
+        }
+
+        echo '  DONE.'.PHP_EOL;
     }
 
     public static function generateCSSClassesJS() : void
