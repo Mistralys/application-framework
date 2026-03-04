@@ -13,6 +13,7 @@ moduleMetaData:
     - ui
     - ui-form
     - db-helper
+    - composer
 
 documents:
 -
