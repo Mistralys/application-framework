@@ -1,0 +1,1355 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "AppFramework TestSuite",
+        "version": "1.0.0"
+    },
+    "servers": [],
+    "tags": [
+        {
+            "name": "Framework",
+            "description": "System API methods for the application framework."
+        },
+        {
+            "name": "Test Driver APIs",
+            "description": "All APIs provided by the Test Driver for testing purposes."
+        },
+        {
+            "name": "Application countries",
+            "description": "API methods for retrieving information on countries available in the application."
+        },
+        {
+            "name": "Locales",
+            "description": "APIs related to the application locales management."
+        },
+        {
+            "name": "Test application",
+            "description": "Collection of APIs used by the test application."
+        }
+    ],
+    "paths": {
+        "/api/DescribeAdminAreas": {
+            "post": {
+                "operationId": "DescribeAdminAreas",
+                "summary": "Compiles information about all administration areas available in the application,",
+                "description": "Compiles information about all administration areas available in the application,\nin the form of a tree with root areas and subscreen structure.",
+                "tags": [
+                    "Framework"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=DescribeAdminAreas"
+                }
+            }
+        },
+        "/api/DescribeCollections": {
+            "post": {
+                "operationId": "DescribeCollections",
+                "summary": "Compiles information about all DBHelper collections that are in use in the application.",
+                "description": "Compiles information about all DBHelper collections that are in use in the application.",
+                "tags": [
+                    "Framework"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=DescribeCollections"
+                }
+            }
+        },
+        "/api/ExternalLoadedAPI": {
+            "post": {
+                "operationId": "ExternalLoadedAPI",
+                "summary": "API Method loaded from an external source folder.",
+                "description": "API Method loaded from an external source folder.",
+                "tags": [
+                    "Test Driver APIs"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0.0"
+                            ],
+                            "default": "1.0.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=ExternalLoadedAPI"
+                }
+            }
+        },
+        "/api/GetAppCountries": {
+            "post": {
+                "operationId": "GetAppCountries",
+                "summary": "Gets information on all known countries available in the",
+                "description": "Gets information on all known countries available in the \nAppFramework TestSuite application, including their default locale and currency.",
+                "tags": [
+                    "Application countries"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                },
+                                "example": {
+                                    "countries": {
+                                        "de": {
+                                            "countryID": 1,
+                                            "isoCode": "de",
+                                            "labelInvariant": "Germany",
+                                            "codeAliases": [],
+                                            "defaultLocale": {
+                                                "localeCode": "de_DE",
+                                                "languageCode": "de",
+                                                "labelInvariant": "German (Germany)"
+                                            },
+                                            "currency": {
+                                                "isoCode": "EUR",
+                                                "labelSingular": "Euro",
+                                                "labelPlural": "Euros",
+                                                "symbol": "\u20ac",
+                                                "preferredSymbol": "\u20ac",
+                                                "thousandsSeparator": ".",
+                                                "decimalSeparator": ",",
+                                                "structuralTemplate": "-{amount} {symbol}"
+                                            }
+                                        },
+                                        "gb": {
+                                            "countryID": 4,
+                                            "isoCode": "gb",
+                                            "labelInvariant": "United Kingdom",
+                                            "codeAliases": [
+                                                "uk"
+                                            ],
+                                            "defaultLocale": {
+                                                "localeCode": "en_GB",
+                                                "languageCode": "en",
+                                                "labelInvariant": "English (Great Britain)"
+                                            },
+                                            "currency": {
+                                                "isoCode": "GBP",
+                                                "labelSingular": "Pound",
+                                                "labelPlural": "Pounds",
+                                                "symbol": "\u00a3",
+                                                "preferredSymbol": "\u00a3",
+                                                "thousandsSeparator": ",",
+                                                "decimalSeparator": ".",
+                                                "structuralTemplate": "-{symbol}{amount}"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-related-methods": [
+                    "GetAppLocales"
+                ],
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=GetAppCountries"
+                }
+            }
+        },
+        "/api/GetAppLocales": {
+            "post": {
+                "operationId": "GetAppLocales",
+                "summary": "Retrieves a list of all known locales along with all",
+                "description": "Retrieves a list of all known locales along with all \nrelevant details. This also shows which of the locales are\navailable for use in the application's user interface.",
+                "tags": [
+                    "Locales"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "appLocale",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "de_DE",
+                                "en_GB"
+                            ]
+                        },
+                        "description": "The application locale to use, as used for the AppTestSuite user interface. This determines the language in which translatable text is returned. If not provided, the system default locale, <span class=\"text-reference\">en_GB</span>, is used."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                },
+                                "example": {
+                                    "locales": [
+                                        {
+                                            "localeID": "de_AT",
+                                            "languageCode": "de",
+                                            "countryCode": "at",
+                                            "label": "German (Austria)",
+                                            "labelInvariant": "German (Austria)",
+                                            "isAvailableForUI": false
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-related-methods": [
+                    "GetAppCountries"
+                ],
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=GetAppLocales"
+                }
+            }
+        },
+        "/api/GetOpenAPISpec": {
+            "post": {
+                "operationId": "GetOpenAPISpec",
+                "summary": "Returns the pre-generated OpenAPI 3.1 specification for all API methods as raw JSON.",
+                "description": "Returns the pre-generated OpenAPI 3.1 specification for all API methods as raw JSON.",
+                "tags": [
+                    "Framework"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=GetOpenAPISpec"
+                }
+            }
+        },
+        "/api/TestAPIKey": {
+            "post": {
+                "operationId": "TestAPIKey",
+                "summary": "A test API method for API key handling.",
+                "description": "A test API method for API key handling.",
+                "tags": [
+                    "Test Driver APIs"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0.0"
+                            ],
+                            "default": "1.0.0"
+                        }
+                    },
+                    {
+                        "name": "apiKey",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The API Key used to authenticate the request."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestAPIKey"
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
+            }
+        },
+        "/api/TestAppLocale": {
+            "post": {
+                "operationId": "TestAppLocale",
+                "summary": "Test method for application locales",
+                "description": "Test method for application locales",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "appLocale",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "de_DE",
+                                "en_GB"
+                            ]
+                        },
+                        "description": "The application locale to use, as used for the AppTestSuite user interface. This determines the language in which translatable text is returned. If not provided, the system default locale, <span class=\"text-reference\">en_GB</span>, is used."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                },
+                                "example": {
+                                    "text": "Yes"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestAppLocale"
+                }
+            }
+        },
+        "/api/TestDryRun": {
+            "post": {
+                "operationId": "TestDryRun",
+                "summary": "A test API method to demonstrate dry run functionality.",
+                "description": "A test API method to demonstrate dry run functionality.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "dryRun",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "enum": [
+                                "false",
+                                "no",
+                                "true",
+                                "yes"
+                            ]
+                        },
+                        "description": "If enabled, a dry run of the operation will be performed. The process will run as usual, but no actual changes will be made. Note: Any IDs and other data types returned will not correspond to real entities."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                },
+                                "example": {
+                                    "dryRun": false
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestDryRun"
+                }
+            }
+        },
+        "/api/TestErrorResponse": {
+            "post": {
+                "operationId": "TestErrorResponse",
+                "summary": "A test method that always returns an error response.",
+                "description": "A test method that always returns an error response.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestErrorResponse"
+                }
+            }
+        },
+        "/api/TestGetCountry": {
+            "post": {
+                "operationId": "TestGetCountry",
+                "summary": "This is a test API method to get country information.",
+                "description": "This is a test API method to get country information.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "countryID",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "enum": [
+                                "1",
+                                "2",
+                                "3",
+                                "4",
+                                "5",
+                                "6",
+                                "7",
+                                "8",
+                                "9",
+                                "10",
+                                "11",
+                                "9999",
+                                "11828"
+                            ]
+                        },
+                        "description": "Application country ID."
+                    },
+                    {
+                        "name": "countryISO",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "at",
+                                "ca",
+                                "ch",
+                                "de",
+                                "es",
+                                "fr",
+                                "gb",
+                                "it",
+                                "mx",
+                                "pl",
+                                "ro",
+                                "us",
+                                "zz"
+                            ]
+                        },
+                        "description": "Two-letter country ISO code, e.g. `de` for Germany. Case insensitive."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                },
+                                "example": {
+                                    "countryID": 42
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestGetCountry"
+                }
+            }
+        },
+        "/api/TestGetCountryBySet": {
+            "post": {
+                "operationId": "TestGetCountryBySet",
+                "summary": "Stub Country Param Set API for testing purposes.",
+                "description": "Stub Country Param Set API for testing purposes.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "countryID",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64",
+                            "enum": [
+                                "1",
+                                "2",
+                                "3",
+                                "4",
+                                "5",
+                                "6",
+                                "7",
+                                "8",
+                                "9",
+                                "10",
+                                "11",
+                                "9999",
+                                "11828"
+                            ]
+                        },
+                        "description": "Application country ID."
+                    },
+                    {
+                        "name": "countryISO",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "at",
+                                "ca",
+                                "ch",
+                                "de",
+                                "es",
+                                "fr",
+                                "gb",
+                                "it",
+                                "mx",
+                                "pl",
+                                "ro",
+                                "us",
+                                "zz"
+                            ]
+                        },
+                        "description": "Two-letter country ISO code, e.g. `de` for Germany. Case insensitive."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                },
+                                "example": {
+                                    "countryID": 42
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestGetCountryBySet"
+                },
+                "x-validation-rules": [
+                    {
+                        "id": "OR",
+                        "label": "Selecting the country",
+                        "description": "At least one of the following parameters must be provided: countryID, countryISO.",
+                        "parameters": [
+                            "countryID",
+                            "countryISO"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/api/TestJSON2JSONMethod": {
+            "post": {
+                "operationId": "TestJSON2JSONMethod",
+                "summary": "A test method that accepts a JSON object and returns it as a JSON response.",
+                "description": "A test method that accepts a JSON object and returns it as a JSON response.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestJSON2JSONMethod"
+                }
+            }
+        },
+        "/api/TestStringValidations": {
+            "post": {
+                "operationId": "TestStringValidations",
+                "summary": "A test method for string validations.",
+                "description": "A test method for string validations.",
+                "tags": [
+                    "Test Driver APIs"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "alias",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "alnum",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "alpha",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "label",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "md5",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestStringValidations"
+                }
+            }
+        },
+        "/api/TestVersioned": {
+            "post": {
+                "operationId": "TestVersioned",
+                "summary": "API method for testing API methods that handle versions with separate classes.",
+                "description": "API method for testing API methods that handle versions with separate classes.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-changelog": {
+                    "1.0": "- Initial version."
+                },
+                "externalDocs": {
+                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestVersioned"
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "APIInfo": {
+                "type": "object",
+                "description": "Metadata about the API method that handled the request.",
+                "properties": {
+                    "methodName": {
+                        "type": "string",
+                        "description": "The name of the API method that handled the request."
+                    },
+                    "selectedVersion": {
+                        "type": "string",
+                        "description": "The API version that was active for this request."
+                    },
+                    "availableVersions": {
+                        "type": "array",
+                        "description": "All versions supported by this API method.",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "The description of the API method."
+                    },
+                    "requestMime": {
+                        "type": "string",
+                        "description": "The MIME type of the request body."
+                    },
+                    "responseMime": {
+                        "type": "string",
+                        "description": "The MIME type of the response body."
+                    },
+                    "requestTime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "ISO 8601 timestamp of when the request was processed."
+                    },
+                    "documentationURL": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL to the human-readable documentation for this method."
+                    }
+                }
+            },
+            "APIEnvelope": {
+                "type": "object",
+                "description": "Standard success response envelope returned by all API methods.",
+                "required": [
+                    "state",
+                    "data",
+                    "api"
+                ],
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "success"
+                        ],
+                        "description": "Always \"success\" for a successful response."
+                    },
+                    "data": {
+                        "type": "object",
+                        "description": "The response payload. Structure varies per method."
+                    },
+                    "api": {
+                        "$ref": "#/components/schemas/APIInfo"
+                    }
+                }
+            },
+            "APIErrorEnvelope": {
+                "type": "object",
+                "description": "Standard error response envelope returned when an API method fails.",
+                "required": [
+                    "state",
+                    "code",
+                    "message",
+                    "api"
+                ],
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "error"
+                        ],
+                        "description": "Always \"error\" for an error response."
+                    },
+                    "code": {
+                        "type": "integer",
+                        "description": "Application-level error code."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Human-readable error message."
+                    },
+                    "data": {
+                        "type": "object",
+                        "description": "Optional additional error context payload."
+                    },
+                    "api": {
+                        "$ref": "#/components/schemas/APIInfo"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "apiKey": {
+                "type": "http",
+                "scheme": "bearer",
+                "description": "API key passed as a Bearer token in the Authorization header."
+            }
+        }
+    }
+}
