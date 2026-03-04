@@ -312,6 +312,30 @@ class ComposerScripts
 	}
 
 
+	public static function generateOpenAPISpec(): void
+	{
+		/* ... */
+	}
+
+
+	public static function doGenerateOpenAPISpec(): void
+	{
+		/* ... */
+	}
+
+
+	public static function generateHtaccess(): void
+	{
+		/* ... */
+	}
+
+
+	public static function doGenerateHtaccess(): void
+	{
+		/* ... */
+	}
+
+
 	public static function generateCSSClassesJS(): void
 	{
 		/* ... */
@@ -881,6 +905,6 @@ final class ModulesOverviewRenderer
 ```
 ---
 **File Statistics**
-- **Size**: 19.45 KB
-- **Lines**: 887
+- **Size**: 19.73 KB
+- **Lines**: 911
 File: `modules/composer/architecture-core.md`

@@ -3,13 +3,13 @@ _SOURCE: Tree of PHP Class Files_
 # Tree of PHP Class Files
 ###  
 ```
-└── src/ [69,979 chars]
-    └── classes/ [69,979 chars]
-        └── Application/ [69,979 chars]
-            └── Composer/ [69,979 chars]
+└── src/ [72,750 chars]
+    └── classes/ [72,750 chars]
+        └── Application/ [72,750 chars]
+            └── Composer/ [72,750 chars]
                 └── BuildMessages.php [7,070 chars]
                 └── CSSClassesGenerator.php [2,528 chars]
-                └── ComposerScripts.php [5,816 chars]
+                └── ComposerScripts.php [8,221 chars]
                 └── KeywordGlossary/ [18,427 chars]
                     ├── Events/ [2,838 chars]
                     │   ├── BaseDecorateGlossaryListener.php [1,400 chars]
@@ -26,7 +26,7 @@ _SOURCE: Tree of PHP Class Files_
                     ├── ModulesOverviewGenerator.php [11,249 chars]
                     ├── ModulesOverviewRenderer.php [5,614 chars]
                 └── README.md [7,089 chars]
-                └── module-context.yaml [3,427 chars]
+                └── module-context.yaml [3,793 chars]
 
 ```
 ---
