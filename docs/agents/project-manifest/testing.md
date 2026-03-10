@@ -191,3 +191,34 @@ Located in `tests/AppFrameworkTestClasses/Stubs/`:
 | `ValidatableStub` | Validatable stub |
 
 Additional stubs exist in subdirectories: `Stubs/Admin/`, `Stubs/DBHelper/`, `Stubs/Revisionables/`, `Stubs/Session/`, `Stubs/UI/`.
+
+---
+
+## PHPUnit Mock Conventions
+
+PHPUnit 13 emits a **Notice** — "No expectations were configured for the mock object for X"
+— when `createMock()` is used without any `expects()` call. Use `createStub()` instead when
+the test only needs a double that returns values (no call-count verification):
+
+```php
+// Correct — test only needs the object to return a value; no expectation needed
+$method = $this->createStub(APIMethodInterface::class);
+
+// Avoid — triggers a PHPUnit Notice when no expects() are added
+$method = $this->createMock(APIMethodInterface::class);
+```
+
+When writing helper methods that return a test double, annotate the return type with
+`&\PHPUnit\Framework\MockObject\Stub` (not `MockObject`) to match `createStub()`'s
+actual return type:
+
+```php
+/** @return APIMethodInterface&\PHPUnit\Framework\MockObject\Stub */
+private function createMethodStub() : APIMethodInterface
+{
+    return $this->createStub(APIMethodInterface::class);
+}
+```
+
+Use `createMock()` only when the test explicitly verifies interaction (e.g., `expects(once())`).
+
