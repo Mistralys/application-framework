@@ -35,11 +35,11 @@ final class ResponseConverterTest extends TestCase
      * Creates a basic APIMethodInterface mock with a configurable response MIME.
      *
      * @param string $responseMime
-     * @return APIMethodInterface&\PHPUnit\Framework\MockObject\MockObject
+     * @return APIMethodInterface&\PHPUnit\Framework\MockObject\Stub
      */
     private function createBasicMethodMock(string $responseMime = 'application/json') : APIMethodInterface
     {
-        $mock = $this->createMock(APIMethodInterface::class);
+        $mock = $this->createStub(APIMethodInterface::class);
         $mock->method('getResponseMime')->willReturn($responseMime);
         return $mock;
     }
@@ -50,14 +50,14 @@ final class ResponseConverterTest extends TestCase
      * @param array<string,mixed> $example
      * @param KeyDescription[] $keyDescriptions
      * @param string $responseMime
-     * @return JSONResponseInterface&\PHPUnit\Framework\MockObject\MockObject
+     * @return JSONResponseInterface&\PHPUnit\Framework\MockObject\Stub
      */
     private function createJsonMethodMock(
         array $example = array(),
         array $keyDescriptions = array(),
         string $responseMime = 'application/json'
     ) : JSONResponseInterface {
-        $mock = $this->createMock(JSONResponseInterface::class);
+        $mock = $this->createStub(JSONResponseInterface::class);
         $mock->method('getResponseMime')->willReturn($responseMime);
         $mock->method('getExampleJSONResponse')->willReturn($example);
         $mock->method('getReponseKeyDescriptions')->willReturn($keyDescriptions);
@@ -155,7 +155,7 @@ final class ResponseConverterTest extends TestCase
 
     public function test_200response_jsonMethod_exceptionInGetExample_noExampleKey() : void
     {
-        $method = $this->createMock(JSONResponseInterface::class);
+        $method = $this->createStub(JSONResponseInterface::class);
         $method->method('getResponseMime')->willReturn('application/json');
         $method->method('getExampleJSONResponse')->willThrowException(new RuntimeException('DB not connected'));
         $method->method('getReponseKeyDescriptions')->willReturn(array());
@@ -292,5 +292,75 @@ final class ResponseConverterTest extends TestCase
         $this->assertStringNotContainsString(OpenAPISchema::SCHEMA_API_ENVELOPE.'_', $schema400['$ref']);
         $this->assertStringContainsString(OpenAPISchema::SCHEMA_API_ERROR_ENVELOPE, $schema400['$ref']);
         $this->assertStringContainsString(OpenAPISchema::SCHEMA_API_ERROR_ENVELOPE, $schema500['$ref']);
+    }
+
+    // -------------------------------------------------------------------------
+    // Success response (200) — bare payload & KeyPath-style descriptions
+    // -------------------------------------------------------------------------
+
+    public function test_200response_jsonMethod_barePayloadExample_producesAllOfSchema() : void
+    {
+        // Bare payload (no envelope wrapper) — the real-world format from getExampleJSONResponse().
+        $barePayload = array(
+            'companyId' => 42,
+            'name' => 'ACME',
+        );
+
+        $keyDescriptions = array(
+            KeyDescription::create('companyId', 'The company identifier.'),
+        );
+
+        $method = $this->createJsonMethodMock($barePayload, $keyDescriptions);
+        $result = $this->converter->convertResponses($method);
+        $content = $result[ResponseConverter::HTTP_200]['content'];
+        $mime = array_key_first($content);
+        $this->assertIsString($mime);
+
+        $schema = $content[$mime]['schema'];
+
+        // Should use allOf since we have inferred data schema.
+        $this->assertArrayHasKey('allOf', $schema);
+        $this->assertSame(
+            '#/components/schemas/'.OpenAPISchema::SCHEMA_API_ENVELOPE,
+            $schema['allOf'][0]['$ref']
+        );
+
+        // The data sub-schema should contain the inferred + described properties.
+        $dataProperties = $schema['properties']['data']['properties'];
+        $this->assertArrayHasKey('companyId', $dataProperties);
+        $this->assertSame('integer', $dataProperties['companyId']['type']);
+        $this->assertSame('The company identifier.', $dataProperties['companyId']['description']);
+        $this->assertArrayHasKey('name', $dataProperties);
+        $this->assertSame('string', $dataProperties['name']['type']);
+    }
+
+    public function test_200response_jsonMethod_keypathDescriptions_mergedIntoSchema() : void
+    {
+        // KeyPath-style descriptions (paths relative to data, without `data.` prefix).
+        $barePayload = array(
+            'grayZoneModes' => array('strict', 'lenient'),
+            'mailForgeName' => 'Newsletter Template',
+        );
+
+        $keyDescriptions = array(
+            KeyDescription::create('grayZoneModes', 'Available gray zone modes.'),
+            KeyDescription::create('mailForgeName', 'The MailForge template name.'),
+        );
+
+        $method = $this->createJsonMethodMock($barePayload, $keyDescriptions);
+        $result = $this->converter->convertResponses($method);
+        $content = $result[ResponseConverter::HTTP_200]['content'];
+        $mime = array_key_first($content);
+        $this->assertIsString($mime);
+
+        $schema = $content[$mime]['schema'];
+
+        // Should use allOf.
+        $this->assertArrayHasKey('allOf', $schema);
+
+        // Data properties should have descriptions merged.
+        $dataProperties = $schema['properties']['data']['properties'];
+        $this->assertSame('Available gray zone modes.', $dataProperties['grayZoneModes']['description']);
+        $this->assertSame('The MailForge template name.', $dataProperties['mailForgeName']['description']);
     }
 }

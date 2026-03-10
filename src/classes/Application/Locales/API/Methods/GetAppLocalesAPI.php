@@ -11,6 +11,7 @@ use Application\API\Traits\JSONResponseWithExampleInterface;
 use Application\API\Traits\JSONResponseWithExampleTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
+use Application\API\Utilities\KeyDescription;
 use Application\Countries\API\Methods\GetAppCountriesAPI;
 use Application\Locales;
 use Application\Locales\API\AppLocaleAPIInterface;
@@ -149,7 +150,36 @@ MARKDOWN;
 
     public function getReponseKeyDescriptions(): array
     {
-        return array();
+        return array(
+            KeyDescription::create(
+                AppLocaleAPIResponseInterface::KEY_ROOT_LOCALES,
+                'Array of all locales known to the application.'
+            ),
+            KeyDescription::create(
+                AppLocaleAPIResponseInterface::KEY_ROOT_LOCALES . '.' . AppLocaleAPIResponseInterface::KEY_LOCALE_ID,
+                'Compound locale identifier (e.g. de_DE).'
+            ),
+            KeyDescription::create(
+                AppLocaleAPIResponseInterface::KEY_ROOT_LOCALES . '.' . AppLocaleAPIResponseInterface::KEY_LOCALE_LANGUAGE_CODE,
+                'Two-letter ISO 639-1 language code component of the locale.'
+            ),
+            KeyDescription::create(
+                AppLocaleAPIResponseInterface::KEY_ROOT_LOCALES . '.' . AppLocaleAPIResponseInterface::KEY_LOCALE_COUNTRY_CODE,
+                'Two-letter ISO 3166-1 alpha-2 country code component of the locale.'
+            ),
+            KeyDescription::create(
+                AppLocaleAPIResponseInterface::KEY_ROOT_LOCALES . '.' . AppLocaleAPIResponseInterface::KEY_LOCALE_LABEL,
+                'Localised display name of the locale (translated to the requested language if available).'
+            ),
+            KeyDescription::create(
+                AppLocaleAPIResponseInterface::KEY_ROOT_LOCALES . '.' . AppLocaleAPIResponseInterface::KEY_LOCALE_LABEL_INVARIANT,
+                'Locale-invariant display name of the locale.'
+            ),
+            KeyDescription::create(
+                AppLocaleAPIResponseInterface::KEY_ROOT_LOCALES . '.' . AppLocaleAPIResponseInterface::KEY_LOCALE_AVAILABLE_FOR_UI,
+                'Whether this locale is configured as an available language for the application user interface.'
+            ),
+        );
     }
 
     // endregion

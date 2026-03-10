@@ -102,6 +102,8 @@ MARKDOWN;
 
     public function getReponseKeyDescriptions(): array
     {
+        // No static key descriptions applicable — the response is a dynamic, application-specific
+        // tree of administration areas whose structure depends on the screens registered at runtime.
         return array();
     }
 
