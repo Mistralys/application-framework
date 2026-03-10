@@ -50,3 +50,4 @@ VERSION
 .idea/copilot.data.migration.agent.xml
 phpstan.result.txt
 phpstan-result.txt
+.phpunit.cache/test-results
