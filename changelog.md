@@ -3,9 +3,10 @@
 ## v7.0.11 - Deepl Settings Overrides
 - Deepl: Added DB-based app setting overrides for the API key and proxy configuration.
 - Deepl: Driver settings now take precedence over boot constants for API key and proxy.
+- Deepl: Errors are now much more detailed in the test screen.
 - Admin: Fixed broken subnavigation in devel area screens.
 - CTX: Added PHPStan scripts guard to agent instructions.
-- Dependencies: Updated DeepL XML Translator to v2.0.3.
+- Dependencies: Updated DeepL XML Translator to [v3.0.0](https://github.com/Mistralys/deepl-xml-translator/releases/tag/3.0.0).
 
 ## v7.0.10 - Module Doc Generators
 - Docs: Added a generated modules overview.
