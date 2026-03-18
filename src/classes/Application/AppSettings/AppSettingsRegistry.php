@@ -9,6 +9,7 @@ use Application\AppSettings\Events\RegisterAppSettingsEvent;
 use Application_Driver;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
+use DeeplHelper;
 use UI_MarkupEditorInfo;
 
 /**
@@ -63,6 +64,24 @@ class AppSettingsRegistry extends BaseStringPrimaryCollection
                     sb()->link('strtotime', 'https://www.php.net/manual/en/function.strtotime.php', true),
                     sb()->code('20 seconds')
                 )
+        ));
+
+        $this->registerItem(new AppSettingDef(
+            DeeplHelper::APP_SETTING_API_KEY,
+            AppSettingDef::SETTING_TYPE_STRING,
+            t('The DeepL API key used for translation requests. Overrides the boot constant if set.')
+        ));
+
+        $this->registerItem(new AppSettingDef(
+            DeeplHelper::APP_SETTING_PROXY_ENABLED,
+            AppSettingDef::SETTING_TYPE_BOOLEAN,
+            t('Whether to route DeepL API requests through a proxy. Overrides the boot constant if set.')
+        ));
+
+        $this->registerItem(new AppSettingDef(
+            DeeplHelper::APP_SETTING_PROXY_URL,
+            AppSettingDef::SETTING_TYPE_STRING,
+            t('The proxy URL used for DeepL API requests when the proxy is enabled. Overrides the boot constant if set.')
         ));
 
         // Allow the application to register any custom settings

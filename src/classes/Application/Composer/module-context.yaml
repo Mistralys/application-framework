@@ -94,5 +94,5 @@ documents:
         filePattern: '*'
         renderFormat: ascii
         enabled: true
-        showCharCount: true
+        showCharCount: false
         maxDepth: 4

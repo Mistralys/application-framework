@@ -3,30 +3,30 @@ _SOURCE: Tree of PHP Class Files_
 # Tree of PHP Class Files
 ###  
 ```
-└── src/ [72,750 chars]
-    └── classes/ [72,750 chars]
-        └── Application/ [72,750 chars]
-            └── Composer/ [72,750 chars]
-                └── BuildMessages.php [7,070 chars]
-                └── CSSClassesGenerator.php [2,528 chars]
-                └── ComposerScripts.php [8,221 chars]
-                └── KeywordGlossary/ [18,427 chars]
-                    ├── Events/ [2,838 chars]
-                    │   ├── BaseDecorateGlossaryListener.php [1,400 chars]
-                    │   ├── DecorateGlossaryEvent.php [1,438 chars]
-                    ├── GlossarySection.php [1,413 chars]
-                    ├── GlossarySectionEntry.php [709 chars]
-                    ├── KeywordEntry.php [1,687 chars]
-                    ├── KeywordGlossaryGenerator.php [6,049 chars]
-                    ├── KeywordGlossaryRenderer.php [4,176 chars]
-                    ├── KeywordParser.php [1,555 chars]
-                └── ModulesOverview/ [25,622 chars]
-                    ├── ModuleContextFileFinder.php [5,622 chars]
-                    ├── ModuleInfo.php [3,137 chars]
-                    ├── ModulesOverviewGenerator.php [11,249 chars]
-                    ├── ModulesOverviewRenderer.php [5,614 chars]
-                └── README.md [7,089 chars]
-                └── module-context.yaml [3,793 chars]
+└── src/
+    └── classes/
+        └── Application/
+            └── Composer/
+                └── BuildMessages.php
+                └── CSSClassesGenerator.php
+                └── ComposerScripts.php
+                └── KeywordGlossary/
+                    ├── Events/
+                    │   ├── BaseDecorateGlossaryListener.php
+                    │   ├── DecorateGlossaryEvent.php
+                    ├── GlossarySection.php
+                    ├── GlossarySectionEntry.php
+                    ├── KeywordEntry.php
+                    ├── KeywordGlossaryGenerator.php
+                    ├── KeywordGlossaryRenderer.php
+                    ├── KeywordParser.php
+                └── ModulesOverview/
+                    ├── ModuleContextFileFinder.php
+                    ├── ModuleInfo.php
+                    ├── ModulesOverviewGenerator.php
+                    ├── ModulesOverviewRenderer.php
+                └── README.md
+                └── module-context.yaml
 
 ```
 ---

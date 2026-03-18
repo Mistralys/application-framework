@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v7.0.13 - API Cache Quality Improvements
+## v7.1.0 - API Cache Quality Improvements
 - API Cache: `CacheableAPIMethodTrait::readFromCache()` now logs corrupt cache files at error level (via `AppFactory::createLogger()->logError()`) before deleting the file and returning `null`. Log output includes the file path, exception message, and `APICacheException::ERROR_CACHE_FILE_CORRUPT` as the error code reference. Behaviour is unchanged — no exception propagates to the caller.
 - AI Cache: `FixedDurationStrategy::isCacheFileValid()` now has an explicit `filemtime() === false` guard, matching the API cache counterpart and preventing potential implicit-coercion issues in race-condition scenarios.
 - API Cache: Added `@throws APICacheException` annotation to `APICacheManager::invalidateMethod()`.
@@ -21,6 +21,14 @@
 - API: `BaseAPIMethod::_process()` modified to transparently check and write cache for methods implementing `CacheableAPIMethodInterface`.
 - API: `APIResponseCacheLocation` registers the API response cache with the admin CacheControl UI via the event handler registry.
 - API: Caching is opt-in via interface + trait composition, consistent with the existing `DryRunAPIInterface`/`DryRunAPITrait` pattern.
+
+## v7.0.11 - Deepl Settings Overrides
+- Deepl: Added DB-based app setting overrides for the API key and proxy configuration.
+- Deepl: Driver settings now take precedence over boot constants for API key and proxy.
+- Deepl: Errors are now much more detailed in the test screen.
+- Admin: Fixed broken subnavigation in devel area screens.
+- CTX: Added PHPStan scripts guard to agent instructions.
+- Dependencies: Updated DeepL XML Translator to [v3.0.0](https://github.com/Mistralys/deepl-xml-translator/releases/tag/3.0.0).
 
 ## v7.0.10 - Module Doc Generators
 - Docs: Added a generated modules overview.

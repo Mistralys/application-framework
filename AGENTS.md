@@ -108,6 +108,7 @@ This codebase has **1,545+ class files**. Wasteful scanning is expensive. Follow
 | Legacy (non-namespaced) class encountered | Do not refactor unless explicitly asked; follow existing style in that file | MUST |
 | Unsure if `array()` or `[]` syntax | Always use `array()` — this is a hard project rule | MUST |
 | Need to add a new class file | Run `composer dump-autoload` after — classmap autoloading requires it | MUST |
+| Found `tests/phpstan/` directory | This contains only bootstrap constants for `phpstan.neon` — use `composer analyze` to run PHPStan; never restore or create scripts there | MUST |
 
 ---
 
@@ -158,6 +159,8 @@ Run PHPStan via Composer scripts — **never invoke `vendor/bin/phpstan` directl
 | `composer analyze` | Run PHPStan against the codebase |
 | `composer analyze-save` | Run PHPStan and write results to `phpstan-result.txt` |
 | `composer analyze-clear` | Clear the PHPStan result cache |
+
+> **Warning:** `tests/phpstan/` contains only a bootstrap constants file (`constants.php`) consumed by `phpstan.neon`. It is **not** a PHPStan runner or CLI tooling directory. Never restore, create, or execute scripts from this folder — always use the Composer commands above.
 
 ---
 
