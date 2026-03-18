@@ -11,6 +11,7 @@ use Application\AppFactory;
 use Application\Development\DevManager;
 use DeeplHelper;
 use DeeplHelper\Admin\DeeplScreenRights;
+use DeeplXML\Translator_Exception_Request;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
@@ -60,7 +61,7 @@ class DeepLTestScreen extends BaseMode implements DevelModeInterface
         $this->renderer
             ->setAbstract(sb()
                 ->t('This allows testing the DeepL translation service.')
-                ->t('PHP exceptions are not caught, so that connection errors can be identified.')
+                ->t('Request exceptions are caught and their full diagnostics displayed below the form.')
                 ->nl()
                 ->note()
                 ->t(
@@ -97,7 +98,19 @@ class DeepLTestScreen extends BaseMode implements DevelModeInterface
 
         $translator = AppFactory::createDeeplHelper()->createTranslator($sourceCountry, $targetCountry);
         $translator->addString('target_text', $text);
-        $translator->translate();
+
+        try
+        {
+            $translator->translate();
+        }
+        catch(Translator_Exception_Request $e)
+        {
+            $this->renderer->appendContent($this->ui->createSection(t('Translation error'))
+                ->makeError()
+                ->setContent($e->renderAnalysis(true))
+            );
+            return;
+        }
 
         $translated = $translator->getStringByID('target_text')->getTranslatedText();
 
