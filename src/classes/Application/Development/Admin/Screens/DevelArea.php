@@ -77,8 +77,14 @@ class DevelArea extends BaseArea
 
     protected function initItems(): void
     {
-        foreach($this->getSubscreens() as $subscreen)
+        // Instantiate screens in non-admin mode: admin-mode instantiation triggers
+        // initScreen() → setParam('mode', urlName) as a side effect, which would
+        // clobber $_REQUEST['mode'] for the active screen. For navigation purposes
+        // we only need URL name, title and category — none of which require admin mode.
+        foreach($this->getSubscreenIDs() as $subscreenID => $urlName)
         {
+            $subscreen = $this->createSubscreen($subscreenID, false);
+
             if($subscreen instanceof DevelOverviewMode) {
                 continue;
             }
