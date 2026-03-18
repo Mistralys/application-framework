@@ -51,3 +51,5 @@ VERSION
 phpstan.result.txt
 phpstan-result.txt
 .phpunit.cache/test-results
+/docs/agents/**/work.md
+/docs/agents/**/work/

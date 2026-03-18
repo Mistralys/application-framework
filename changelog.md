@@ -1,5 +1,27 @@
 # Application Framework Changelog
 
+## v7.0.13 - API Cache Quality Improvements
+- API Cache: `CacheableAPIMethodTrait::readFromCache()` now logs corrupt cache files at error level (via `AppFactory::createLogger()->logError()`) before deleting the file and returning `null`. Log output includes the file path, exception message, and `APICacheException::ERROR_CACHE_FILE_CORRUPT` as the error code reference. Behaviour is unchanged — no exception propagates to the caller.
+- AI Cache: `FixedDurationStrategy::isCacheFileValid()` now has an explicit `filemtime() === false` guard, matching the API cache counterpart and preventing potential implicit-coercion issues in race-condition scenarios.
+- API Cache: Added `@throws APICacheException` annotation to `APICacheManager::invalidateMethod()`.
+- Docs: Added "Keyword Value Syntax Constraints" section to `docs/agents/references/module-context-reference.md` documenting the Symfony YAML colon+space parsing requirement for `module-context.yaml` keyword values.
+- Docs: Added "Trait Consumer Policy" section to `docs/agents/project-manifest/constraints.md` — `trait.unused` PHPStan suppressions must never be added; library traits must have a concrete consumer in the test application instead.
+- Test: Added `CountryRequestScreen` to the test application as a reference consumer for `CountryRequestTrait`, eliminating the PHPStan `trait.unused` notice.
+
+## v7.0.12 - User-Scoped API Response Caching
+- API: New `UserScopedCacheInterface` and `UserScopedCacheTrait` in `Application\API\Cache` for API methods returning user-specific data.
+- API: `UserScopedCacheTrait::getCacheKeyParameters()` automatically injects the `_userScope` cache key using the array union operator, guaranteeing user identity can never be silently omitted or overwritten.
+- API: Empty return from `getUserCacheIdentifier()` throws `APICacheException::ERROR_EMPTY_USER_CACHE_IDENTIFIER` — silent fallback is not acceptable.
+- API: `UserScopedCacheInterface` extends `CacheableAPIMethodInterface`; `BaseAPIMethod::_process()` requires no changes.
+
+## v7.0.11 - API Response Caching
+- API: Added file-based response caching for API methods.
+- API: New `Application\API\Cache` namespace: `APICacheStrategyInterface`, `CacheableAPIMethodInterface`, `CacheableAPIMethodTrait`, `APICacheManager`.
+- API: Built-in strategies: `FixedDurationStrategy` (time-based TTL) and `ManualOnlyStrategy` (manual invalidation only).
+- API: `BaseAPIMethod::_process()` modified to transparently check and write cache for methods implementing `CacheableAPIMethodInterface`.
+- API: `APIResponseCacheLocation` registers the API response cache with the admin CacheControl UI via the event handler registry.
+- API: Caching is opt-in via interface + trait composition, consistent with the existing `DryRunAPIInterface`/`DryRunAPITrait` pattern.
+
 ## v7.0.10 - Module Doc Generators
 - Docs: Added a generated modules overview.
 - Docs: Added a keyword glossary.

@@ -1,0 +1,98 @@
+## ---------------------------------------------------------------
+## AI MODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "ai"
+  label: "AI Tools"
+  description: "Infrastructure for exposing application logic as cacheable AI tools and serving them via an MCP server over stdio."
+  keywords:
+    - AI tool (callable unit that returns structured data, discovered and executed by AI agents)
+    - MCP server (Model Context Protocol server exposing tools over stdio transport)
+    - Tool container (orchestrator that boots the environment, checks cache, runs a tool, stores the result)
+    - Cache strategy (pluggable caching policy per tool — fixed-duration or uncached)
+  relatedModules:
+    - event-handler
+
+documents:
+  -
+    description: 'AI Module - Overview'
+    outputPath: 'modules/ai/overview.md'
+    sources:
+      - type: file
+        description: "AI Module README"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'AI Module - Core Architecture'
+    outputPath: 'modules/ai/architecture-core.md'
+    sources:
+      - type: file
+        description: "Tool container, environment runner, tool interface and base class"
+        sourcePaths:
+          - ./
+          - ./Tools
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'AI Module - Cache Architecture'
+    outputPath: 'modules/ai/architecture-cache.md'
+    sources:
+      - type: file
+        description: "Cache strategy interface, base class, concrete strategies, and cache location"
+        sourcePaths:
+          - ./Cache
+          - ./Cache/Strategies
+          - ./Cache/Events
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'AI Module - Server Architecture'
+    outputPath: 'modules/ai/architecture-server.md'
+    sources:
+      - type: file
+        description: "MCP server wrapper and stderr logger"
+        sourcePaths:
+          - ./Server
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'AI Module - File Structure'
+    outputPath: 'modules/ai/file-structure.md'
+    sources:
+      - type: tree
+        description: 'AI Module File Structure'
+        sourcePaths: [ ./ ]
+        filePattern: '*.php'
+        renderFormat: ascii
+        showCharCount: false
+        maxDepth: 5

@@ -9,7 +9,7 @@ use AppUtils\FileHelper\JSONFile;
 
 class UncachedStrategy extends BaseAICacheStrategy
 {
-    public const string STRATEGY_ID = 'uncached';
+    public const string STRATEGY_ID = 'Uncached';
 
     public function getID(): string
     {

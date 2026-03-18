@@ -105,6 +105,36 @@ moduleMetaData:
     - db-helper
 ```
 
+### Keyword Value Syntax Constraints
+
+> **Warning:** Keyword values containing a colon followed by a space (`: `) **must be quoted**. Symfony YAML 
+> parses an unquoted `word: text` as a mapping key, not a string scalar.
+
+#### Why this matters
+
+The `keywords` list items are YAML scalar strings. If a list item contains `: ` (colon + space), Symfony YAML
+interprets everything before the colon as a mapping key and the rest as a nested mapping value. The
+`ModulesOverviewGenerator::buildModuleInfo()` method receives an associative `array` instead of a `string`,
+causing an `Array to string conversion` error during `composer build`.
+
+#### Examples
+
+```yaml
+# CORRECT — plain string, no colon+space issue
+keywords:
+  - DataGrid (tabular list component with sorting and pagination)
+
+# CORRECT — quoted string, colon+space is safe inside quotes
+keywords:
+  - "CacheableAPIMethodTrait: provides transparent read-through caching for API methods"
+
+# BROKEN — Symfony YAML parses this as { "CacheableAPIMethodTrait" => "provides caching" }
+keywords:
+  - CacheableAPIMethodTrait: provides caching
+```
+
+**Rule:** If a keyword value must contain `: `, wrap the entire value in double quotes.
+
 ---
 
 ## Section 2: `documents`

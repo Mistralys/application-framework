@@ -12,7 +12,7 @@ Comprehensive guide to the Application Framework's test infrastructure, conventi
 | **PHP version** | 8.4+ |
 | **Config file** | `phpunit.xml` (project root) |
 | **Bootstrap** | `tests/bootstrap.php` |
-| **Test count** | ~141 unit test files + 2 integration test files |
+| **Test count** | ~155 unit test files + 2 integration test files |
 | **Test suite** | Single suite: `Framework Tests` (all tests under `tests/AppFrameworkTests/`) |
 
 ---
@@ -176,6 +176,22 @@ The framework includes a working test application in `tests/application/` that p
 
 ---
 
+## Local Test Environment Setup
+
+The test suite requires local configuration files that are **not committed** to the repository. Before running tests for the first time, copy the distribution templates and configure them for the local environment:
+
+1. Copy `tests/application/config/test-db-config.dist.php` → `tests/application/config/test-db-config.php`
+2. Copy `tests/application/config/test-ui-config.dist.php` → `tests/application/config/test-ui-config.php`
+3. Copy `tests/application/config/test-cas-config.dist.php` → `tests/application/config/test-cas-config.php`
+
+Edit `test-db-config.php` and set the correct database host, name, user, and password. The database name defaults to `app_framework_testsuite`; import `tests/sql/testsuite.sql` to initialise it.
+
+Edit `test-ui-config.php` and adjust `TESTS_BASE_URL` to the URL at which `tests/application` is reachable on the local webserver.
+
+`test-cas-config.php` is only required when `TESTS_SESSION_TYPE` is set to `CAS` in `test-ui-config.php`. For most local runs the default `NoAuth` session type is sufficient and the CAS config can be left as-is.
+
+---
+
 ## Stubs
 
 Located in `tests/AppFrameworkTestClasses/Stubs/`:
@@ -191,6 +207,24 @@ Located in `tests/AppFrameworkTestClasses/Stubs/`:
 | `ValidatableStub` | Validatable stub |
 
 Additional stubs exist in subdirectories: `Stubs/Admin/`, `Stubs/DBHelper/`, `Stubs/Revisionables/`, `Stubs/Session/`, `Stubs/UI/`.
+
+---
+
+## API Test Stub Placement
+
+API method stubs that invoke `processReturn()` must be placed in the test application's source directory:
+
+```
+tests/application/assets/classes/TestDriver/API/
+```
+
+**Do not** place such stubs in `tests/AppFrameworkTestClasses/` — they will not be discovered by the method index.
+
+### Why this matters
+
+`APIMethodParameter` validates that the method name passed to `processReturn()` exists in the framework's API method index. This index is built by scanning the test application's source folders (`tests/application/assets/classes/`). Classes in `AppFrameworkTestClasses/` are invisible to this discovery process and will trigger a "method not found" validation error.
+
+Simple stubs that do not invoke `processReturn()` (e.g., those only used via `createStub()` / `createMock()`) can still reside in `AppFrameworkTestClasses/`.
 
 ---
 

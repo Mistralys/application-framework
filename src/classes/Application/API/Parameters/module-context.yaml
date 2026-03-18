@@ -1,0 +1,169 @@
+## ---------------------------------------------------------------
+## API / PARAMETERS — Parameter Type System for API Methods
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "api-parameters"
+  label: "API Parameters"
+  description: "Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle."
+  keywords:
+    - ParamTypeSelector (fluent builder returned by addParam for choosing the parameter type)
+    - common type (reusable domain-specific parameter preset like AliasParameter or EmailParameter)
+    - flavor (cross-cutting parameter behavior like header-sourced or always-required)
+    - rule (cross-parameter constraint evaluated after individual validation; e.g. OrRule, RequiredIfOtherIsSetRule)
+    - reserved parameter (framework-owned parameter name that application code cannot register)
+    - selectable value (fixed set of allowed values declared by a parameter for validation and documentation)
+    - param handler (internal pipeline component that reads parameter values during method processing)
+  relatedModules:
+    - "api"
+    - "api-openapi"
+    - "api-cache"
+
+documents:
+  -
+    description: 'API Parameters - Overview'
+    outputPath: 'modules/api/parameters/overview.md'
+    sources:
+      - type: file
+        description: "API Parameters Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'API Parameters - Core Architecture (Public API)'
+    outputPath: 'modules/api/parameters/architecture-core.md'
+    sources:
+      - type: file
+        description: "APIParamManager, APIParameterInterface, BaseAPIParameter, ParamTypeSelector, APIParameterException, ReservedParamInterface"
+        sourcePaths:
+          - ./
+        filePattern: "*.php"
+        excludePatterns:
+          - 'CommonTypes/'
+          - 'Flavors/'
+          - 'Handlers/'
+          - 'Reserved/'
+          - 'Rules/'
+          - 'Type/'
+          - 'Validation/'
+          - 'ValueLookup/'
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - Parameter Types (Public API)'
+    outputPath: 'modules/api/parameters/architecture-types.md'
+    sources:
+      - type: file
+        description: "StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringValidations"
+        sourcePaths:
+          - ./Type
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - Common Types (Public API)'
+    outputPath: 'modules/api/parameters/architecture-common-types.md'
+    sources:
+      - type: file
+        description: "AliasParameter, AlphabeticalParameter, AlphanumericParameter, DateParameter, EmailParameter, LabelParameter, MD5Parameter, NameOrTitleParameter"
+        sourcePaths:
+          - ./CommonTypes
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - Rules (Public API)'
+    outputPath: 'modules/api/parameters/architecture-rules.md'
+    sources:
+      - type: file
+        description: "RuleInterface, BaseRule, OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals, RuleTypeSelector, ParamSet, ParamSetInterface, CustomParamSetInterface, BaseCustomParamSet"
+        sourcePaths:
+          - ./Rules
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public", "protected" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - Validation (Public API)'
+    outputPath: 'modules/api/parameters/architecture-validation.md'
+    sources:
+      - type: file
+        description: "ParamValidationInterface, BaseParamValidation, RequiredValidation, EnumValidation, RegexValidation, CallbackValidation, ValueExistsCallbackValidation, ParamValidationResults"
+        sourcePaths:
+          - ./Validation
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - Flavors, Handlers, Reserved, Value Lookup (Public API)'
+    outputPath: 'modules/api/parameters/architecture-supporting.md'
+    sources:
+      - type: file
+        description: "APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, ParamHandlerInterface, BaseParamHandler, BaseRuleHandler, RuleHandlerInterface, APIHandlerInterface, BaseAPIHandler, ParamsHandlerContainerInterface, BaseParamsHandlerContainer, APIMethodParameter, APIVersionParameter, SelectableValueParamInterface/Trait, SelectableParamValue"
+        sourcePaths:
+          - ./Flavors
+          - ./Handlers
+          - ./Reserved
+          - ./ValueLookup
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public", "protected" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - File Structure'
+    outputPath: 'modules/api/parameters/file-structure.md'
+    sources:
+      - type: tree
+        description: 'API Parameters File Structure'
+        sourcePaths: [ ./ ]
+        filePattern: '*.php'
+        renderFormat: ascii
+        showCharCount: false
+        maxDepth: 4

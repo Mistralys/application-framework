@@ -1,0 +1,83 @@
+## ---------------------------------------------------------------
+## API / CACHE — File-Based Response Caching for API Methods
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "api-cache"
+  label: "API Cache"
+  description: "File-based response caching for API methods. Provides a two-tier interface/trait composition pattern: (1) CacheableAPIMethodInterface + CacheableAPIMethodTrait for stateless, non-user-scoped methods; (2) UserScopedCacheInterface + UserScopedCacheTrait for user-specific methods that require per-user cache isolation — the trait automatically injects _userScope into the cache key using the array union operator so a user identifier can never be silently omitted or overwritten. Covers the full caching pipeline: strategy abstraction (APICacheStrategyInterface, FixedDurationStrategy, ManualOnlyStrategy with STRATEGY_ID PascalCase constants), file system management (APICacheManager: storage layout, method-level invalidation with path-traversal guard via APICacheException, cache size reporting), deterministic cache key generation via MD5 hash of method name + version + json_encode of sorted key parameters, read/write/invalidate operations (CacheableAPIMethodTrait: readFromCache returns null on miss, expired entry, or corrupt file — corrupt files are automatically deleted; writeToCache auto-creates parent dirs via JSONFile::putData; invalidateCache delegates to APICacheManager::invalidateMethod), error handling (APICacheException with ERROR_EMPTY_USER_CACHE_IDENTIFIER, ERROR_INVALID_METHOD_NAME, ERROR_CACHE_FILE_CORRUPT constants), and CacheControl admin UI integration (APIResponseCacheLocation)."
+  keywords:
+    - CacheableAPIMethodInterface (interface API method classes implement to opt into file-based response caching; extends APIMethodInterface; requires getCacheStrategy() and getCacheKeyParameters() from the implementing class)
+    - CacheableAPIMethodTrait (trait providing default implementations for getCacheKey, readFromCache, writeToCache, and invalidateCache; use alongside CacheableAPIMethodInterface)
+    - getCacheStrategy (CacheableAPIMethodInterface method; implementing class returns the APICacheStrategyInterface instance that controls cache file validity)
+    - getCacheKeyParameters (CacheableAPIMethodInterface method; implementing class returns an associative array of parameter name to scalar value pairs used in cache key generation)
+    - "getCacheKey (CacheableAPIMethodTrait: builds a deterministic MD5 hash from method name, version, and ksort-ed getCacheKeyParameters; same inputs always produce the same key)"
+    - "readFromCache (CacheableAPIMethodTrait: returns null on missing file, invalid strategy check, or corrupt JSON; on a corrupt file the file is automatically deleted before returning null; returns parsed array on a valid cache hit)"
+    - "writeToCache (CacheableAPIMethodTrait: writes response data to the resolved JSON cache file; parent directory is created automatically)"
+    - "invalidateCache (CacheableAPIMethodTrait: deletes all cache files for this method by delegating to APICacheManager::invalidateMethod)"
+    - APICacheManager (static utility; resolves storage paths under APP_STORAGE/api/cache/MethodName/; provides getCacheFolder, getMethodCacheFolder, invalidateMethod, clearAll, getCacheSize)
+    - getMethodCacheFolder (APICacheManager static method; throws APICacheException ERROR_INVALID_METHOD_NAME if the method name is empty or contains path-traversal characters)
+    - invalidateMethod (APICacheManager static method; deletes the entire MethodName cache subfolder; no-op if folder does not exist)
+    - clearAll (APICacheManager static method; deletes the entire api/cache folder)
+    - getCacheSize (APICacheManager static method; returns total byte size of all files in the cache folder)
+    - "APICacheException (exception class extending APIException; thrown by cache infrastructure for programming errors; error codes: ERROR_EMPTY_USER_CACHE_IDENTIFIER 59213009, ERROR_INVALID_METHOD_NAME 59213010, ERROR_CACHE_FILE_CORRUPT 59213011)"
+    - APICacheStrategyInterface (contract for cache validity strategies; requires getID returning a STRATEGY_ID string constant and isCacheFileValid accepting a JSONFile)
+    - isCacheFileValid (APICacheStrategyInterface method; given a JSONFile returns whether the cached response is still valid)
+    - "FixedDurationStrategy (built-in strategy with STRATEGY_ID=FixedDuration; cache file is valid if it is younger than the configured duration in seconds; ships with named constants DURATION_1MIN, DURATION_5MIN, DURATION_15MIN, DURATION_1HOUR, DURATION_6HOURS, DURATION_12HOURS, DURATION_24HOURS)"
+    - "ManualOnlyStrategy (built-in strategy with STRATEGY_ID=ManualOnly; cached file never expires automatically; invalidation is triggered only via invalidateCache or APICacheManager::clearAll)"
+    - APIResponseCacheLocation (CacheControl integration; exposes the API response cache to the admin cache management UI; registered automatically via RegisterAPIResponseCacheListener)
+    - "UserScopedCacheInterface (sub-interface of CacheableAPIMethodInterface for API methods returning user-specific data; declares getUserCacheIdentifier returning a unique non-empty string user identifier, and getUserScopedCacheKeyParameters returning method-specific parameters array; use with UserScopedCacheTrait; _userScope is a reserved key name)"
+    - "UserScopedCacheTrait (pair trait for UserScopedCacheInterface; uses CacheableAPIMethodTrait internally; overrides getCacheKeyParameters to inject _userScope key via array union operator; throws APICacheException ERROR_EMPTY_USER_CACHE_IDENTIFIER if getUserCacheIdentifier returns empty; annotated with @phpstan-require-implements UserScopedCacheInterface)"
+    - getUserCacheIdentifier (UserScopedCacheInterface method; returns a unique non-empty string identifying the current user context; must never return empty or APICacheException is thrown by UserScopedCacheTrait)
+    - getUserScopedCacheKeyParameters (UserScopedCacheInterface method; returns method-specific cache key parameters excluding user identification; _userScope is a reserved key and the trait-injected value always takes precedence)
+  relatedModules:
+    - "api-openapi"
+
+documents:
+  -
+    description: 'API Cache - Overview'
+    outputPath: 'modules/api-cache/overview.md'
+    sources:
+      - type: file
+        description: "API Cache Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'API Cache - Core Architecture (Public API)'
+    outputPath: 'modules/api-cache/architecture-core.md'
+    sources:
+      - type: file
+        description: "APICacheException, APICacheStrategyInterface, APICacheManager, CacheableAPIMethodInterface, CacheableAPIMethodTrait, UserScopedCacheInterface, UserScopedCacheTrait, APIResponseCacheLocation"
+        sourcePaths:
+          - ./
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public", "protected" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Cache - Cache Strategies (Public API)'
+    outputPath: 'modules/api-cache/architecture-strategies.md'
+    sources:
+      - type: file
+        description: "FixedDurationStrategy, ManualOnlyStrategy"
+        sourcePaths:
+          - ./Strategies
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
