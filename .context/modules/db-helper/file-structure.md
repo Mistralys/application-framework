@@ -3,127 +3,127 @@ _SOURCE: PHP class file tree_
 # PHP class file tree
 ###  
 ```
-└── src/ [314,022 chars]
-    └── classes/ [314,022 chars]
-        └── DBHelper/ [314,022 chars]
-            └── API/ [4,184 chars]
-                ├── Methods/ [4,184 chars]
-                │   └── DescribeCollectionsAPI.php [4,184 chars]
-            └── Admin/ [49,802 chars]
-                ├── BaseCollectionListBuilder.php [1,871 chars]
-                ├── BaseDBRecordSelectionTieIn.php [1,398 chars]
-                ├── DBHelperAdminException.php [325 chars]
-                ├── DBRecordSelectionTieInInterface.php [776 chars]
-                ├── Requests/ [1,100 chars]
-                │   ├── BaseDBRecordRequestType.php [1,100 chars]
-                ├── Screens/ [7,175 chars]
-                │   ├── Action/ [2,657 chars]
-                │   │   ├── BaseRecordAction.php [622 chars]
-                │   │   ├── BaseRecordCreateAction.php [571 chars]
-                │   │   ├── BaseRecordDeleteAction.php [321 chars]
-                │   │   ├── BaseRecordListAction.php [365 chars]
-                │   │   ├── BaseRecordSettingsAction.php [457 chars]
-                │   │   ├── BaseRecordStatusAction.php [321 chars]
-                │   ├── Mode/ [1,443 chars]
-                │   │   ├── BaseRecordCreateMode.php [605 chars]
-                │   │   ├── BaseRecordListMode.php [514 chars]
-                │   │   ├── BaseRecordMode.php [324 chars]
-                │   ├── Submode/ [3,075 chars]
-                │   │   └── BaseRecordCreateSubmode.php [538 chars]
-                │   │   └── BaseRecordDeleteSubmode.php [540 chars]
-                │   │   └── BaseRecordListSubmode.php [440 chars]
-                │   │   └── BaseRecordSettingsSubmode.php [623 chars]
-                │   │   └── BaseRecordStatusSubmode.php [493 chars]
-                │   │   └── BaseRecordSubmode.php [441 chars]
-                ├── Traits/ [37,157 chars]
-                │   └── RecordCreateScreenInterface.php [148 chars]
-                │   └── RecordCreateScreenTrait.php [325 chars]
-                │   └── RecordDeleteScreenInterface.php [275 chars]
-                │   └── RecordDeleteScreenTrait.php [2,428 chars]
-                │   └── RecordEditScreenInterface.php [685 chars]
-                │   └── RecordEditScreenTrait.php [693 chars]
-                │   └── RecordListScreenInterface.php [572 chars]
-                │   └── RecordListScreenTrait.php [5,787 chars]
-                │   └── RecordScreenInterface.php [535 chars]
-                │   └── RecordScreenTrait.php [2,932 chars]
-                │   └── RecordSettingsScreenInterface.php [2,449 chars]
-                │   └── RecordSettingsScreenTrait.php [18,751 chars]
-                │   └── RecordStatusScreenInterface.php [290 chars]
-                │   └── RecordStatusScreenTrait.php [1,287 chars]
-            └── Attributes/ [118 chars]
-                ├── UncachedQuery.php [118 chars]
-            └── BaseCollection.php [24,934 chars]
-            └── BaseCollection/ [34,638 chars]
-                ├── BaseChildCollection.php [4,860 chars]
-                ├── ChildCollectionInterface.php [565 chars]
-                ├── DBHelperCollectionException.php [727 chars]
-                ├── DBHelperCollectionInterface.php [11,685 chars]
-                ├── Event/ [2,692 chars]
-                │   ├── AfterCreateRecordEvent.php [1,000 chars]
-                │   ├── AfterDeleteRecordEvent.php [1,000 chars]
-                │   ├── BeforeCreateRecordEvent.php [692 chars]
-                ├── Keys.php [2,430 chars]
-                ├── Keys/ [8,165 chars]
-                │   ├── Key.php [8,165 chars]
-                ├── OperationContext.php [1,857 chars]
-                ├── OperationContext/ [1,657 chars]
-                │   └── Create.php [565 chars]
-                │   └── Delete.php [565 chars]
-                │   └── Save.php [527 chars]
-            └── BaseFilterCriteria.php [5,688 chars]
-            └── BaseFilterCriteria/ [4,453 chars]
-                ├── BaseCollectionFilteringInterface.php [1,052 chars]
-                ├── IntegerCollectionFilteringInterface.php [649 chars]
-                ├── Record.php [2,534 chars]
-                ├── StringCollectionFilteringInterface.php [218 chars]
-            └── BaseFilterSettings.php [811 chars]
-            └── BaseRecord.php [18,603 chars]
-            └── BaseRecord/ [2,394 chars]
-                ├── BaseRecordDecorator.php [886 chars]
-                ├── BaseRecordException.php [334 chars]
-                ├── Event/ [1,174 chars]
-                │   └── KeyModifiedEvent.php [1,174 chars]
-            └── BaseRecordSettings.php [1,564 chars]
-            └── CaseStatement.php [2,382 chars]
-            └── DBHelper.php [65,115 chars]
-            └── DBHelperFilterCriteriaInterface.php [587 chars]
-            └── DBHelperFilterSettingsInterface.php [190 chars]
-            └── DataTable.php [12,310 chars]
-            └── DataTable/ [1,445 chars]
-                ├── Events/ [1,445 chars]
-                │   └── KeysDeleted.php [724 chars]
-                │   └── KeysSaved.php [721 chars]
-            └── Docs/ [9,911 chars]
-                ├── dbhelper-database-abstraction.md [215 chars]
-                ├── dbhelper-record-collections.md [9,696 chars]
-            └── Event.php [2,159 chars]
-            └── Exception.php [795 chars]
-            └── Exception/ [4,784 chars]
-                ├── BaseErrorRenderer.php [3,439 chars]
-                ├── CLIErrorRenderer.php [648 chars]
-                ├── HTMLErrorRenderer.php [697 chars]
-            └── FetchBase.php [4,945 chars]
-            └── FetchKey.php [1,342 chars]
-            └── FetchMany.php [2,939 chars]
-            └── FetchOne.php [1,939 chars]
-            └── Interfaces/ [8,991 chars]
-                ├── DBHelperRecordInterface.php [8,991 chars]
-            └── OperationTypes.php [2,291 chars]
-            └── README.md [391 chars]
-            └── StatementBuilder.php [4,766 chars]
-            └── StatementBuilder/ [6,831 chars]
-                ├── ValueDefinition.php [1,287 chars]
-                ├── ValuesContainer.php [5,544 chars]
-            └── TrackedQuery.php [5,031 chars]
-            └── Traits/ [24,022 chars]
-                ├── AfterRecordCreatedEventTrait.php [1,865 chars]
-                ├── BeforeCreateEventTrait.php [1,618 chars]
-                ├── LooseDBRecordInterface.php [2,729 chars]
-                ├── LooseDBRecordTrait.php [6,452 chars]
-                ├── RecordDecoratorInterface.php [937 chars]
-                ├── RecordDecoratorTrait.php [6,464 chars]
-                ├── RecordKeyHandlersTrait.php [3,957 chars]
-            └── module-context.yaml [3,667 chars]
+└── src/
+    └── classes/
+        └── DBHelper/
+            └── API/
+                ├── Methods/
+                │   └── DescribeCollectionsAPI.php
+            └── Admin/
+                ├── BaseCollectionListBuilder.php
+                ├── BaseDBRecordSelectionTieIn.php
+                ├── DBHelperAdminException.php
+                ├── DBRecordSelectionTieInInterface.php
+                ├── Requests/
+                │   ├── BaseDBRecordRequestType.php
+                ├── Screens/
+                │   ├── Action/
+                │   │   ├── BaseRecordAction.php
+                │   │   ├── BaseRecordCreateAction.php
+                │   │   ├── BaseRecordDeleteAction.php
+                │   │   ├── BaseRecordListAction.php
+                │   │   ├── BaseRecordSettingsAction.php
+                │   │   ├── BaseRecordStatusAction.php
+                │   ├── Mode/
+                │   │   ├── BaseRecordCreateMode.php
+                │   │   ├── BaseRecordListMode.php
+                │   │   ├── BaseRecordMode.php
+                │   ├── Submode/
+                │   │   └── BaseRecordCreateSubmode.php
+                │   │   └── BaseRecordDeleteSubmode.php
+                │   │   └── BaseRecordListSubmode.php
+                │   │   └── BaseRecordSettingsSubmode.php
+                │   │   └── BaseRecordStatusSubmode.php
+                │   │   └── BaseRecordSubmode.php
+                ├── Traits/
+                │   └── RecordCreateScreenInterface.php
+                │   └── RecordCreateScreenTrait.php
+                │   └── RecordDeleteScreenInterface.php
+                │   └── RecordDeleteScreenTrait.php
+                │   └── RecordEditScreenInterface.php
+                │   └── RecordEditScreenTrait.php
+                │   └── RecordListScreenInterface.php
+                │   └── RecordListScreenTrait.php
+                │   └── RecordScreenInterface.php
+                │   └── RecordScreenTrait.php
+                │   └── RecordSettingsScreenInterface.php
+                │   └── RecordSettingsScreenTrait.php
+                │   └── RecordStatusScreenInterface.php
+                │   └── RecordStatusScreenTrait.php
+            └── Attributes/
+                ├── UncachedQuery.php
+            └── BaseCollection.php
+            └── BaseCollection/
+                ├── BaseChildCollection.php
+                ├── ChildCollectionInterface.php
+                ├── DBHelperCollectionException.php
+                ├── DBHelperCollectionInterface.php
+                ├── Event/
+                │   ├── AfterCreateRecordEvent.php
+                │   ├── AfterDeleteRecordEvent.php
+                │   ├── BeforeCreateRecordEvent.php
+                ├── Keys.php
+                ├── Keys/
+                │   ├── Key.php
+                ├── OperationContext.php
+                ├── OperationContext/
+                │   └── Create.php
+                │   └── Delete.php
+                │   └── Save.php
+            └── BaseFilterCriteria.php
+            └── BaseFilterCriteria/
+                ├── BaseCollectionFilteringInterface.php
+                ├── IntegerCollectionFilteringInterface.php
+                ├── Record.php
+                ├── StringCollectionFilteringInterface.php
+            └── BaseFilterSettings.php
+            └── BaseRecord.php
+            └── BaseRecord/
+                ├── BaseRecordDecorator.php
+                ├── BaseRecordException.php
+                ├── Event/
+                │   └── KeyModifiedEvent.php
+            └── BaseRecordSettings.php
+            └── CaseStatement.php
+            └── DBHelper.php
+            └── DBHelperFilterCriteriaInterface.php
+            └── DBHelperFilterSettingsInterface.php
+            └── DataTable.php
+            └── DataTable/
+                ├── Events/
+                │   └── KeysDeleted.php
+                │   └── KeysSaved.php
+            └── Docs/
+                ├── dbhelper-database-abstraction.md
+                ├── dbhelper-record-collections.md
+            └── Event.php
+            └── Exception.php
+            └── Exception/
+                ├── BaseErrorRenderer.php
+                ├── CLIErrorRenderer.php
+                ├── HTMLErrorRenderer.php
+            └── FetchBase.php
+            └── FetchKey.php
+            └── FetchMany.php
+            └── FetchOne.php
+            └── Interfaces/
+                ├── DBHelperRecordInterface.php
+            └── OperationTypes.php
+            └── README.md
+            └── StatementBuilder.php
+            └── StatementBuilder/
+                ├── ValueDefinition.php
+                ├── ValuesContainer.php
+            └── TrackedQuery.php
+            └── Traits/
+                ├── AfterRecordCreatedEventTrait.php
+                ├── BeforeCreateEventTrait.php
+                ├── LooseDBRecordInterface.php
+                ├── LooseDBRecordTrait.php
+                ├── RecordDecoratorInterface.php
+                ├── RecordDecoratorTrait.php
+                ├── RecordKeyHandlersTrait.php
+            └── module-context.yaml
 
 ```
 ---
