@@ -44,6 +44,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 2.13 KB
+- **Size**: 1.63 KB
 - **Lines**: 50
 File: `modules/connectors/class-tree.md`

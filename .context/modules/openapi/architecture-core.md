@@ -748,6 +748,6 @@ class TypeMapper
 ```
 ---
 **File Statistics**
-- **Size**: 21.32 KB
-- **Lines**: 742
+- **Size**: 21.74 KB
+- **Lines**: 754
 File: `modules/openapi/architecture-core.md`

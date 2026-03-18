@@ -358,8 +358,9 @@ For methods implementing `JSONResponseInterface`:
   database state), the exception is caught and the example is silently omitted.
 - **Key descriptions** — if `getReponseKeyDescriptions()` returns `KeyDescription` objects,
   the success response schema is extended using `allOf` to annotate `data.*` property descriptions.
-  Root-level envelope keys (`state`, `code`, `message`, `api`) are excluded; only paths matching
-  `data.<propertyName>` are included.
+  Root-level envelope keys (`state`, `code`, `message`, `api`) are excluded. Paths may be
+  specified as bare property names relative to the `data` object (e.g. `fieldName` or
+  `root.child`) or with the legacy `data.` prefix (e.g. `data.fieldName`).
 
 ### Response MIME type
 
@@ -411,9 +412,11 @@ $responses = $converter->convertResponses($apiMethod);
   custom MIME support is added in future.
 - `SchemaInferrer` is instantiated inline inside `buildSuccessResponse()`. Constructor
   injection of the inferrer would improve testability of `ResponseConverter` in isolation.
-- Key description merging only handles paths one level below `data` (e.g. `data.field`).
-  Paths deeper than one level (`data.nested.field`) are silently skipped — intentional
-  for the current use case but worth revisiting if nested key descriptions are needed.
+- Key description merging performs deep recursive traversal for multi-segment paths: for
+  `root.child`, the description is placed on the `child` property inside `root` (or inside
+  `root.items.properties` if `root` is an array schema). Both bare relative paths (`fieldName`,
+  `root.child`) and legacy `data.` prefixed paths (`data.fieldName`) are accepted.
+  See [SchemaInferrer — Deep path traversal](#deep-path-traversal) for full details.
 
 ---
 
@@ -614,14 +617,85 @@ this is always satisfied).
 - Unknown types (objects, resources) fall back to `{ "type": "object" }`.
 - `inferDataSchema()` never throws — all failures are silently contained.
 
+### Example format detection
+
+`inferDataSchema()` accepts two example formats transparently:
+
+- **Bare payload format (preferred):** `getExampleJSONResponse()` returns the `data`
+  payload directly, without an outer envelope — e.g. `['id' => 1, 'label' => 'Foo']`.
+  The inferrer uses the array as-is. This is the universal format used by all production
+  API methods.
+- **Envelope format (backward-compatible):** `['state' => 'success', 'data' => [...]]`.
+  The inferrer detects the envelope heuristically (both a `state` string key and a `data`
+  array key are present) and extracts `$example['data']` before inferring. This format is
+  accepted for backward compatibility with existing tests.
+
+> **Heuristic note:** The envelope detection is a two-condition check (`state` is a string
+> AND `data` is an array). This is reliable because real data payloads never carry both keys
+> with those exact types simultaneously.
+
 ### Key description merging
 
 `inferDataSchema()` merges `KeyDescription` property descriptions into the inferred
-schema's `properties`. Only paths matching `data.<field>` (one level below `data`) are
-processed. Deeper paths (`data.nested.field`) are silently skipped.
+schema's `properties`. Two path formats are recognized:
+
+- **Relative paths (preferred):** `fieldName` or `root.child` — interpreted as relative
+  to the `data` object. This is the format produced by `KeyPath` and used in all production
+  API methods. Multi-segment paths perform deep recursive traversal into nested schemas
+  (see [Deep path traversal](#deep-path-traversal) below).
+- **Legacy `data.` prefix:** `data.fieldName` — the `data.` prefix is stripped and
+  `fieldName` is used. Multi-segment legacy paths (e.g. `data.root.child`) also perform
+  deep traversal. Kept for backward compatibility with existing tests.
+
+Paths whose first segment matches an envelope-level key (`state`, `code`, `message`, `api`)
+are silently excluded. `inferDataSchema()` never throws — all failures are silently contained.
 
 If `keyDescriptions` contains a path whose property does not exist in the inferred schema,
 a new property entry is created automatically so the description is always recorded.
+
+### Deep path traversal
+
+Multi-segment paths (e.g. `comGroups.textSnippet`) navigate recursively into the inferred
+schema to place the `description` on the correct leaf property. The traversal follows two rules:
+
+1. **Array schema** (`type: array` with `items`): descend into `items` **without consuming
+   a path segment**. Arrays are transparent wrappers — the next segment always applies to
+   the items schema. This correctly handles any depth of array nesting.
+2. **Object schema** (has `properties`): consume the next path segment and recurse into
+   the named child property.
+
+If any intermediate step fails (the property does not exist, there is no `items` or
+`properties` to navigate), the traversal stops silently. The description is not set and
+the rest of the schema is left unchanged — inference never throws.
+
+#### Example: array items
+
+For a path `comGroups.textSnippet` where `comGroups` is inferred as an array:
+
+```php
+// Inferred example schema (simplified):
+// comGroups → { type: array, items: { type: object, properties: { textSnippet: { type: string } } } }
+
+$descriptions = array(
+    new KeyDescription('comGroups.textSnippet', 'The plain-text snippet for this communication group.'),
+);
+
+$schema = $inferrer->inferDataSchema($example, $descriptions);
+// comGroups.items.properties.textSnippet now carries the description.
+```
+
+#### Example: nested objects
+
+For a path `address.city` where `address` is inferred as an object:
+
+```php
+$descriptions = array(
+    new KeyDescription('address.city', 'ISO 3166-1 city name.'),
+);
+
+$schema = $inferrer->inferDataSchema($example, $descriptions);
+// address.properties.city now carries the description.
+```
 
 ### Public API
 
@@ -641,10 +715,15 @@ $inferrer = new SchemaInferrer();
 $schema = $inferrer->inferSchema(['id' => 1, 'name' => 'Example']);
 // => ['type' => 'object', 'properties' => ['id' => ['type' => 'integer'], 'name' => ['type' => 'string']]]
 
-// Infer the data schema from a full API example response:
+// Preferred: bare payload format (as returned by getExampleJSONResponse() in production):
+$example = ['id' => 1, 'label' => 'Foo'];
+$schema = $inferrer->inferDataSchema($example, array());
+// => ['type' => 'object', 'properties' => ['id' => ['type' => 'integer'], 'label' => ['type' => 'string']]]
+
+// Backward-compatible: envelope format (used in legacy tests):
 $example = ['state' => 'success', 'data' => ['id' => 1, 'label' => 'Foo']];
-$schema = $inferrer->inferDataSchema($example, $keyDescriptions);
-// => ['type' => 'object', 'properties' => ['id' => ['type' => 'integer'], 'label' => ['type' => 'string', 'description' => '...']]]
+$schema = $inferrer->inferDataSchema($example, array());
+// => ['type' => 'object', 'properties' => ['id' => ['type' => 'integer'], 'label' => ['type' => 'string']]]
 ```
 
 `ResponseConverter` calls `inferDataSchema()` internally when building the 200 success
@@ -657,8 +736,15 @@ directly unless building a custom response schema layer.
   OpenAPI 3.1 type-union form `{ "type": ["...", "null"] }` in a future spec-compliance pass.
 - An empty sequential array (`[]`) produces `{ "type": "array" }` without `items`. This
   is valid OpenAPI but loses type specificity. The behavior is intentional and tested.
-- Key description paths deeper than `data.<field>` are skipped. A recursive merge would
-  be needed to support `data.nested.field` annotations.
+- Deep path traversal is implemented for both object and array-item schemas. 3-level depth
+  (`a.b.c`) and the legacy `data.` prefix combined with a multi-segment remainder
+  (e.g. `data.comGroups.textSnippet`) are both covered by dedicated regression tests
+  (`test_mergeKeyDescriptions_deepPath_threeLevels` and
+  `test_mergeKeyDescriptions_legacyDataPrefix_deepPath` in `SchemaInferrerTest`).
+- The envelope detection heuristic (two-condition check for `state` string + `data` array)
+  could misidentify a bare data payload that happens to carry both keys with those exact
+  types. This is an accepted trade-off; a stricter three-condition guard may be added in
+  a future hardening pass.
 
 ### Encouraging richer schemas: implement `getReponseKeyDescriptions()`
 
@@ -678,17 +764,42 @@ use Application\API\Parameters\APIParamType;
 
 public function getReponseKeyDescriptions() : array
 {
+    // Preferred: paths relative to the data object (no `data.` prefix).
+    // This is the format produced by KeyPath and used in all production methods.
     return array(
-        new KeyDescription('data.id',    APIParamType::TYPE_ID,      'The unique record identifier.'),
-        new KeyDescription('data.label', APIParamType::TYPE_LABEL,   'The human-readable label.'),
-        new KeyDescription('data.hash',  APIParamType::TYPE_LABEL_MD5, 'MD5 hash of the content.'),
+        new KeyDescription('id',    APIParamType::TYPE_ID,        'The unique record identifier.'),
+        new KeyDescription('label', APIParamType::TYPE_LABEL,     'The human-readable label.'),
+        new KeyDescription('hash',  APIParamType::TYPE_LABEL_MD5, 'MD5 hash of the content.'),
     );
 }
 ```
 
+> **Backward-compatible alternative:** Paths with a `data.` prefix (e.g. `data.id`) are
+> still accepted and work identically. New code should omit the prefix — it is redundant
+> because these paths are always relative to the `data` object.
+
 Without `getReponseKeyDescriptions()`, the `data` property in the spec is a bare
 `{ "type": "object" }`. With it, each declared key gets a `description` and inferred type,
 making the spec significantly more useful to consumers.
+
+#### Dynamic or introspective endpoints
+
+Some endpoints return a response whose structure is not statically known at code time (e.g.
+endpoints that introspect internal registries, or endpoints that serve raw third-party data).
+For these, implement `getReponseKeyDescriptions()` but return an empty array and include a
+comment explaining why static descriptions are not applicable:
+
+```php
+public function getReponseKeyDescriptions() : array
+{
+    // No static response key descriptions — the response structure is determined at runtime
+    // by the internal registry contents and cannot be declared statically.
+    return array();
+}
+```
+
+This pattern documents the deliberate decision to leave the spec unenriched, ensuring the
+empty array is never mistaken for a forgotten or incomplete implementation.
 
 ---
 
@@ -1070,6 +1181,6 @@ API method collection alongside other built-in methods.
 ```
 ---
 **File Statistics**
-- **Size**: 42.29 KB
-- **Lines**: 1060
+- **Size**: 43.33 KB
+- **Lines**: 1076
 File: `modules/openapi/overview.md`

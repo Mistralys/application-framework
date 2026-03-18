@@ -128,6 +128,6 @@ _SOURCE: PHP class file tree_
 ```
 ---
 **File Statistics**
-- **Size**: 7.49 KB
+- **Size**: 5.91 KB
 - **Lines**: 134
 File: `modules/db-helper/file-structure.md`

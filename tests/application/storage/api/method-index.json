@@ -7,11 +7,13 @@
     "GetOpenAPISpec": "Application\\API\\OpenAPI\\GetOpenAPISpec",
     "TestAPIKey": "TestDriver\\API\\TestAPIKeyMethod",
     "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
+    "TestCacheable": "TestDriver\\API\\TestCacheableMethod",
     "TestDryRun": "TestDriver\\API\\TestDryRunMethod",
     "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
     "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
     "TestGetCountryBySet": "application\\assets\\classes\\TestDriver\\API\\TestGetCountryBySetAPI",
     "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod",
     "TestStringValidations": "TestDriver\\API\\TestStringValidationsMethod",
+    "TestUserScoped": "TestDriver\\API\\TestUserScopedMethod",
     "TestVersioned": "TestDriver\\API\\TestVersionedMethod"
 }
