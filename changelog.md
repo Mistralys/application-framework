@@ -1,5 +1,12 @@
 # Application Framework Changelog
 
+## v7.0.11 - Deepl Settings Overrides
+- Deepl: Added DB-based app setting overrides for the API key and proxy configuration.
+- Deepl: Driver settings now take precedence over boot constants for API key and proxy.
+- Admin: Fixed broken subnavigation in devel area screens.
+- CTX: Added PHPStan scripts guard to agent instructions.
+- Dependencies: Updated DeepL XML Translator to v2.0.3.
+
 ## v7.0.10 - Module Doc Generators
 - Docs: Added a generated modules overview.
 - Docs: Added a keyword glossary.
