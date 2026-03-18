@@ -20,11 +20,24 @@ use DeeplXML\Translator;
  *
  * Create an instance of the helper using {@see AppFactory::createDeeplHelper()}.
  *
+ * ## Configuration
+ *
+ * The API key and proxy settings can be configured in two ways:
+ *
+ * 1. Via driver settings (editable at runtime through the application settings UI).
+ * 2. Via boot constants (set in the application configuration, used as fallback).
+ *
+ * Driver settings take precedence over boot constants.
+ *
  * @package DeeplHelper
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class DeeplHelper
 {
+    public const string APP_SETTING_API_KEY = 'deepl_api_key';
+    public const string APP_SETTING_PROXY_URL = 'deepl_proxy_url';
+    public const string APP_SETTING_PROXY_ENABLED = 'deepl_proxy_enabled';
+
     /**
      * @param Application_Countries_Country $fromCountry
      * @param Application_Countries_Country $toCountry
@@ -51,8 +64,14 @@ class DeeplHelper
 
     public function getAPIKey() : ?string
     {
-        $key = boot_constant(BaseConfigRegistry::DEEPL_API_KEY);
+        $settings = Application_Driver::getInstance()->getSettings();
 
+        $key = $settings->get(self::APP_SETTING_API_KEY);
+        if(!empty($key)) {
+            return $key;
+        }
+
+        $key = boot_constant(BaseConfigRegistry::DEEPL_API_KEY);
         if(!empty($key) && is_string($key)) {
             return $key;
         }
@@ -76,7 +95,8 @@ class DeeplHelper
         throw new DeeplHelperException(
             'Missing DeepL API key',
             sprintf(
-                'The configuration setting [%s] is not defined.',
+                'Neither the driver setting [%s] nor the configuration constant [%s] is defined.',
+                self::APP_SETTING_API_KEY,
                 BaseConfigRegistry::DEEPL_API_KEY
             ),
             DeeplHelperException::ERROR_DEEPL_API_KEY_NOT_SET
@@ -85,13 +105,25 @@ class DeeplHelper
 
     public function isProxyEnabled() : bool
     {
+        $settings = Application_Driver::getInstance()->getSettings();
+
+        if($settings->exists(self::APP_SETTING_PROXY_ENABLED)) {
+            return $settings->getBool(self::APP_SETTING_PROXY_ENABLED);
+        }
+
         return boot_constant(BaseConfigRegistry::DEEPL_PROXY_ENABLED) === true;
     }
 
     public function getProxyURL() : ?string
     {
-        $url = boot_constant(BaseConfigRegistry::DEEPL_PROXY_URL);
+        $settings = Application_Driver::getInstance()->getSettings();
 
+        $url = $settings->get(self::APP_SETTING_PROXY_URL);
+        if(!empty($url)) {
+            return $url;
+        }
+
+        $url = boot_constant(BaseConfigRegistry::DEEPL_PROXY_URL);
         if(!empty($url) && is_string($url)) {
             return $url;
         }
