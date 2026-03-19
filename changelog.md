@@ -4,6 +4,7 @@
 - DeeplHelper: Fixed deprecated language codes causing exceptions; now resolved to regional locales.
 - Tests: Added `DeeplHelperTest` integration test to verify correct target language code resolution.
 - Deepl: Fixed an exception in the test screen.
+- Dependencies: Updated DeepL XML Translator to [v3.0.1](https://github.com/Mistralys/deepl-xml-translator/releases/tag/3.0.1).
 
 ## v7.0.11 - Deepl Settings Overrides
 - Deepl: Added DB-based app setting overrides for the API key and proxy configuration.
