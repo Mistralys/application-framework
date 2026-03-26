@@ -1,26 +1,56 @@
 # Application Framework Changelog
 
+## v7.3.0 - OpenAPI Specification Generator
+- API: Added automatic OpenAPI 3.1 spec generation from registered API methods.
+- API: New `GetOpenAPISpec` method serves the generated spec as raw JSON.
+- API: Added `HtaccessGenerator` for API URL rewriting via `.htaccess`.
+- API: Added response schema inference from PHP return arrays.
+- API: OpenAPI spec link added to the API methods meta navigation.
+- API: Added response schemas to `GetAppCountriesAPI` and `GetAppLocalesAPI`.
+- Composer: Build now generates `openapi.json` and API `.htaccess`.
+- Composer: Fixed build artefacts output path for framework-internal builds.
+- Tests: Added 11 test files covering the OpenAPI module.
+
+## v7.2.1 - Test & Doc Cleanup
+- Tests: Fixed `HtaccessGeneratorTest` assertions for empty default rewrite base.
+- Tests: Fixed `RecordTieInTest` inter-test pollution via `tearDown()` cleanup.
+- Tests: Added `live-http` PHPUnit group excluding live-server tests by default.
+- API Cache: Improved `readFromCache()` PHPDoc for corrupt-cache return case.
+- Deepl: Fixed double-instantiation in test screen.
+- Docs: Added PHPStan baseline regeneration rule to constraints.
+
+## v7.2.0 - API Cache Constants Harmonization (Breaking-S)
+- API Cache: Renamed `FixedDurationStrategy` duration constants to underscore format.
+- AI Cache: Added matching short-duration constants to `FixedDurationStrategy`.
+- API Cache: Hardened `readFromCache()` error logging against logger failures.
+- Deepl: Fixed incorrect `makeError()` call, replaced with `makeDangerous()`.
+- Deepl: Removed deprecated language code workaround, now handled upstream.
+- Tests: Migrated 19 legacy test files to namespaced `*Test.php` convention.
+
+### Breaking Changes
+
+`FixedDurationStrategy` duration constants were renamed from compressed format
+(`DURATION_1MIN`) to underscore-separated (`DURATION_1_MIN`). Find-and-replace
+all consumer references.
+
 ## v7.1.0 - API Cache Quality Improvements
-- API Cache: `CacheableAPIMethodTrait::readFromCache()` now logs corrupt cache files at error level (via `AppFactory::createLogger()->logError()`) before deleting the file and returning `null`. Log output includes the file path, exception message, and `APICacheException::ERROR_CACHE_FILE_CORRUPT` as the error code reference. Behaviour is unchanged — no exception propagates to the caller.
-- AI Cache: `FixedDurationStrategy::isCacheFileValid()` now has an explicit `filemtime() === false` guard, matching the API cache counterpart and preventing potential implicit-coercion issues in race-condition scenarios.
-- API Cache: Added `@throws APICacheException` annotation to `APICacheManager::invalidateMethod()`.
-- Docs: Added "Keyword Value Syntax Constraints" section to `docs/agents/references/module-context-reference.md` documenting the Symfony YAML colon+space parsing requirement for `module-context.yaml` keyword values.
-- Docs: Added "Trait Consumer Policy" section to `docs/agents/project-manifest/constraints.md` — `trait.unused` PHPStan suppressions must never be added; library traits must have a concrete consumer in the test application instead.
-- Test: Added `CountryRequestScreen` to the test application as a reference consumer for `CountryRequestTrait`, eliminating the PHPStan `trait.unused` notice.
+- API Cache: `readFromCache()` now logs corrupt cache files before auto-removing.
+- AI Cache: Added explicit `filemtime()` false-guard in `FixedDurationStrategy`.
+- API Cache: Added `@throws` annotation to `invalidateMethod()`.
+- Docs: Documented YAML colon+space constraint for module keyword values.
+- Docs: Added "Trait Consumer Policy" to coding constraints.
+- Tests: Added `CountryRequestScreen` as `CountryRequestTrait` consumer.
 
 ## v7.0.12 - User-Scoped API Response Caching
-- API: New `UserScopedCacheInterface` and `UserScopedCacheTrait` in `Application\API\Cache` for API methods returning user-specific data.
-- API: `UserScopedCacheTrait::getCacheKeyParameters()` automatically injects the `_userScope` cache key using the array union operator, guaranteeing user identity can never be silently omitted or overwritten.
-- API: Empty return from `getUserCacheIdentifier()` throws `APICacheException::ERROR_EMPTY_USER_CACHE_IDENTIFIER` — silent fallback is not acceptable.
-- API: `UserScopedCacheInterface` extends `CacheableAPIMethodInterface`; `BaseAPIMethod::_process()` requires no changes.
+- API: Added user-scoped caching via `UserScopedCacheInterface` and trait.
+- API: User scope key injected automatically, preventing silent omission.
+- API: Empty user identifier now throws instead of silent fallback.
 
 ## v7.0.11 - API Response Caching
 - API: Added file-based response caching for API methods.
-- API: New `Application\API\Cache` namespace: `APICacheStrategyInterface`, `CacheableAPIMethodInterface`, `CacheableAPIMethodTrait`, `APICacheManager`.
-- API: Built-in strategies: `FixedDurationStrategy` (time-based TTL) and `ManualOnlyStrategy` (manual invalidation only).
-- API: `BaseAPIMethod::_process()` modified to transparently check and write cache for methods implementing `CacheableAPIMethodInterface`.
-- API: `APIResponseCacheLocation` registers the API response cache with the admin CacheControl UI via the event handler registry.
-- API: Caching is opt-in via interface + trait composition, consistent with the existing `DryRunAPIInterface`/`DryRunAPITrait` pattern.
+- API: Strategies: `FixedDurationStrategy` (TTL) and `ManualOnlyStrategy`.
+- API: Caching opt-in via interface + trait, matching existing patterns.
+- API: Cache location registered in admin CacheControl UI via event handler.
 
 ## v7.0.11 - Deepl Settings Overrides
 - Deepl: Added DB-based app setting overrides for the API key and proxy configuration.
