@@ -56,6 +56,8 @@ interface CacheableAPIMethodInterface extends APIMethodInterface
     /**
      * Reads response data from the cache, if available and valid.
      * Returns null on cache miss or if the cache entry has expired.
+     * Also returns null if the cached entry is corrupt and has been
+     * auto-removed (see {@see CacheableAPIMethodTrait} for recovery behaviour).
      *
      * @param string $version
      * @return array|null

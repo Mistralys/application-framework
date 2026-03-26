@@ -53,7 +53,8 @@ trait CacheableAPIMethodTrait
     /**
      * Reads response data from the cache file for the given version.
      * Returns null if the cache file does not exist or is no longer valid
-     * according to the configured strategy.
+     * according to the configured strategy. If the cache file is corrupt
+     * (parse failure), logs an error, deletes the file, and returns null.
      *
      * @param string $version
      * @return array|null
@@ -80,14 +81,19 @@ trait CacheableAPIMethodTrait
         {
             // Cache file is corrupt — log the event for operator observability, then
             // delete the file best-effort and signal a cache miss.
-            AppFactory::createLogger()->logError(
-                sprintf(
-                    'Corrupt API cache file detected and deleted (error code %d). Path: %s | Error: %s',
-                    APICacheException::ERROR_CACHE_FILE_CORRUPT,
-                    $cacheFile->getPath(),
-                    $e->getMessage()
-                )
-            );
+            try
+            {
+                AppFactory::createLogger()->logError(
+                    sprintf(
+                        'Corrupt API cache file detected and deleted (error code %d). Path: %s | Error: %s',
+                        APICacheException::ERROR_CACHE_FILE_CORRUPT,
+                        $cacheFile->getPath(),
+                        $e->getMessage()
+                    )
+                );
+            }
+            catch(\Throwable $ignored) {}
+
             try { $cacheFile->delete(); } catch(\Throwable $ignored) {}
             return null;
         }

@@ -18,17 +18,17 @@ class FixedDurationStrategy implements APICacheStrategyInterface
 {
     public const string STRATEGY_ID = 'FixedDuration';
 
-    public const int DURATION_1MIN = 60;
-    public const int DURATION_5MIN = 300;
-    public const int DURATION_15MIN = 900;
-    public const int DURATION_1HOUR = 3600;
-    public const int DURATION_6HOURS = 21600;
-    public const int DURATION_12HOURS = 43200;
-    public const int DURATION_24HOURS = 86400;
+    public const int DURATION_1_MIN = 60;
+    public const int DURATION_5_MIN = 300;
+    public const int DURATION_15_MIN = 900;
+    public const int DURATION_1_HOUR = 3600;
+    public const int DURATION_6_HOURS = 21600;
+    public const int DURATION_12_HOURS = 43200;
+    public const int DURATION_24_HOURS = 86400;
 
     private int $durationInSeconds;
 
-    public function __construct(int $durationInSeconds = self::DURATION_1HOUR)
+    public function __construct(int $durationInSeconds = self::DURATION_1_HOUR)
     {
         $this->durationInSeconds = $durationInSeconds;
     }

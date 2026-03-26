@@ -63,7 +63,7 @@ class GetProductsAPI extends BaseAPIMethod implements CacheableAPIMethodInterfac
 
     public function getCacheStrategy() : APICacheStrategyInterface
     {
-        return new FixedDurationStrategy(FixedDurationStrategy::DURATION_1HOUR);
+        return new FixedDurationStrategy(FixedDurationStrategy::DURATION_1_HOUR);
     }
 
     public function getCacheKeyParameters() : array
@@ -111,7 +111,7 @@ class GetUserOrdersAPI extends BaseAPIMethod implements UserScopedCacheInterface
 
     public function getCacheStrategy() : APICacheStrategyInterface
     {
-        return new FixedDurationStrategy(FixedDurationStrategy::DURATION_15MIN);
+        return new FixedDurationStrategy(FixedDurationStrategy::DURATION_15_MIN);
     }
 
     public function getUserCacheIdentifier() : string
@@ -195,8 +195,8 @@ rather than silently producing `false`.
 | `ManualOnlyStrategy` | `STRATEGY_ID = 'ManualOnly'` | Always valid; never expires automatically. |
 
 `FixedDurationStrategy` ships with named duration constants for common intervals:
-`DURATION_1MIN`, `DURATION_5MIN`, `DURATION_15MIN`, `DURATION_1HOUR`, `DURATION_6HOURS`,
-`DURATION_12HOURS`, `DURATION_24HOURS`.
+`DURATION_1_MIN`, `DURATION_5_MIN`, `DURATION_15_MIN`, `DURATION_1_HOUR`, `DURATION_6_HOURS`,
+`DURATION_12_HOURS`, `DURATION_24_HOURS`.
 
 Each strategy exposes a `STRATEGY_ID` string constant (PascalCase) that can be used
 for comparison or logging instead of hard-coding the string value.
