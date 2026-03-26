@@ -66,7 +66,8 @@ final class HtaccessGeneratorTest extends TestCase
     {
         $content = (new HtaccessGenerator($this->tempDir))->getContent();
 
-        $this->assertStringContainsString('RewriteBase '.HtaccessGenerator::DEFAULT_REWRITE_BASE, $content);
+        // When DEFAULT_REWRITE_BASE is empty the RewriteBase directive is omitted entirely.
+        $this->assertStringNotContainsString('RewriteBase', $content);
     }
 
     public function test_getContent_containsRequestFilenameCondition() : void
@@ -196,7 +197,7 @@ final class HtaccessGeneratorTest extends TestCase
 
     public function test_defaultRewriteBaseConstant() : void
     {
-        $this->assertSame('/api/', HtaccessGenerator::DEFAULT_REWRITE_BASE);
+        $this->assertSame('', HtaccessGenerator::DEFAULT_REWRITE_BASE);
     }
 
     public function test_htaccessFilenameConstant() : void

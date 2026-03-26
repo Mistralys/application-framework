@@ -76,7 +76,7 @@ class TestUserScopedMethod
 
     public function getCacheStrategy() : APICacheStrategyInterface
     {
-        return new FixedDurationStrategy(FixedDurationStrategy::DURATION_1HOUR);
+        return new FixedDurationStrategy(FixedDurationStrategy::DURATION_1_HOUR);
     }
 
     public function getMethodName() : string

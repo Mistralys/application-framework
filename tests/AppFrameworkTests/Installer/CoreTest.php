@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
-use AppFrameworkTestClasses\ApplicationTestCase;
-use Application\Application;
+namespace AppFrameworkTests\Installer;
 
-final class Installer_CoreTest extends ApplicationTestCase
+use Application\Application;
+use Application_Exception;
+use Application_Installer_Task;
+use AppFrameworkTestClasses\ApplicationTestCase;
+
+final class CoreTest extends ApplicationTestCase
 {
     protected function setUp(): void
     {

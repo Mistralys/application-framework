@@ -1,8 +1,13 @@
 <?php
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+declare(strict_types=1);
 
-final class Forms_DefaultValuesTest extends ApplicationTestCase
+namespace AppFrameworkTests\Forms;
+
+use AppFrameworkTestClasses\ApplicationTestCase;
+use UI;
+
+final class DefaultValuesTest extends ApplicationTestCase
 {
     public function test_default(): void
     {

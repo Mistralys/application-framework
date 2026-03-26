@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+namespace AppFrameworkTests\User;
+
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
 
-final class User_SettingsTest extends UserTestCase
+final class SettingsTest extends UserTestCase
 {
     public function test_setSetting() : void
     {
@@ -38,17 +42,17 @@ final class User_SettingsTest extends UserTestCase
     {
         $this->logHeader('Set date');
 
-        $date = new DateTime();
-        $value = $date->format(DateTime::RFC3339_EXTENDED);
+        $date = new \DateTime();
+        $value = $date->format(\DateTime::RFC3339_EXTENDED);
 
         $this->user->setDateSetting('foo', $date);
         $this->user->saveSettings();
 
-        $this->assertSame($value, $this->user->getDateSetting('foo')->format(DateTime::RFC3339_EXTENDED));
+        $this->assertSame($value, $this->user->getDateSetting('foo')->format(\DateTime::RFC3339_EXTENDED));
 
         $this->user->clearCache();
 
-        $this->assertSame($value, $this->user->getDateSetting('foo')->format(DateTime::RFC3339_EXTENDED));
+        $this->assertSame($value, $this->user->getDateSetting('foo')->format(\DateTime::RFC3339_EXTENDED));
     }
 
     public function test_setIntSetting() : void

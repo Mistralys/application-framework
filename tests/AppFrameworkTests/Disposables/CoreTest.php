@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\Disposables;
+
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\Disposables\DisposableDisposedException;
+use TestDisposable;
 
-class Disposables_CoreTests extends ApplicationTestCase
+final class CoreTest extends ApplicationTestCase
 {
     private bool $eventTriggered = false;
     private bool $disposedTriggered;

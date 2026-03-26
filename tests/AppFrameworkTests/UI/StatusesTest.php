@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+namespace AppFrameworkTests\UI;
 
-final class UI_StatusesTest extends ApplicationTestCase
+use AppFrameworkTestClasses\ApplicationTestCase;
+use TestStatuses;
+use TestStatus;
+use UI_Statuses_Status;
+
+final class StatusesTest extends ApplicationTestCase
 {
     public function test_getAll() : void
     {

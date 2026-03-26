@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
+namespace AppFrameworkTests\Application;
+
 use Application\AppFactory;
 use Application\Application;
+use DBHelper;
 use PHPUnit\Framework\TestCase;
 
-final class Application_MessagelogsTest extends TestCase
+final class MessagelogsTest extends TestCase
 {
     public function test_addLog()
     {

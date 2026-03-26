@@ -1,8 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
+namespace AppFrameworkTests\User;
+
+use Application_User_Rights;
+use Application_User_Rights_Group;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
 
-final class User_RightsTest extends UserTestCase
+final class RightsTest extends UserTestCase
 {
     public function test_registerGroup() : void
     {

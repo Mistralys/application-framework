@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+namespace AppFrameworkTests\Collection;
 
-final class Collection_IntegerRecordTest extends ApplicationTestCase
+use AppFrameworkTestClasses\ApplicationTestCase;
+use DateTime;
+use TestIntegerBaseRecord;
+
+final class IntegerRecordTest extends ApplicationTestCase
 {
     public function test_getKeyDate() : void
     {

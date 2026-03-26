@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\User;
+
 use Application\Application;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
+use TestDriver_User;
 
 /**
  * These tests can only be run from the application's
@@ -12,7 +15,7 @@ use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
  *
  * @see TestDriver_User
  */
-final class User_SystemUsersTest extends UserTestCase
+final class SystemUsersTest extends UserTestCase
 {
     public function test_createSystemUser(): void
     {

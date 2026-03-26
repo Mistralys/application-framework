@@ -1,8 +1,16 @@
 <?php
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+declare(strict_types=1);
 
-final class Application_SettingsTest extends ApplicationTestCase
+namespace AppFrameworkTests\Application;
+
+use Application_Driver;
+use Application_Driver_Storage_DB;
+use AppFrameworkTestClasses\ApplicationTestCase;
+use DBHelper;
+use TestDriver;
+
+final class SettingsTest extends ApplicationTestCase
 {
     private string $settingName = 'expiry_test';
     private string $settingValue = 'bar';
@@ -90,7 +98,7 @@ final class Application_SettingsTest extends ApplicationTestCase
         $settings = Application_Driver::createSettings();
         $settings->set($this->settingName, $this->settingValue);
 
-        $value = new DateTime();
+        $value = new \DateTime();
         $value->modify('+1 day');
         $settings->setExpiry($this->settingName, $value);
 
@@ -107,7 +115,7 @@ final class Application_SettingsTest extends ApplicationTestCase
 
         $settings->set($this->settingName, $this->settingValue);
 
-        $value = new DateTime();
+        $value = new \DateTime();
         $value->modify('-1 day');
         $settings->setExpiry($this->settingName, $value);
 

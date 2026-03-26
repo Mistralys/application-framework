@@ -94,7 +94,7 @@ final class APICacheStrategyTest extends ApplicationTestCase
 
     private function createMethod(array $params = array()) : TestCacheableMethod
     {
-        return new TestCacheableMethod(APIManager::getInstance(), FixedDurationStrategy::DURATION_1HOUR, $params);
+        return new TestCacheableMethod(APIManager::getInstance(), FixedDurationStrategy::DURATION_1_HOUR, $params);
     }
 
     public function test_cacheKey_isDeterministic() : void

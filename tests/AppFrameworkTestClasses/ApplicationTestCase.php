@@ -33,6 +33,12 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
      */
     private static array $counter = array();
 
+    /**
+     * Backup of $_REQUEST state from before the test.
+     * @var array<string,mixed>
+     */
+    private array $requestBackup = array();
+
     protected function logHeader(string $testName): void
     {
         Application::logHeader(get_class($this) . ' | ' . $testName);
@@ -66,6 +72,9 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         if($this instanceof ImageMediaTestInterface) {
             $this->tearDownImageTestCase();
         }
+
+        // Restore $_REQUEST to pre-test state to prevent inter-test pollution
+        $_REQUEST = $this->requestBackup;
     }
 
     protected function startTransaction() : void
@@ -198,6 +207,9 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
 
     protected function setUp(): void
     {
+        // Capture $_REQUEST state before test execution to restore it in tearDown()
+        $this->requestBackup = $_REQUEST;
+
         Localization::selectAppLocale(Localization::BUILTIN_LOCALE_NAME);
         AppFactory::createLogger()->reset();
         AppFactory::createOfflineEvents()->clearEventHistory();

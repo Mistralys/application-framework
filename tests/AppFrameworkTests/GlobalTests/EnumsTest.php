@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+namespace AppFrameworkTests\GlobalTests;
 
-final class Global_EnumsTest extends ApplicationTestCase
+use Application_Exception;
+use AppFrameworkTestClasses\ApplicationTestCase;
+use TestEnum;
+
+final class EnumsTest extends ApplicationTestCase
 {
     public function test_getValues() : void
     {

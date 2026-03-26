@@ -8,10 +8,16 @@ use AppFrameworkTestClasses\ApplicationTestCase;
 use AppFrameworkTestClasses\Traits\ConnectorTestInterface;
 use AppFrameworkTestClasses\Traits\ConnectorTestTrait;
 use Connectors;
+use PHPUnit\Framework\Attributes\Group;
 use TestDriver\AjaxMethods\AjaxGetTestJSON;
 use TestDriver\Connectors\InternalAjax\GetTestJSONMethod;
 use TestDriver\Connectors\InternalAjaxConnector;
 
+/**
+ * Tests for the internal AJAX connector that make live HTTP requests to APP_URL.
+ * Excluded from the default suite — requires a running web server at APP_URL.
+ */
+#[Group('live-http')]
 final class AjaxRequestTest
     extends ApplicationTestCase
     implements ConnectorTestInterface

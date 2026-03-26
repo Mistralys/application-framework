@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\User;
+
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
+use Application_User_Recent_Entry;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
+use TestDriver_User;
+use TestDriver_User_Recent;
 
 /**
  * These tests can only be run from the application's
@@ -13,7 +18,7 @@ use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
  *
  * @see TestDriver_User
  */
-final class User_RecentTest extends UserTestCase
+final class RecentTest extends UserTestCase
 {
     public function test_create(): void
     {

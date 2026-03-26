@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+namespace AppFrameworkTests\UI;
 
-final class UI_IconsTest extends ApplicationTestCase
+use AppFrameworkTestClasses\ApplicationTestCase;
+use UI;
+
+final class IconsTest extends ApplicationTestCase
 {
     public function test_render() : void
     {

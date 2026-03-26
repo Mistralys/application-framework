@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+namespace AppFrameworkTests\User;
+
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
 
-final class User_StatisticsTest extends UserTestCase
+final class StatisticsTest extends UserTestCase
 {
     public function test_resetStatistics(): void
     {
@@ -27,14 +31,14 @@ final class User_StatisticsTest extends UserTestCase
 
         $stats->reset();
 
-        $stats->handleLoggedIn(new DateTime());
+        $stats->handleLoggedIn(new \DateTime());
 
         $this->assertTrue($stats->isFirstLogin());
         $this->assertSame(1, $stats->getTotalLogins());
         $this->assertSame(1, $stats->getAmountLoginsToday());
         $this->assertCount(1, $stats->getDatesLoggedIn());
-        $this->assertInstanceOf(DateTime::class, $stats->getFirstLogin());
-        $this->assertInstanceOf(DateTime::class, $stats->getLastLogin());
+        $this->assertInstanceOf(\DateTime::class, $stats->getFirstLogin());
+        $this->assertInstanceOf(\DateTime::class, $stats->getLastLogin());
     }
 
     public function test_multiLogins(): void
@@ -45,16 +49,16 @@ final class User_StatisticsTest extends UserTestCase
 
         $stats->reset();
 
-        $stats->handleLoggedIn(new DateTime());
-        $stats->handleLoggedIn(new DateTime());
-        $stats->handleLoggedIn(new DateTime());
+        $stats->handleLoggedIn(new \DateTime());
+        $stats->handleLoggedIn(new \DateTime());
+        $stats->handleLoggedIn(new \DateTime());
 
         $this->assertFalse($stats->isFirstLogin());
         $this->assertSame(3, $stats->getTotalLogins());
         $this->assertSame(3, $stats->getAmountLoginsToday());
         $this->assertCount(1, $stats->getDatesLoggedIn());
-        $this->assertInstanceOf(DateTime::class, $stats->getFirstLogin());
-        $this->assertInstanceOf(DateTime::class, $stats->getLastLogin());
+        $this->assertInstanceOf(\DateTime::class, $stats->getFirstLogin());
+        $this->assertInstanceOf(\DateTime::class, $stats->getLastLogin());
     }
 
     public function test_olderLogins(): void
@@ -65,9 +69,9 @@ final class User_StatisticsTest extends UserTestCase
 
         $stats->reset();
 
-        $date1 = new DateTime(); $date1->sub(new DateInterval('P10D'));
-        $date2 = new DateTime(); $date2->sub(new DateInterval('P5D'));
-        $date3 = new DateTime();
+        $date1 = new \DateTime(); $date1->sub(new \DateInterval('P10D'));
+        $date2 = new \DateTime(); $date2->sub(new \DateInterval('P5D'));
+        $date3 = new \DateTime();
 
         $stats->handleLoggedIn($date1);
         $stats->handleLoggedIn($date2);
@@ -75,7 +79,7 @@ final class User_StatisticsTest extends UserTestCase
 
         $this->assertCount(3, $stats->getDatesLoggedIn());
         $this->assertSame(1, $stats->getAmountLoginsToday());
-        $this->assertEquals($date1->format(DateTime::RFC3339_EXTENDED), $stats->getFirstLogin()->format(DateTime::RFC3339_EXTENDED));
+        $this->assertEquals($date1->format(\DateTime::RFC3339_EXTENDED), $stats->getFirstLogin()->format(\DateTime::RFC3339_EXTENDED));
         $this->assertEquals(5, $stats->getDaysSincePreviousLogin());
     }
 }

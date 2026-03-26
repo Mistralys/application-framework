@@ -1,8 +1,14 @@
-<?php 
+<?php
 
+declare(strict_types=1);
+
+namespace AppFrameworkTests\Ratings;
+
+use Application_Driver;
+use Application_Exception;
 use PHPUnit\Framework\TestCase;
 
-final class Ratings_GeneralTest extends TestCase
+final class GeneralTest extends TestCase
 {
     public function test_exception()
     {

@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+namespace AppFrameworkTests\Functions;
+
 use PHPUnit\Framework\TestCase;
 
-final class Functions_SubsetSumTest extends TestCase
+final class SubsetSumTest extends TestCase
 {
     public function test_subsetsum() : void
     {

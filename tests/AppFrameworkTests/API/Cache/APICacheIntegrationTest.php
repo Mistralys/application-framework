@@ -26,7 +26,7 @@ final class APICacheIntegrationTest extends APITestCase
         APICacheManager::clearAll();
     }
 
-    private function createMethod(int $ttl = FixedDurationStrategy::DURATION_1HOUR) : TestCacheableMethod
+    private function createMethod(int $ttl = FixedDurationStrategy::DURATION_1_HOUR) : TestCacheableMethod
     {
         return new TestCacheableMethod(APIManager::getInstance(), $ttl);
     }

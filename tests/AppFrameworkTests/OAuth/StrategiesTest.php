@@ -2,7 +2,13 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\OAuth;
+
+use Application_Driver;
+use Application_OAuth;
 use AppFrameworkTestClasses\ApplicationTestCase;
+use OAuth_Exception;
+use TestDriver_OAuth_Google;
 
 /**
  * The test driver has exactly two strategies configured:
@@ -11,7 +17,7 @@ use AppFrameworkTestClasses\ApplicationTestCase;
  * @see TestDriver_OAuth_GitHub
  * @see TestDriver_OAuth_Google
  */
-final class OAuth_StrategiesTest extends ApplicationTestCase
+final class StrategiesTest extends ApplicationTestCase
 {
     /**
      * @var Application_OAuth

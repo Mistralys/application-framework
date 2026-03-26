@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\User;
+
 use Application\MarkdownRenderer\MarkdownRenderer;
+use Application_User_Notepad_Note;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
 
 /**
@@ -12,7 +15,7 @@ use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
  *
  * @see TestDriver_User
  */
-final class User_NotepadTest extends UserTestCase
+final class NotepadTest extends UserTestCase
 {
     protected function setUp() : void
     {

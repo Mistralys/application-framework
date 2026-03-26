@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\Ratings;
+
+use Application_Driver;
 use AppFrameworkTestClasses\ApplicationTestCase;
 
-final class Rating_URLTests extends ApplicationTestCase
+final class URLTest extends ApplicationTestCase
 {
     /**
      * Ensure that parsing application URLs works as intended,

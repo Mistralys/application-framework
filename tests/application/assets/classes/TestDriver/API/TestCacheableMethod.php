@@ -58,7 +58,7 @@ class TestCacheableMethod
      */
     public function __construct(
         APIManager $api,
-        int $ttl = FixedDurationStrategy::DURATION_1HOUR,
+        int $ttl = FixedDurationStrategy::DURATION_1_HOUR,
         array $cacheParams = array()
     )
     {
