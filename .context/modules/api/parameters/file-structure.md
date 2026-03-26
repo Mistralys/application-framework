@@ -76,3 +76,8 @@ _SOURCE: API Parameters File Structure_
                         └── SelectableValueParamTrait.php
 
 ```
+---
+**File Statistics**
+- **Size**: 3.91 KB
+- **Lines**: 84
+File: `modules/api/parameters/file-structure.md`

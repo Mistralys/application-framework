@@ -97,3 +97,8 @@ discovers, indexes, and exposes through a single dispatcher entry point.
 - **Composer build** pipeline triggers method index generation and OpenAPI spec output.
 
 ```
+---
+**File Statistics**
+- **Size**: 5.45 KB
+- **Lines**: 105
+File: `modules/api/overview.md`

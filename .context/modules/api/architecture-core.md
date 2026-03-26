@@ -2064,3 +2064,8 @@ trait VersionedAPITrait
 
 
 ```
+---
+**File Statistics**
+- **Size**: 45.38 KB
+- **Lines**: 2072
+File: `modules/api/architecture-core.md`

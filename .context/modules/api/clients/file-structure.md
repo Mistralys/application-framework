@@ -64,3 +64,8 @@ _SOURCE: API Clients and Admin File Structure_
                         └── APIKeysCollection.php
 
 ```
+---
+**File Statistics**
+- **Size**: 3.34 KB
+- **Lines**: 72
+File: `modules/api/clients/file-structure.md`

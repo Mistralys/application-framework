@@ -45,3 +45,8 @@ Provides the infrastructure for exposing application logic as **AI tools** — c
 - **Entry point:** The root-level `mcp-server.php` script instantiates `FrameworkMCPServer` and starts the stdio transport.
 
 ```
+---
+**File Statistics**
+- **Size**: 3.04 KB
+- **Lines**: 53
+File: `modules/ai/overview.md`

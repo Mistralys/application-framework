@@ -267,3 +267,8 @@ trait VersionedAPITrait
 
 
 ```
+---
+**File Statistics**
+- **Size**: 6.74 KB
+- **Lines**: 275
+File: `modules/api/architecture-versioning.md`

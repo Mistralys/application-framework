@@ -727,3 +727,8 @@ trait SelectableValueParamTrait
 
 
 ```
+---
+**File Statistics**
+- **Size**: 17.7 KB
+- **Lines**: 735
+File: `modules/api/parameters/architecture-supporting.md`

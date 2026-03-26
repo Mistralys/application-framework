@@ -320,3 +320,8 @@ class APIClientsCollection extends DBHelper_BaseCollection
 
 
 ```
+---
+**File Statistics**
+- **Size**: 7.03 KB
+- **Lines**: 328
+File: `modules/api/clients/architecture-core.md`

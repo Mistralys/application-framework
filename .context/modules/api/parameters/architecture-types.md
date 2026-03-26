@@ -493,3 +493,8 @@ class StringParameter extends BaseAPIParameter
 
 
 ```
+---
+**File Statistics**
+- **Size**: 11.4 KB
+- **Lines**: 501
+File: `modules/api/parameters/architecture-types.md`

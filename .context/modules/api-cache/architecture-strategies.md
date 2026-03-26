@@ -31,13 +31,13 @@ use Application\API\Cache\APICacheStrategyInterface as APICacheStrategyInterface
 class FixedDurationStrategy implements APICacheStrategyInterface
 {
 	public const STRATEGY_ID = 'FixedDuration';
-	public const DURATION_1MIN = 60;
-	public const DURATION_5MIN = 300;
-	public const DURATION_15MIN = 900;
-	public const DURATION_1HOUR = 3600;
-	public const DURATION_6HOURS = 21600;
-	public const DURATION_12HOURS = 43200;
-	public const DURATION_24HOURS = 86400;
+	public const DURATION_1_MIN = 60;
+	public const DURATION_5_MIN = 300;
+	public const DURATION_15_MIN = 900;
+	public const DURATION_1_HOUR = 3600;
+	public const DURATION_6_HOURS = 21600;
+	public const DURATION_12_HOURS = 43200;
+	public const DURATION_24_HOURS = 86400;
 
 	public function getID(): string
 	{
@@ -96,3 +96,8 @@ class ManualOnlyStrategy implements APICacheStrategyInterface
 
 
 ```
+---
+**File Statistics**
+- **Size**: 2.54 KB
+- **Lines**: 104
+File: `modules/api-cache/architecture-strategies.md`

@@ -2050,6 +2050,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 99.07 KB
-- **Lines**: 2021
+- **Size**: 100.88 KB
+- **Lines**: 2056
 File: `framework-file-structure.md`

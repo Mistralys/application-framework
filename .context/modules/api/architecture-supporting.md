@@ -746,3 +746,8 @@ class KeyReplacement implements KeyPathInterface
 
 
 ```
+---
+**File Statistics**
+- **Size**: 16.63 KB
+- **Lines**: 754
+File: `modules/api/architecture-supporting.md`

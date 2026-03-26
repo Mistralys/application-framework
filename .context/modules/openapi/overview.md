@@ -1181,6 +1181,6 @@ API method collection alongside other built-in methods.
 ```
 ---
 **File Statistics**
-- **Size**: 43.33 KB
-- **Lines**: 1076
+- **Size**: 48.79 KB
+- **Lines**: 1187
 File: `modules/openapi/overview.md`

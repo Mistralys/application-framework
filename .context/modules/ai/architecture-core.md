@@ -207,6 +207,9 @@ use Application\AI\Cache\BaseAICacheStrategy as BaseAICacheStrategy;
 class FixedDurationStrategy extends BaseAICacheStrategy
 {
 	public const STRATEGY_ID = 'FixedDuration';
+	public const DURATION_1_MIN = 60;
+	public const DURATION_5_MIN = 300;
+	public const DURATION_15_MIN = 900;
 	public const DURATION_1_HOUR = 3600;
 	public const DURATION_6_HOURS = 21600;
 	public const DURATION_12_HOURS = 43200;
@@ -341,3 +344,8 @@ abstract class BaseAITool implements AIToolInterface
 
 
 ```
+---
+**File Statistics**
+- **Size**: 7.47 KB
+- **Lines**: 352
+File: `modules/ai/architecture-core.md`

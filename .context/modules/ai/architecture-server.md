@@ -65,3 +65,8 @@ class StderrLogger extends AbstractLogger
 
 
 ```
+---
+**File Statistics**
+- **Size**: 1.5 KB
+- **Lines**: 73
+File: `modules/ai/architecture-server.md`
