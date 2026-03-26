@@ -44,7 +44,7 @@ tests/
 │   ├── Eventables/
 │   ├── Forms/
 │   ├── Functions/
-│   ├── Global/
+│   ├── GlobalTests/
 │   ├── Helpers/
 │   ├── Installer/
 │   ├── LDAP/
@@ -83,6 +83,40 @@ tests/
 ├── phpstan/                         # PHPStan test-related config
 └── sql/                             # Source SQL files for the test database
 ```
+
+---
+
+## Test File Naming Convention
+
+All unit test files under `tests/AppFrameworkTests/` must follow this convention:
+
+| Element | Requirement | Example |
+|---|---|---|
+| **File name** | Must match the class name exactly (`.php` extension) | `CoreTest.php` |
+| **Class name** | Must end in `Test`, PascalCase | `CoreTest` |
+| **Namespace** | Must match the directory path under `AppFrameworkTests\` | `AppFrameworkTests\Disposables` |
+| **Declaration** | Must include `declare(strict_types=1);` | — |
+
+### Correct structure
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace AppFrameworkTests\Disposables;
+
+use AppFrameworkTestClasses\ApplicationTestCase;
+
+class CoreTest extends ApplicationTestCase
+{
+    // ...
+}
+```
+
+PHPUnit discovers tests by scanning the `tests/AppFrameworkTests/` directory tree for `.php` files. If the **class name does not match the file name**, PHPUnit emits a "Class X cannot be found" warning and the test is silently skipped. Always verify that both match before committing a new test file.
+
+> **Note on `AppFrameworkTests\Global`:** `Global` is a reserved word in PHP. Tests that previously lived under the `Global/` directory have been placed in `AppFrameworkTests\GlobalTests` instead to avoid parser errors.
 
 ---
 
@@ -225,6 +259,82 @@ tests/application/assets/classes/TestDriver/API/
 `APIMethodParameter` validates that the method name passed to `processReturn()` exists in the framework's API method index. This index is built by scanning the test application's source folders (`tests/application/assets/classes/`). Classes in `AppFrameworkTestClasses/` are invisible to this discovery process and will trigger a "method not found" validation error.
 
 Simple stubs that do not invoke `processReturn()` (e.g., those only used via `createStub()` / `createMock()`) can still reside in `AppFrameworkTestClasses/`.
+
+---
+
+## Live-HTTP Tests
+
+Some tests make real HTTP requests to `APP_URL` (the running test application). These tests are
+marked with the `#[Group('live-http')]` PHP attribute (PHPUnit 13) and are **excluded from the
+default `composer test` run** via the `<groups><exclude>` block in `phpunit.xml`.
+
+> **PHPUnit 13 note:** The legacy `@group` docblock annotation is silently ignored by PHPUnit 13.
+> Always use the `#[Group(...)]` PHP 8 attribute with a `use PHPUnit\Framework\Attributes\Group;`
+> import. Using the annotation form has no effect and will not exclude the test from the default run.
+
+To run live-HTTP tests, a web server must be available at `APP_URL` (configured in
+`tests/application/config/test-ui-config.php` via the `TESTS_BASE_URL` constant). Run them
+explicitly with:
+
+```
+composer test-group -- live-http
+```
+
+Tests in this group:
+
+| Test Class | Methods |
+|---|---|
+| `AppFrameworkTests\Ajax\AjaxRequestTest` | All (class-level `#[Group('live-http')]`) |
+| `AppFrameworkTests\Connectors\RequestTest` | `test_adapterSockets`, `test_adapterCURL` |
+
+Do not remove the `#[Group('live-http')]` attribute or the `phpunit.xml` exclusion — without it,
+the CI pipeline and local runs without a web server will fail with network errors.
+
+---
+
+## Superglobal Teardown
+
+### Automatic $_REQUEST restore
+
+`ApplicationTestCase` now automatically backs up `$_REQUEST` in `setUp()` and restores it in
+`tearDown()`. This prevents inter-test pollution when test files write to `$_REQUEST` without
+explicit cleanup.
+
+**No per-class tearDown required for `$_REQUEST`.** Test classes that modify `$_REQUEST` no
+longer need to manually unset those keys — the base class restore handles it globally.
+
+### Other superglobals
+
+`ApplicationTestCase` does **not** automatically restore `$_GET`, `$_POST`, or `$_SESSION`.
+Test classes that write to these superglobals must still unset those keys in their own
+`tearDown()` before calling `parent::tearDown()`.
+
+### Why this matters
+
+`BaseRecordSelectionTieIn::getRecord()` (and similar request-state-reading classes) caches
+the first result it finds. If a previous test left a key in `$_REQUEST`, the next test in the
+same file will read a stale cached value, causing assertions that depend on "nothing selected"
+to fail — only when the tests are run as a file, not in isolation. This is a classic
+inter-test pollution signature that is difficult to diagnose.
+
+The automatic `$_REQUEST` backup/restore in `ApplicationTestCase` eliminates this category of
+bug for the most common superglobal.
+
+### Convention (for $_GET, $_POST, $_SESSION)
+
+```php
+protected function tearDown() : void
+{
+    // Unset every $_GET, $_POST, or $_SESSION key written by this test class.
+    // (No need to unset $_REQUEST keys — ApplicationTestCase handles those automatically.)
+    unset(
+        $_GET['some_key'],
+        $_POST['some_other_key']
+    );
+
+    parent::tearDown();
+}
+```
 
 ---
 

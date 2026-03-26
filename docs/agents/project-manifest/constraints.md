@@ -267,3 +267,22 @@ When a library trait has no consumer in the main codebase:
 
 See [tests/application/assets/classes/TestDriver/Area/TestingScreen/CountryRequestScreen.php](../../../tests/application/assets/classes/TestDriver/Area/TestingScreen/CountryRequestScreen.php) as a reference implementation of this pattern for `CountryRequestTrait`.
 
+---
+
+## PHPStan Baseline (`phpstan-result.txt`)
+
+### Rule
+
+**Any commit that changes the PHPStan error count must also update `phpstan-result.txt` in the
+same commit.** The file serves as a human-readable baseline snapshot of the current static-analysis
+state. When the count drifts, agents in subsequent sessions compare against a stale baseline and
+may incorrectly assess the static-analysis health of the codebase.
+
+Regenerate with:
+
+```
+composer analyze-save
+```
+
+This is equivalent to running `composer analyze` and writing the output to `phpstan-result.txt`.
+
