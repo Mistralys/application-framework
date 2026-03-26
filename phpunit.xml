@@ -5,6 +5,11 @@
       <directory suffix=".php">./tests/AppFrameworkTests</directory>
     </testsuite>
   </testsuites>
+  <groups>
+    <exclude>
+      <group>live-http</group>
+    </exclude>
+  </groups>
   <php>
     <ini name="memory_limit" value="-1"/>
   </php>
