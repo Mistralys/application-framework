@@ -839,6 +839,10 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── MediaTag.php
             │   ├── MarkdownRenderer.php
             │   ├── README.md
+            │   ├── docs/
+            │   │   ├── custom-tags.md
+            │   │   ├── public-api.md
+            │   ├── module-context.yaml
             ├── Media/
             │   ├── Admin/
             │   │   ├── MediaAdminURLs.php
@@ -2015,6 +2019,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 125.49 KB
-- **Lines**: 2021
+- **Size**: 99.24 KB
+- **Lines**: 2025
 File: `framework-file-structure.md`
