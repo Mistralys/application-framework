@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v7.0.13 - Markdown Renderer Docs
+- MarkdownRenderer: Added full module documentation and CTX integration.
+
 ## v7.0.12 - DeepL Target Language Fix
 - DeeplHelper: Fixed deprecated language codes causing exceptions; now resolved to regional locales.
 - Tests: Added `DeeplHelperTest` integration test to verify correct target language code resolution.
