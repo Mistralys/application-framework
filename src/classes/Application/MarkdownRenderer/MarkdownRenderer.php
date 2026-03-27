@@ -71,9 +71,9 @@ class MarkdownRenderer implements OptionableInterface
                 sb()->mono('_'.t('Italic text').'_'),
                 sb()->mono('`'.t('Inline code').'`'),
                 sb()->mono('['.t('Link label').'](https://mistralys.eu)'),
-                sb()->mono('{image:filename.png}')->muted('('.t('Store image in theme image subfolder %1$s', sb()->code('whatsnew')).')'),
-                sb()->mono('{image 20%:filename.png}')->muted('('.t('With percentage width').')'),
-                sb()->mono('{image 120px:filename.png}')->muted('('.t('With pixel width').')'),
+                sb()->mono('{media: 42}')->muted('('.t('Embed media library image by ID').')'),
+                sb()->mono('{media: 42 width="400"}')->muted('('.t('With pixel width').')'),
+                sb()->mono('{media: 42 title="Caption"}')->muted('('.t('With title attribute').')'),
                 sb()->mono('### '.t('Heading'))->muted('('.t('Amount of hashes = level').')'),
                 sb()->mono('```')->nl()->mono(t('Code fence'))->nl()->mono('```'),
             ));
