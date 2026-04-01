@@ -84,7 +84,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=DescribeAdminAreas"
+                    "url": "documentation.php?method=DescribeAdminAreas"
                 }
             }
         },
@@ -144,7 +144,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=DescribeCollections"
+                    "url": "documentation.php?method=DescribeCollections"
                 }
             }
         },
@@ -204,7 +204,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=ExternalLoadedAPI"
+                    "url": "documentation.php?method=ExternalLoadedAPI"
                 }
             }
         },
@@ -237,7 +237,147 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIEnvelope"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "countries": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "de": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "countryID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "isoCode": {
+                                                                    "type": "string"
+                                                                },
+                                                                "labelInvariant": {
+                                                                    "type": "string"
+                                                                },
+                                                                "codeAliases": {
+                                                                    "type": "array"
+                                                                },
+                                                                "defaultLocale": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "localeCode": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "languageCode": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "labelInvariant": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "currency": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "isoCode": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "labelSingular": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "labelPlural": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "symbol": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "preferredSymbol": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "thousandsSeparator": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "decimalSeparator": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "structuralTemplate": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "gb": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "countryID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "isoCode": {
+                                                                    "type": "string"
+                                                                },
+                                                                "labelInvariant": {
+                                                                    "type": "string"
+                                                                },
+                                                                "codeAliases": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "defaultLocale": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "localeCode": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "languageCode": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "labelInvariant": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "currency": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "isoCode": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "labelSingular": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "labelPlural": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "symbol": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "preferredSymbol": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "thousandsSeparator": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "decimalSeparator": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "structuralTemplate": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "description": "Object keyed by country ISO code; each value is a country details object."
+                                                }
+                                            }
+                                        }
+                                    }
                                 },
                                 "example": {
                                     "countries": {
@@ -315,7 +455,7 @@
                     "GetAppLocales"
                 ],
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=GetAppCountries"
+                    "url": "documentation.php?method=GetAppCountries"
                 }
             }
         },
@@ -361,7 +501,51 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIEnvelope"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "locales": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "localeID": {
+                                                                "type": "string",
+                                                                "description": "Compound locale identifier (e.g. de_DE)."
+                                                            },
+                                                            "languageCode": {
+                                                                "type": "string",
+                                                                "description": "Two-letter ISO 639-1 language code component of the locale."
+                                                            },
+                                                            "countryCode": {
+                                                                "type": "string",
+                                                                "description": "Two-letter ISO 3166-1 alpha-2 country code component of the locale."
+                                                            },
+                                                            "label": {
+                                                                "type": "string",
+                                                                "description": "Localised display name of the locale (translated to the requested language if available)."
+                                                            },
+                                                            "labelInvariant": {
+                                                                "type": "string",
+                                                                "description": "Locale-invariant display name of the locale."
+                                                            },
+                                                            "isAvailableForUI": {
+                                                                "type": "boolean",
+                                                                "description": "Whether this locale is configured as an available language for the application user interface."
+                                                            }
+                                                        }
+                                                    },
+                                                    "description": "Array of all locales known to the application."
+                                                }
+                                            }
+                                        }
+                                    }
                                 },
                                 "example": {
                                     "locales": [
@@ -403,7 +587,7 @@
                     "GetAppCountries"
                 ],
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=GetAppLocales"
+                    "url": "documentation.php?method=GetAppLocales"
                 }
             }
         },
@@ -463,7 +647,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=GetOpenAPISpec"
+                    "url": "documentation.php?method=GetOpenAPISpec"
                 }
             }
         },
@@ -532,7 +716,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestAPIKey"
+                    "url": "documentation.php?method=TestAPIKey"
                 },
                 "security": [
                     {
@@ -583,7 +767,21 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIEnvelope"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "text": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
                                 },
                                 "example": {
                                     "text": "Yes"
@@ -613,7 +811,84 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestAppLocale"
+                    "url": "documentation.php?method=TestAppLocale"
+                }
+            }
+        },
+        "/api/TestCacheable": {
+            "post": {
+                "operationId": "TestCacheable",
+                "summary": "Cacheable stub API method for unit and integration testing.",
+                "description": "Cacheable stub API method for unit and integration testing.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "collectCount": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "collectCount": 1
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestCacheable"
                 }
             }
         },
@@ -661,7 +936,21 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIEnvelope"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "dryRun": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
                                 },
                                 "example": {
                                     "dryRun": false
@@ -691,7 +980,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestDryRun"
+                    "url": "documentation.php?method=TestDryRun"
                 }
             }
         },
@@ -751,7 +1040,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestErrorResponse"
+                    "url": "documentation.php?method=TestErrorResponse"
                 }
             }
         },
@@ -833,7 +1122,21 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIEnvelope"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "countryID": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
                                 },
                                 "example": {
                                     "countryID": 42
@@ -863,7 +1166,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestGetCountry"
+                    "url": "documentation.php?method=TestGetCountry"
                 }
             }
         },
@@ -945,7 +1248,21 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/APIEnvelope"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "countryID": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
                                 },
                                 "example": {
                                     "countryID": 42
@@ -975,7 +1292,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestGetCountryBySet"
+                    "url": "documentation.php?method=TestGetCountryBySet"
                 },
                 "x-validation-rules": [
                     {
@@ -1046,7 +1363,7 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestJSON2JSONMethod"
+                    "url": "documentation.php?method=TestJSON2JSONMethod"
                 }
             }
         },
@@ -1170,7 +1487,84 @@
                     }
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestStringValidations"
+                    "url": "documentation.php?method=TestStringValidations"
+                }
+            }
+        },
+        "/api/TestUserScoped": {
+            "post": {
+                "operationId": "TestUserScoped",
+                "summary": "User-scoped cacheable stub for unit and integration testing.",
+                "description": "User-scoped cacheable stub for unit and integration testing.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "userScope": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "userScope": "user-1"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestUserScoped"
                 }
             }
         },
@@ -1233,7 +1627,7 @@
                     "1.0": "- Initial version."
                 },
                 "externalDocs": {
-                    "url": "http://127.0.0.1/libraries/application-framework/tests/application/api/documentation.php?method=TestVersioned"
+                    "url": "documentation.php?method=TestVersioned"
                 }
             }
         }

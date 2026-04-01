@@ -401,6 +401,21 @@ class OpenAPIGenerator
 
 
 	/**
+	 * Registers a string replacement to apply to the serialized JSON output
+	 * before writing to disk. Useful for normalizing environment-specific
+	 * values (e.g., replacing the application base URL with a placeholder).
+	 *
+	 * @param string $search  The literal string to find.
+	 * @param string $replace The replacement string.
+	 * @return $this
+	 */
+	public function addOutputReplacement(string $search, string $replace): self
+	{
+		/* ... */
+	}
+
+
+	/**
 	 * Generates the OpenAPI 3.1 specification document and writes it as a
 	 * pretty-printed JSON file to the configured output path.
 	 *

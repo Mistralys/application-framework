@@ -214,6 +214,11 @@ class APIManager
             $outputPath
         );
 
+        if(defined('APP_URL'))
+        {
+            $generator->addOutputReplacement(APP_URL, '{APPLICATION_URL}');
+        }
+
         return $generator->generate();
     }
 

@@ -10,7 +10,6 @@ use Application\API\Groups\APIGroupInterface;
 use Application\API\OpenAPI\OpenAPIGenerator;
 use Application\API\OpenAPI\OpenAPISchema;
 use Application\API\Parameters\APIParamManager;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use UI\AdminURLs\AdminURLInterface;
@@ -43,62 +42,78 @@ final class OpenAPIGeneratorTest extends TestCase
     // -------------------------------------------------------------------------
 
     /**
-     * Creates a mock APIMethodCollection that returns the given methods from getAll().
+     * Creates a stub APIMethodCollection that returns the given methods from getAll().
      *
      * @param APIMethodInterface[] $methods
-     * @return APIMethodCollection&MockObject
+     * @return APIMethodCollection
      */
     private function createCollectionMock(array $methods = array()) : APIMethodCollection
     {
-        $collection = $this->createMock(APIMethodCollection::class);
+        $collection = $this->createStub(APIMethodCollection::class);
         $collection->method('getAll')->willReturn($methods);
         return $collection;
     }
 
     /**
-     * Creates a mock APIGroupInterface.
+     * Creates a stub APIGroupInterface.
      *
      * @param string $label
      * @param string $description
-     * @return APIGroupInterface&MockObject
+     * @return APIGroupInterface
      */
     private function createGroupMock(string $label = 'Test Group', string $description = 'A test group.') : APIGroupInterface
     {
-        $group = $this->createMock(APIGroupInterface::class);
+        $group = $this->createStub(APIGroupInterface::class);
         $group->method('getLabel')->willReturn($label);
         $group->method('getDescription')->willReturn($description);
         return $group;
     }
 
     /**
-     * Creates a mock APIParamManager with no parameters.
+     * Creates a stub APIParamManager with no parameters.
      *
-     * @return APIParamManager&MockObject
+     * @return APIParamManager
      */
     private function createEmptyParamManager() : APIParamManager
     {
-        $manager = $this->createMock(APIParamManager::class);
+        $manager = $this->createStub(APIParamManager::class);
         $manager->method('getParams')->willReturn(array());
         return $manager;
     }
 
     /**
-     * Creates a minimal APIMethodInterface mock suitable for generator tests.
+     * Creates a minimal APIMethodInterface stub for generator tests.
+     *
+     * All parameters are optional — provide only the values that matter for your test;
+     * sensible defaults are used for everything else.
      *
      * @param string $methodName
      * @param APIGroupInterface|null $group
-     * @return APIMethodInterface&MockObject
+     * @param string $docUrl Documentation URL string cast. Empty string → no externalDocs entry.
+     * @param RuntimeException|null $descriptionException When set, getDescription() throws this.
+     * @return APIMethodInterface
      */
-    private function createMethodMock(
+    private function buildMethodStub(
         string $methodName = 'TestMethod',
-        ?APIGroupInterface $group = null
+        ?APIGroupInterface $group = null,
+        string $docUrl = '',
+        ?RuntimeException $descriptionException = null
     ) : APIMethodInterface {
-        $adminUrl = $this->createMock(AdminURLInterface::class);
-        $adminUrl->method('__toString')->willReturn('');
+        $adminUrl = $this->createStub(AdminURLInterface::class);
+        $adminUrl->method('__toString')->willReturn($docUrl);
 
-        $method = $this->createMock(APIMethodInterface::class);
+        $method = $this->createStub(APIMethodInterface::class);
         $method->method('getMethodName')->willReturn($methodName);
-        $method->method('getDescription')->willReturn('Test description.');
+
+        if($descriptionException !== null)
+        {
+            $method->method('getDescription')->willThrowException($descriptionException);
+        }
+        else
+        {
+            $method->method('getDescription')->willReturn('Test description.');
+        }
+
         $method->method('getGroup')->willReturn($group ?? $this->createGroupMock());
         $method->method('getDocumentationURL')->willReturn($adminUrl);
         $method->method('getVersions')->willReturn(array('1.0'));
@@ -225,8 +240,8 @@ final class OpenAPIGeneratorTest extends TestCase
     public function test_paths_hasEntryForEachMethod() : void
     {
         $methods = array(
-            $this->createMethodMock('GetComtypes'),
-            $this->createMethodMock('GetMailings'),
+            $this->buildMethodStub('GetComtypes'),
+            $this->buildMethodStub('GetMailings'),
         );
 
         $result = $this->createGenerator($methods)->toArray();
@@ -237,9 +252,34 @@ final class OpenAPIGeneratorTest extends TestCase
 
     public function test_paths_eachEntryHasPostOperation() : void
     {
-        $result = $this->createGenerator(array($this->createMethodMock('TestMethod')))->toArray();
+        $result = $this->createGenerator(array($this->buildMethodStub('TestMethod')))->toArray();
 
         $this->assertArrayHasKey('post', $result['paths']['/api/TestMethod']);
+    }
+
+    public function test_paths_externalDocsUrlIsRelativeWhenDocumentationUrlIsSet() : void
+    {
+        $method = $this->buildMethodStub(
+            methodName: 'GetComtypes',
+            docUrl: 'http://example.com/api/documentation.php?method=GetComtypes'
+        );
+
+        $result = $this->createGenerator(array($method))->toArray();
+
+        $operation = $result['paths']['/api/GetComtypes']['post'];
+        $this->assertArrayHasKey('externalDocs', $operation);
+        $this->assertSame(
+            'documentation.php?'.APIMethodInterface::REQUEST_PARAM_METHOD.'=GetComtypes',
+            $operation['externalDocs']['url']
+        );
+    }
+
+    public function test_paths_externalDocsAbsentWhenDocumentationUrlIsEmpty() : void
+    {
+        $result = $this->createGenerator(array($this->buildMethodStub('TestMethod')))->toArray();
+
+        $operation = $result['paths']['/api/TestMethod']['post'];
+        $this->assertArrayNotHasKey('externalDocs', $operation);
     }
 
     // -------------------------------------------------------------------------
@@ -258,9 +298,9 @@ final class OpenAPIGeneratorTest extends TestCase
         $groupB = $this->createGroupMock('Group B', 'Description of B.');
 
         $methods = array(
-            $this->createMethodMock('Method1', $groupA),
-            $this->createMethodMock('Method2', $groupA), // same group
-            $this->createMethodMock('Method3', $groupB),
+            $this->buildMethodStub('Method1', $groupA),
+            $this->buildMethodStub('Method2', $groupA), // same group
+            $this->buildMethodStub('Method3', $groupB),
         );
 
         $result = $this->createGenerator($methods)->toArray();
@@ -271,7 +311,7 @@ final class OpenAPIGeneratorTest extends TestCase
     public function test_tags_containsGroupLabelAndDescription() : void
     {
         $group = $this->createGroupMock('API Group', 'The main API group.');
-        $methods = array($this->createMethodMock('SomeMethod', $group));
+        $methods = array($this->buildMethodStub('SomeMethod', $group));
 
         $result = $this->createGenerator($methods)->toArray();
 
@@ -308,20 +348,11 @@ final class OpenAPIGeneratorTest extends TestCase
 
     public function test_failingMethod_isSkipped_notFatal() : void
     {
-        $goodMethod = $this->createMethodMock('GoodMethod');
-
-        // This method will throw during conversion (getMethodName works, getDescription throws).
-        $badMethod = $this->createMock(APIMethodInterface::class);
-        $badMethod->method('getMethodName')->willReturn('BadMethod');
-        $badMethod->method('getDescription')->willThrowException(new RuntimeException('DB connection failed'));
-        $badMethod->method('getGroup')->willReturn($this->createGroupMock());
-        $badMethod->method('getDocumentationURL')->willReturn($this->createMock(AdminURLInterface::class));
-        $badMethod->method('getVersions')->willReturn(array('1.0'));
-        $badMethod->method('getCurrentVersion')->willReturn('1.0');
-        $badMethod->method('getChangelog')->willReturn(array());
-        $badMethod->method('getRelatedMethodNames')->willReturn(array());
-        $badMethod->method('getResponseMime')->willReturn('application/json');
-        $badMethod->method('manageParams')->willReturn($this->createEmptyParamManager());
+        $goodMethod = $this->buildMethodStub('GoodMethod');
+        $badMethod = $this->buildMethodStub(
+            methodName: 'BadMethod',
+            descriptionException: new RuntimeException('DB connection failed')
+        );
 
         $generator = $this->createGenerator(array($goodMethod, $badMethod));
         $result = $generator->toArray();
@@ -334,17 +365,10 @@ final class OpenAPIGeneratorTest extends TestCase
 
     public function test_failingMethod_recordedInConversionErrors() : void
     {
-        $badMethod = $this->createMock(APIMethodInterface::class);
-        $badMethod->method('getMethodName')->willReturn('FailingMethod');
-        $badMethod->method('getDescription')->willThrowException(new RuntimeException('Boom'));
-        $badMethod->method('getGroup')->willReturn($this->createGroupMock());
-        $badMethod->method('getDocumentationURL')->willReturn($this->createMock(AdminURLInterface::class));
-        $badMethod->method('getVersions')->willReturn(array('1.0'));
-        $badMethod->method('getCurrentVersion')->willReturn('1.0');
-        $badMethod->method('getChangelog')->willReturn(array());
-        $badMethod->method('getRelatedMethodNames')->willReturn(array());
-        $badMethod->method('getResponseMime')->willReturn('application/json');
-        $badMethod->method('manageParams')->willReturn($this->createEmptyParamManager());
+        $badMethod = $this->buildMethodStub(
+            methodName: 'FailingMethod',
+            descriptionException: new RuntimeException('Boom')
+        );
 
         $generator = $this->createGenerator(array($badMethod));
         $generator->toArray();
@@ -383,7 +407,7 @@ final class OpenAPIGeneratorTest extends TestCase
     {
         $this->tempFile = sys_get_temp_dir().'/openapi_test_'.uniqid().'/openapi.json';
 
-        $generator = $this->createGenerator(array($this->createMethodMock()));
+        $generator = $this->createGenerator(array($this->buildMethodStub()));
         $generator->setOutputPath($this->tempFile);
         $generator->generate();
 
@@ -410,5 +434,51 @@ final class OpenAPIGeneratorTest extends TestCase
         $generator = $this->createGenerator();
         $result = $generator->setServerUrl('https://example.com');
         $this->assertSame($generator, $result);
+    }
+
+    public function test_addOutputReplacement_returnsSelf() : void
+    {
+        $generator = $this->createGenerator();
+        $result = $generator->addOutputReplacement('foo', 'bar');
+        $this->assertSame($generator, $result);
+    }
+
+    public function test_generate_outputReplacementIsApplied() : void
+    {
+        $this->tempFile = sys_get_temp_dir().'/openapi_test_'.uniqid().'/openapi.json';
+
+        $generator = $this->createGenerator(
+            array(),
+            'REPLACE_ME App',
+            '1.0.0'
+        );
+        $generator->setOutputPath($this->tempFile);
+        $generator->addOutputReplacement('REPLACE_ME', '{PLACEHOLDER}');
+        $generator->generate();
+
+        $content = (string)file_get_contents($this->tempFile);
+        $this->assertStringContainsString('{PLACEHOLDER}', $content);
+        $this->assertStringNotContainsString('REPLACE_ME', $content);
+    }
+
+    public function test_generate_multipleOutputReplacementsAreAllApplied() : void
+    {
+        $this->tempFile = sys_get_temp_dir().'/openapi_test_'.uniqid().'/openapi.json';
+
+        $generator = $this->createGenerator(
+            array(),
+            'AppName-ALPHA',
+            '1.0.0-BETA'
+        );
+        $generator->setOutputPath($this->tempFile);
+        $generator->addOutputReplacement('ALPHA', '{alpha-placeholder}');
+        $generator->addOutputReplacement('BETA', '{beta-placeholder}');
+        $generator->generate();
+
+        $content = (string)file_get_contents($this->tempFile);
+        $this->assertStringContainsString('{alpha-placeholder}', $content);
+        $this->assertStringContainsString('{beta-placeholder}', $content);
+        $this->assertStringNotContainsString('ALPHA', $content);
+        $this->assertStringNotContainsString('BETA', $content);
     }
 }

@@ -119,8 +119,8 @@ class MethodConverter
             $operation['x-related-methods'] = $relatedMethodNames;
         }
 
-        // Optional: external documentation.
-        $docUrl = (string)$method->getDocumentationURL();
+        // Optional: external documentation (relative URL for environment portability).
+        $docUrl = $this->buildDocumentationUrl($method);
         if($docUrl !== '')
         {
             $operation['externalDocs'] = array(
@@ -200,6 +200,31 @@ class MethodConverter
                     'schema' => $schema,
                 ),
             ),
+        );
+    }
+
+    /**
+     * Builds a relative documentation URL for the method.
+     *
+     * Uses a path relative to the API directory so the generated
+     * OpenAPI spec is independent of the application's base URL.
+     *
+     * @param APIMethodInterface $method
+     * @return string Relative URL, e.g. `documentation.php?method=GetComtypes`. Empty if no documentation URL is available.
+     */
+    private function buildDocumentationUrl(APIMethodInterface $method) : string
+    {
+        $adminUrl = $method->getDocumentationURL();
+
+        if((string)$adminUrl === '')
+        {
+            return '';
+        }
+
+        return sprintf(
+            'documentation.php?%s=%s',
+            APIMethodInterface::REQUEST_PARAM_METHOD,
+            $method->getMethodName()
         );
     }
 

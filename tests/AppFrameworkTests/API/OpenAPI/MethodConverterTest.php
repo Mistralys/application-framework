@@ -397,7 +397,7 @@ final class MethodConverterTest extends TestCase
         $operation = $this->getOperation($method);
 
         $this->assertArrayHasKey('externalDocs', $operation);
-        $this->assertSame('https://example.com/api/TestMethod', $operation['externalDocs']['url']);
+        $this->assertSame('documentation.php?method=TestMethod', $operation['externalDocs']['url']);
     }
 
     public function test_externalDocs_omittedWhenDocUrlEmpty() : void

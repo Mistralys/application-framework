@@ -62,6 +62,11 @@ class OpenAPIGenerator
     private array $conversionErrors = array();
 
     /**
+     * @var array<string, string> Search → replace pairs applied to the serialized JSON before writing.
+     */
+    private array $outputReplacements = array();
+
+    /**
      * @param APIMethodCollection $methodCollection  Collection to iterate.
      * @param string $appName                        Application name for the `info.title` field.
      * @param string $appVersion                     Application version for the `info.version` field.
@@ -119,6 +124,21 @@ class OpenAPIGenerator
         return $this;
     }
 
+    /**
+     * Registers a string replacement to apply to the serialized JSON output
+     * before writing to disk. Useful for normalizing environment-specific
+     * values (e.g., replacing the application base URL with a placeholder).
+     *
+     * @param string $search  The literal string to find.
+     * @param string $replace The replacement string.
+     * @return $this
+     */
+    public function addOutputReplacement(string $search, string $replace) : self
+    {
+        $this->outputReplacements[$search] = $replace;
+        return $this;
+    }
+
     // -------------------------------------------------------------------------
     // Public generation API
     // -------------------------------------------------------------------------
@@ -136,6 +156,8 @@ class OpenAPIGenerator
             $this->toArray(),
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
+
+        $json = $this->applyOutputReplacements($json);
 
         FileInfo::factory($this->outputPath)->putContents($json);
 
@@ -189,6 +211,22 @@ class OpenAPIGenerator
     // -------------------------------------------------------------------------
     // Internal helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Applies all registered string replacements to the serialized JSON output.
+     *
+     * @param string $json
+     * @return string
+     */
+    private function applyOutputReplacements(string $json) : string
+    {
+        foreach($this->outputReplacements as $search => $replace)
+        {
+            $json = str_replace($search, $replace, $json);
+        }
+
+        return $json;
+    }
 
     /**
      * Converts a single method and merges the result into `$paths` and `$groups`.
