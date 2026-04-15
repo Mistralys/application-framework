@@ -10,6 +10,7 @@
 - Composer: Build now generates `openapi.json` and API `.htaccess`.
 - Composer: Fixed build artefacts output path for framework-internal builds.
 - Tests: Added 11 test files covering the OpenAPI module.
+- Dependencies: Bumped up AppUtils Collections to [v1.2.2](https://github.com/Mistralys/application-utils-collections/releases/tag/1.2.2).
 
 ## v7.2.1 - Test & Doc Cleanup
 - Tests: Fixed `HtaccessGeneratorTest` assertions for empty default rewrite base.
