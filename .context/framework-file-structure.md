@@ -874,6 +874,10 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── MediaTag.php
             │   ├── MarkdownRenderer.php
             │   ├── README.md
+            │   ├── docs/
+            │   │   ├── custom-tags.md
+            │   │   ├── public-api.md
+            │   ├── module-context.yaml
             ├── Media/
             │   ├── Admin/
             │   │   ├── MediaAdminURLs.php

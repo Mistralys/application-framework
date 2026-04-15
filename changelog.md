@@ -41,12 +41,21 @@ all consumer references.
 - Docs: Added "Trait Consumer Policy" to coding constraints.
 - Tests: Added `CountryRequestScreen` as `CountryRequestTrait` consumer.
 
-## v7.0.12 - User-Scoped API Response Caching
+## v7.0.13 - Markdown Renderer Docs
+- MarkdownRenderer: Added full module documentation and CTX integration.
+
+## v7.0.12 - DeepL Target Language Fix
+- DeeplHelper: Fixed deprecated language codes causing exceptions; now resolved to regional locales.
+- Tests: Added `DeeplHelperTest` integration test to verify correct target language code resolution.
+- Deepl: Fixed an exception in the test screen.
+- Dependencies: Updated DeepL XML Translator to [v3.0.1](https://github.com/Mistralys/deepl-xml-translator/releases/tag/3.0.1).
+
+## v7.0.12-dev - User-Scoped API Response Caching
 - API: Added user-scoped caching via `UserScopedCacheInterface` and trait.
 - API: User scope key injected automatically, preventing silent omission.
 - API: Empty user identifier now throws instead of silent fallback.
 
-## v7.0.11 - API Response Caching
+## v7.0.11-dev - API Response Caching
 - API: Added file-based response caching for API methods.
 - API: Strategies: `FixedDurationStrategy` (TTL) and `ManualOnlyStrategy`.
 - API: Caching opt-in via interface + trait, matching existing patterns.

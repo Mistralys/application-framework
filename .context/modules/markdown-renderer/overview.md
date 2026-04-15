@@ -1,3 +1,18 @@
+# Markdown Renderer - Overview
+_SOURCE: Markdown Renderer Overview_
+# Markdown Renderer Overview
+```
+// Structure of documents
+└── src/
+    └── classes/
+        └── Application/
+            └── MarkdownRenderer/
+                └── README.md
+
+```
+###  Path: `/src/classes/Application/MarkdownRenderer/README.md`
+
+```md
 # Markdown Renderer
 
 Converts Markdown text to styled HTML for display in Framework-based applications.
@@ -65,3 +80,10 @@ See [docs/custom-tags.md](docs/custom-tags.md) for the full reference and extens
 | [docs/public-api.md](docs/public-api.md) | Public API surface for all classes in this module. |
 
 For the full standard Markdown syntax reference see <https://commonmark.org/help/>.
+
+```
+---
+**File Statistics**
+- **Size**: 2.79 KB
+- **Lines**: 84
+File: `modules/markdown-renderer/overview.md`

@@ -903,10 +903,12 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | clearAll | APICacheManager static method; deletes the entire api/cache folder | api-cache |
 | Collection | ORM-like container of typed database records with CRUD, filtering, and events | db-helper |
 | common type | reusable domain-specific parameter preset like AliasParameter or EmailParameter | api-parameters |
+| CommonMark | Markdown-to-HTML conversion engine used by the renderer | markdown-renderer |
 | ComposerScripts | orchestrates all composer build steps: cache clearing, event/admin indexing, API method index, OpenAPI spec generation, .htaccess generation, CSS classes, context date, module docs | composer |
 | convertParameter | converts a single API parameter to its OpenAPI representation; returns null for reserved parameters | api-openapi |
 | convertParameters | batch-converts all parameters from APIParamManager into query/header and JSON-body buckets | api-openapi |
 | convertResponses | returns a map of HTTP status codes to OpenAPI response objects for a given API method | api-openapi |
+| Custom Tags | framework-specific tags like {media} and {api} processed around CommonMark | markdown-renderer |
 | DataGrid | tabular list component with column sorting, pagination, and bulk actions | ui-datagrid |
 | DataTable | raw SQL result wrapper for manual query output | db-helper |
 | dry-run | optional mode where a method validates and reports what it would do without side effects | api |
@@ -939,6 +941,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | list builder | pluggable data source implementation that populates a DataGrid | ui-datagrid |
 | load key | deduplication token ensuring each JS/CSS asset is injected once per page | ui-client-resources |
 | ManualOnlyStrategy | built-in strategy with STRATEGY_ID=ManualOnly; cached file never expires automatically; invalidation is triggered only via invalidateCache or APICacheManager::clearAll | api-cache |
+| MarkdownRenderer | converts Markdown to styled HTML with CommonMark and custom tags | markdown-renderer |
 | MCP server | Model Context Protocol server exposing tools over stdio transport | ai |
 | method index | cached class map of all API methods; rebuilt by composer build | api |
 | method whitelist | per-key list of API methods the key is authorized to call; managed by APIKeyMethods | api-clients |
@@ -997,6 +1000,7 @@ Total: 22 modules across 1 package.
 | `connectors` | Connectors | Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods. | `src/classes/Connectors/` | `.context/modules/connectors/` | — |
 | `db-helper` | DBHelper | Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations. | `src/classes/DBHelper/` | `.context/modules/db-helper/` | event-handler, ui, ui-datagrid, application-sets |
 | `event-handler` | Event Handling | Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners. | `src/classes/Application/EventHandler/` | `.context/modules/event-handler/` | ui, ui-form, db-helper, composer |
+| `markdown-renderer` | Markdown Renderer | Converts Markdown text to styled HTML using CommonMark with GFM extensions, extended with custom tags for media library images and API documentation links. | `src/classes/Application/MarkdownRenderer/` | `.context/modules/markdown-renderer/` | ui |
 | `ui` | User Interface | Central rendering layer of the framework: the UI singleton, Bootstrap component abstractions, page composition, client-side resource management, and the PHP-based theming engine. | `src/classes/UI/` | `.context/modules/ui/` | event-handler, db-helper, ui-datagrid, ui-tree, ui-markup-editor, ui-page, ui-form, ui-admin-urls, ui-bootstrap, ui-client-resources, ui-properties-grid, ui-themes |
 | `ui-admin-urls` | UI Admin URLs | Type-safe fluent URL builder for constructing admin-screen navigation links using the framework's area/mode/submode/action routing scheme. | `src/classes/UI/AdminURLs/` | `.context/modules/ui/admin-urls/` | ui, ui-tree |
 | `ui-bootstrap` | UI Bootstrap Components | PHP abstractions for Bootstrap v2 UI components — dropdowns, tabs, button groups, popovers, and the BigSelection widget — each exposing a fluent builder API. | `src/classes/UI/Bootstrap/` | `.context/modules/ui/bootstrap/` | ui |
@@ -1020,6 +1024,7 @@ Total: 22 modules across 1 package.
 - **composer** → event-handler
 - **db-helper** → event-handler, ui, ui-datagrid, application-sets
 - **event-handler** → ui, ui-form, db-helper, composer
+- **markdown-renderer** → ui
 - **ui** → event-handler, db-helper, ui-datagrid, ui-tree, ui-markup-editor, ui-page, ui-form, ui-admin-urls, ui-bootstrap, ui-client-resources, ui-properties-grid, ui-themes
 - **ui-admin-urls** → ui, ui-tree
 - **ui-bootstrap** → ui

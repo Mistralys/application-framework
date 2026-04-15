@@ -48,10 +48,15 @@ class DeeplHelper
      */
     public function createTranslator(Application_Countries_Country $fromCountry, Application_Countries_Country $toCountry) : Translator
     {
+        $targetLang = strtoupper($toCountry->getLanguageCode());
+        if(isset(Translator::DEPRECATED_TARGET_LANGUAGES[$targetLang])) {
+            $targetLang = str_replace('_', '-', strtoupper($toCountry->getLocaleCode()));
+        }
+
         $translator = new Translator(
             $this->requireAPIKey(),
             $fromCountry->getLanguageCode(),
-            $toCountry->getLanguageCode()
+            $targetLang
         );
 
         if($this->isProxyEnabled())

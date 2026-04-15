@@ -105,7 +105,8 @@ class DeepLTestScreen extends BaseMode implements DevelModeInterface
         }
         catch(Translator_Exception_Request $e)
         {
-            $this->renderer->appendContent($this->ui->createSection(t('Translation error'))
+            $this->renderer->appendContent($this->ui->createSection()
+                ->setTitle(t('Translation error'))
                 ->makeDangerous()
                 ->setContent($e->renderAnalysis(true))
             );
@@ -114,7 +115,8 @@ class DeepLTestScreen extends BaseMode implements DevelModeInterface
 
         $translated = $translator->getStringByID('target_text')->getTranslatedText();
 
-        $this->renderer->appendContent($this->ui->createSection(t('Translation result'))
+        $this->renderer->appendContent($this->ui->createSection()
+            ->setTitle(t('Translation result'))
             ->setContent($translated)
         );
     }

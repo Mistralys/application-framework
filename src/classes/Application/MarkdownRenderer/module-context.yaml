@@ -1,0 +1,61 @@
+## ---------------------------------------------------------------
+## MARKDOWN RENDERER — Markdown-to-HTML Conversion with Custom Tags
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "markdown-renderer"
+  label: "Markdown Renderer"
+  description: "Converts Markdown text to styled HTML using CommonMark with GFM extensions, extended with custom tags for media library images and API documentation links."
+  keywords:
+    - MarkdownRenderer (converts Markdown to styled HTML with CommonMark and custom tags)
+    - CommonMark (Markdown-to-HTML conversion engine used by the renderer)
+    - Custom Tags (framework-specific tags like {media} and {api} processed around CommonMark)
+  relatedModules:
+    - ui
+
+documents:
+  -
+    description: 'Markdown Renderer - Overview'
+    outputPath: 'modules/markdown-renderer/overview.md'
+    sources:
+      - type: file
+        description: "Markdown Renderer Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'Markdown Renderer - Core Architecture (Public API)'
+    outputPath: 'modules/markdown-renderer/architecture-core.md'
+    sources:
+      - type: file
+        description: "MarkdownRenderer, BaseCustomTag, and custom tag implementations"
+        sourcePaths:
+          - ./
+          - ./CustomTags
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Markdown Renderer - File Structure'
+    outputPath: 'modules/markdown-renderer/file-structure.md'
+    overwrite: true
+    sources:
+      -
+        type: tree
+        description: 'Tree of Module Files'
+        sourcePaths:
+          - ./
+        filePattern: '*'
+        renderFormat: ascii
+        enabled: true
+        showCharCount: false
+        maxDepth: 4
