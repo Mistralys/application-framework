@@ -733,7 +733,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
             }
         }
 
-        if (isset($this->timeoutSeconds)) {
+        if ($this->timeoutSeconds > 0) {
             $this->log(sprintf(
                 'Timeout is set to %s seconds (%s).',
                 $this->timeoutSeconds,

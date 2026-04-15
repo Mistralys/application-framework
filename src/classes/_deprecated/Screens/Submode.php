@@ -71,9 +71,9 @@ abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Ske
 
     /**
      * Retrieves the currently active action, or null if no actions are available.
-     * @return AdminActionInterface|NULL
+     * @return AdminActionInterface
      */
-    final public function getAction() : ?AdminActionInterface
+    final public function getAction() : AdminActionInterface
     {
         return ClassHelper::requireObjectInstanceOf(
             AdminActionInterface::class,

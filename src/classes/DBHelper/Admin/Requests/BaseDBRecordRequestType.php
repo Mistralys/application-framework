@@ -11,7 +11,6 @@ use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
- * @implements RequestTypeInterface<DBHelperRecordInterface>
  */
 abstract class BaseDBRecordRequestType extends BaseRequestType
 {
