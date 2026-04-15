@@ -1,5 +1,47 @@
 # Application Framework Changelog
 
+## v7.3.0 - OpenAPI Specification Generator
+- API: Added automatic OpenAPI 3.1 spec generation from registered API methods.
+- API: New `GetOpenAPISpec` method serves the generated spec as raw JSON.
+- API: Added `HtaccessGenerator` for API URL rewriting via `.htaccess`.
+- API: Added response schema inference from PHP return arrays.
+- API: OpenAPI spec link added to the API methods meta navigation.
+- API: Added response schemas to `GetAppCountriesAPI` and `GetAppLocalesAPI`.
+- Composer: Build now generates `openapi.json` and API `.htaccess`.
+- Composer: Fixed build artefacts output path for framework-internal builds.
+- Tests: Added 11 test files covering the OpenAPI module.
+- Dependencies: Bumped up AppUtils Collections to [v1.2.2](https://github.com/Mistralys/application-utils-collections/releases/tag/1.2.2).
+
+## v7.2.1 - Test & Doc Cleanup
+- Tests: Fixed `HtaccessGeneratorTest` assertions for empty default rewrite base.
+- Tests: Fixed `RecordTieInTest` inter-test pollution via `tearDown()` cleanup.
+- Tests: Added `live-http` PHPUnit group excluding live-server tests by default.
+- API Cache: Improved `readFromCache()` PHPDoc for corrupt-cache return case.
+- Deepl: Fixed double-instantiation in test screen.
+- Docs: Added PHPStan baseline regeneration rule to constraints.
+
+## v7.2.0 - API Cache Constants Harmonization (Breaking-S)
+- API Cache: Renamed `FixedDurationStrategy` duration constants to underscore format.
+- AI Cache: Added matching short-duration constants to `FixedDurationStrategy`.
+- API Cache: Hardened `readFromCache()` error logging against logger failures.
+- Deepl: Fixed incorrect `makeError()` call, replaced with `makeDangerous()`.
+- Deepl: Removed deprecated language code workaround, now handled upstream.
+- Tests: Migrated 19 legacy test files to namespaced `*Test.php` convention.
+
+### Breaking Changes
+
+`FixedDurationStrategy` duration constants were renamed from compressed format
+(`DURATION_1MIN`) to underscore-separated (`DURATION_1_MIN`). Find-and-replace
+all consumer references.
+
+## v7.1.0 - API Cache Quality Improvements
+- API Cache: `readFromCache()` now logs corrupt cache files before auto-removing.
+- AI Cache: Added explicit `filemtime()` false-guard in `FixedDurationStrategy`.
+- API Cache: Added `@throws` annotation to `invalidateMethod()`.
+- Docs: Documented YAML colon+space constraint for module keyword values.
+- Docs: Added "Trait Consumer Policy" to coding constraints.
+- Tests: Added `CountryRequestScreen` as `CountryRequestTrait` consumer.
+
 ## v7.0.13 - Markdown Renderer Docs
 - MarkdownRenderer: Added full module documentation and CTX integration.
 
@@ -8,6 +50,17 @@
 - Tests: Added `DeeplHelperTest` integration test to verify correct target language code resolution.
 - Deepl: Fixed an exception in the test screen.
 - Dependencies: Updated DeepL XML Translator to [v3.0.1](https://github.com/Mistralys/deepl-xml-translator/releases/tag/3.0.1).
+
+## v7.0.12-dev - User-Scoped API Response Caching
+- API: Added user-scoped caching via `UserScopedCacheInterface` and trait.
+- API: User scope key injected automatically, preventing silent omission.
+- API: Empty user identifier now throws instead of silent fallback.
+
+## v7.0.11-dev - API Response Caching
+- API: Added file-based response caching for API methods.
+- API: Strategies: `FixedDurationStrategy` (TTL) and `ManualOnlyStrategy`.
+- API: Caching opt-in via interface + trait, matching existing patterns.
+- API: Cache location registered in admin CacheControl UI via event handler.
 
 ## v7.0.11 - Deepl Settings Overrides
 - Deepl: Added DB-based app setting overrides for the API key and proxy configuration.

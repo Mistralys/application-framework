@@ -67,7 +67,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
                             </a>
                             <?php
                         }
-                        else if(isset($linkDef['url']))
+                        else
                         {
                             ?>
                             <a href="<?php echo $linkDef['url'] ?>">

@@ -451,7 +451,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
             $value = (float)$value;
         }
 
-        if(is_int($value) || is_float($value)) {
+        if(is_float($value)) {
             return $value;
         }
 

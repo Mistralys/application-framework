@@ -160,8 +160,10 @@ MARKDOWN;
 
     public function getReponseKeyDescriptions(): array
     {
+        // No static key descriptions applicable — the response is a dynamic list of collection
+        // introspection objects generated at runtime by BaseCollection::describe(); the schema
+        // varies per collection type and cannot be statically enumerated.
         return array();
     }
-
     // endregion
 }

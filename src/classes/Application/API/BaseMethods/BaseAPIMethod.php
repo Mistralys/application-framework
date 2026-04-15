@@ -7,6 +7,7 @@ namespace Application\API\BaseMethods;
 use Application\API\APIException;
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
+use Application\API\Cache\CacheableAPIMethodInterface;
 use Application\API\APIResponseDataException;
 use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\ErrorResponse;
@@ -147,6 +148,13 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
         $version = $this->getActiveVersion();
 
+        if ($this instanceof CacheableAPIMethodInterface) {
+            $cached = $this->readFromCache($version);
+            if ($cached !== null) {
+                $this->sendSuccessResponse(ArrayDataCollection::create($cached));
+            }
+        }
+
         try {
             $this->collectRequestData($version);
         } catch (Throwable $e) {
@@ -173,6 +181,10 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
                 ->makeInternalServerError()
                 ->setErrorMessage('Failed collecting response data: %s', $e->getMessage())
                 ->send();
+        }
+
+        if ($this instanceof CacheableAPIMethodInterface) {
+            $this->writeToCache($version, $response->getData());
         }
 
         $this->sendSuccessResponse($response);

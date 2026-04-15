@@ -1,0 +1,105 @@
+## ---------------------------------------------------------------
+## API / CLIENTS — API Client & Key Management
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "api-clients"
+  label: "API Clients"
+  description: "Manages API client registrations and their API keys using the Collection/Record pattern. An API client represents an external application authorized to consume the API, with multiple API keys each having their own activation status and method permissions. Provides bearer token authentication for API methods via APIKeyMethodInterface/APIKeyMethodTrait, the complete admin UI for client and key management (APIClientsArea with list/create/view modes and key sub-modes), and type-safe URL builders for all admin screens."
+  keywords:
+    - API client (registered external application authorized to consume the API; stored in api_clients)
+    - API key (bearer token belonging to a client; stored in api_keys with a per-key method whitelist)
+    - foreign ID (unique external identifier assigned to an API client for cross-system correlation)
+    - APIKeyMethodInterface (opt-in interface that makes an API method require bearer token authentication)
+    - method whitelist (per-key list of API methods the key is authorized to call; managed by APIKeyMethods)
+  relatedModules:
+    - "api"
+    - "api-openapi"
+    - "db-helper"
+    - "ui"
+
+documents:
+  -
+    description: 'API Clients - Overview'
+    outputPath: 'modules/api/clients/overview.md'
+    sources:
+      - type: file
+        description: "API Clients Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'API Clients - Core Architecture (Public API)'
+    outputPath: 'modules/api/clients/architecture-core.md'
+    sources:
+      - type: file
+        description: "APIClientsCollection, APIClientRecord, APIClientFilterCriteria, APIClientFilterSettings, APIClientRecordSettings, APIClientException"
+        sourcePaths:
+          - ./
+        filePattern: "*.php"
+        excludePatterns:
+          - 'API/'
+          - 'Keys/'
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Clients - API Keys Architecture (Public API)'
+    outputPath: 'modules/api/clients/architecture-keys.md'
+    sources:
+      - type: file
+        description: "APIKeysCollection, APIKeyRecord, APIKeyFilterCriteria, APIKeyFilterSettings, APIKeyRecordSettings, APIKeyException, APIKeyMethods, APIKeyMethodInterface, APIKeyMethodTrait, APIKeyParam, APIKeyHandler"
+        sourcePaths:
+          - ./Keys
+          - ./API
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Clients - Admin UI (Public API)'
+    outputPath: 'modules/api/clients/architecture-ui.md'
+    sources:
+      - type: file
+        description: "APIClientsArea, ClientsListMode, CreateClientMode, ViewClientMode, ClientStatusSubmode, ClientSettingsSubmode, APIKeysSubmode, APIKeysListAction, CreateAPIKeyAction, APIKeyStatusAction, APIKeySettingsAction, URL classes, screen rights, request types, traits"
+        sourcePaths:
+          - ../Admin
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Clients - File Structure'
+    outputPath: 'modules/api/clients/file-structure.md'
+    sources:
+      - type: tree
+        description: 'API Clients and Admin File Structure'
+        sourcePaths:
+          - ./
+          - ../Admin
+        filePattern: '*.php'
+        renderFormat: ascii
+        showCharCount: false
+        maxDepth: 5

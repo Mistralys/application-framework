@@ -20,12 +20,14 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   └── FixedDurationStrategy.php
             │   │   │   └── UncachedStrategy.php
             │   ├── EnvironmentRunner.php
+            │   ├── README.md
             │   ├── Server/
             │   │   ├── FrameworkMCPServer.php
             │   │   ├── StderrLogger.php
             │   ├── Tools/
-            │   │   └── AIToolInterface.php
-            │   │   └── BaseAITool.php
+            │   │   ├── AIToolInterface.php
+            │   │   ├── BaseAITool.php
+            │   ├── module-context.yaml
             ├── API/
             │   ├── APIException.php
             │   ├── APIFoldersManager.php
@@ -64,6 +66,20 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   └── ClientSubmodeTrait.php
             │   ├── BaseMethods/
             │   │   ├── BaseAPIMethod.php
+            │   ├── Cache/
+            │   │   ├── APICacheException.php
+            │   │   ├── APICacheManager.php
+            │   │   ├── APICacheStrategyInterface.php
+            │   │   ├── APIResponseCacheLocation.php
+            │   │   ├── CacheableAPIMethodInterface.php
+            │   │   ├── CacheableAPIMethodTrait.php
+            │   │   ├── README.md
+            │   │   ├── Strategies/
+            │   │   │   ├── FixedDurationStrategy.php
+            │   │   │   ├── ManualOnlyStrategy.php
+            │   │   ├── UserScopedCacheInterface.php
+            │   │   ├── UserScopedCacheTrait.php
+            │   │   ├── module-context.yaml
             │   ├── Clients/
             │   │   ├── API/
             │   │   │   ├── APIKeyMethodInterface.php
@@ -78,13 +94,15 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── APIClientRecordSettings.php
             │   │   ├── APIClientsCollection.php
             │   │   ├── Keys/
-            │   │   │   └── APIKeyException.php
-            │   │   │   └── APIKeyFilterCriteria.php
-            │   │   │   └── APIKeyFilterSettings.php
-            │   │   │   └── APIKeyMethods.php
-            │   │   │   └── APIKeyRecord.php
-            │   │   │   └── APIKeyRecordSettings.php
-            │   │   │   └── APIKeysCollection.php
+            │   │   │   ├── APIKeyException.php
+            │   │   │   ├── APIKeyFilterCriteria.php
+            │   │   │   ├── APIKeyFilterSettings.php
+            │   │   │   ├── APIKeyMethods.php
+            │   │   │   ├── APIKeyRecord.php
+            │   │   │   ├── APIKeyRecordSettings.php
+            │   │   │   ├── APIKeysCollection.php
+            │   │   ├── README.md
+            │   │   ├── module-context.yaml
             │   ├── Collection/
             │   │   ├── APICacheLocation.php
             │   │   ├── APIMethodCollection.php
@@ -102,10 +120,23 @@ _SOURCE: Tree of PHP Class Files_
             │   ├── ErrorResponsePayload.php
             │   ├── Events/
             │   │   ├── RegisterAPIIndexCacheListener.php
+            │   │   ├── RegisterAPIResponseCacheListener.php
             │   ├── Groups/
             │   │   ├── APIGroupInterface.php
             │   │   ├── FrameworkAPIGroup.php
             │   │   ├── GenericAPIGroup.php
+            │   ├── OpenAPI/
+            │   │   ├── GetOpenAPISpec.php
+            │   │   ├── HtaccessGenerator.php
+            │   │   ├── MethodConverter.php
+            │   │   ├── OpenAPIGenerator.php
+            │   │   ├── OpenAPISchema.php
+            │   │   ├── ParameterConverter.php
+            │   │   ├── README.md
+            │   │   ├── ResponseConverter.php
+            │   │   ├── SchemaInferrer.php
+            │   │   ├── TypeMapper.php
+            │   │   ├── module-context.yaml
             │   ├── Parameters/
             │   │   ├── APIParamManager.php
             │   │   ├── APIParameterException.php
@@ -135,6 +166,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── ParamsHandlerContainerInterface.php
             │   │   │   ├── RuleHandlerInterface.php
             │   │   ├── ParamTypeSelector.php
+            │   │   ├── README.md
             │   │   ├── Reserved/
             │   │   │   ├── APIMethodParameter.php
             │   │   │   ├── APIVersionParameter.php
@@ -170,9 +202,11 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   │   └── RequiredValidation.php
             │   │   │   │   └── ValueExistsCallbackValidation.php
             │   │   ├── ValueLookup/
-            │   │   │   └── SelectableParamValue.php
-            │   │   │   └── SelectableValueParamInterface.php
-            │   │   │   └── SelectableValueParamTrait.php
+            │   │   │   ├── SelectableParamValue.php
+            │   │   │   ├── SelectableValueParamInterface.php
+            │   │   │   ├── SelectableValueParamTrait.php
+            │   │   ├── module-context.yaml
+            │   ├── README.md
             │   ├── Response/
             │   │   ├── JSONInfoSerializer.php
             │   │   ├── ResponseInterface.php
@@ -199,11 +233,12 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── KeyPathInterface.php
             │   │   ├── KeyReplacement.php
             │   ├── Versioning/
-            │   │   └── APIVersionInterface.php
-            │   │   └── BaseAPIVersion.php
-            │   │   └── VersionCollection.php
-            │   │   └── VersionedAPIInterface.php
-            │   │   └── VersionedAPITrait.php
+            │   │   ├── APIVersionInterface.php
+            │   │   ├── BaseAPIVersion.php
+            │   │   ├── VersionCollection.php
+            │   │   ├── VersionedAPIInterface.php
+            │   │   ├── VersionedAPITrait.php
+            │   ├── module-context.yaml
             ├── Admin/
             │   ├── AdminException.php
             │   ├── AdminScreenStubInterface.php
@@ -2019,6 +2054,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 99.24 KB
-- **Lines**: 2025
+- **Size**: 100.88 KB
+- **Lines**: 2056
 File: `framework-file-structure.md`

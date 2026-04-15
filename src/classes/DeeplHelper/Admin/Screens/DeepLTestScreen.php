@@ -24,7 +24,7 @@ class DeepLTestScreen extends BaseMode implements DevelModeInterface
     public const string FIELD_TEXT = 'text_to_translate';
     public const string FIELD_SOURCE_LANGUAGE = 'source_language';
     public const string FIELD_TARGET_LANGUAGE = 'target_language';
-    private DeeplHelper $helper;
+    private ?DeeplHelper $helper = null;
 
     public function getURLName(): string
     {
@@ -96,7 +96,7 @@ class DeepLTestScreen extends BaseMode implements DevelModeInterface
         $sourceCountry = AppFactory::createLocales()->getByID($sourceLocale)->getCountry();
         $targetCountry = AppFactory::createLocales()->getByID($targetLocale)->getCountry();
 
-        $translator = AppFactory::createDeeplHelper()->createTranslator($sourceCountry, $targetCountry);
+        $translator = $this->helper->createTranslator($sourceCountry, $targetCountry);
         $translator->addString('target_text', $text);
 
         try

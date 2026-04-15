@@ -9,8 +9,11 @@ use AppUtils\FileHelper\JSONFile;
 
 class FixedDurationStrategy extends BaseAICacheStrategy
 {
-    public const string STRATEGY_ID = 'fixed_duration';
+    public const string STRATEGY_ID = 'FixedDuration';
 
+    public const int DURATION_1_MIN = 60;
+    public const int DURATION_5_MIN = 300;
+    public const int DURATION_15_MIN = 900;
     public const int DURATION_1_HOUR = 3600;
     public const int DURATION_6_HOURS = 21600;
     public const int DURATION_12_HOURS = 43200;
@@ -28,8 +31,24 @@ class FixedDurationStrategy extends BaseAICacheStrategy
         return self::STRATEGY_ID;
     }
 
+    /**
+     * Returns true if the cache file's modification time is within
+     * the configured duration from the current time.
+     * Returns false if `filemtime()` returns false (e.g. race condition
+     * during parallel deletion — treated as expired).
+     *
+     * @param JSONFile $cacheFile
+     * @return bool
+     */
     protected function isCacheFileValid(JSONFile $cacheFile): bool
     {
-        return (time() - filemtime($cacheFile->getPath()) < $this->durationInSeconds);
+        $mtime = filemtime($cacheFile->getPath());
+
+        if($mtime === false)
+        {
+            return false;
+        }
+
+        return (time() - $mtime) < $this->durationInSeconds;
     }
 }

@@ -12,9 +12,6 @@ _SOURCE: Framework Documentation_
         └── file-handling.md
         └── folder-structure.md
         └── json-handling.md
-        └── plans/
-            ├── 2026-02-09-upgrade-helper-work.md
-            ├── 2026-02-09-upgrade-helper.md
         └── project-manifest/
             ├── README.md
             ├── constraints.md
@@ -461,2193 +458,6 @@ $null = JSONConverter::json2var('null'); // Returns NULL
 
 
 ```
-###  Path: `/docs/agents/plans/2026-02-09-upgrade-helper-work.md`
-
-```md
-# Work Packages: v7.0.0 Upgrade Documentation & Helper Script
-
-**Plan Reference**: [2026-02-09-upgrade-helper.md](2026-02-09-upgrade-helper.md)  
-**Date Created**: 2026-02-09  
-**Status**: Ready for Implementation  
-**Total Estimated Effort**: 13-20 hours
-
-## Overview
-
-This document breaks down the v7.0.0 upgrade documentation project into distinct, incrementally implementable work packages. Each package is self-contained with all necessary context for implementation, even if picked up weeks or months later.
-
-## Context Summary
-
-**What**: Create comprehensive upgrade guide and automated scanner for Application Framework v7.0.0 "Breaking-XXL" release.
-
-**Why**: v7.0.0 contains systematic breaking changes (class relocations, namespace additions, admin screen system overhaul, events refactoring) requiring detailed migration documentation.
-
-**Key Changes in v7.0.0**:
-- Classes moved into thematically organized folders with PHP namespaces
-- Admin screens now dynamically loaded via `RegisterAdminScreenFolders` event
-- Offline events refactored with auto-discovery
-- Deprecated classes maintain backward compatibility temporarily
-- One database change: `2025-12-19-app-sets.sql`
-
-**Key Files**:
-- Source: `/Users/smordziol/Webserver/libraries/application-framework/changelog.md`
-- Source: `/Users/smordziol/Webserver/libraries/application-framework/src/classes/_deprecated/`
-- Template: `/Users/smordziol/Webserver/libraries/application-framework/docs/upgrade-guides/upgrade-guide-v5.5.0.md`
-- Output: `/Users/smordziol/Webserver/libraries/application-framework/docs/upgrade-guides/upgrade-guide-v7.0.0.md`
-- Script: `/Users/smordziol/Webserver/libraries/application-framework/tools/upgrade-to-v7.php`
-
----
-
-## Work Package 1: Extract Complete Class Mapping Database
-
-**Objective**: Create a comprehensive reference table of all deprecated class mappings (old → new) for use in documentation and scanner script.
-
-**Status**: 🔲 Not Started  
-**Estimated Effort**: 2-3 hours  
-**Dependencies**: None  
-**Priority**: HIGH (Required for all other packages)
-
-### Context
-
-v7.0.0 moved 50+ classes from root folder into organized subfolders with namespacing. Deprecated wrapper classes maintain backward compatibility. Need complete mapping for:
-1. Upgrade guide reference table
-2. Scanner script's detection database
-3. Migration example generation
-
-### Information Sources
-
-1. **Changelog commits**: `/Users/smordziol/Webserver/libraries/application-framework/changelog.md`
-   - Search for: "Moved", "Renamed", "Relocated"
-   - Lines approximately 1-500 contain v7.0.0 changes
-
-2. **Deprecated classes folder**: `/Users/smordziol/Webserver/libraries/application-framework/src/classes/_deprecated/`
-   - Each file contains `@deprecated` tag pointing to new location
-   - Example: `Application_Exception` → `Application\Exception\ApplicationException`
-
-3. **Git history** (if available):
-   ```bash
-   cd /Users/smordziol/Webserver/libraries/application-framework
-   git log --oneline --all --grep="Moved" --since="2025-01-01"
-   git log --oneline --all --grep="Renamed" --since="2025-01-01"
-   git diff HEAD~100..HEAD --name-status | grep "^R"
-   ```
-
-### Tasks
-
-1. **Scan deprecated classes folder**
-   - Read all PHP files in `src/classes/_deprecated/`
-   - Extract class name from `class ClassName`
-   - Extract new location from `@deprecated Use {@see \New\Namespace\ClassName}`
-   - Record namespace, type (class/interface/trait)
-
-2. **Parse changelog entries**
-   - Extract "Moved X to Y" entries from `changelog.md`
-   - Cross-reference with deprecated folder findings
-   - Note any classes mentioned but not deprecated
-
-3. **Categorize mappings**
-   - **Core classes**: Exceptions, Interfaces, Utils, AppFolder
-   - **Media library**: Media, MediaCollection, events
-   - **Admin screens**: Base classes, area classes
-   - **Session**: Session classes, events
-   - **Events**: Offline events, listeners
-   - **UI**: UI, renderable classes
-   - **Other**: Miscellaneous utilities
-
-4. **Create structured data file**
-   - Format: Markdown table or JSON
-   - Columns: Old Class | New Class | Namespace | Type | Category | Priority
-   - Priority: HIGH (commonly used), MEDIUM, LOW
-   - Save to: `docs/upgrade-guides/v7.0.0-class-mappings.md` or `.json`
-
-### Example Entry Format
-
-**Markdown**:
-```markdown
-| Old Class | New Class | Namespace | Type | Category | Priority |
-|-----------|-----------|-----------|------|----------|----------|
-| Application_Exception | ApplicationException | Application\Exception | class | Core | HIGH |
-| Application_FilterSettings | FilterSettingsInterface | Application | interface | Core | HIGH |
-```
-
-**JSON**:
-```json
-{
-  "Application_Exception": {
-    "newClass": "ApplicationException",
-    "fullNamespace": "Application\\Exception\\ApplicationException",
-    "namespace": "Application\\Exception",
-    "type": "class",
-    "category": "Core",
-    "priority": "HIGH",
-    "usage": ["throw new", "extends"],
-    "notes": "Primary exception class"
-  }
-}
-```
-
-### Acceptance Criteria
-
-- [ ] At least 50 deprecated classes documented
-- [ ] All entries include: old name, new name, full namespace, type
-- [ ] Classes categorized by module/functionality
-- [ ] Priority assigned to each (HIGH/MEDIUM/LOW based on usage frequency)
-- [ ] Data saved in both human-readable (Markdown) and machine-readable (JSON) formats
-- [ ] Cross-referenced with changelog entries
-- [ ] Validated by checking that new classes actually exist in codebase
-
-### Output Files
-
-- `docs/upgrade-guides/v7.0.0-class-mappings.md` (human-readable reference)
-- `docs/upgrade-guides/v7.0.0-class-mappings.json` (scanner script data)
-
-### Notes
-
-- Use `grep -r "@deprecated" src/classes/_deprecated/` to quickly find all deprecated classes
-- Common patterns in deprecated files:
-  ```php
-  /**
-   * @deprecated Use {@see \New\Namespace\ClassName} instead.
-   */
-  class Old_ClassName extends \New\Namespace\ClassName
-  ```
-- If a class is mentioned in changelog but not in `_deprecated/`, it may be a complete removal (not just relocation)
-
----
-
-## Work Package 2: Create Upgrade Guide Structure & Overview
-
-**Objective**: Create the upgrade guide document with complete structure, overview sections, and prerequisites.
-
-**Status**: 🔲 Not Started  
-**Estimated Effort**: 1-2 hours  
-**Dependencies**: None (can run parallel to WP1)  
-**Priority**: HIGH
-
-### Context
-
-Create the main upgrade guide document following the established pattern from previous upgrade guides. Sets foundation for all detailed content.
-
-### Reference Documents
-
-**Template**: `/Users/smordziol/Webserver/libraries/application-framework/docs/upgrade-guides/upgrade-guide-v5.5.0.md`
-
-**Read sections**:
-- Document structure (headers, sections)
-- Overview format and tone
-- Prerequisites format
-- Database updates format
-- Step-by-step guide structure
-
-### Tasks
-
-1. **Create document file**
-   - Path: `/Users/smordziol/Webserver/libraries/application-framework/docs/upgrade-guides/upgrade-guide-v7.0.0.md`
-   - Copy header structure from v5.5.0 guide
-   - Update version references to v7.0.0
-
-2. **Write Overview section**
-   - Brief summary of v7.0.0 scope
-   - Major changes summary (3-5 bullet points)
-   - Version compatibility (upgrading from v6.x)
-   - Reference to "Breaking-XXL" nature
-   - Link to changelog for full details
-
-3. **Write Prerequisites section**
-   - PHP version requirements (check `composer.json`)
-   - Database requirements (MySQL/MariaDB versions)
-   - Required tools (Git, Composer, etc.)
-   - Backup recommendations
-   - Estimated migration time ranges (by application size)
-   - Testing environment recommendation
-
-4. **Write Database Updates section**
-   - List required SQL script: `2025-12-19-app-sets.sql`
-   - Location: `docs/sql/2025-12-19-app-sets.sql`
-   - Import instructions (command-line and GUI)
-   - Verification steps
-   - Backup recommendations
-
-5. **Create section placeholders**
-   - Breaking Changes (to be filled in WP3)
-   - Step-by-Step Migration Guide (to be filled in WP4)
-   - Testing Checklist (to be filled in WP4)
-   - Common Issues and Solutions (to be filled in WP4)
-   - Deprecation Timeline
-   - Additional Resources
-   - Version Compatibility
-   - Support
-
-6. **Write Deprecation Timeline section**
-   - v7.0.0: Deprecated classes available with warnings
-   - v7.1.0: Deprecated classes still available
-   - v8.0.0: Deprecated classes will be removed (estimated Q3 2026)
-   - Recommendation to migrate immediately
-
-7. **Write Version Compatibility section**
-   - Upgrading from: v6.0.0, v6.1.0, v6.1.1, v6.2.0, v6.3.0
-   - Upgrading to: v7.0.0
-   - PHP requirements from `composer.json`
-   - Database version requirements
-
-8. **Write Additional Resources section**
-   - Link to `changelog.md`
-   - Link to `docs/changelog-history/v6-changelog.md`
-   - Framework documentation links
-   - Contact information for support
-
-9. **Write Support section**
-   - Migration assistance process
-   - Issue reporting
-   - Where to get help
-
-### Template Structure
-
-```markdown
-# Upgrade Guide: v7.0.0
-
-> **Migration Complexity**: Breaking-XXL  
-> **Estimated Time**: 2-6 hours depending on application size  
-> **Last Updated**: 2026-02-09
-
-## Overview
-
-[2-3 paragraphs about v7.0.0 scope and changes]
-
-**Major Changes**:
-- Class reorganization with namespacing
-- Admin screen system overhaul
-- Offline events refactoring
-- MCP/AI integration support
-- Type safety improvements
-
-See [changelog.md](../../changelog.md) for complete details.
-
-## Prerequisites
-
-### System Requirements
-- PHP 8.0 or higher
-- MySQL 5.7+ or MariaDB 10.2+
-- Composer 2.0+
-
-### Before You Begin
-1. **Create full backup** of application and database
-2. **Set up testing environment** - do NOT upgrade production first
-3. **Review this guide completely** before starting
-4. **Allocate time**:
-   - Small applications (< 10k LOC): 2-3 hours
-   - Medium applications (10-50k LOC): 3-5 hours
-   - Large applications (> 50k LOC): 5-6+ hours
-
-## Database Updates
-
-### Required SQL Scripts
-
-Execute the following SQL script on your database:
-
-**File**: `docs/sql/2025-12-19-app-sets.sql`  
-**Purpose**: Creates AppSets feature database storage
-
-**Command-line import**:
-```bash
-mysql -u username -p database_name < docs/sql/2025-12-19-app-sets.sql
-```
-
-**Verification**:
-```sql
-SHOW TABLES LIKE '%appsets%';
-```
-
-**Note**: This is the ONLY database change required for v7.0.0.
-
-## Breaking Changes
-
-[Placeholder - filled in WP3]
-
-## Step-by-Step Migration Guide
-
-[Placeholder - filled in WP4]
-
-## Testing Checklist
-
-[Placeholder - filled in WP4]
-
-## Common Issues and Solutions
-
-[Placeholder - filled in WP4]
-
-## Deprecation Timeline
-
-| Version | Status | Timeline |
-|---------|--------|----------|
-| v7.0.0 | Deprecated classes available with `@deprecated` warnings | Current |
-| v7.1.0 | Deprecated classes still available | Q2 2026 |
-| v8.0.0 | **Deprecated classes REMOVED** | Q3 2026 (estimated) |
-
-**⚠️ Recommendation**: Migrate immediately to avoid breaking changes in v8.0.0 (6-12 months).
-
-## Version Compatibility
-
-**Upgrading From**: v6.0.0, v6.1.0, v6.1.1, v6.2.0, v6.3.0  
-**Upgrading To**: v7.0.0  
-**PHP Requirements**: PHP 8.0+ (PHP 8.1+ recommended)  
-**Database**: MySQL 5.7+, MariaDB 10.2+
-
-## Additional Resources
-
-- **Detailed Changes**: [changelog.md](../../changelog.md)
-- **v6 History**: [v6-changelog.md](../changelog-history/v6-changelog.md)
-- **Framework Documentation**: [docs/](../README.md)
-- **Agent Documentation**: [agents/](../agents/readme.md)
-
-## Support
-
-For migration assistance:
-1. Review this guide thoroughly
-2. Run automated scanner (see Work Package 5)
-3. Check changelog for additional details
-4. Contact framework maintainer
-
----
-
-**Document Version**: 1.0  
-**Created**: 2026-02-09  
-**Applies To**: Application Framework v7.0.0
-```
-
-### Acceptance Criteria
-
-- [ ] Document created at correct path
-- [ ] Overview section complete and accurate
-- [ ] Prerequisites clearly stated with version numbers
-- [ ] Database update instructions complete and tested
-- [ ] All major section placeholders created
-- [ ] Deprecation timeline included
-- [ ] Version compatibility table complete
-- [ ] Follows format and tone of existing upgrade guides
-- [ ] Markdown formatting valid
-
-### Output Files
-
-- `docs/upgrade-guides/upgrade-guide-v7.0.0.md` (partial - structure only)
-
----
-
-## Work Package 3: Document Breaking Changes in Detail
-
-**Objective**: Complete the "Breaking Changes" section of the upgrade guide with comprehensive details, examples, and migration instructions for each category.
-
-**Status**: 🔲 Not Started  
-**Estimated Effort**: 3-4 hours  
-**Dependencies**: WP1 (class mappings), WP2 (document structure)  
-**Priority**: HIGH
-
-### Context
-
-This is the core content of the upgrade guide. Documents each breaking change category with examples and migration paths. Uses class mapping data from WP1.
-
-### Input Files
-
-- Class mapping data: `docs/upgrade-guides/v7.0.0-class-mappings.md` (from WP1)
-- Document structure: `docs/upgrade-guides/upgrade-guide-v7.0.0.md` (from WP2)
-- Changelog reference: `changelog.md` (for detailed change descriptions)
-
-### Tasks
-
-#### Task 3.1: Class Locations and Namespaces Section
-
-1. **Write overview**
-   - Explain the reorganization pattern
-   - Why namespaces were added
-   - Impact on existing code
-
-2. **Insert class mapping reference table**
-   - Use top 30-40 most important classes from WP1 data
-   - Format as markdown table
-   - Group by category (Core, Media, Admin, Events, etc.)
-   - Include status column (Deprecated, Relocated, etc.)
-
-3. **Write migration steps**
-   - How to update use statements
-   - How to update class references
-   - How to update type hints
-   - IDE find/replace patterns
-
-4. **Create code examples**
-   - Minimum 5 before/after examples
-   - Cover: Exceptions, Media library, Filter settings, UI classes
-   - Show both old and new patterns
-   - Include namespace import examples
-
-**Example Structure**:
-```markdown
-### 1. Class Locations and Namespaces
-
-#### Overview
-
-The v7.0.0 release reorganizes classes from the root folder into thematically organized subfolders with proper PHP namespacing. This improves code organization, enables autoloading, and follows modern PHP standards.
-
-**Pattern**: Old underscore-based pseudo-namespaces → Proper PHP namespaces
-
-**Backward Compatibility**: All old class names remain available as deprecated wrappers but will be removed in v8.0.0.
-
-#### Class Mapping Reference
-
-##### Core Classes
-| Old Class | New Class | Full Namespace | Status |
-|-----------|-----------|----------------|--------|
-| Application_Exception | ApplicationException | Application\Exception\ApplicationException | Deprecated |
-| ... | ... | ... | ... |
-
-##### Media Library
-[Table of media classes]
-
-##### Admin Screens
-[Table of screen classes]
-
-#### Migration Steps
-
-1. **Search for deprecated class usage**
-   - Use automated scanner (see Scanner Tool section)
-   - Or manually search: `grep -r "Application_Exception" assets/classes/`
-
-2. **Update namespace imports**
-   ```php
-   // Add at top of file
-   use Application\Exception\ApplicationException;
-   ```
-
-3. **Update class references**
-   - Replace old names with new names
-   - Remove underscores from class names
-
-4. **Update type hints**
-   ```php
-   // OLD
-   public function handle(Application_Exception $e) {}
-   
-   // NEW
-   public function handle(ApplicationException $e) {}
-   ```
-
-#### Code Examples
-
-**Example 1: Exception Handling**
-```php
-// OLD
-try {
-    // code
-} catch (Application_Exception $e) {
-    throw new Application_Exception('Error: ' . $e->getMessage());
-}
-
-// NEW
-use Application\Exception\ApplicationException;
-
-try {
-    // code
-} catch (ApplicationException $e) {
-    throw new ApplicationException('Error: ' . $e->getMessage());
-}
-```
-
-[4+ more examples]
-```
-
-#### Task 3.2: Admin Screen System Migration Section
-
-1. **Write overview**
-   - Explain architectural change
-   - Old: Fixed `Area` folder structure
-   - New: Dynamic loading with event registration
-   - Benefits of new approach
-
-2. **Write migration steps**
-   - Numbered steps for migrating screens
-   - How to implement `getAdminScreensFolder()`
-   - How to create event listener
-   - How to register listener
-
-3. **Create complete example**
-   - Show old structure
-   - Show new structure
-   - Module class with `getAdminScreensFolder()`
-   - Event listener implementation
-   - Registration code
-
-4. **List affected screens**
-   - Which built-in screens moved
-   - What application developers need to check
-
-**Example Structure**:
-```markdown
-### 2. Admin Screen System Migration
-
-#### Overview
-
-Admin screens are now **dynamically loaded** instead of being tied to the fixed `Area` folder structure. Screens can now be placed alongside their modules for better organization.
-
-**Old Approach**:
-- Screens in fixed `/Area/` folder structure
-- Hardcoded screen locations
-- Manual sitemap maintenance
-
-**New Approach**:
-- Screens can be anywhere in codebase
-- Dynamic loading by class name
-- Register locations via `RegisterAdminScreenFolders` event
-- Automatic sitemap generation
-
-**Benefits**: Better code organization, screens next to their modules, easier maintenance.
-
-#### Affected Screens
-
-The following built-in screens were relocated:
-- Users management → `Application\Admin\Screens\Users\`
-- Media library → `Application\Media\Admin\Screens\`
-- News central → `Application\Admin\Screens\News\`
-- Developer screens → `Application\Admin\Screens\Developer\`
-
-**Action Required**: If you have custom admin screens, follow migration steps below.
-
-#### Migration Steps
-
-[Detailed numbered steps]
-
-#### Complete Example
-
-[Full before/after code example]
-```
-
-#### Task 3.3: Offline Events System Section
-
-1. **Write overview**
-2. **Document required changes**
-   - Extend `BaseOfflineEvent`
-   - Implement `getEventName()`
-   - Remove `wakeUp()` method
-3. **Create before/after examples**
-4. **List moved events**
-
-#### Task 3.4: Media Library Changes Section
-
-1. **Document class renames**
-2. **Show migration examples**
-3. **Note admin screen changes**
-
-#### Task 3.5: Deprecated Screen Base Classes Section
-
-1. **Create mapping table**
-2. **Show migration examples**
-
-### Acceptance Criteria
-
-- [ ] All 5 breaking change categories documented
-- [ ] Each category has clear overview
-- [ ] Migration steps are detailed and actionable
-- [ ] Minimum 10 total code examples (before/after)
-- [ ] Class mapping reference table complete (30-40 entries)
-- [ ] Examples are tested and accurate
-- [ ] Language is clear and non-technical where possible
-- [ ] Cross-references to other sections where appropriate
-
-### Output Files
-
-- `docs/upgrade-guides/upgrade-guide-v7.0.0.md` (updated - breaking changes section complete)
-
----
-
-## Work Package 4: Write Step-by-Step Migration Guide & Testing
-
-**Objective**: Complete the practical migration guide with phased approach, testing checklist, and common issues section.
-
-**Status**: 🔲 Not Started  
-**Estimated Effort**: 2-3 hours  
-**Dependencies**: WP3 (breaking changes documented)  
-**Priority**: HIGH
-
-### Context
-
-Provides actionable step-by-step process for upgrading, organized by phase with time estimates. Includes comprehensive testing checklist and troubleshooting guide.
-
-### Tasks
-
-#### Task 4.1: Step-by-Step Migration Guide
-
-Create 7 phases with detailed tasks:
-
-1. **Phase 1: Preparation**
-   - Backup procedures
-   - Scanner script download/setup
-   - Report review
-   - Scope estimation
-
-2. **Phase 2: Database Updates**
-   - SQL script execution
-   - Verification
-   - Rollback plan
-
-3. **Phase 3: Class Reference Updates**
-   - Priority-based approach (high-frequency classes first)
-   - Find/replace patterns
-   - Namespace imports
-   - Testing after each batch
-
-4. **Phase 4: Admin Screen Migration**
-   - Screen identification
-   - Optional relocation
-   - Event listener creation
-   - Registration
-   - Cache clearing
-
-5. **Phase 5: Event Listener Updates**
-   - Custom event updates
-   - Listener updates
-   - `wakeUp()` removal
-   - `getEventName()` implementation
-
-6. **Phase 6: Testing**
-   - Cache clearing
-   - Functionality testing
-   - Test suite execution
-   - Smoke testing
-
-7. **Phase 7: Cleanup**
-   - Code cleanup
-   - Documentation updates
-   - Commit changes
-
-**Format Each Phase**:
-```markdown
-### Phase X: Phase Name (Time Estimate)
-
-**Goal**: [What this phase accomplishes]
-
-**Steps**:
-1. [Detailed step with commands/examples]
-2. [Detailed step]
-   ```bash
-   # Example commands
-   ```
-3. [Detailed step]
-
-**Verification**:
-- [ ] Checkpoint 1
-- [ ] Checkpoint 2
-
-**Common Issues**: See [Common Issues](#common-issues-and-solutions)
-```
-
-#### Task 4.2: Testing Checklist
-
-Create comprehensive checklist organized by:
-
-1. **Critical Functionality**
-   - Application boots
-   - Database connection
-   - Authentication
-   - Admin access
-
-2. **Admin Screens**
-   - Default screens load
-   - Custom screens accessible
-   - Navigation complete
-   - Forms work
-   - Modes/tabs work
-
-3. **Events System**
-   - Session events fire
-   - Media events fire
-   - Custom events fire
-   - Listeners execute
-
-4. **Media Library**
-   - Collection loads
-   - Upload works
-   - Editing works
-   - Deletion works
-
-5. **Application-Specific**
-   - Template for custom tests
-
-**Format**:
-```markdown
-## Testing Checklist
-
-### Critical Functionality
-- [ ] Application boots without errors
-- [ ] Database connection successful
-- [ ] User authentication works
-- [ ] Admin area accessible
-- [ ] No PHP warnings/notices in logs
-
-### Admin Screens
-- [ ] Dashboard loads
-- [ ] Users screen accessible
-- [ ] [etc.]
-
-[Continue for all categories]
-
-### Application-Specific Tests
-Add your application-specific tests:
-- [ ] _________________
-- [ ] _________________
-```
-
-#### Task 4.3: Common Issues and Solutions
-
-Document 8-10 common issues with solutions:
-
-1. **"Class not found" errors**
-   - Cause
-   - Solution
-   - Example
-
-2. **Admin screen not appearing**
-   - Cause
-   - Solution
-   - Example
-
-3. **Events not firing**
-4. **Interface not found errors**
-5. **Cache-related errors**
-6. **Namespace import errors**
-7. **Type hint errors**
-8. **Deprecated warning floods**
-
-**Format**:
-```markdown
-## Common Issues and Solutions
-
-### Issue: "Class 'Application_Exception' not found"
-
-**Cause**: Deprecated class reference not updated and old class file missing.
-
-**Solution**: 
-1. Use upgrade scanner to find all usages
-2. Update namespace imports
-3. Update class references
-
-**Example**:
-```php
-// Update from:
-throw new Application_Exception('Error');
-
-// To:
-use Application\Exception\ApplicationException;
-throw new ApplicationException('Error');
-```
-
-**See Also**: [Class Locations and Namespaces](#class-locations-and-namespaces)
-
-[Continue for all issues]
-```
-
-### Acceptance Criteria
-
-- [ ] 7 migration phases documented
-- [ ] Each phase has clear goals, steps, verification
-- [ ] Time estimates provided for each phase
-- [ ] Testing checklist covers all critical areas
-- [ ] Minimum 8 common issues documented
-- [ ] Each issue has cause, solution, example
-- [ ] Cross-references between sections
-- [ ] Practical and actionable instructions
-
-### Output Files
-
-- `docs/upgrade-guides/upgrade-guide-v7.0.0.md` (updated - guide sections complete)
-
----
-
-## Work Package 5: Create Automated Scanner Script
-
-**Objective**: Build a CLI tool that scans application code for deprecated class usage and generates actionable migration reports.
-
-**Status**: 🔲 Not Started  
-**Estimated Effort**: 4-6 hours  
-**Dependencies**: WP1 (class mappings - provides data source)  
-**Priority**: MEDIUM (valuable but guide can exist without it)
-
-### Context
-
-Create PHP CLI script that helps developers identify deprecated class usage in their applications. Makes migration significantly easier, especially for large codebases.
-
-### Script Location
-
-`/Users/smordziol/Webserver/libraries/application-framework/tools/upgrade-to-v7.php`
-
-### Features
-
-1. **Recursive file scanning**: Scan all PHP files in target directory
-2. **Class usage detection**: Find deprecated classes in various contexts (new, extends, implements, type hints, use statements)
-3. **Admin screen detection**: Identify screens needing migration
-4. **Event listener detection**: Identify event listeners needing updates
-5. **Report generation**: Console, HTML, and JSON output formats
-6. **Priority ranking**: Order findings by frequency/importance
-7. **Progress indicator**: Show progress for large scans
-
-### Script Structure
-
-```php
-#!/usr/bin/env php
-<?php
-/**
- * Application Framework v7.0.0 Upgrade Scanner
- * 
- * Scans application code for deprecated class usage and generates
- * migration reports.
- * 
- * Usage:
- *   php upgrade-to-v7.php /path/to/application
- *   php upgrade-to-v7.php /path/to/app --format=html --output=report.html
- *   php upgrade-to-v7.php /path/to/app --format=json --output=report.json
- */
-
-// 1. Argument parsing
-// 2. Class definitions
-// 3. Main execution
-// 4. Output formatting
-
-class UpgradeScanner
-{
-    private array $classMap = [];
-    private array $findings = [];
-    private string $scanPath;
-    private int $filesScanned = 0;
-    
-    // Methods:
-    // - __construct()
-    // - loadClassMap()
-    // - scan()
-    // - scanFile()
-    // - detectClassUsage()
-    // - detectAdminScreens()
-    // - detectEventListeners()
-    // - generateReport()
-    // - formatConsole()
-    // - formatHTML()
-    // - formatJSON()
-    // - prioritize()
-}
-```
-
-### Tasks
-
-#### Task 5.1: Core Scanner Implementation
-
-1. **Create file with shebang and docblock**
-2. **Implement argument parsing**
-   - Path (required)
-   - --format=console|html|json (optional, default: console)
-   - --output=filename (optional)
-   - --help flag
-
-3. **Load class mapping data**
-   - Read JSON file from WP1
-   - Parse into lookup array
-   - Include metadata (namespace, type, category, priority)
-
-4. **Implement recursive file scanner**
-   - Use `RecursiveDirectoryIterator`
-   - Filter for `.php` files
-   - Skip common ignore patterns (vendor/, node_modules/, cache/, etc.)
-   - Show progress (files scanned / total)
-
-5. **Implement class usage detector**
-   - Regex patterns for:
-     - `new ClassName(`
-     - `extends ClassName`
-     - `implements ClassName`
-     - `use Full\ClassName;`
-     - Type hints: `function foo(ClassName $var)`
-     - Static calls: `ClassName::method()`
-   - Capture file path and line number
-   - Store in findings array
-
-6. **Implement admin screen detector**
-   - Look for patterns:
-     - `extends Application_Admin_Area`
-     - Files in `/Area/` folders
-     - Classes extending deprecated screen base classes
-   - Flag for migration
-
-7. **Implement event listener detector**
-   - Look for patterns:
-     - `public function wakeUp(` (old pattern)
-     - Files in `OfflineEvents/` folders
-     - Classes without `getEventName()` method
-   - Flag for migration
-
-#### Task 5.2: Report Generation
-
-1. **Console formatter**
-   - ASCII table formatting
-   - Color coding (if terminal supports)
-   - Priority sections (High/Medium/Low)
-   - File grouping
-   - Summary statistics
-
-2. **HTML formatter**
-   - Bootstrap-based styling
-   - Collapsible sections
-   - Syntax highlighting
-   - Searchable/filterable table
-   - Export functionality
-
-3. **JSON formatter**
-   - Structured data output
-   - Machine-readable
-   - For CI/CD integration
-
-4. **Priority ranking**
-   - HIGH: 10+ usages or critical classes
-   - MEDIUM: 3-9 usages
-   - LOW: 1-2 usages
-   - Sort by frequency within priority
-
-#### Task 5.3: Testing and Refinement
-
-1. **Create test fixtures**
-   - Small PHP files with various deprecated usage patterns
-   - Test all detection patterns
-   - Verify accurate line numbers
-
-2. **Test on real application**
-   - Run on sample application using framework
-   - Verify findings are accurate
-   - Check for false positives
-   - Refine patterns as needed
-
-3. **Performance optimization**
-   - Test on large codebases
-   - Optimize file reading
-   - Add caching if needed
-
-4. **Error handling**
-   - Handle invalid paths
-   - Handle permission errors
-   - Handle malformed PHP files
-   - Graceful degradation
-
-### Example Output
-
-**Console Format**:
-```
-=================================================================
- Application Framework v7.0.0 Upgrade Scanner
-=================================================================
-
-Scanning: /path/to/application
-Files scanned: 145/145 [========================================] 100%
-
-Found 47 deprecated class usages in 23 files
-
-PRIORITY 1: High-frequency deprecated classes (10+ usages)
------------------------------------------------------------
-Application_Exception (15 usages)
-  /assets/classes/MyApp/Module.php:45
-  /assets/classes/MyApp/Module.php:67
-  /assets/classes/MyApp/Helper.php:23
-  ...
-→ Replacement: Use Application\Exception\ApplicationException
-→ See: docs/upgrade-guides/upgrade-guide-v7.0.0.md#class-locations
-
-Application_Media (12 usages)
-  /assets/classes/MyApp/MediaHandler.php:12, 34, 56, 78
-  ...
-→ Replacement: Use Application\Media\Collection\MediaCollection
-
-PRIORITY 2: Medium-frequency (3-9 usages)
-------------------------------------------
-[...]
-
-PRIORITY 3: Low-frequency (1-2 usages)
----------------------------------------
-[...]
-
-Admin Screens Requiring Migration
-----------------------------------
-  /Area/MyModule/CustomScreen.php
-    → Extends deprecated Application_Admin_Area_Mode_CollectionCreateScreen
-    → Action: Update to DBHelper\Admin\Screens\Mode\BaseRecordCreateMode
-    → See: docs/upgrade-guides/upgrade-guide-v7.0.0.md#admin-screens
-
-Offline Events Requiring Migration
------------------------------------
-  /assets/classes/MyApp/Events/MyListener.php:45
-    → Has wakeUp() method (deprecated pattern)
-    → Action: Remove wakeUp(), implement getEventName()
-    → See: docs/upgrade-guides/upgrade-guide-v7.0.0.md#offline-events
-
-=================================================================
-Summary
-=================================================================
-Deprecated classes found:    15 distinct classes
-Total usages:                47 locations
-Files affected:              23 files
-Admin screens to migrate:     1 screen
-Event listeners to update:    1 listener
-
-Estimated migration effort:   3-4 hours
-
-Next Steps:
-1. Review this report carefully
-2. Read: docs/upgrade-guides/upgrade-guide-v7.0.0.md
-3. Start with HIGH priority items
-4. Test after each batch of changes
-=================================================================
-```
-
-### Acceptance Criteria
-
-- [ ] Script executable from command line
-- [ ] Scans directory recursively for PHP files
-- [ ] Detects all deprecated class usage patterns (new, extends, implements, type hints, use)
-- [ ] Detects admin screens needing migration
-- [ ] Detects event listeners needing updates
-- [ ] Generates console report with priorities
-- [ ] Generates HTML report (optional)
-- [ ] Generates JSON export (optional)
-- [ ] Shows progress indicator for large scans
-- [ ] Handles errors gracefully
-- [ ] Performance acceptable (< 1 second per 100 files)
-- [ ] Tested on real application
-- [ ] Documented with --help flag
-- [ ] No false positives in test cases
-
-### Output Files
-
-- `tools/upgrade-to-v7.php` (executable PHP script)
-- `tools/upgrade-to-v7-README.md` (usage documentation)
-
-### Testing Data
-
-Create test directory: `tests/upgrade-scanner/fixtures/`
-
-Sample files to test all patterns:
-```php
-// fixture-exceptions.php
-class TestClass {
-    public function test() {
-        throw new Application_Exception('Test'); // Should detect
-        try {
-        } catch (Application_Exception $e) { // Should detect
-        }
-    }
-}
-
-// fixture-extends.php
-class TestScreen extends Application_Admin_Area_Mode_CollectionCreateScreen { // Should detect
-}
-
-// fixture-typehints.php
-class TestClass {
-    public function handle(Application_Exception $e) { // Should detect
-    }
-}
-
-// fixture-use.php
-use Application_Exception; // Should detect
-
-// fixture-events.php
-class TestListener {
-    public function wakeUp() { // Should detect (needs migration)
-    }
-}
-```
-
----
-
-## Work Package 6: Integration and Final Testing
-
-**Objective**: Integrate all components, test on real application, refine based on findings.
-
-**Status**: 🔲 Not Started  
-**Estimated Effort**: 2-3 hours  
-**Dependencies**: WP2, WP3, WP4, WP5 (all components complete)  
-**Priority**: HIGH
-
-### Context
-
-Validate that the complete upgrade guide and scanner tool work together effectively on a real application upgrade.
-
-### Tasks
-
-#### Task 6.1: Test Application Setup
-
-1. **Create or select test application**
-   - Use existing application on framework v6.3.0
-   - Or create minimal test application with:
-     - Custom admin screens
-     - Custom event listeners
-     - Media library usage
-     - Exception handling
-     - FilterSettings implementation
-
-2. **Establish baseline**
-   - Document current functionality
-   - Create automated tests if possible
-   - Take full backup
-   - Note all custom features
-
-#### Task 6.2: Execute Upgrade Following Guide
-
-1. **Run scanner script**
-   - Execute on test application
-   - Review report
-   - Document findings
-   - Note any unexpected results
-
-2. **Follow upgrade guide step-by-step**
-   - Execute each phase precisely as documented
-   - Note any unclear instructions
-   - Track actual time vs estimated time
-   - Document any issues encountered
-
-3. **Record all changes**
-   - Keep log of modifications
-   - Note helpful patterns
-   - Identify pain points
-
-#### Task 6.3: Validate Results
-
-1. **Functional testing**
-   - All features work as before upgrade
-   - No new errors
-   - No warnings in logs
-   - Performance unchanged
-
-2. **Code quality**
-   - No deprecated class warnings
-   - All namespaces correct
-   - Admin screens accessible
-   - Events firing correctly
-
-3. **Scanner validation**
-   - Re-run scanner on upgraded application
-   - Should find zero deprecated usages
-   - Verify accuracy
-
-#### Task 6.4: Refine Documentation
-
-1. **Update upgrade guide based on findings**
-   - Clarify ambiguous instructions
-   - Add missing steps
-   - Improve examples
-   - Adjust time estimates
-   - Add discovered gotchas to Common Issues
-
-2. **Update scanner script**
-   - Fix any false positives
-   - Add missing detection patterns
-   - Improve error messages
-   - Refine output formatting
-
-3. **Update class mappings**
-   - Add any missing classes discovered
-   - Correct any errors
-   - Improve categorization
-
-### Acceptance Criteria
-
-- [ ] Test application successfully upgraded from v6.3.0 to v7.0.0
-- [ ] All functionality works post-upgrade
-- [ ] Scanner tool identified all actual deprecated usages
-- [ ] Zero false positives in scanner results
-- [ ] Upgrade guide instructions are accurate and complete
-- [ ] Time estimates are realistic
-- [ ] Common issues section covers actual encountered problems
-- [ ] Documentation refined based on real-world testing
-
-### Output Files
-
-- Updated `docs/upgrade-guides/upgrade-guide-v7.0.0.md`
-- Updated `tools/upgrade-to-v7.php`
-- Updated class mapping files
-- Test application upgrade log (for reference)
-
----
-
-## Work Package 7: Review, Polish, and Finalize
-
-**Objective**: Final review, proofreading, consistency check, and formal release preparation.
-
-**Status**: 🔲 Not Started  
-**Estimated Effort**: 1-2 hours  
-**Dependencies**: WP6 (testing complete)  
-**Priority**: MEDIUM
-
-### Context
-
-Ensure documentation is production-ready with consistent formatting, accurate cross-references, and professional quality.
-
-### Tasks
-
-#### Task 7.1: Content Review
-
-1. **Accuracy check**
-   - Verify all version numbers (v6.x → v7.0.0)
-   - Verify all file paths
-   - Verify all commands work
-   - Verify all code examples syntax
-   - Test all cross-reference links
-
-2. **Completeness check**
-   - All breaking changes covered
-   - All migration paths documented
-   - All common issues addressed
-   - All acceptance criteria from WP1-6 met
-
-3. **Consistency check**
-   - Terminology consistent throughout
-   - Formatting consistent
-   - Tone consistent
-   - Example structure consistent
-
-#### Task 7.2: Formatting and Polish
-
-1. **Markdown validation**
-   - Valid markdown syntax
-   - Proper heading hierarchy
-   - Code blocks properly formatted
-   - Lists properly structured
-   - Tables properly formatted
-
-2. **Visual formatting**
-   - Consistent use of bold, italic, code
-   - Proper use of callouts/notes
-   - Adequate spacing between sections
-   - Syntax highlighting correct
-
-3. **Grammar and clarity**
-   - Proofread all text
-   - Remove jargon where possible
-   - Simplify complex sentences
-   - Fix typos and grammar errors
-
-#### Task 7.3: Cross-References and Links
-
-1. **Internal links**
-   - Verify all anchor links work
-   - Add missing cross-references
-   - Consistent link formatting
-
-2. **External references**
-   - Verify file paths exist
-   - Verify referenced documentation exists
-   - Update if files moved
-
-3. **Navigation aids**
-   - Table of contents (if needed)
-   - "See also" references
-   - Back-to-top links (if long document)
-
-#### Task 7.4: Final Checklist
-
-- [ ] All work packages 1-6 complete
-- [ ] Document tested on real upgrade
-- [ ] Scanner script tested and functional
-- [ ] All code examples are valid PHP
-- [ ] All file paths are accurate
-- [ ] All cross-references work
-- [ ] Markdown validates
-- [ ] Grammar and spelling checked
-- [ ] Formatting consistent
-- [ ] No TODOs or placeholders remaining
-- [ ] Version and date correct
-- [ ] Contact/support information accurate
-
-#### Task 7.5: Create Summary Document
-
-Create `docs/upgrade-guides/README.md` or update existing:
-- List all available upgrade guides
-- Add v7.0.0 guide to list
-- Link to scanner tool
-- Note complexity/estimated time
-
-### Acceptance Criteria
-
-- [ ] All checklist items complete
-- [ ] Document is professional quality
-- [ ] No errors or inconsistencies
-- [ ] Ready for public release
-- [ ] Summary/index updated
-
-### Output Files
-
-- Final `docs/upgrade-guides/upgrade-guide-v7.0.0.md`
-- Final `tools/upgrade-to-v7.php`
-- Final class mapping files
-- Updated `docs/upgrade-guides/README.md`
-
----
-
-## Implementation Strategy
-
-### Recommended Order
-
-1. **Start with WP1 and WP2 in parallel** (both are foundational, no dependencies)
-2. **Complete WP3** (needs class mappings from WP1, document structure from WP2)
-3. **Complete WP4** (needs breaking changes from WP3)
-4. **Complete WP5** (needs class mappings from WP1; can be parallel with WP3/WP4)
-5. **Complete WP6** (needs all components)
-6. **Complete WP7** (final polish)
-
-### Incremental Delivery
-
-Each work package produces usable output:
-- **WP1**: Class mapping reference (useful immediately)
-- **WP2**: Document structure (shows scope and outline)
-- **WP3**: Breaking changes details (primary content)
-- **WP4**: Migration guide (practical instructions)
-- **WP5**: Scanner tool (high-value utility)
-- **WP6**: Validated documentation
-- **WP7**: Publication-ready materials
-
-### Time Distribution
-
-| Work Package | Hours | Percentage |
-|--------------|-------|------------|
-| WP1: Class Mappings | 2-3 | 15% |
-| WP2: Structure | 1-2 | 10% |
-| WP3: Breaking Changes | 3-4 | 25% |
-| WP4: Migration Guide | 2-3 | 18% |
-| WP5: Scanner Script | 4-6 | 32% |
-| WP6: Testing | 2-3 | 18% |
-| WP7: Polish | 1-2 | 10% |
-| **Total** | **15-23** | **100%** |
-
-### Parallelization Opportunities
-
-- **WP1 + WP2**: Can run completely in parallel
-- **WP5**: Can start after WP1, parallel to WP3/WP4
-- **WP3 + WP4**: Sequential but can start WP4 sections that don't depend on WP3
-
-### Session Planning
-
-**Session 1** (3-4 hours):
-- Complete WP1 (class mappings)
-- Complete WP2 (document structure)
-- Start WP3 (first 2 breaking change sections)
-
-**Session 2** (3-4 hours):
-- Complete WP3 (remaining breaking changes)
-- Complete WP4 (migration guide)
-
-**Session 3** (4-6 hours):
-- Complete WP5 (scanner script)
-
-**Session 4** (2-3 hours):
-- Complete WP6 (testing)
-- Complete WP7 (polish)
-
----
-
-## Success Metrics
-
-- [ ] Upgrade guide covers 100% of v7.0.0 breaking changes
-- [ ] Class mapping includes 50+ classes
-- [ ] Scanner detects 95%+ of deprecated usages (validated by testing)
-- [ ] Scanner has < 5% false positive rate
-- [ ] Upgrade guide tested on real application successfully
-- [ ] Average upgrade time for medium application: 3-5 hours (validated)
-- [ ] Zero blockers encountered in test upgrade
-- [ ] Documentation clarity rated 4+/5 by test users
-
----
-
-## Notes for Future Implementers
-
-### Key Files Quick Reference
-
-**Framework Root**: `/Users/smordziol/Webserver/libraries/application-framework/`
-
-- Changelog: `changelog.md`
-- Deprecated classes: `src/classes/_deprecated/`
-- Upgrade guides: `docs/upgrade-guides/`
-- Tools: `tools/`
-- Class mapping output: `docs/upgrade-guides/v7.0.0-class-mappings.*`
-- Guide output: `docs/upgrade-guides/upgrade-guide-v7.0.0.md`
-- Scanner output: `tools/upgrade-to-v7.php`
-
-### Common Patterns in Deprecated Files
-
-```php
-/**
- * @deprecated Use {@see \Full\Namespace\NewClass} instead.
- */
-class Old_Class_Name extends \Full\Namespace\NewClass
-{
-    // Usually empty - just extends new class
-}
-```
-
-### Git Commands for Research
-
-```bash
-cd /Users/smordziol/Webserver/libraries/application-framework
-
-# Find moved classes
-git log --all --oneline --grep="Moved" --since="2025-01-01"
-
-# Find renames
-git diff HEAD~100..HEAD --name-status | grep "^R"
-
-# Find all deprecated tags
-grep -r "@deprecated" src/classes/_deprecated/
-```
-
-### Changelog Parsing Tips
-
-v7.0.0 section starts around line 1 in `changelog.md`. Look for commit summaries like:
-- "Moved X to Y"
-- "Renamed X to Y"
-- "Relocated X"
-
-### Scanner Detection Patterns
-
-Common PHP patterns to detect:
-```regex
-new\s+([A-Z][a-zA-Z_]*)
-extends\s+([A-Z][a-zA-Z_]*)
-implements\s+([A-Z][a-zA-Z_,\s]*)
-use\s+([A-Z][a-zA-Z_\\]*);
-function\s+\w+\([^)]*([A-Z][a-zA-Z_]*)\s+\$
-```
-
----
-
-## Document Status Tracking
-
-| Work Package | Status | Assignee | Started | Completed | Notes |
-|--------------|--------|----------|---------|-----------|-------|
-| WP1: Class Mappings | 🔲 Not Started | - | - | - | - |
-| WP2: Structure | 🔲 Not Started | - | - | - | - |
-| WP3: Breaking Changes | 🔲 Not Started | - | - | - | - |
-| WP4: Migration Guide | 🔲 Not Started | - | - | - | - |
-| WP5: Scanner Script | 🔲 Not Started | - | - | - | - |
-| WP6: Testing | 🔲 Not Started | - | - | - | - |
-| WP7: Polish | 🔲 Not Started | - | - | - | - |
-
-**Legend**: 🔲 Not Started | 🔄 In Progress | ✅ Complete | ⚠️ Blocked
-
----
-
-**Last Updated**: 2026-02-09  
-**Document Version**: 1.0  
-**Estimated Total Effort**: 15-23 hours
-
-```
-###  Path: `/docs/agents/plans/2026-02-09-upgrade-helper.md`
-
-```md
-# Plan: v7.0.0 Upgrade Documentation and Helper Script
-
-**Date**: 2026-02-09  
-**Status**: Ready for Implementation  
-**Complexity**: High (Breaking-XXL Release)
-
-## Overview
-
-Create comprehensive upgrade documentation for the v7.0.0 "Breaking-XXL" release, including:
-1. Detailed upgrade guide following existing documentation patterns
-2. Automated helper script to scan applications for deprecated class usage
-3. Complete class mapping reference table
-4. Migration examples for all affected systems
-
-## Context
-
-The v7.0.0 release contains systematic breaking changes centered on:
-- **Class reorganization**: Classes moved into thematically organized folders with proper namespacing
-- **Admin screen system overhaul**: Dynamic loading with sitemap auto-discovery
-- **Events system refactoring**: Auto-discovery of event/listener classes
-- **MCP/AI integration**: Context-as-Code support for agentic development
-- **Type safety improvements**: Extensive type hints and strict typing
-
-Changes are well-documented in `changelog.md` with detailed commit summaries. Backward compatibility is maintained through deprecated class wrappers.
-
-## Breaking Changes Summary
-
-### 1. Class Locations and Namespaces (PRIMARY PATTERN)
-
-Classes moved from root folder into thematically organized subfolders with proper PHP namespacing.
-
-**Key Examples**:
-- `Application_Exception` → `Application\Exception\ApplicationException`
-- `Application_FilterSettings` → `Application\FilterSettingsInterface`
-- `UI` class → Moved to organized location
-- Media library classes → `Application\Media\*` namespace
-- Session events → `Application\Session\Events\*`
-
-**Pattern**: Old underscore-based pseudo-namespaces replaced with proper PHP namespaces.
-
-### 2. Admin Screen System (MAJOR BREAKING)
-
-**Old Approach**:
-- Screens in fixed `Area` folder structure
-- Hardcoded screen locations
-- Manual sitemap maintenance
-
-**New Approach**:
-- Screens can be placed alongside their modules
-- Dynamic loading by class name
-- `RegisterAdminScreenFolders` offline event to register screen locations
-- Automatic sitemap generation with caching
-- Admin screens indexed on build
-
-**Affected Screens**:
-- Users management
-- News central
-- Media library
-- Time tracker
-- UI translation
-- Countries management
-- Tags management
-- Developer screens
-
-### 3. Offline Events System (BREAKING)
-
-**Changes Required**:
-- Events must extend `BaseOfflineEvent`
-- Listeners must provide event name via `getEventName()`
-- No more `wakeUp()` method needed
-- Special `OfflineEvents` folder no longer required
-- Event/listener classes auto-discovered
-
-**Examples**:
-- Session events moved to `Application\Session\Events\`
-- Media events moved to `Application\Media\Events\`
-- New `RegisterAdminScreenFolders` event
-
-### 4. Database Changes (MINIMAL)
-
-**Required SQL Updates**:
-- `2025-12-19-app-sets.sql` - AppSets feature database storage
-- This is the ONLY database change for v7.0.0
-
-### 5. Deprecated Classes
-
-Old class names marked as deprecated with `@deprecated` tags pointing to new locations. Backward compatibility maintained but classes will be removed in future version.
-
-## Upgrade Guide Structure
-
-Following the pattern from `docs/upgrade-guides/upgrade-guide-v5.5.0.md`:
-
-```markdown
-# Upgrade Guide: v7.0.0
-
-## Overview
-- Scope and impact summary
-- Version compatibility (upgrading from v6.x)
-
-## Prerequisites
-- Minimum PHP version requirements
-- Backup recommendations
-- Estimated migration time
-
-## Database Updates
-### Required SQL Scripts
-- 2025-12-19-app-sets.sql
-- Import instructions
-
-## Breaking Changes
-
-### 1. Class Locations and Namespaces
-#### Overview
-- Pattern explanation
-- Impact on existing code
-
-#### Class Mapping Reference Table
-Complete old → new mappings (50+ entries):
-| Old Class | New Class/Namespace | Status |
-|-----------|---------------------|--------|
-| Application_Exception | Application\Exception\ApplicationException | Deprecated |
-| Application_FilterSettings | Application\FilterSettingsInterface | Deprecated |
-| [etc.] | [etc.] | [etc.] |
-
-#### Migration Steps
-1. Search for deprecated class usage
-2. Update use statements
-3. Update class references
-4. Test affected functionality
-
-#### Code Examples
-```php
-// OLD
-throw new Application_Exception('Error');
-
-// NEW
-use Application\Exception\ApplicationException;
-throw new ApplicationException('Error');
-```
-
-### 2. Admin Screen System Migration
-#### Overview
-- Architectural change explanation
-- Benefits of new approach
-
-#### Migration Steps
-1. Identify custom admin screens
-2. Move screens to module-adjacent locations (optional)
-3. Implement `getAdminScreensFolder()` in module
-4. Create `RegisterAdminScreenFolders` event listener
-5. Register listener
-6. Test screen accessibility
-
-#### Complete Example
-```php
-// Before: Screen in fixed location
-// /Area/Devel/MyCustomScreen.php
-
-// After: Screen alongside module
-// /MyModule/Admin/Screens/MyCustomScreen.php
-
-// Module class
-class MyModule
-{
-    public static function getAdminScreensFolder(): string
-    {
-        return __DIR__ . '/Admin/Screens';
-    }
-}
-
-// Event listener
-class MyScreenFoldersListener extends BaseRegisterAdminScreenFoldersListener
-{
-    public function handleEvent(RegisterAdminScreenFolders $event): void
-    {
-        $event->addFolder(MyModule::getAdminScreensFolder());
-    }
-}
-```
-
-### 3. Offline Events System Migration
-#### Overview
-- Event discovery changes
-- Listener base class requirements
-
-#### Migration Steps
-1. Update event classes to extend `BaseOfflineEvent`
-2. Update listeners to extend appropriate base listener
-3. Remove `wakeUp()` methods
-4. Implement `getEventName()` in listeners
-5. Move events to thematic namespaces (recommended)
-
-#### Code Examples
-```php
-// OLD
-class MyListener
-{
-    public function wakeUp(Application_EventHandler_OfflineEvents_OfflineEvent $event) 
-    {
-        // Setup
-    }
-    
-    public function handleEvent(array $data) 
-    {
-        // Handle
-    }
-}
-
-// NEW
-namespace MyApp\Events;
-
-use Application\OfflineEvents\BaseOfflineEventListener;
-
-class MyListener extends BaseOfflineEventListener
-{
-    public function getEventName(): string 
-    { 
-        return MyEvent::class; 
-    }
-    
-    public function handleEvent(MyEvent $event): void
-    {
-        // Handle - no wakeUp needed
-    }
-}
-```
-
-### 4. Media Library Changes
-#### Class Renames
-- Collection class namespace updates
-- Admin screen relocations
-
-#### Migration Example
-```php
-// OLD
-$media = Application_Media::getInstance();
-
-// NEW
-use Application\Media\Collection\MediaCollection;
-$media = MediaCollection::getInstance();
-```
-
-### 5. Deprecated Screen Base Classes
-#### Mapping Table
-| Old Base Class | New Base Class | Usage |
-|----------------|----------------|-------|
-| Application_Admin_Area_Mode_CollectionCreateScreen | DBHelper\Admin\Screens\Mode\BaseRecordCreateMode | Create screens |
-| Application_Admin_Area_Mode_CollectionRecordScreen | DBHelper\Admin\Screens\Mode\BaseRecordMode | Edit screens |
-| [etc.] | [etc.] | [etc.] |
-
-## Step-by-Step Migration Guide
-
-### Phase 1: Preparation (15-30 minutes)
-1. Create full backup of application
-2. Review this guide completely
-3. Run automated deprecated class scanner
-4. Review scanner report
-5. Estimate migration scope
-
-### Phase 2: Database Updates (5 minutes)
-1. Execute `2025-12-19-app-sets.sql`
-2. Verify table creation
-3. No data migration required
-
-### Phase 3: Class Reference Updates (1-3 hours)
-1. Update namespace imports
-2. Replace deprecated class references
-3. Update type hints
-4. Focus on most-used classes first:
-   - Exception classes
-   - Media library
-   - Filter settings
-   - Admin screens
-
-### Phase 4: Admin Screen Migration (30 minutes - 2 hours)
-1. Identify custom admin screens
-2. Optionally relocate screens
-3. Implement `getAdminScreensFolder()` methods
-4. Create and register event listeners
-5. Clear cache and rebuild
-
-### Phase 5: Event Listener Updates (30 minutes - 1 hour)
-1. Update custom offline events
-2. Update custom event listeners
-3. Remove `wakeUp()` methods
-4. Implement `getEventName()`
-5. Test event firing
-
-### Phase 6: Testing (1-2 hours)
-1. Clear all caches
-2. Test admin screen access
-3. Test custom event functionality
-4. Test media library features
-5. Run application test suite
-6. Manual smoke testing
-
-### Phase 7: Cleanup (30 minutes)
-1. Remove old commented code
-2. Update inline documentation
-3. Document any deferred changes
-4. Commit migration changes
-
-## Automated Helper Script
-
-### Purpose
-Scan application codebase for deprecated class usage and generate migration report.
-
-### Location
-`tools/upgrade-to-v7.php`
-
-### Features
-1. **Scan for deprecated classes**: Search PHP files for old class names
-2. **Generate report**: List files, line numbers, and suggested replacements
-3. **Priority ranking**: Order by frequency of usage
-4. **Export options**: Console output, HTML report, JSON export
-
-### Usage
-```bash
-# Scan entire application
-php tools/upgrade-to-v7.php /path/to/application
-
-# Scan specific folder
-php tools/upgrade-to-v7.php /path/to/application/assets/classes
-
-# Generate HTML report
-php tools/upgrade-to-v7.php /path/to/application --format=html --output=report.html
-
-# JSON export for automated processing
-php tools/upgrade-to-v7.php /path/to/application --format=json --output=report.json
-```
-
-### Sample Output
-```
-=================================================================
- Application Framework v7.0.0 Upgrade Scanner
-=================================================================
-
-Scanning: /path/to/application
-Found 47 deprecated class usages in 23 files
-
-PRIORITY 1: High-frequency deprecated classes (10+ usages)
------------------------------------------------------------
-Application_Exception (15 usages)
-  - /assets/classes/MyApp/Module.php:45, 67, 89
-  - /assets/classes/MyApp/Helper.php:23, 156
-  Replacement: Use Application\Exception\ApplicationException
-
-PRIORITY 2: Medium-frequency deprecated classes (3-9 usages)
------------------------------------------------------------
-Application_Media (6 usages)
-  - /assets/classes/MyApp/MediaHandler.php:12, 34, 56, 78, 90, 102
-  Replacement: Use Application\Media\Collection\MediaCollection
-
-[etc.]
-
-Admin Screens Requiring Migration:
------------------------------------
-  - /Area/MyModule/CustomScreen.php
-    Action: Implement getAdminScreensFolder() and register via event
-
-Offline Events Requiring Migration:
-------------------------------------
-  - /assets/classes/MyApp/Events/MyCustomListener.php
-    Action: Remove wakeUp(), implement getEventName()
-
-=================================================================
-Summary: 47 deprecated usages, 2 screen migrations, 1 event migration
-Estimated effort: 2-4 hours
-=================================================================
-```
-
-### Implementation Details
-
-**Class Mapping Database**: Hardcoded array of deprecated classes with replacements:
-```php
-$classMap = [
-    'Application_Exception' => [
-        'new' => 'Application\Exception\ApplicationException',
-        'namespace' => 'Application\Exception',
-        'type' => 'class',
-        'priority' => 'high'
-    ],
-    'Application_FilterSettings' => [
-        'new' => 'Application\FilterSettingsInterface',
-        'namespace' => 'Application',
-        'type' => 'interface',
-        'priority' => 'high'
-    ],
-    // [50+ more entries]
-];
-```
-
-**Scanning Logic**:
-1. Recursively scan PHP files
-2. Parse for class usage (new, extends, implements, type hints, use statements)
-3. Match against deprecated class map
-4. Collect file locations and line numbers
-5. Generate prioritized report
-
-**Special Detections**:
-- Admin screen base class usage (triggers migration notice)
-- Offline event listener patterns (triggers migration notice)
-- `Area` folder structure usage
-
-## Testing Checklist
-
-### Critical Functionality
-- [ ] Application boots without errors
-- [ ] Database connection successful
-- [ ] User authentication works
-- [ ] Admin area accessible
-
-### Admin Screens
-- [ ] All default admin screens load
-- [ ] Custom admin screens accessible
-- [ ] Navigation menu complete
-- [ ] Screen tabs/modes work
-- [ ] Form submissions successful
-
-### Events System
-- [ ] Session events fire correctly
-- [ ] Media events fire correctly
-- [ ] Custom events fire correctly
-- [ ] Event listeners execute
-
-### Media Library
-- [ ] Media collection loads
-- [ ] Media upload works
-- [ ] Media editing works
-- [ ] Media deletion works
-
-### Application-Specific
-- [ ] [Add application-specific tests]
-- [ ] [Add application-specific tests]
-
-## Common Issues and Solutions
-
-### Issue: "Class not found" errors
-**Cause**: Deprecated class reference not updated  
-**Solution**: Use upgrade scanner to find all usages, update namespaces
-
-### Issue: Admin screen not appearing
-**Cause**: Screen not registered via `RegisterAdminScreenFolders` event  
-**Solution**: Create event listener and register screen folder
-
-### Issue: Events not firing
-**Cause**: Listener not implementing `getEventName()` or wrong base class  
-**Solution**: Update listener to extend proper base class, implement `getEventName()`
-
-### Issue: "Interface not found" errors
-**Cause**: `FilterSettingsInterface` namespace not imported  
-**Solution**: Add `use Application\FilterSettingsInterface;`
-
-### Issue: Cache-related errors
-**Cause**: Old cached data referencing old class locations  
-**Solution**: Clear all caches (storage/cache/*, storage/compiled/*)
-
-## Deprecation Timeline
-
-**v7.0.0**: Deprecated classes available with warnings  
-**v7.1.0**: Deprecated classes still available  
-**v8.0.0**: Deprecated classes removed (estimated Q3 2026)
-
-**Recommendation**: Migrate immediately to avoid breaking changes in v8.0.0
-
-## Additional Resources
-
-- **Changelog**: `changelog.md` - Detailed commit summaries
-- **Changelog History**: `docs/changelog-history/v6-changelog.md` - Historical v6.x changes
-- **Framework Documentation**: `docs/` - General framework guides
-- **Example Applications**: Contact framework maintainer for example migrations
-
-## Version Compatibility
-
-**Upgrading From**: v6.0.0, v6.1.0, v6.1.1, v6.2.0, v6.3.0  
-**Upgrading To**: v7.0.0  
-**PHP Requirements**: PHP 8.0+ (PHP 8.5 support planned)  
-**Database**: MySQL 5.7+, MariaDB 10.2+
-
-## Support
-
-For migration assistance or issues:
-1. Review this guide thoroughly
-2. Run automated scanner
-3. Check changelog for additional details
-4. Contact framework maintainer
-
----
-
-**Document Version**: 1.0  
-**Last Updated**: 2026-02-09  
-**Applies To**: Application Framework v7.0.0
-```
-
-## Implementation Steps
-
-### Step 1: Create Upgrade Guide Document
-**File**: `docs/upgrade-guides/upgrade-guide-v7.0.0.md`
-
-**Tasks**:
-1. Copy structure template above
-2. Extract complete class mapping from:
-   - Git history analysis
-   - Changelog commit summaries  
-   - Deprecated class files in `_deprecated/` folder
-3. Create comprehensive mapping table (target: 50+ entries)
-4. Write detailed examples for each section
-5. Add application-specific testing checklist
-6. Review and refine language
-
-**Estimated Time**: 3-4 hours
-
-### Step 2: Create Automated Helper Script
-**File**: `tools/upgrade-to-v7.php`
-
-**Requirements**:
-1. Command-line interface
-2. Recursive PHP file scanning
-3. Pattern matching for deprecated classes
-4. Report generation (console, HTML, JSON)
-5. Priority ranking
-6. Admin screen detection
-7. Event listener detection
-
-**Core Components**:
-
-```php
-#!/usr/bin/env php
-<?php
-/**
- * Application Framework v7.0.0 Upgrade Scanner
- * 
- * Scans application code for deprecated class usage and generates
- * migration reports.
- */
-
-class UpgradeScanner
-{
-    private array $classMap = []; // Deprecated class mappings
-    private array $findings = []; // Scan results
-    private string $scanPath;
-    
-    public function __construct(string $scanPath)
-    {
-        $this->scanPath = $scanPath;
-        $this->initClassMap();
-    }
-    
-    private function initClassMap(): void
-    {
-        // Load all deprecated class mappings
-        // Extract from framework's deprecated classes
-    }
-    
-    public function scan(): void
-    {
-        // Recursively scan PHP files
-        // Parse for class usage
-        // Match against deprecated map
-        // Store findings
-    }
-    
-    public function generateReport(string $format = 'console'): void
-    {
-        // Generate report in specified format
-        // Priority ranking
-        // File grouping
-        // Actionable recommendations
-    }
-    
-    private function detectAdminScreens(): array
-    {
-        // Detect admin screens needing migration
-    }
-    
-    private function detectEventListeners(): array
-    {
-        // Detect event listeners needing updates
-    }
-}
-
-// CLI execution
-$scanner = new UpgradeScanner($argv[1] ?? getcwd());
-$scanner->scan();
-$scanner->generateReport($options['format'] ?? 'console');
-```
-
-**Features to Implement**:
-- [ ] Class mapping database (50+ entries)
-- [ ] Recursive file scanner
-- [ ] Class usage detection (new, extends, implements, type hints, use)
-- [ ] Admin screen pattern detection
-- [ ] Event listener pattern detection
-- [ ] Priority ranking algorithm
-- [ ] Console output formatter
-- [ ] HTML report generator
-- [ ] JSON export
-- [ ] Summary statistics
-- [ ] Progress indicator for large scans
-
-**Estimated Time**: 4-6 hours
-
-### Step 3: Extract Complete Class Mapping
-
-**Sources**:
-1. Git history: `git log --all --oneline --grep="moved" --since="2025-01-01"`
-2. Changelog: Parse commit summaries in `changelog.md`
-3. Deprecated files: Scan `src/classes/_deprecated/` folder
-4. New namespaced classes: Scan organized folders
-
-**Mapping Categories**:
-- Core classes (Exception, Interfaces, Utils)
-- Media library classes
-- Admin screen base classes
-- Event classes
-- Session classes
-- Deployment classes
-- UI classes
-
-**Format**:
-```
-OLD_CLASS | NEW_CLASS | NAMESPACE | TYPE | PRIORITY
-```
-
-**Estimated Time**: 2-3 hours
-
-### Step 4: Testing and Validation
-
-**Test on Sample Application**:
-1. Create test application using v6.3.0
-2. Add various deprecated class usages
-3. Run upgrade scanner
-4. Follow upgrade guide step-by-step
-5. Verify all functionality works
-6. Document any issues
-
-**Refine Documentation**:
-1. Update guide based on test findings
-2. Add common issues encountered
-3. Improve examples
-4. Clarify ambiguous instructions
-
-**Estimated Time**: 2-3 hours
-
-### Step 5: Review and Finalize
-
-**Review Checklist**:
-- [ ] All breaking changes documented
-- [ ] Code examples tested and verified
-- [ ] Class mapping table complete (50+ entries)
-- [ ] Scanner script functional
-- [ ] Testing checklist comprehensive
-- [ ] Language clear and actionable
-- [ ] Formatting consistent
-- [ ] Links to related docs valid
-
-**Final Steps**:
-1. Proofread entire guide
-2. Test scanner on real applications
-3. Get feedback from framework maintainer
-4. Make final revisions
-5. Mark document as complete
-
-**Estimated Time**: 1-2 hours
-
-## Total Estimated Effort
-
-**Documentation**: 6-9 hours  
-**Scanner Script**: 4-6 hours  
-**Testing**: 2-3 hours  
-**Review**: 1-2 hours  
-
-**Total**: 13-20 hours
-
-## Success Criteria
-
-1. ✅ Upgrade guide covers all breaking changes in v7.0.0
-2. ✅ Class mapping table includes 50+ deprecated classes
-3. ✅ Scanner script successfully detects deprecated usage
-4. ✅ Scanner script generates actionable reports
-5. ✅ Guide tested on sample application successfully
-6. ✅ All code examples tested and verified
-7. ✅ Documentation follows existing pattern
-8. ✅ Testing checklist is comprehensive
-
-## Notes
-
-- This is a "Breaking-XXL" release - comprehensive documentation is critical
-- Backward compatibility via deprecated classes gives users migration runway
-- Scanner script provides significant value for large applications
-- Template can be reused for future major version upgrades
-- Consider creating video walkthrough for complex migrations (future enhancement)
-
-## Related Documents
-
-- `changelog.md` - Detailed v7.0.0 changes
-- `docs/changelog-history/v6-changelog.md` - Historical context
-- `docs/upgrade-guides/upgrade-guide-v5.5.0.md` - Template reference
-- `VERSION` - Current framework version (7.0.0)
-
----
-
-**Plan Status**: ✅ Ready for Implementation  
-**Approval Date**: 2026-02-09  
-**Implementation Target**: Q1 2026
-
-```
 ###  Path: `/docs/agents/project-manifest/README.md`
 
 ```md
@@ -2916,6 +726,55 @@ Public API methods extend `Application_API_Method` and follow a composition patt
 
 API method classes are stored in `API/Methods/` subdirectories within their module folder.
 
+**Method names must be PascalCase** — the `.htaccess` rewrite rule generated by the OpenAPI submodule uses the regex `^([A-Za-z][A-Za-z0-9]*)$`. Method names containing underscores, hyphens, or dots will not be rewritten and will return 404 on the clean-path URL.
+
+---
+
+## Trait Consumer Policy
+
+### Rule
+
+**Never add `trait.unused` suppressions to `phpstan.neon`.** PHPStan's `trait.unused` notice indicates that a trait exists with no concrete consumer in the analysed codebase. The correct response is to **create a test-application consumer class**, not to suppress the notice.
+
+### Why suppression is harmful
+
+`trait.unused` suppression disables PHPStan's analysis of the **entire trait method body** for the duration of the suppression. This creates a static-analysis blind spot: type errors and logic bugs inside the trait's methods become invisible to the analyser. Every suppressed trait is untested dead code from PHPStan's perspective.
+
+### What to do instead
+
+When a library trait has no consumer in the main codebase:
+
+1. Create a minimal screen or class in `tests/application/assets/classes/TestDriver/` that:
+   - Implements the corresponding interface (if one exists).
+   - Uses the trait.
+   - Provides only the minimal stubs required to satisfy interface contracts.
+2. Run `composer dump-autoload` so the classmap picks up the new file.
+3. Verify with `composer analyze` that the `trait.unused` notice is gone and no new errors are introduced.
+
+### Example
+
+See [tests/application/assets/classes/TestDriver/Area/TestingScreen/CountryRequestScreen.php](../../../tests/application/assets/classes/TestDriver/Area/TestingScreen/CountryRequestScreen.php) as a reference implementation of this pattern for `CountryRequestTrait`.
+
+---
+
+## PHPStan Baseline (`phpstan-result.txt`)
+
+### Rule
+
+**Any commit that changes the PHPStan error count must also update `phpstan-result.txt` in the
+same commit.** The file serves as a human-readable baseline snapshot of the current static-analysis
+state. When the count drifts, agents in subsequent sessions compare against a stale baseline and
+may incorrectly assess the static-analysis health of the codebase.
+
+Regenerate with:
+
+```
+composer analyze-save
+```
+
+This is equivalent to running `composer analyze` and writing the output to `phpstan-result.txt`.
+
+
 ```
 ###  Path: `/docs/agents/project-manifest/context-documentation.md`
 
@@ -3014,40 +873,107 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 
 ```md
 > **Auto-generated** — do not edit. Regenerated by `composer build-dev`.
-> Generated: 2026-03-27T14:00:38Z
+> Generated: 2026-04-01T12:26:33Z
 
 # Keyword Glossary
 
 | Keyword | Context | Module(s) |
 |---------|---------|-----------|
 | Admin URL | type-safe fluent builder for admin-screen navigation links using area/mode/submode routing | ui-admin-urls |
+| AI tool | callable unit that returns structured data, discovered and executed by AI agents | ai |
+| API client | registered external application authorized to consume the API; stored in api_clients | api-clients |
+| API group | logical grouping of methods for documentation and API key permissions | api |
+| API key | bearer token belonging to a client; stored in api_keys with a per-key method whitelist | api-clients |
+| API method | named endpoint class registered with the APIManager; discovered via APIMethodIndex | api |
+| APICacheException | exception class extending APIException; thrown by cache infrastructure for programming errors; error codes: ERROR_EMPTY_USER_CACHE_IDENTIFIER 59213009, ERROR_INVALID_METHOD_NAME 59213010, ERROR_CACHE_FILE_CORRUPT 59213011 | api-cache |
+| APICacheManager | static utility; resolves storage paths under APP_STORAGE/api/cache/MethodName/; provides getCacheFolder, getMethodCacheFolder, invalidateMethod, clearAll, getCacheSize | api-cache |
+| APICacheStrategyInterface | contract for cache validity strategies; requires getID returning a STRATEGY_ID string constant and isCacheFileValid accepting a JSONFile | api-cache |
+| APIEnvelope | standard OpenAPI success response envelope schema | api-openapi |
+| APIErrorEnvelope | standard OpenAPI error response envelope schema | api-openapi |
+| APIInfo | OpenAPI schema for the api metadata sub-object in every JSON response | api-openapi |
+| APIKeyMethodInterface | opt-in interface that makes an API method require bearer token authentication | api-clients |
+| APIResponseCacheLocation | CacheControl integration; exposes the API response cache to the admin cache management UI; registered automatically via RegisterAPIResponseCacheListener | api-cache |
+| AppAPIConnector | HTTP client for consuming another framework application's API remotely | api |
 | Application Sets | configuration controlling which administration areas are active per application instance | application-sets |
 | BigSelection widget | scrollable multi-item selector component built on Bootstrap v2 | ui-bootstrap |
+| Cache strategy | pluggable caching policy per tool — fixed-duration or uncached | ai |
+| CacheableAPIMethodInterface | interface API method classes implement to opt into file-based response caching; extends APIMethodInterface; requires getCacheStrategy() and getCacheKeyParameters() from the implementing class | api-cache |
+| CacheableAPIMethodTrait | trait providing default implementations for getCacheKey, readFromCache, writeToCache, and invalidateCache; use alongside CacheableAPIMethodInterface | api-cache |
 | CKEditor 5 | WYSIWYG rich-text editor integrated through the Markup Editor abstraction | ui-markup-editor |
+| clearAll | APICacheManager static method; deletes the entire api/cache folder | api-cache |
 | Collection | ORM-like container of typed database records with CRUD, filtering, and events | db-helper |
+| common type | reusable domain-specific parameter preset like AliasParameter or EmailParameter | api-parameters |
 | CommonMark | Markdown-to-HTML conversion engine used by the renderer | markdown-renderer |
+| ComposerScripts | orchestrates all composer build steps: cache clearing, event/admin indexing, API method index, OpenAPI spec generation, .htaccess generation, CSS classes, context date, module docs | composer |
+| convertParameter | converts a single API parameter to its OpenAPI representation; returns null for reserved parameters | api-openapi |
+| convertParameters | batch-converts all parameters from APIParamManager into query/header and JSON-body buckets | api-openapi |
+| convertResponses | returns a map of HTTP status codes to OpenAPI response objects for a given API method | api-openapi |
 | Custom Tags | framework-specific tags like {media} and {api} processed around CommonMark | markdown-renderer |
 | DataGrid | tabular list component with column sorting, pagination, and bulk actions | ui-datagrid |
 | DataTable | raw SQL result wrapper for manual query output | db-helper |
+| dry-run | optional mode where a method validates and reports what it would do without side effects | api |
 | Eventable | mixin trait that adds instance-level event emitter capabilities to any class | event-handler |
 | FilterCriteria | query filter builder defining SQL WHERE conditions for a collection | db-helper |
 | FilterSettings | persisted user-facing filter values for a collection's list view | db-helper |
+| FixedDurationStrategy | built-in strategy with STRATEGY_ID=FixedDuration; cache file is valid if it is younger than the configured duration in seconds; ships with named constants DURATION_1_MIN, DURATION_5_MIN, DURATION_15_MIN, DURATION_1_HOUR, DURATION_6_HOURS, DURATION_12_HOURS, DURATION_24_HOURS | api-cache |
+| flavor | cross-cutting parameter behavior like header-sourced or always-required | api-parameters |
+| foreign ID | unique external identifier assigned to an API client for cross-system correlation | api-clients |
+| generateHtaccess | APIManager convenience method; generates the API .htaccess for RESTful URL rewriting using the running driver context | api-openapi |
+| generateOpenAPISpec | APIManager convenience method; generates the OpenAPI spec using the running driver's app name and version | api-openapi |
+| getCacheKey | CacheableAPIMethodTrait: builds a deterministic MD5 hash from method name, version, and ksort-ed getCacheKeyParameters; same inputs always produce the same key | api-cache |
+| getCacheKeyParameters | CacheableAPIMethodInterface method; implementing class returns an associative array of parameter name to scalar value pairs used in cache key generation | api-cache |
+| getCacheSize | APICacheManager static method; returns total byte size of all files in the cache folder | api-cache |
+| getCacheStrategy | CacheableAPIMethodInterface method; implementing class returns the APICacheStrategyInterface instance that controls cache file validity | api-cache |
+| getMethodCacheFolder | APICacheManager static method; throws APICacheException ERROR_INVALID_METHOD_NAME if the method name is empty or contains path-traversal characters | api-cache |
+| GetOpenAPISpec | framework built-in API method; serves the pre-generated openapi.json as raw JSON over HTTP at /api/GetOpenAPISpec; bypasses the standard JSON envelope; returns 500 when the spec file is missing | api-openapi |
+| getSecuritySchemes | returns the components/securitySchemes definition for the HTTP Bearer API key scheme | api-openapi |
+| getSpecURL | GetOpenAPISpec static helper; returns the absolute URL to the spec endpoint using APP_URL; used by APIMethodsOverviewTmpl to render the OpenAPI button on the API docs overview page | api-openapi |
+| getUserCacheIdentifier | UserScopedCacheInterface method; returns a unique non-empty string identifying the current user context; must never return empty or APICacheException is thrown by UserScopedCacheTrait | api-cache |
+| getUserScopedCacheKeyParameters | UserScopedCacheInterface method; returns method-specific cache key parameters excluding user identification; _userScope is a reserved key and the trait-injected value always takes precedence | api-cache |
+| HtaccessGenerator | generates Apache .htaccess for RESTful URL rewriting of /api/ paths | api-openapi |
 | HTML_QuickForm2 | underlying PHP form library wrapped and extended by the UI Form module | ui-form |
 | HTTP connector | base class for building typed REST API clients with GET/POST/PUT/DELETE support | connectors |
+| invalidateCache | CacheableAPIMethodTrait: deletes all cache files for this method by delegating to APICacheManager::invalidateMethod | api-cache |
+| invalidateMethod | APICacheManager static method; deletes the entire MethodName cache subfolder; no-op if folder does not exist | api-cache |
+| isCacheFileValid | APICacheStrategyInterface method; given a JSONFile returns whether the cached response is still valid | api-cache |
+| JSON envelope | standard response wrapper with state/code/data/message keys | api |
 | KeywordGlossaryGenerator | build-time tool that produces module-glossary.md from module keywords | composer |
 | list builder | pluggable data source implementation that populates a DataGrid | ui-datagrid |
 | load key | deduplication token ensuring each JS/CSS asset is injected once per page | ui-client-resources |
+| ManualOnlyStrategy | built-in strategy with STRATEGY_ID=ManualOnly; cached file never expires automatically; invalidation is triggered only via invalidateCache or APICacheManager::clearAll | api-cache |
 | MarkdownRenderer | converts Markdown to styled HTML with CommonMark and custom tags | markdown-renderer |
+| MCP server | Model Context Protocol server exposing tools over stdio transport | ai |
+| method index | cached class map of all API methods; rebuilt by composer build | api |
+| method whitelist | per-key list of API methods the key is authorized to call; managed by APIKeyMethods | api-clients |
+| MethodConverter | converts a single APIMethodInterface to an OpenAPI path item; adds security requirement for APIKeyMethodInterface methods and x-validation-rules for methods with parameter rules | api-openapi |
 | ModulesOverviewGenerator | build-time tool that produces modules-overview.md from module-context.yaml files | composer |
 | offline event listener | deferred JIT listener registered before its target class is instantiated | event-handler |
+| OpenAPIGenerator | main orchestrator; iterates all API methods, assembles the complete OpenAPI 3.1 document including securitySchemes and x-validation-rules, writes it as a JSON file | api-openapi |
+| OpenAPISchema | OpenAPI 3.1 component schemas for APIEnvelope, APIErrorEnvelope, APIInfo and security schemes for APIKeyMethodInterface authentication | api-openapi |
 | page frame | container template defining the overall admin page structure — header, sidebar, footer | ui-page |
+| param handler | internal pipeline component that reads parameter values during method processing | api-parameters |
+| ParameterConverter | converts APIParameterInterface instances to OpenAPI parameter objects or request body schema properties | api-openapi |
+| ParamTypeSelector | fluent builder returned by addParam for choosing the parameter type | api-parameters |
+| processReturn | test helper on BaseAPIMethod; executes the method without sending a response | api |
 | Properties Grid | key/value table component for rendering record detail views | ui-properties-grid |
+| readFromCache | CacheableAPIMethodTrait: returns null on missing file, invalid strategy check, or corrupt JSON; on a corrupt file the file is automatically deleted before returning null; returns parsed array on a valid cache hit | api-cache |
 | Record | typed wrapper for a single database row with field accessors and lifecycle events | db-helper |
 | Redactor | alternative WYSIWYG rich-text editor available through the Markup Editor | ui-markup-editor |
+| reserved parameter | framework-owned parameter name that application code cannot register | api-parameters |
+| ResponseConverter | converts API method response metadata into OpenAPI 3.1 response objects for 200/400/500 status codes | api-openapi |
+| rule | cross-parameter constraint evaluated after individual validation; e.g. OrRule, RequiredIfOtherIsSetRule | api-parameters |
+| SECURITY_SCHEME_API_KEY | OpenAPISchema constant identifying the 'apiKey' security scheme name used in both components definition and per-method security requirements | api-openapi |
+| selectable value | fixed set of allowed values declared by a parameter for validation and documentation | api-parameters |
 | StatementBuilder | fluent SQL SELECT/INSERT/UPDATE/DELETE query builder | db-helper |
 | theme override | mechanism for transparently replacing framework templates at the application level | ui-themes |
+| Tool container | orchestrator that boots the environment, checks cache, runs a tool, stores the result | ai |
 | Tree widget | hierarchical navigation component with nestable nodes supporting icons and action buttons | ui-tree |
+| TypeMapper | maps framework API parameter type labels to OpenAPI 3.1 type/format pairs | api-openapi |
 | UI singleton | central access point for all framework rendering components | ui |
+| UserScopedCacheInterface | sub-interface of CacheableAPIMethodInterface for API methods returning user-specific data; declares getUserCacheIdentifier returning a unique non-empty string user identifier, and getUserScopedCacheKeyParameters returning method-specific parameters array; use with UserScopedCacheTrait; _userScope is a reserved key name | api-cache |
+| UserScopedCacheTrait | pair trait for UserScopedCacheInterface; uses CacheableAPIMethodTrait internally; overrides getCacheKeyParameters to inject _userScope key via array union operator; throws APICacheException ERROR_EMPTY_USER_CACHE_IDENTIFIER if getUserCacheIdentifier returns empty; annotated with @phpstan-require-implements UserScopedCacheInterface | api-cache |
+| writeToCache | CacheableAPIMethodTrait: writes response data to the resolved JSON cache file; parent directory is created automatically | api-cache |
+| x-validation-rules | OpenAPI extension field added by MethodConverter to document inter-parameter validation constraints such as OrRule and RequiredIfOtherIsSetRule | api-openapi |
 
 ```
 ###  Path: `/docs/agents/project-manifest/modules-overview.md`
@@ -3055,16 +981,22 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 ```md
 # Modules Overview
 
-> Auto-generated on 2026-03-27 15:00:38. Do not edit manually.
+> Auto-generated on 2026-04-01 14:26:33. Do not edit manually.
 
-Total: 17 modules across 1 package.
+Total: 22 modules across 1 package.
 
 ## mistralys/application_framework
 
 | ID | Label | Description | Source Path | Context Docs | Related Modules |
 |----|-------|-------------|-------------|--------------|-----------------|
+| `ai` | AI Tools | Infrastructure for exposing application logic as cacheable AI tools and serving them via an MCP server over stdio. | `src/classes/Application/AI/` | `.context/modules/ai/` | event-handler |
+| `api` | API | Central API subsystem providing request dispatching, method registration, versioning, response envelope construction, documentation, and remote API consumption. The APIManager singleton processes requests by resolving method names via APIMethodIndex, instantiating method classes extending BaseAPIMethod, and delegating the full lifecycle (parameter validation, execution, response). Methods declare group affiliation (APIGroupInterface), version support (VersionedAPIInterface/VersionedAPITrait with per-version response classes), and response format via mix-in traits (JSONResponseInterface, JSONRequestInterface, DryRunAPIInterface). AppAPIConnector provides an HTTP client for consuming other framework applications' APIs remotely. | `src/classes/Application/API/` | `.context/modules/api/` | api-parameters, api-cache, api-openapi, api-clients, connectors, event-handler |
+| `api-cache` | API Cache | File-based response caching for API methods. Provides a two-tier interface/trait composition pattern: (1) CacheableAPIMethodInterface + CacheableAPIMethodTrait for stateless, non-user-scoped methods; (2) UserScopedCacheInterface + UserScopedCacheTrait for user-specific methods that require per-user cache isolation — the trait automatically injects _userScope into the cache key using the array union operator so a user identifier can never be silently omitted or overwritten. Covers the full caching pipeline: strategy abstraction (APICacheStrategyInterface, FixedDurationStrategy, ManualOnlyStrategy with STRATEGY_ID PascalCase constants), file system management (APICacheManager: storage layout, method-level invalidation with path-traversal guard via APICacheException, cache size reporting), deterministic cache key generation via MD5 hash of method name + version + json_encode of sorted key parameters, read/write/invalidate operations (CacheableAPIMethodTrait: readFromCache returns null on miss, expired entry, or corrupt file — corrupt files are automatically deleted; writeToCache auto-creates parent dirs via JSONFile::putData; invalidateCache delegates to APICacheManager::invalidateMethod), error handling (APICacheException with ERROR_EMPTY_USER_CACHE_IDENTIFIER, ERROR_INVALID_METHOD_NAME, ERROR_CACHE_FILE_CORRUPT constants), and CacheControl admin UI integration (APIResponseCacheLocation). | `src/classes/Application/API/Cache/` | `.context/modules/api-cache/` | api-openapi |
+| `api-clients` | API Clients | Manages API client registrations and their API keys using the Collection/Record pattern. An API client represents an external application authorized to consume the API, with multiple API keys each having their own activation status and method permissions. Provides bearer token authentication for API methods via APIKeyMethodInterface/APIKeyMethodTrait, the complete admin UI for client and key management (APIClientsArea with list/create/view modes and key sub-modes), and type-safe URL builders for all admin screens. | `src/classes/Application/API/Clients/` | `.context/modules/api/clients/` | api, api-openapi, db-helper, ui |
+| `api-openapi` | API OpenAPI | End-to-end support for generating OpenAPI 3.1 specifications from the framework API system and serving them over HTTP. Covers parameter type mapping (TypeMapper), reusable component schemas and security schemes for the standard API response envelopes (OpenAPISchema), Apache .htaccess generation for RESTful URL rewriting (HtaccessGenerator), conversion of framework API parameters to OpenAPI parameter objects and request body schema properties (ParameterConverter), conversion of API method response metadata to OpenAPI response objects for 200/400/500 status codes (ResponseConverter), full spec assembly with error resilience and authentication/validation documentation (OpenAPIGenerator, MethodConverter), HTTP serving of the pre-generated spec as raw JSON (GetOpenAPISpec), and application-level convenience entry points (APIManager::generateOpenAPISpec, APIManager::generateHtaccess). The composer build pipeline calls both generation steps automatically via ComposerScripts. | `src/classes/Application/API/OpenAPI/` | `.context/modules/openapi/` | — |
+| `api-parameters` | API Parameters | Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle. | `src/classes/Application/API/Parameters/` | `.context/modules/api/parameters/` | api, api-openapi, api-cache |
 | `application-sets` | Application Sets | Configuration-level system to control which administration areas are enabled per application instance, supporting multiple feature configurations. | `src/classes/Application/AppSets/` | `.context/modules/application-sets/` | db-helper |
-| `composer` | Application Composer | Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase. Includes a shared BuildMessages registry for build-time notices. | `src/classes/Application/Composer/` | `.context/modules/composer/` | event-handler |
+| `composer` | Application Composer | Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase, generate the OpenAPI 3.1 specification JSON, and generate the API .htaccess for RESTful URL rewriting. Includes a shared BuildMessages registry for build-time notices. All steps are orchestrated by ComposerScripts::build(). | `src/classes/Application/Composer/` | `.context/modules/composer/` | event-handler |
 | `connectors` | Connectors | Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods. | `src/classes/Connectors/` | `.context/modules/connectors/` | — |
 | `db-helper` | DBHelper | Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations. | `src/classes/DBHelper/` | `.context/modules/db-helper/` | event-handler, ui, ui-datagrid, application-sets |
 | `event-handler` | Event Handling | Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners. | `src/classes/Application/EventHandler/` | `.context/modules/event-handler/` | ui, ui-form, db-helper, composer |
@@ -3083,6 +1015,11 @@ Total: 17 modules across 1 package.
 
 ## Module Relationships
 
+- **ai** → event-handler
+- **api** → api-parameters, api-cache, api-openapi, api-clients, connectors, event-handler
+- **api-cache** → api-openapi
+- **api-clients** → api, api-openapi, db-helper, ui
+- **api-parameters** → api, api-openapi, api-cache
 - **application-sets** → db-helper
 - **composer** → event-handler
 - **db-helper** → event-handler, ui, ui-datagrid, application-sets
@@ -3118,7 +1055,7 @@ Comprehensive guide to the Application Framework's test infrastructure, conventi
 | **PHP version** | 8.4+ |
 | **Config file** | `phpunit.xml` (project root) |
 | **Bootstrap** | `tests/bootstrap.php` |
-| **Test count** | ~141 unit test files + 2 integration test files |
+| **Test count** | ~155 unit test files + 2 integration test files |
 | **Test suite** | Single suite: `Framework Tests` (all tests under `tests/AppFrameworkTests/`) |
 
 ---
@@ -3150,7 +1087,7 @@ tests/
 │   ├── Eventables/
 │   ├── Forms/
 │   ├── Functions/
-│   ├── Global/
+│   ├── GlobalTests/
 │   ├── Helpers/
 │   ├── Installer/
 │   ├── LDAP/
@@ -3189,6 +1126,40 @@ tests/
 ├── phpstan/                         # PHPStan test-related config
 └── sql/                             # Source SQL files for the test database
 ```
+
+---
+
+## Test File Naming Convention
+
+All unit test files under `tests/AppFrameworkTests/` must follow this convention:
+
+| Element | Requirement | Example |
+|---|---|---|
+| **File name** | Must match the class name exactly (`.php` extension) | `CoreTest.php` |
+| **Class name** | Must end in `Test`, PascalCase | `CoreTest` |
+| **Namespace** | Must match the directory path under `AppFrameworkTests\` | `AppFrameworkTests\Disposables` |
+| **Declaration** | Must include `declare(strict_types=1);` | — |
+
+### Correct structure
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace AppFrameworkTests\Disposables;
+
+use AppFrameworkTestClasses\ApplicationTestCase;
+
+class CoreTest extends ApplicationTestCase
+{
+    // ...
+}
+```
+
+PHPUnit discovers tests by scanning the `tests/AppFrameworkTests/` directory tree for `.php` files. If the **class name does not match the file name**, PHPUnit emits a "Class X cannot be found" warning and the test is silently skipped. Always verify that both match before committing a new test file.
+
+> **Note on `AppFrameworkTests\Global`:** `Global` is a reserved word in PHP. Tests that previously lived under the `Global/` directory have been placed in `AppFrameworkTests\GlobalTests` instead to avoid parser errors.
 
 ---
 
@@ -3282,6 +1253,22 @@ The framework includes a working test application in `tests/application/` that p
 
 ---
 
+## Local Test Environment Setup
+
+The test suite requires local configuration files that are **not committed** to the repository. Before running tests for the first time, copy the distribution templates and configure them for the local environment:
+
+1. Copy `tests/application/config/test-db-config.dist.php` → `tests/application/config/test-db-config.php`
+2. Copy `tests/application/config/test-ui-config.dist.php` → `tests/application/config/test-ui-config.php`
+3. Copy `tests/application/config/test-cas-config.dist.php` → `tests/application/config/test-cas-config.php`
+
+Edit `test-db-config.php` and set the correct database host, name, user, and password. The database name defaults to `app_framework_testsuite`; import `tests/sql/testsuite.sql` to initialise it.
+
+Edit `test-ui-config.php` and adjust `TESTS_BASE_URL` to the URL at which `tests/application` is reachable on the local webserver.
+
+`test-cas-config.php` is only required when `TESTS_SESSION_TYPE` is set to `CAS` in `test-ui-config.php`. For most local runs the default `NoAuth` session type is sufficient and the CAS config can be left as-is.
+
+---
+
 ## Stubs
 
 Located in `tests/AppFrameworkTestClasses/Stubs/`:
@@ -3297,6 +1284,131 @@ Located in `tests/AppFrameworkTestClasses/Stubs/`:
 | `ValidatableStub` | Validatable stub |
 
 Additional stubs exist in subdirectories: `Stubs/Admin/`, `Stubs/DBHelper/`, `Stubs/Revisionables/`, `Stubs/Session/`, `Stubs/UI/`.
+
+---
+
+## API Test Stub Placement
+
+API method stubs that invoke `processReturn()` must be placed in the test application's source directory:
+
+```
+tests/application/assets/classes/TestDriver/API/
+```
+
+**Do not** place such stubs in `tests/AppFrameworkTestClasses/` — they will not be discovered by the method index.
+
+### Why this matters
+
+`APIMethodParameter` validates that the method name passed to `processReturn()` exists in the framework's API method index. This index is built by scanning the test application's source folders (`tests/application/assets/classes/`). Classes in `AppFrameworkTestClasses/` are invisible to this discovery process and will trigger a "method not found" validation error.
+
+Simple stubs that do not invoke `processReturn()` (e.g., those only used via `createStub()` / `createMock()`) can still reside in `AppFrameworkTestClasses/`.
+
+---
+
+## Live-HTTP Tests
+
+Some tests make real HTTP requests to `APP_URL` (the running test application). These tests are
+marked with the `#[Group('live-http')]` PHP attribute (PHPUnit 13) and are **excluded from the
+default `composer test` run** via the `<groups><exclude>` block in `phpunit.xml`.
+
+> **PHPUnit 13 note:** The legacy `@group` docblock annotation is silently ignored by PHPUnit 13.
+> Always use the `#[Group(...)]` PHP 8 attribute with a `use PHPUnit\Framework\Attributes\Group;`
+> import. Using the annotation form has no effect and will not exclude the test from the default run.
+
+To run live-HTTP tests, a web server must be available at `APP_URL` (configured in
+`tests/application/config/test-ui-config.php` via the `TESTS_BASE_URL` constant). Run them
+explicitly with:
+
+```
+composer test-group -- live-http
+```
+
+Tests in this group:
+
+| Test Class | Methods |
+|---|---|
+| `AppFrameworkTests\Ajax\AjaxRequestTest` | All (class-level `#[Group('live-http')]`) |
+| `AppFrameworkTests\Connectors\RequestTest` | `test_adapterSockets`, `test_adapterCURL` |
+
+Do not remove the `#[Group('live-http')]` attribute or the `phpunit.xml` exclusion — without it,
+the CI pipeline and local runs without a web server will fail with network errors.
+
+---
+
+## Superglobal Teardown
+
+### Automatic $_REQUEST restore
+
+`ApplicationTestCase` now automatically backs up `$_REQUEST` in `setUp()` and restores it in
+`tearDown()`. This prevents inter-test pollution when test files write to `$_REQUEST` without
+explicit cleanup.
+
+**No per-class tearDown required for `$_REQUEST`.** Test classes that modify `$_REQUEST` no
+longer need to manually unset those keys — the base class restore handles it globally.
+
+### Other superglobals
+
+`ApplicationTestCase` does **not** automatically restore `$_GET`, `$_POST`, or `$_SESSION`.
+Test classes that write to these superglobals must still unset those keys in their own
+`tearDown()` before calling `parent::tearDown()`.
+
+### Why this matters
+
+`BaseRecordSelectionTieIn::getRecord()` (and similar request-state-reading classes) caches
+the first result it finds. If a previous test left a key in `$_REQUEST`, the next test in the
+same file will read a stale cached value, causing assertions that depend on "nothing selected"
+to fail — only when the tests are run as a file, not in isolation. This is a classic
+inter-test pollution signature that is difficult to diagnose.
+
+The automatic `$_REQUEST` backup/restore in `ApplicationTestCase` eliminates this category of
+bug for the most common superglobal.
+
+### Convention (for $_GET, $_POST, $_SESSION)
+
+```php
+protected function tearDown() : void
+{
+    // Unset every $_GET, $_POST, or $_SESSION key written by this test class.
+    // (No need to unset $_REQUEST keys — ApplicationTestCase handles those automatically.)
+    unset(
+        $_GET['some_key'],
+        $_POST['some_other_key']
+    );
+
+    parent::tearDown();
+}
+```
+
+---
+
+## PHPUnit Mock Conventions
+
+PHPUnit 13 emits a **Notice** — "No expectations were configured for the mock object for X"
+— when `createMock()` is used without any `expects()` call. Use `createStub()` instead when
+the test only needs a double that returns values (no call-count verification):
+
+```php
+// Correct — test only needs the object to return a value; no expectation needed
+$method = $this->createStub(APIMethodInterface::class);
+
+// Avoid — triggers a PHPUnit Notice when no expects() are added
+$method = $this->createMock(APIMethodInterface::class);
+```
+
+When writing helper methods that return a test double, annotate the return type with
+`&\PHPUnit\Framework\MockObject\Stub` (not `MockObject`) to match `createStub()`'s
+actual return type:
+
+```php
+/** @return APIMethodInterface&\PHPUnit\Framework\MockObject\Stub */
+private function createMethodStub() : APIMethodInterface
+{
+    return $this->createStub(APIMethodInterface::class);
+}
+```
+
+Use `createMock()` only when the test explicitly verifies interaction (e.g., `expects(once())`).
+
 
 ```
 ###  Path: `/docs/agents/readme.md`
@@ -3438,6 +1550,36 @@ moduleMetaData:
     - ui
     - db-helper
 ```
+
+### Keyword Value Syntax Constraints
+
+> **Warning:** Keyword values containing a colon followed by a space (`: `) **must be quoted**. Symfony YAML 
+> parses an unquoted `word: text` as a mapping key, not a string scalar.
+
+#### Why this matters
+
+The `keywords` list items are YAML scalar strings. If a list item contains `: ` (colon + space), Symfony YAML
+interprets everything before the colon as a mapping key and the rest as a nested mapping value. The
+`ModulesOverviewGenerator::buildModuleInfo()` method receives an associative `array` instead of a `string`,
+causing an `Array to string conversion` error during `composer build`.
+
+#### Examples
+
+```yaml
+# CORRECT — plain string, no colon+space issue
+keywords:
+  - DataGrid (tabular list component with sorting and pagination)
+
+# CORRECT — quoted string, colon+space is safe inside quotes
+keywords:
+  - "CacheableAPIMethodTrait: provides transparent read-through caching for API methods"
+
+# BROKEN — Symfony YAML parses this as { "CacheableAPIMethodTrait" => "provides caching" }
+keywords:
+  - CacheableAPIMethodTrait: provides caching
+```
+
+**Rule:** If a keyword value must contain `: `, wrap the entire value in double quotes.
 
 ---
 
@@ -4266,6 +2408,6 @@ This guide should be updated as conventions evolve. When in doubt, examine recen
 ```
 ---
 **File Statistics**
-- **Size**: 138.04 KB
-- **Lines**: 4267
+- **Size**: 117.58 KB
+- **Lines**: 2644
 File: `framework-core-system-overview.md`

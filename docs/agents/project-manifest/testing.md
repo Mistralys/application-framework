@@ -12,7 +12,7 @@ Comprehensive guide to the Application Framework's test infrastructure, conventi
 | **PHP version** | 8.4+ |
 | **Config file** | `phpunit.xml` (project root) |
 | **Bootstrap** | `tests/bootstrap.php` |
-| **Test count** | ~141 unit test files + 2 integration test files |
+| **Test count** | ~155 unit test files + 2 integration test files |
 | **Test suite** | Single suite: `Framework Tests` (all tests under `tests/AppFrameworkTests/`) |
 
 ---
@@ -44,7 +44,7 @@ tests/
 │   ├── Eventables/
 │   ├── Forms/
 │   ├── Functions/
-│   ├── Global/
+│   ├── GlobalTests/
 │   ├── Helpers/
 │   ├── Installer/
 │   ├── LDAP/
@@ -83,6 +83,40 @@ tests/
 ├── phpstan/                         # PHPStan test-related config
 └── sql/                             # Source SQL files for the test database
 ```
+
+---
+
+## Test File Naming Convention
+
+All unit test files under `tests/AppFrameworkTests/` must follow this convention:
+
+| Element | Requirement | Example |
+|---|---|---|
+| **File name** | Must match the class name exactly (`.php` extension) | `CoreTest.php` |
+| **Class name** | Must end in `Test`, PascalCase | `CoreTest` |
+| **Namespace** | Must match the directory path under `AppFrameworkTests\` | `AppFrameworkTests\Disposables` |
+| **Declaration** | Must include `declare(strict_types=1);` | — |
+
+### Correct structure
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace AppFrameworkTests\Disposables;
+
+use AppFrameworkTestClasses\ApplicationTestCase;
+
+class CoreTest extends ApplicationTestCase
+{
+    // ...
+}
+```
+
+PHPUnit discovers tests by scanning the `tests/AppFrameworkTests/` directory tree for `.php` files. If the **class name does not match the file name**, PHPUnit emits a "Class X cannot be found" warning and the test is silently skipped. Always verify that both match before committing a new test file.
+
+> **Note on `AppFrameworkTests\Global`:** `Global` is a reserved word in PHP. Tests that previously lived under the `Global/` directory have been placed in `AppFrameworkTests\GlobalTests` instead to avoid parser errors.
 
 ---
 
@@ -176,6 +210,22 @@ The framework includes a working test application in `tests/application/` that p
 
 ---
 
+## Local Test Environment Setup
+
+The test suite requires local configuration files that are **not committed** to the repository. Before running tests for the first time, copy the distribution templates and configure them for the local environment:
+
+1. Copy `tests/application/config/test-db-config.dist.php` → `tests/application/config/test-db-config.php`
+2. Copy `tests/application/config/test-ui-config.dist.php` → `tests/application/config/test-ui-config.php`
+3. Copy `tests/application/config/test-cas-config.dist.php` → `tests/application/config/test-cas-config.php`
+
+Edit `test-db-config.php` and set the correct database host, name, user, and password. The database name defaults to `app_framework_testsuite`; import `tests/sql/testsuite.sql` to initialise it.
+
+Edit `test-ui-config.php` and adjust `TESTS_BASE_URL` to the URL at which `tests/application` is reachable on the local webserver.
+
+`test-cas-config.php` is only required when `TESTS_SESSION_TYPE` is set to `CAS` in `test-ui-config.php`. For most local runs the default `NoAuth` session type is sufficient and the CAS config can be left as-is.
+
+---
+
 ## Stubs
 
 Located in `tests/AppFrameworkTestClasses/Stubs/`:
@@ -191,3 +241,128 @@ Located in `tests/AppFrameworkTestClasses/Stubs/`:
 | `ValidatableStub` | Validatable stub |
 
 Additional stubs exist in subdirectories: `Stubs/Admin/`, `Stubs/DBHelper/`, `Stubs/Revisionables/`, `Stubs/Session/`, `Stubs/UI/`.
+
+---
+
+## API Test Stub Placement
+
+API method stubs that invoke `processReturn()` must be placed in the test application's source directory:
+
+```
+tests/application/assets/classes/TestDriver/API/
+```
+
+**Do not** place such stubs in `tests/AppFrameworkTestClasses/` — they will not be discovered by the method index.
+
+### Why this matters
+
+`APIMethodParameter` validates that the method name passed to `processReturn()` exists in the framework's API method index. This index is built by scanning the test application's source folders (`tests/application/assets/classes/`). Classes in `AppFrameworkTestClasses/` are invisible to this discovery process and will trigger a "method not found" validation error.
+
+Simple stubs that do not invoke `processReturn()` (e.g., those only used via `createStub()` / `createMock()`) can still reside in `AppFrameworkTestClasses/`.
+
+---
+
+## Live-HTTP Tests
+
+Some tests make real HTTP requests to `APP_URL` (the running test application). These tests are
+marked with the `#[Group('live-http')]` PHP attribute (PHPUnit 13) and are **excluded from the
+default `composer test` run** via the `<groups><exclude>` block in `phpunit.xml`.
+
+> **PHPUnit 13 note:** The legacy `@group` docblock annotation is silently ignored by PHPUnit 13.
+> Always use the `#[Group(...)]` PHP 8 attribute with a `use PHPUnit\Framework\Attributes\Group;`
+> import. Using the annotation form has no effect and will not exclude the test from the default run.
+
+To run live-HTTP tests, a web server must be available at `APP_URL` (configured in
+`tests/application/config/test-ui-config.php` via the `TESTS_BASE_URL` constant). Run them
+explicitly with:
+
+```
+composer test-group -- live-http
+```
+
+Tests in this group:
+
+| Test Class | Methods |
+|---|---|
+| `AppFrameworkTests\Ajax\AjaxRequestTest` | All (class-level `#[Group('live-http')]`) |
+| `AppFrameworkTests\Connectors\RequestTest` | `test_adapterSockets`, `test_adapterCURL` |
+
+Do not remove the `#[Group('live-http')]` attribute or the `phpunit.xml` exclusion — without it,
+the CI pipeline and local runs without a web server will fail with network errors.
+
+---
+
+## Superglobal Teardown
+
+### Automatic $_REQUEST restore
+
+`ApplicationTestCase` now automatically backs up `$_REQUEST` in `setUp()` and restores it in
+`tearDown()`. This prevents inter-test pollution when test files write to `$_REQUEST` without
+explicit cleanup.
+
+**No per-class tearDown required for `$_REQUEST`.** Test classes that modify `$_REQUEST` no
+longer need to manually unset those keys — the base class restore handles it globally.
+
+### Other superglobals
+
+`ApplicationTestCase` does **not** automatically restore `$_GET`, `$_POST`, or `$_SESSION`.
+Test classes that write to these superglobals must still unset those keys in their own
+`tearDown()` before calling `parent::tearDown()`.
+
+### Why this matters
+
+`BaseRecordSelectionTieIn::getRecord()` (and similar request-state-reading classes) caches
+the first result it finds. If a previous test left a key in `$_REQUEST`, the next test in the
+same file will read a stale cached value, causing assertions that depend on "nothing selected"
+to fail — only when the tests are run as a file, not in isolation. This is a classic
+inter-test pollution signature that is difficult to diagnose.
+
+The automatic `$_REQUEST` backup/restore in `ApplicationTestCase` eliminates this category of
+bug for the most common superglobal.
+
+### Convention (for $_GET, $_POST, $_SESSION)
+
+```php
+protected function tearDown() : void
+{
+    // Unset every $_GET, $_POST, or $_SESSION key written by this test class.
+    // (No need to unset $_REQUEST keys — ApplicationTestCase handles those automatically.)
+    unset(
+        $_GET['some_key'],
+        $_POST['some_other_key']
+    );
+
+    parent::tearDown();
+}
+```
+
+---
+
+## PHPUnit Mock Conventions
+
+PHPUnit 13 emits a **Notice** — "No expectations were configured for the mock object for X"
+— when `createMock()` is used without any `expects()` call. Use `createStub()` instead when
+the test only needs a double that returns values (no call-count verification):
+
+```php
+// Correct — test only needs the object to return a value; no expectation needed
+$method = $this->createStub(APIMethodInterface::class);
+
+// Avoid — triggers a PHPUnit Notice when no expects() are added
+$method = $this->createMock(APIMethodInterface::class);
+```
+
+When writing helper methods that return a test double, annotate the return type with
+`&\PHPUnit\Framework\MockObject\Stub` (not `MockObject`) to match `createStub()`'s
+actual return type:
+
+```php
+/** @return APIMethodInterface&\PHPUnit\Framework\MockObject\Stub */
+private function createMethodStub() : APIMethodInterface
+{
+    return $this->createStub(APIMethodInterface::class);
+}
+```
+
+Use `createMock()` only when the test explicitly verifies interaction (e.g., `expects(once())`).
+

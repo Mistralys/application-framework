@@ -1,0 +1,136 @@
+## ---------------------------------------------------------------
+## API — Core API Subsystem
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "api"
+  label: "API"
+  description: "Central API subsystem providing request dispatching, method registration, versioning, response envelope construction, documentation, and remote API consumption. The APIManager singleton processes requests by resolving method names via APIMethodIndex, instantiating method classes extending BaseAPIMethod, and delegating the full lifecycle (parameter validation, execution, response). Methods declare group affiliation (APIGroupInterface), version support (VersionedAPIInterface/VersionedAPITrait with per-version response classes), and response format via mix-in traits (JSONResponseInterface, JSONRequestInterface, DryRunAPIInterface). AppAPIConnector provides an HTTP client for consuming other framework applications' APIs remotely."
+  keywords:
+    - API method (named endpoint class registered with the APIManager; discovered via APIMethodIndex)
+    - method index (cached class map of all API methods; rebuilt by composer build)
+    - processReturn (test helper on BaseAPIMethod; executes the method without sending a response)
+    - dry-run (optional mode where a method validates and reports what it would do without side effects)
+    - API group (logical grouping of methods for documentation and API key permissions)
+    - JSON envelope (standard response wrapper with state/code/data/message keys)
+    - AppAPIConnector (HTTP client for consuming another framework application's API remotely)
+  relatedModules:
+    - "api-parameters"
+    - "api-cache"
+    - "api-openapi"
+    - "api-clients"
+    - "connectors"
+    - "event-handler"
+
+documents:
+  -
+    description: 'API - Overview'
+    outputPath: 'modules/api/overview.md'
+    sources:
+      - type: file
+        description: "API Module Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'API - Core Architecture (Public API)'
+    outputPath: 'modules/api/architecture-core.md'
+    sources:
+      - type: file
+        description: "APIManager, APIMethodInterface, APIException, APIFoldersManager, APIUrls, ResponsePayload, ErrorResponsePayload, ErrorResponse, APIResponseDataException"
+        sourcePaths:
+          - ./
+        filePattern: "*.php"
+        excludePatterns:
+          - 'Admin/'
+          - 'Cache/'
+          - 'Clients/'
+          - 'OpenAPI/'
+          - 'Parameters/'
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API - Base Method & Traits (Public API)'
+    outputPath: 'modules/api/architecture-base-method.md'
+    sources:
+      - type: file
+        description: "BaseAPIMethod lifecycle, JSONResponseInterface/Trait, JSONRequestInterface/Trait, DryRunAPIInterface/Trait, JSONResponseWithExampleInterface/Trait, RequestRequestInterface/Trait"
+        sourcePaths:
+          - ./BaseMethods
+          - ./Traits
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public", "protected" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API - Versioning (Public API)'
+    outputPath: 'modules/api/architecture-versioning.md'
+    sources:
+      - type: file
+        description: "VersionedAPIInterface, VersionedAPITrait, BaseAPIVersion, VersionCollection, APIVersionInterface"
+        sourcePaths:
+          - ./Versioning
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public", "protected" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API - Groups, Documentation, Response, Connector, Utilities (Public API)'
+    outputPath: 'modules/api/architecture-supporting.md'
+    sources:
+      - type: file
+        description: "APIGroupInterface, FrameworkAPIGroup, GenericAPIGroup, APIDocumentation, MethodDocumentation, JSONMethodExample, ResponseInterface, JSONInfoSerializer, AppAPIConnector, AppAPIMethod, KeyDescription, KeyPath, KeyPathInterface, KeyReplacement, APIRightsInterface, APIRightsTrait"
+        sourcePaths:
+          - ./Groups
+          - ./Documentation
+          - ./Response
+          - ./Connector
+          - ./Utilities
+          - ./User
+          - ./Collection
+          - ./Events
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API - File Structure'
+    outputPath: 'modules/api/file-structure.md'
+    sources:
+      - type: tree
+        description: 'API Module File Structure'
+        sourcePaths: [ ./ ]
+        filePattern: '*.php'
+        renderFormat: ascii
+        showCharCount: false
+        maxDepth: 4

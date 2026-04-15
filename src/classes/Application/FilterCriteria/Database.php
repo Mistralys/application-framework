@@ -169,7 +169,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     protected function finalizeWhere() : void
     {
-        if (!isset($this->search))
+        if ($this->search === '')
         {
             return;
         }

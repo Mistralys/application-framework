@@ -21,6 +21,21 @@ final class RecordTieInTest extends ApplicationTestCase implements DBHelperTestI
     use DBHelperTestTrait;
     use MythologyTestTrait;
 
+    protected function tearDown(): void
+    {
+        // Reset any request variables set during the test to prevent pollution
+        // of subsequent tests in the same run. BaseRecordSelectionTieIn::getRecord()
+        // caches its result based on $_REQUEST, so stale values from prior tests
+        // cause isRecordSelected() to return unexpected results.
+        unset(
+            $_REQUEST[TestDBCollection::REQUEST_PRIMARY_NAME],
+            $_REQUEST[MythologyRecordCollection::REQUEST_VAR_NAME],
+            $_REQUEST['inherit']
+        );
+
+        parent::tearDown();
+    }
+
     // region: _Tests
 
     public function test_enabledCallback() : void

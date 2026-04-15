@@ -38,6 +38,7 @@ final class DisposingTest extends DBHelperTestCase
     {
         $this->markTestIncomplete();
 
+        // @phpstan-ignore deadCode.unreachable
         $parentCollection = new TestDBCollection();
         $parentRecord = $parentCollection->addTestRecord();
 

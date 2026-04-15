@@ -19,6 +19,7 @@ use Connectors_Response;
 use HTTP_Request2;
 use HTTP_Request2_Response;
 use AppFrameworkTestClasses\ApplicationTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use function AppUtils\parseThrowable;
 
 /**
@@ -31,6 +32,7 @@ class RequestTest extends ApplicationTestCase
 
     public const BASE_ENDPOINT_URL = APP_URL.'/request-tests/endpoint-json-200.php';
 
+    #[Group('live-http')]
     public function test_adapterSockets() : void
     {
         $this->assertValidResponse(
@@ -42,6 +44,7 @@ class RequestTest extends ApplicationTestCase
         );
     }
 
+    #[Group('live-http')]
     public function test_adapterCURL() : void
     {
         $this->assertValidResponse(

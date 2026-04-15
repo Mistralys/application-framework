@@ -98,6 +98,7 @@ return array (
     'testing.collection-create-basic' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateBasicScreen',
     'testing.collection-create-legacy' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerLegacyScreen',
     'testing.collection-create-manager-ex' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerExtendedScreen',
+    'testing.country-request' => 'TestDriver\\Area\\TestingScreen\\CountryRequestScreen',
     'testing.dbhelper-selection-tiein' => 'TestDriver\\Area\\TestingScreen\\DBHelperSelectionTieInScreen',
     'testing.log-javascript-error' => 'TestDriver\\Area\\TestingScreen\\LogJavaScriptErrorScreen',
     'testing.overview' => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
@@ -2101,11 +2102,12 @@ return array (
         1 => 'TestDriver\\Area\\TestingScreen\\CollectionCreateBasicScreen',
         2 => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerExtendedScreen',
         3 => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerLegacyScreen',
-        4 => 'TestDriver\\Area\\TestingScreen\\DBHelperSelectionTieInScreen',
-        5 => 'TestDriver\\Area\\TestingScreen\\LogJavaScriptErrorScreen',
-        6 => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
-        7 => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
-        8 => 'TestDriver\\Area\\TestingScreen\\TieInAncestryTestScreen',
+        4 => 'TestDriver\\Area\\TestingScreen\\CountryRequestScreen',
+        5 => 'TestDriver\\Area\\TestingScreen\\DBHelperSelectionTieInScreen',
+        6 => 'TestDriver\\Area\\TestingScreen\\LogJavaScriptErrorScreen',
+        7 => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
+        8 => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
+        9 => 'TestDriver\\Area\\TestingScreen\\TieInAncestryTestScreen',
       ),
     ),
     'TestDriver\\Area\\TestingScreen\\CancelHandleActionsScreen' => 
@@ -2169,6 +2171,21 @@ return array (
       array (
       ),
       'class' => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerLegacyScreen',
+      'path' => 'driver-classes:Area/TestingScreen',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'TestDriver\\Area\\TestingScreen\\CountryRequestScreen' => 
+    array (
+      'id' => 'CountryRequestScreen',
+      'urlName' => 'country-request',
+      'urlPath' => 'testing.country-request',
+      'title' => 'Country Request Trait',
+      'navigationTitle' => 'Country Request Trait',
+      'requiredRight' => NULL,
+      'featureRights' => NULL,
+      'class' => 'TestDriver\\Area\\TestingScreen\\CountryRequestScreen',
       'path' => 'driver-classes:Area/TestingScreen',
       'subscreenClasses' => 
       array (
@@ -2564,11 +2581,12 @@ return array (
         1 => 'TestDriver\\Area\\TestingScreen\\CollectionCreateBasicScreen',
         2 => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerExtendedScreen',
         3 => 'TestDriver\\Area\\TestingScreen\\CollectionCreateManagerLegacyScreen',
-        4 => 'TestDriver\\Area\\TestingScreen\\DBHelperSelectionTieInScreen',
-        5 => 'TestDriver\\Area\\TestingScreen\\LogJavaScriptErrorScreen',
-        6 => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
-        7 => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
-        8 => 'TestDriver\\Area\\TestingScreen\\TieInAncestryTestScreen',
+        4 => 'TestDriver\\Area\\TestingScreen\\CountryRequestScreen',
+        5 => 'TestDriver\\Area\\TestingScreen\\DBHelperSelectionTieInScreen',
+        6 => 'TestDriver\\Area\\TestingScreen\\LogJavaScriptErrorScreen',
+        7 => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
+        8 => 'TestDriver\\Area\\TestingScreen\\TestingOverviewScreen',
+        9 => 'TestDriver\\Area\\TestingScreen\\TieInAncestryTestScreen',
       ),
       'subscreens' => 
       array (
@@ -2600,6 +2618,24 @@ return array (
           'requiredRight' => NULL,
           'featureRights' => NULL,
           'class' => 'TestDriver\\Area\\TestingScreen\\ReplaceContentScreen',
+          'path' => 'driver-classes:Area/TestingScreen',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'country-request' => 
+        array (
+          'id' => 'CountryRequestScreen',
+          'urlName' => 'country-request',
+          'urlPath' => 'testing.country-request',
+          'title' => 'Country Request Trait',
+          'navigationTitle' => 'Country Request Trait',
+          'requiredRight' => NULL,
+          'featureRights' => NULL,
+          'class' => 'TestDriver\\Area\\TestingScreen\\CountryRequestScreen',
           'path' => 'driver-classes:Area/TestingScreen',
           'subscreenClasses' => 
           array (

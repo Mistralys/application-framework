@@ -318,7 +318,7 @@ class UI_Button
         
         $title = $this->getAttribute('title');
 
-        if(isset($this->tooltipText)) 
+        if($this->tooltipText !== '') 
         {
             $tooltip = null;
             

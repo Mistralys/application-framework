@@ -1,0 +1,60 @@
+## ---------------------------------------------------------------
+## API / OPENAPI — Foundational OpenAPI 3.1 Spec Generation
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "api-openapi"
+  label: "API OpenAPI"
+  description: "End-to-end support for generating OpenAPI 3.1 specifications from the framework API system and serving them over HTTP. Covers parameter type mapping (TypeMapper), reusable component schemas and security schemes for the standard API response envelopes (OpenAPISchema), Apache .htaccess generation for RESTful URL rewriting (HtaccessGenerator), conversion of framework API parameters to OpenAPI parameter objects and request body schema properties (ParameterConverter), conversion of API method response metadata to OpenAPI response objects for 200/400/500 status codes (ResponseConverter), full spec assembly with error resilience and authentication/validation documentation (OpenAPIGenerator, MethodConverter), HTTP serving of the pre-generated spec as raw JSON (GetOpenAPISpec), and application-level convenience entry points (APIManager::generateOpenAPISpec, APIManager::generateHtaccess). The composer build pipeline calls both generation steps automatically via ComposerScripts."
+  keywords:
+    - OpenAPIGenerator (main orchestrator; iterates all API methods, assembles the complete OpenAPI 3.1 document including securitySchemes and x-validation-rules, writes it as a JSON file)
+    - generateOpenAPISpec (APIManager convenience method; generates the OpenAPI spec using the running driver's app name and version)
+    - generateHtaccess (APIManager convenience method; generates the API .htaccess for RESTful URL rewriting using the running driver context)
+    - TypeMapper (maps framework API parameter type labels to OpenAPI 3.1 type/format pairs)
+    - OpenAPISchema (OpenAPI 3.1 component schemas for APIEnvelope, APIErrorEnvelope, APIInfo and security schemes for APIKeyMethodInterface authentication)
+    - getSecuritySchemes (returns the components/securitySchemes definition for the HTTP Bearer API key scheme)
+    - SECURITY_SCHEME_API_KEY (OpenAPISchema constant identifying the 'apiKey' security scheme name used in both components definition and per-method security requirements)
+    - HtaccessGenerator (generates Apache .htaccess for RESTful URL rewriting of /api/ paths)
+    - ParameterConverter (converts APIParameterInterface instances to OpenAPI parameter objects or request body schema properties)
+    - convertParameter (converts a single API parameter to its OpenAPI representation; returns null for reserved parameters)
+    - convertParameters (batch-converts all parameters from APIParamManager into query/header and JSON-body buckets)
+    - ResponseConverter (converts API method response metadata into OpenAPI 3.1 response objects for 200/400/500 status codes)
+    - convertResponses (returns a map of HTTP status codes to OpenAPI response objects for a given API method)
+    - MethodConverter (converts a single APIMethodInterface to an OpenAPI path item; adds security requirement for APIKeyMethodInterface methods and x-validation-rules for methods with parameter rules)
+    - x-validation-rules (OpenAPI extension field added by MethodConverter to document inter-parameter validation constraints such as OrRule and RequiredIfOtherIsSetRule)
+    - APIEnvelope (standard OpenAPI success response envelope schema)
+    - APIErrorEnvelope (standard OpenAPI error response envelope schema)
+    - APIInfo (OpenAPI schema for the api metadata sub-object in every JSON response)
+    - GetOpenAPISpec (framework built-in API method; serves the pre-generated openapi.json as raw JSON over HTTP at /api/GetOpenAPISpec; bypasses the standard JSON envelope; returns 500 when the spec file is missing)
+    - getSpecURL (GetOpenAPISpec static helper; returns the absolute URL to the spec endpoint using APP_URL; used by APIMethodsOverviewTmpl to render the OpenAPI button on the API docs overview page)
+  relatedModules: []
+
+documents:
+  -
+    description: 'API OpenAPI - Overview'
+    outputPath: 'modules/openapi/overview.md'
+    sources:
+      - type: file
+        description: "API OpenAPI Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'API OpenAPI - Core Architecture (Public API)'
+    outputPath: 'modules/openapi/architecture-core.md'
+    sources:
+      - type: file
+        description: "TypeMapper, OpenAPISchema, HtaccessGenerator"
+        sourcePaths:
+          - ./
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true

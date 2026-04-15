@@ -14,6 +14,7 @@ use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
+use Application\API\Utilities\KeyDescription;
 use Application\AppFactory;
 use Application\Countries\API\AppCountryAPIInterface;
 use Application\Countries\API\CountriesAPIGroup;
@@ -65,6 +66,20 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
     // region: A - Payload
 
     public const string KEY_COUNTRIES = 'countries';
+    public const string KEY_LABEL_INVARIANT = 'labelInvariant';
+    public const string KEY_CODE_ALIASES = 'codeAliases';
+    public const string KEY_DEFAULT_LOCALE = 'defaultLocale';
+    public const string KEY_DEFAULT_LOCALE_CODE = 'localeCode';
+    public const string KEY_DEFAULT_LOCALE_LANGUAGE_CODE = 'languageCode';
+    public const string KEY_CURRENCY = 'currency';
+    public const string KEY_CURRENCY_ISO_CODE = 'isoCode';
+    public const string KEY_CURRENCY_LABEL_SINGULAR = 'labelSingular';
+    public const string KEY_CURRENCY_LABEL_PLURAL = 'labelPlural';
+    public const string KEY_CURRENCY_SYMBOL = 'symbol';
+    public const string KEY_CURRENCY_PREFERRED_SYMBOL = 'preferredSymbol';
+    public const string KEY_CURRENCY_THOUSANDS_SEP = 'thousandsSeparator';
+    public const string KEY_CURRENCY_DECIMAL_SEP = 'decimalSeparator';
+    public const string KEY_CURRENCY_STRUCTURAL_TEMPLATE = 'structuralTemplate';
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
@@ -177,7 +192,80 @@ MARKDOWN,
 
     public function getReponseKeyDescriptions(): array
     {
-        return array();
+        return array(
+            KeyDescription::create(
+                self::KEY_COUNTRIES,
+                'Object keyed by country ISO code; each value is a country details object.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . AppCountryAPIInterface::KEY_COUNTRY_ID,
+                'Numeric database identifier of the country.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . AppCountryAPIInterface::KEY_COUNTRY_ISO,
+                'Two-letter ISO 3166-1 alpha-2 code identifying the country.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_LABEL_INVARIANT,
+                'Locale-invariant display name of the country.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CODE_ALIASES,
+                'Array of alternative ISO codes or aliases recognised for this country.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_DEFAULT_LOCALE,
+                'Default locale configuration associated with this country.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_DEFAULT_LOCALE . '.' . self::KEY_DEFAULT_LOCALE_CODE,
+                'Compound locale identifier (e.g. de_DE).'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_DEFAULT_LOCALE . '.' . self::KEY_DEFAULT_LOCALE_LANGUAGE_CODE,
+                'Two-letter ISO 639-1 language code.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_DEFAULT_LOCALE . '.' . self::KEY_LABEL_INVARIANT,
+                'Locale-invariant display name of the language.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY,
+                'Currency details for the country.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_ISO_CODE,
+                'Three-letter ISO 4217 currency code (e.g. EUR).'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_LABEL_SINGULAR,
+                'Singular display name of the currency (e.g. Euro).'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_LABEL_PLURAL,
+                'Plural display name of the currency (e.g. Euros).'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_SYMBOL,
+                'Primary currency symbol (e.g. €).'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_PREFERRED_SYMBOL,
+                'Preferred display symbol for the currency; may differ from the primary symbol in some locales.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_THOUSANDS_SEP,
+                'Character used to separate thousands in formatted currency amounts.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_DECIMAL_SEP,
+                'Character used to separate decimal digits in formatted currency amounts.'
+            ),
+            KeyDescription::create(
+                self::KEY_COUNTRIES . '.' . self::KEY_CURRENCY . '.' . self::KEY_CURRENCY_STRUCTURAL_TEMPLATE,
+                'Template string describing the structural position of symbol, integer, and decimal parts.'
+            ),
+        );
     }
 
     // endregion

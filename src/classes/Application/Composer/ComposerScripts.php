@@ -41,6 +41,8 @@ class ComposerScripts
         self::indexOfflineEvents();
         self::indexAdminScreens();
         self::apiMethodIndex();
+        self::generateOpenAPISpec();
+        self::generateHtaccess();
         self::generateCSSClassesJS();
         self::updateContextGenerateDate();
         self::updateModuleDocumentation();
@@ -159,6 +161,52 @@ class ComposerScripts
         APIManager::getInstance()->getMethodIndex()->build();
     }
 
+    public static function generateOpenAPISpec() : void
+    {
+        self::init();
+
+        self::doGenerateOpenAPISpec();
+    }
+
+    public static function doGenerateOpenAPISpec() : void
+    {
+        echo '- Generating OpenAPI specification...'.PHP_EOL;
+
+        try {
+            $apiDir = self::getFrameworkAPIOutputDirectory();
+            $outputPath = $apiDir !== '' ? $apiDir.'/openapi.json' : '';
+            $path = APIManager::getInstance()->generateOpenAPISpec($outputPath);
+            echo sprintf('  Written to: %s'.PHP_EOL, $path);
+        } catch (\Throwable $e) {
+            error_log('OpenAPI spec generation failed: '.$e->getMessage());
+            echo sprintf('  WARNING: OpenAPI spec generation failed: %s'.PHP_EOL, $e->getMessage());
+        }
+
+        echo '  DONE.'.PHP_EOL;
+    }
+
+    public static function generateHtaccess() : void
+    {
+        self::init();
+
+        self::doGenerateHtaccess();
+    }
+
+    public static function doGenerateHtaccess() : void
+    {
+        echo '- Generating API .htaccess...'.PHP_EOL;
+
+        try {
+            $path = APIManager::getInstance()->generateHtaccess(self::getFrameworkAPIOutputDirectory());
+            echo sprintf('  Written to: %s'.PHP_EOL, $path);
+        } catch (\Throwable $e) {
+            error_log('API .htaccess generation failed: '.$e->getMessage());
+            echo sprintf('  WARNING: API .htaccess generation failed: %s'.PHP_EOL, $e->getMessage());
+        }
+
+        echo '  DONE.'.PHP_EOL;
+    }
+
     public static function generateCSSClassesJS() : void
     {
         self::init();
@@ -176,6 +224,26 @@ class ComposerScripts
     }
 
     private static bool $initialized = false;
+
+    /**
+     * Returns the absolute path to the framework's test application API directory
+     * when running within the framework's own GIT package, so that generated files
+     * (`.htaccess`, `openapi.json`) are written there instead of the default
+     * `APP_INSTALL_FOLDER/api` which resolves to `/src/api` in the test bootstrap.
+     *
+     * Returns an empty string when running inside an application (where the
+     * `tests/application/api` folder does not exist relative to this file).
+     *
+     * @return string Absolute path to `tests/application/api`, or empty string.
+     */
+    private static function getFrameworkAPIOutputDirectory() : string
+    {
+        $path = __DIR__.'/../../../../tests/application/api';
+        if(is_dir($path)) {
+            return (string)realpath($path);
+        }
+        return '';
+    }
 
     /**
      * Loads the bootstrap file for the application.

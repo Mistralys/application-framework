@@ -36,6 +36,7 @@ system with record state tracking (draft, published, etc.).
 - Tagging system and UI
 - Versioning system with state tracking
 - Disposables system for automated garbage collection
+- API response caching (file-based, opt-in via Interface + Trait; TTL and manual strategies)
 - SSO via CAS
 - Interface Translations: English, German, French
 - Build-time module documentation generators (Modules Overview, Keyword Glossary)
