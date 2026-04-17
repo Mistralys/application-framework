@@ -372,6 +372,7 @@ No new external dependencies required.
 - The `/* START METHODS */` / `/* END METHODS */` marker convention is stable and will not change.
 - The `spinner` icon exclusion from code generation (present in the original builder) should be preserved.
 - The `OperationResult` return value is sufficient for error reporting in both standalone and build contexts.
+- **The HCP Editor is in DEV mode** (`composer.json.DEV` marker present, `composer switch-dev` has been run, `composer update` completed). The framework is symlinked into the HCP Editor's `vendor/mistralys/application_framework/`, so new framework classes are immediately available to the HCP Editor without publishing.
 
 ## Constraints
 
