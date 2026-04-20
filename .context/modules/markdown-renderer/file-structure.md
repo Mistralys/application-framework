@@ -21,6 +21,6 @@ _SOURCE: Tree of Module Files_
 ```
 ---
 **File Statistics**
-- **Size**: 639 B
-- **Lines**: 21
+- **Size**: 750 B
+- **Lines**: 27
 File: `modules/markdown-renderer/file-structure.md`

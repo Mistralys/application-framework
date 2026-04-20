@@ -17,14 +17,18 @@ _SOURCE: BuildMessages, ComposerScripts, CSSClassesGenerator_
                     ├── GlossarySection.php
                     ├── GlossarySectionEntry.php
                     ├── KeywordEntry.php
+                    ├── KeywordGlossaryBuilder.php
                     ├── KeywordGlossaryGenerator.php
                     ├── KeywordGlossaryRenderer.php
                     ├── KeywordParser.php
                 └── ModulesOverview/
                     └── ModuleContextFileFinder.php
                     └── ModuleInfo.php
+                    └── ModuleInfoParser.php
+                    └── ModuleJsonExportGenerator.php
                     └── ModulesOverviewGenerator.php
                     └── ModulesOverviewRenderer.php
+                    └── ReadmeOverviewParser.php
 
 ```
 ###  Path: `/src/classes/Application/Composer/BuildMessages.php`
@@ -572,6 +576,44 @@ final class KeywordEntry
 
 
 ```
+###  Path: `/src/classes/Application/Composer/KeywordGlossary/KeywordGlossaryBuilder.php`
+
+```php
+namespace Application\Composer\KeywordGlossary;
+
+use Application\Composer\ModulesOverview\ModuleInfo as ModuleInfo;
+
+/**
+ * Builds a deduplicated, sorted list of {@see KeywordEntry} objects
+ * from a collection of {@see ModuleInfo} value objects.
+ *
+ * Encapsulates the keyword collection, conflict detection, deduplication,
+ * and alphabetical sorting that was previously duplicated across
+ * {@see KeywordGlossaryGenerator} and `ModuleJsonExportGenerator`.
+ *
+ * @package Application
+ * @subpackage Composer
+ */
+final class KeywordGlossaryBuilder
+{
+	/**
+	 * Builds the deduplicated and alphabetically sorted keyword entry list.
+	 *
+	 * Keywords are keyed by their lowercase form; only the first-seen casing is
+	 * preserved. When the same keyword appears in multiple modules, the module
+	 * IDs are merged. A conflict warning is issued via the progress callback when
+	 * the same keyword carries different context strings across modules.
+	 *
+	 * @return KeywordEntry[]
+	 */
+	public function build(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/Application/Composer/KeywordGlossary/KeywordGlossaryGenerator.php`
 
 ```php
@@ -579,20 +621,19 @@ namespace Application\Composer\KeywordGlossary;
 
 use AppUtils\FileHelper\FileInfo as FileInfo;
 use AppUtils\FileHelper\FolderInfo as FolderInfo;
-use Application\Composer\BuildMessages as BuildMessages;
 use Application\Composer\KeywordGlossary\Events\DecorateGlossaryEvent as DecorateGlossaryEvent;
 use Application\Composer\ModulesOverview\ModuleContextFileFinder as ModuleContextFileFinder;
+use Application\Composer\ModulesOverview\ModuleInfoParser as ModuleInfoParser;
 use Application\EventHandler\OfflineEvents\OfflineEventsManager as OfflineEventsManager;
-use Symfony\Component\Yaml\Exception\ParseException as ParseException;
-use Symfony\Component\Yaml\Yaml as Yaml;
 
 /**
  * Orchestrates the keyword-glossary generation workflow.
  *
  * Discovers all `module-context.yaml` files via {@see ModuleContextFileFinder},
- * extracts `moduleMetaData.id` and `moduleMetaData.keywords` from each,
- * builds a de-duplicated {@see KeywordEntry} map, fires
- * {@see DecorateGlossaryEvent} via the offline events manager to collect
+ * delegates parsing to {@see ModuleInfoParser} to obtain {@see ModuleInfo} value
+ * objects from each (files lacking `id`, `label`, or `description` are skipped),
+ * delegates keyword deduplication and sorting to {@see KeywordGlossaryBuilder},
+ * fires {@see DecorateGlossaryEvent} via the offline events manager to collect
  * custom {@see GlossarySection} instances, renders the Markdown document
  * via {@see KeywordGlossaryRenderer}, and writes it to the specified output path.
  *
@@ -837,7 +878,7 @@ final class ModuleInfo
 
 
 ```
-###  Path: `/src/classes/Application/Composer/ModulesOverview/ModulesOverviewGenerator.php`
+###  Path: `/src/classes/Application/Composer/ModulesOverview/ModuleInfoParser.php`
 
 ```php
 namespace Application\Composer\ModulesOverview;
@@ -848,6 +889,103 @@ use AppUtils\FileHelper\JSONFile as JSONFile;
 use Application\Composer\BuildMessages as BuildMessages;
 use Symfony\Component\Yaml\Exception\ParseException as ParseException;
 use Symfony\Component\Yaml\Yaml as Yaml;
+
+/**
+ * Parses individual `module-context.yaml` files into {@see ModuleInfo}
+ * value objects.
+ *
+ * Encapsulates YAML parsing, source-path resolution, Composer-package
+ * resolution, and CTX output-folder resolution so that every generator
+ * that consumes module metadata ({@see ModulesOverviewGenerator},
+ * application-level `ModuleJsonExportGenerator`, etc.) shares a single,
+ * authoritative implementation.
+ *
+ * @package Application
+ * @subpackage Composer
+ */
+final class ModuleInfoParser
+{
+	/**
+	 * Parses a single `module-context.yaml` file and returns the corresponding
+	 * {@see ModuleInfo}. Returns `null` if the file cannot be parsed or lacks a
+	 * valid `moduleMetaData` section; diagnostics are registered via {@see BuildMessages}.
+	 *
+	 * @param FileInfo $file
+	 * @return ModuleInfo|null
+	 */
+	public function parseFile(FileInfo $file): ?ModuleInfo
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/Composer/ModulesOverview/ModuleJsonExportGenerator.php`
+
+```php
+namespace Application\Composer\ModulesOverview;
+
+use AppUtils\FileHelper\FileInfo as FileInfo;
+use AppUtils\FileHelper\FolderInfo as FolderInfo;
+use Application\Composer\KeywordGlossary\Events\DecorateGlossaryEvent as DecorateGlossaryEvent;
+use Application\Composer\KeywordGlossary\KeywordGlossaryBuilder as KeywordGlossaryBuilder;
+use Application\EventHandler\OfflineEvents\OfflineEventsManager as OfflineEventsManager;
+
+/**
+ * Generic, subclassable generator that encapsulates the
+ * application-agnostic module JSON export workflow.
+ *
+ * Discovers and parses all `module-context.yaml` files via
+ * {@see ModuleContextFileFinder} and {@see ModuleInfoParser}, resolves
+ * README overviews via {@see ReadmeOverviewParser} and module briefs via
+ * {@see resolveModuleBrief()}, builds the keyword glossary via
+ * {@see KeywordGlossaryBuilder}, fires {@see DecorateGlossaryEvent} to
+ * collect custom glossary sections, and writes a JSON document with
+ * `generatedAt`, `modules`, `glossary`, and `glossarySections` keys.
+ *
+ * Applications can subclass this generator and override the hook methods
+ * {@see resolveModuleSource()} and {@see resolveModuleBrief()} to customise
+ * module source classification and brief resolution without duplicating the
+ * core data-collection workflow.
+ *
+ * Progress output is routed through the optional `$onProgress` callable.
+ * When `null`, no output is produced, which is suitable for automated or
+ * test contexts.
+ *
+ * @package Application
+ * @subpackage Composer
+ */
+class ModuleJsonExportGenerator
+{
+	/**
+	 * Orchestrates the full workflow: discovers modules, resolves descriptions
+	 * and briefs, builds the glossary, collects glossary sections, and writes
+	 * the JSON output file.
+	 *
+	 * By default only modules that have a brief are included in the output.
+	 * Pass `true` for `$includeAll` to include modules without a brief.
+	 *
+	 * @param string $outputPath Absolute path to the JSON output file.
+	 * @param bool   $includeAll When true, modules without a brief are also included.
+	 * @return void
+	 */
+	public function generate(string $outputPath, bool $includeAll = false): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/Composer/ModulesOverview/ModulesOverviewGenerator.php`
+
+```php
+namespace Application\Composer\ModulesOverview;
+
+use AppUtils\FileHelper\FileInfo as FileInfo;
+use AppUtils\FileHelper\FolderInfo as FolderInfo;
+use Application\Composer\BuildMessages as BuildMessages;
 
 /**
  * Orchestrates the module overview generation workflow.
@@ -903,8 +1041,40 @@ final class ModulesOverviewRenderer
 
 
 ```
+###  Path: `/src/classes/Application/Composer/ModulesOverview/ReadmeOverviewParser.php`
+
+```php
+namespace Application\Composer\ModulesOverview;
+
+/**
+ * Utility class for extracting the `## Overview` section text
+ * from a module's README.md file.
+ *
+ * @package Application
+ * @subpackage Composer
+ */
+final class ReadmeOverviewParser
+{
+	/**
+	 * Extracts the text content of the `## Overview` section from a README.md file.
+	 *
+	 * Returns the trimmed text between the `## Overview` heading and the next
+	 * `##` heading (or the end of the file). Returns `null` if the file does
+	 * not exist or contains no `## Overview` section.
+	 *
+	 * @param string $readmePath Absolute path to the README.md file.
+	 * @return string|null The trimmed overview text, or null if not found.
+	 */
+	public static function extractOverview(string $readmePath): ?string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ---
 **File Statistics**
-- **Size**: 19.73 KB
-- **Lines**: 911
+- **Size**: 25.13 KB
+- **Lines**: 1077
 File: `modules/composer/architecture-core.md`

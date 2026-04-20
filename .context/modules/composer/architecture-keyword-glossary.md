@@ -14,6 +14,7 @@ _SOURCE: KeywordGlossary generator classes and offline event_
                     └── GlossarySection.php
                     └── GlossarySectionEntry.php
                     └── KeywordEntry.php
+                    └── KeywordGlossaryBuilder.php
                     └── KeywordGlossaryGenerator.php
                     └── KeywordGlossaryRenderer.php
                     └── KeywordParser.php
@@ -222,6 +223,44 @@ final class KeywordEntry
 
 
 ```
+###  Path: `/src/classes/Application/Composer/KeywordGlossary/KeywordGlossaryBuilder.php`
+
+```php
+namespace Application\Composer\KeywordGlossary;
+
+use Application\Composer\ModulesOverview\ModuleInfo as ModuleInfo;
+
+/**
+ * Builds a deduplicated, sorted list of {@see KeywordEntry} objects
+ * from a collection of {@see ModuleInfo} value objects.
+ *
+ * Encapsulates the keyword collection, conflict detection, deduplication,
+ * and alphabetical sorting that was previously duplicated across
+ * {@see KeywordGlossaryGenerator} and `ModuleJsonExportGenerator`.
+ *
+ * @package Application
+ * @subpackage Composer
+ */
+final class KeywordGlossaryBuilder
+{
+	/**
+	 * Builds the deduplicated and alphabetically sorted keyword entry list.
+	 *
+	 * Keywords are keyed by their lowercase form; only the first-seen casing is
+	 * preserved. When the same keyword appears in multiple modules, the module
+	 * IDs are merged. A conflict warning is issued via the progress callback when
+	 * the same keyword carries different context strings across modules.
+	 *
+	 * @return KeywordEntry[]
+	 */
+	public function build(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/Application/Composer/KeywordGlossary/KeywordGlossaryGenerator.php`
 
 ```php
@@ -229,20 +268,19 @@ namespace Application\Composer\KeywordGlossary;
 
 use AppUtils\FileHelper\FileInfo as FileInfo;
 use AppUtils\FileHelper\FolderInfo as FolderInfo;
-use Application\Composer\BuildMessages as BuildMessages;
 use Application\Composer\KeywordGlossary\Events\DecorateGlossaryEvent as DecorateGlossaryEvent;
 use Application\Composer\ModulesOverview\ModuleContextFileFinder as ModuleContextFileFinder;
+use Application\Composer\ModulesOverview\ModuleInfoParser as ModuleInfoParser;
 use Application\EventHandler\OfflineEvents\OfflineEventsManager as OfflineEventsManager;
-use Symfony\Component\Yaml\Exception\ParseException as ParseException;
-use Symfony\Component\Yaml\Yaml as Yaml;
 
 /**
  * Orchestrates the keyword-glossary generation workflow.
  *
  * Discovers all `module-context.yaml` files via {@see ModuleContextFileFinder},
- * extracts `moduleMetaData.id` and `moduleMetaData.keywords` from each,
- * builds a de-duplicated {@see KeywordEntry} map, fires
- * {@see DecorateGlossaryEvent} via the offline events manager to collect
+ * delegates parsing to {@see ModuleInfoParser} to obtain {@see ModuleInfo} value
+ * objects from each (files lacking `id`, `label`, or `description` are skipped),
+ * delegates keyword deduplication and sorting to {@see KeywordGlossaryBuilder},
+ * fires {@see DecorateGlossaryEvent} via the offline events manager to collect
  * custom {@see GlossarySection} instances, renders the Markdown document
  * via {@see KeywordGlossaryRenderer}, and writes it to the specified output path.
  *
@@ -379,6 +417,6 @@ final class KeywordParser
 ```
 ---
 **File Statistics**
-- **Size**: 8.65 KB
-- **Lines**: 385
+- **Size**: 9.84 KB
+- **Lines**: 423
 File: `modules/composer/architecture-keyword-glossary.md`

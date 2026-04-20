@@ -103,6 +103,25 @@ abstract class NavigationTemplate extends UI_Page_Template_Custom
 
 
 ```
+###  Path: `/src/classes/UI/Themes/BaseTemplates/NavigationTemplate.php`
+
+```php
+namespace UI\Themes\BaseTemplates;
+
+use DateTime as DateTime;
+use JSHelper as JSHelper;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Page_Navigation_Item as UI_Page_Navigation_Item;
+use UI_Page_Navigation_Item_DropdownMenu as UI_Page_Navigation_Item_DropdownMenu;
+use UI_Page_Template_Custom as UI_Page_Template_Custom;
+
+abstract class NavigationTemplate extends UI_Page_Template_Custom
+{
+	abstract public function getElementID(): string;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Themes/Exception.php`
 
 ```php
@@ -669,8 +688,278 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
 
 
 ```
+###  Path: `/src/classes/UI/Themes/Theme/ContentRenderer.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use AppUtils\ConvertHelper as ConvertHelper;
+use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\Traits\OptionableTrait as OptionableTrait;
+
+/**
+ * A content renderer is automatically given to each UI_Page instance,
+ * and is used to customize the upper scaffold of the pages, like the
+ * page title, abstract, etc., as well as to hold the content that is
+ * shown in the page.
+ *
+ * NOTE: implements the Renderable interface, but does not extend the
+ * Renderable class because of timing issues.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Renderable_Interface
+{
+	use OptionableTrait;
+	use UI_Traits_RenderableGeneric;
+
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	public function getRenderer(): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Enables the sidebar (off by default).
+	 * @return UI_Themes_Theme_ContentRenderer
+	 */
+	public function makeWithSidebar(): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Disable the sidebar (off by default).
+	 * @return UI_Themes_Theme_ContentRenderer
+	 */
+	public function makeWithoutSidebar(): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	public function setWithSidebar(bool $with = true): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the page title. This is used as the browser title
+	 * as well if the page has not been given a specific title.
+	 *
+	 * @param string|number|UI_Renderable_Interface $title
+	 * @return UI_Themes_Theme_ContentRenderer
+	 */
+	public function setTitle($title): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the subline text to show directly beneath the title.
+	 *
+	 * @param string|number|UI_Renderable_Interface $subline
+	 * @return UI_Themes_Theme_ContentRenderer
+	 */
+	public function setTitleSubline($subline): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the page's abstract text, shown below the subnavigation.
+	 *
+	 * @param string|number|UI_Renderable_Interface $abstract
+	 * @return UI_Themes_Theme_ContentRenderer
+	 */
+	public function setAbstract($abstract): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a subtitle for the page, shown above the abstract and the subnavigation.
+	 *
+	 * @param string|number|UI_Renderable_Interface $subtitle
+	 * @return UI_Themes_Theme_ContentRenderer
+	 */
+	public function setSubtitle($subtitle): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface $content
+	 * @return $this
+	 */
+	public function setContent($content): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|StringableInterface $content
+	 * @return $this
+	 */
+	public function appendContent($content): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return $this
+	 */
+	public function setTemplateVar(string $name, $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param Application_Interfaces_Formable $formable
+	 * @return $this
+	 */
+	public function appendFormable(Application_Interfaces_Formable $formable): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param UI_Form $form
+	 * @return $this
+	 * @throws UI_Themes_Exception
+	 * @throws BaseClassHelperException
+	 */
+	public function appendForm(UI_Form $form): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param UI_DataGrid $grid
+	 * @param array<int,array<string,mixed>|UI_DataGrid_Entry> $entries
+	 * @return $this
+	 *
+	 * @throws Application_Exception
+	 * @throws UI_Themes_Exception
+	 * @throws BaseClassHelperException
+	 */
+	public function appendDataGrid(UI_DataGrid $grid, array $entries): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $templateIDOrClass
+	 * @param array<string,mixed> $vars
+	 * @return $this
+	 *
+	 * @throws UI_Themes_Exception
+	 * @throws BaseClassHelperException
+	 */
+	public function appendTemplateClass(string $templateIDOrClass, array $vars = []): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param UI_Page_Template $template
+	 * @return $this
+	 */
+	public function appendTemplate(UI_Page_Template $template): self
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	public function getAbstract(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTitle(): UI_Page_Title
+	{
+		/* ... */
+	}
+
+
+	public function isWithSidebar(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getSubtitle(): UI_Page_Subtitle
+	{
+		/* ... */
+	}
+
+
+	public function getContent(): string
+	{
+		/* ... */
+	}
+
+
+	public function hasTitle(): bool
+	{
+		/* ... */
+	}
+
+
+	public function hasSubtitle(): bool
+	{
+		/* ... */
+	}
+
+
+	public function hasAbstract(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ---
 **File Statistics**
-- **Size**: 10.84 KB
-- **Lines**: 677
+- **Size**: 16.23 KB
+- **Lines**: 966
 File: `modules/ui/themes/architecture.md`

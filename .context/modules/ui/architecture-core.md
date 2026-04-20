@@ -1147,6 +1147,79 @@ class CSSGen extends BaseStringPrimaryCollection
 
 
 ```
+###  Path: `/src/classes/UI/CSSGenerator/CSSGen.php`
+
+```php
+namespace UI\CSSGenerator;
+
+use AppUtils\Collections\BaseStringPrimaryCollection as BaseStringPrimaryCollection;
+use AppUtils\FileHelper as FileHelper;
+use AppUtils\FileHelper\FileInfo as FileInfo;
+use AppUtils\FileHelper\FolderInfo as FolderInfo;
+use Application\AppFactory as AppFactory;
+use Application\Development\Admin\Screens\DevelArea as DevelArea;
+use Application\Interfaces\Admin\AdminScreenInterface as AdminScreenInterface;
+use UI as UI;
+use UI\Admin\Screens\CSSGenDevelMode as CSSGenDevelMode;
+
+/**
+ * CSS Generator: Detects all CSS template files in the framework and driver
+ * theme CSS folders, and compiles them into production CSS files.
+ *
+ * @package Application
+ * @subpackage Development Tooling
+ *
+ * @method CSSGenFile[] getAll()
+ * @method CSSGenFile getByID(string $id)
+ */
+class CSSGen extends BaseStringPrimaryCollection
+{
+	public const LOCATION_FRAMEWORK = 'default';
+	public const LOCATION_DRIVER = 'driver';
+	public const CSS_TEMPLATE_EXTENSION = 'csst';
+	public const FOLDER_PROPERTY_BASE_FOLDER = 'baseFolder';
+
+	public static function create(): self
+	{
+		/* ... */
+	}
+
+
+	public function getDefaultID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getAdminGenerateURL(array $params = []): string
+	{
+		/* ... */
+	}
+
+
+	public function getAdminURL(array $params = []): string
+	{
+		/* ... */
+	}
+
+
+	public function generateAll(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return CSSGenLocation[]
+	 */
+	public function getLocations(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/CSSGenerator/CSSGenException.php`
 
 ```php
@@ -1156,6 +1229,83 @@ use Application\Exception\ApplicationException as ApplicationException;
 
 class CSSGenException extends ApplicationException
 {
+}
+
+
+```
+###  Path: `/src/classes/UI/CSSGenerator/CSSGenException.php`
+
+```php
+namespace UI\CSSGenerator;
+
+use Application\Exception\ApplicationException as ApplicationException;
+
+class CSSGenException extends ApplicationException
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/CSSGenerator/CSSGenFile.php`
+
+```php
+namespace UI\CSSGenerator;
+
+use AppUtils\FileHelper as FileHelper;
+use AppUtils\FileHelper\FileInfo as FileInfo;
+use AppUtils\Interfaces\StringPrimaryRecordInterface as StringPrimaryRecordInterface;
+use DateTime as DateTime;
+
+class CSSGenFile implements StringPrimaryRecordInterface
+{
+	public const ERROR_SOURCE_FILE_NO_MODIFIED_DATE = 148401;
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLocation(): CSSGenLocation
+	{
+		/* ... */
+	}
+
+
+	public function getTargetFile(): FileInfo
+	{
+		/* ... */
+	}
+
+
+	public function getRelativePath(): string
+	{
+		/* ... */
+	}
+
+
+	public function getModifiedDate(): DateTime
+	{
+		/* ... */
+	}
+
+
+	public function getStatusPretty(): string
+	{
+		/* ... */
+	}
+
+
+	public function generate(): self
+	{
+		/* ... */
+	}
 }
 
 
@@ -1259,6 +1409,170 @@ class CSSGenLocation
 
 
 	public function getRelativePath(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/CSSGenerator/CSSGenLocation.php`
+
+```php
+namespace UI\CSSGenerator;
+
+use AppUtils\FileHelper as FileHelper;
+use AppUtils\FileHelper\FolderInfo as FolderInfo;
+
+class CSSGenLocation
+{
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function getBaseFolder(): FolderInfo
+	{
+		/* ... */
+	}
+
+
+	public function getCSSFolder(): FolderInfo
+	{
+		/* ... */
+	}
+
+
+	public function getRelativePath(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/ClientConfirmable/Message.php`
+
+```php
+namespace ;
+
+/**
+ * Container for a button's confirmation message. Allows
+ * customizing the message dialog.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_ClientConfirmable_Message
+{
+	public const ERROR_UNSUPPORTED_ELEMENT_MODE = 54401;
+
+	/**
+	 * Sets the message body of the dialog. May contain HTML.
+	 *
+	 * @param string|int|float|UI_Renderable_Interface|NULL $message
+	 * @return UI_ClientConfirmable_Message
+	 * @throws UI_Exception
+	 */
+	public function setMessage($message): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether to display an input field that the user has to type
+	 * a confirmation text in to confirm the operation.
+	 *
+	 * @param bool $withInput
+	 * @return $this
+	 */
+	public function makeWithInput(bool $withInput = true): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether to add a comments input field to enter comments regarding
+	 * the operation.
+	 *
+	 * @param bool $withComments
+	 * @return $this
+	 *
+	 * @see UI_ClientConfirmable_Message::setCommentsDescription()
+	 * @see UI_ClientConfirmable_Message::getCommentsRequestVar()
+	 */
+	public function makeWithComments(bool $withComments = true): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a description text for the comments field (used only if
+	 * the comment field is enabled).
+	 *
+	 * @param string $description
+	 * @return $this
+	 */
+	public function setCommentsDescription(string $description): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the text to display in the loader shown when the user
+	 * confirms (to replace the default loading text).
+	 *
+	 * @param string|int|float|UI_Renderable_Interface|NULL $text
+	 * @throws UI_Exception
+	 */
+	public function setLoaderText($text): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the name of the request variable that is used to add the
+	 * comments text to the redirect URL when using the `makeWithComments()`
+	 * method, and a linked button.
+	 *
+	 * @param string $name
+	 * @return $this
+	 * @see UI_ClientConfirmable_Message::getCommentsRequestVar()
+	 */
+	public function setCommentsRequestVar(string $name): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Gets the name of the request variable that is used to add the
+	 * comments text to the redirect URL when using the `makeWithComments()`
+	 * method, and a linked button.
+	 *
+	 * @return string
+	 * @see UI_ClientConfirmable_Message::setCommentsRequestVar()
+	 */
+	public function getCommentsRequestVar(): string
+	{
+		/* ... */
+	}
+
+
+	public function getJavaScript(): string
 	{
 		/* ... */
 	}
@@ -2915,6 +3229,62 @@ class FormCreatedEvent extends BaseUIEvent
 
 
 	public function getForm(): UI_Form
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Event/FormCreatedEvent.php`
+
+```php
+namespace UI\Event;
+
+use UI\BaseUIEvent as BaseUIEvent;
+use UI_Form as UI_Form;
+
+class FormCreatedEvent extends BaseUIEvent
+{
+	public const EVENT_NAME = 'FormCreated';
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getForm(): UI_Form
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Event/PageRendered.php`
+
+```php
+namespace UI\Event;
+
+use Application\EventHandler\Event\BaseEvent as BaseEvent;
+use Application\EventHandler\Traits\HTMLProcessingEventTrait as HTMLProcessingEventTrait;
+use Application\Formable\Event\HTMLProcessingEventInterface as HTMLProcessingEventInterface;
+use UI_Page as UI_Page;
+
+class PageRendered extends BaseEvent implements HTMLProcessingEventInterface
+{
+	use HTMLProcessingEventTrait;
+
+	public const EVENT_NAME = 'PageRendered';
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getPage(): UI_Page
 	{
 		/* ... */
 	}
@@ -7340,6 +7710,104 @@ interface ActivatableInterface
 
 
 ```
+###  Path: `/src/classes/UI/Interfaces/ActivatableInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use UI\Traits\ActivatableTrait as ActivatableTrait;
+
+/**
+ * @see ActivatableTrait
+ */
+interface ActivatableInterface
+{
+	/**
+	 * @param bool $active
+	 * @return self
+	 */
+	public function makeActive(bool $active = true): self;
+
+
+	public function isActive(): bool;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/Badge.php`
+
+```php
+namespace ;
+
+interface UI_Interfaces_Badge
+{
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @return $this
+	 */
+	public function setLabel($label): self;
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $code
+	 * @return $this
+	 */
+	public function setWrapper($code): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeDangerous(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInfo(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSuccess(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeWarning(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInverse(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInactive(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function cursorHelp(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeLarge(): self;
+
+
+	public function getLabel(): string;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Interfaces/Badge.php`
 
 ```php
@@ -7483,6 +7951,155 @@ interface UI_Interfaces_Bootstrap extends ClassableInterface, UI_Renderable_Inte
 
 
 	public function hasChildren(): bool;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/Bootstrap.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\ClassableInterface as ClassableInterface;
+use UI\Interfaces\NamedItemInterface as NamedItemInterface;
+
+interface UI_Interfaces_Bootstrap extends ClassableInterface, UI_Renderable_Interface, NamedItemInterface
+{
+	public const ERROR_CHILD_NAME_ALREADY_EXISTS = 18601;
+	public const ERROR_NOT_A_CHILD_ELEMENT_OF_PARENT = 18602;
+	public const ERROR_INVALID_CHILD_ELEMENT = 18603;
+
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
+	public function isNamed(string $name): bool;
+
+
+	public function getID(): string;
+
+
+	public function setID(string $id): self;
+
+
+	public function setAttribute(string $name, $value): self;
+
+
+	public function getAttribute(string $name, $default = null);
+
+
+	public function hasAttribute(string $name): bool;
+
+
+	public function renderAttributes(): string;
+
+
+	/**
+	 * @param string $name
+	 * @param string|number|NULL $value
+	 * @return $this
+	 */
+	public function setStyle(string $name, $value): self;
+
+
+	public function appendChild(UI_Bootstrap $child): self;
+
+
+	public function setParent(UI_Bootstrap $parent): self;
+
+
+	public function getParent(): ?UI_Bootstrap;
+
+
+	public function createChild(string $type): UI_Interfaces_Bootstrap;
+
+
+	public function hasChild(string $name): bool;
+
+
+	/**
+	 * @return UI_Bootstrap[]
+	 */
+	public function getChildren(): array;
+
+
+	public function hasChildren(): bool;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/Button.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\ClassableInterface as ClassableInterface;
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Interfaces\ButtonLayoutInterface as ButtonLayoutInterface;
+
+interface UI_Interfaces_Button extends Application_Interfaces_Iconizable, ClassableInterface, Application_LockableItem_Interface, UI_Interfaces_ClientConfirmable, UI_Interfaces_Conditional, ButtonLayoutInterface
+{
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $reason
+	 * @return $this
+	 */
+	public function disable($reason = ''): self;
+
+
+	public function isDisabled(): bool;
+
+
+	/**
+	 * @param string $statement
+	 * @return $this
+	 */
+	public function click(string $statement): self;
+
+
+	/**
+	 * @param string|AdminURLInterface $url
+	 * @param string $target
+	 * @return $this
+	 */
+	public function link($url, string $target = ''): self;
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface $tooltip
+	 * @return $this
+	 */
+	public function setTooltip($tooltip): self;
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface $text
+	 * @return $this
+	 */
+	public function setLoadingText($text): self;
+
+
+	/**
+	 * @param string $id
+	 * @return $this
+	 */
+	public function setID(string $id): self;
+
+
+	/**
+	 * @param string|number|StringableInterface|NULL $label
+	 * @return $this
+	 */
+	public function setLabel($label): self;
+
+
+	public function getLabel(): string;
+
+
+	public function getID(): string;
+
+
+	public function getTooltip(): string;
 }
 
 
@@ -7662,6 +8279,176 @@ interface ButtonLayoutInterface extends ActivatableInterface
 
 
 ```
+###  Path: `/src/classes/UI/Interfaces/ButtonLayoutInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use UI\Traits\ButtonLayoutTrait as ButtonLayoutTrait;
+
+/**
+ * Interface for the available button layouts.
+ *
+ * @package User Interface
+ * @subpackage Interfaces
+ *
+ * @see ButtonLayoutTrait
+ */
+interface ButtonLayoutInterface extends ActivatableInterface
+{
+	public const LAYOUT_DEFAULT = 'default';
+	public const LAYOUT_DEVELOPER = 'developer';
+	public const LAYOUT_WARNING = 'warning';
+	public const LAYOUT_INVERSE = 'inverse';
+	public const LAYOUT_SUCCESS = 'success';
+	public const LAYOUT_INFO = 'info';
+	public const LAYOUT_DANGER = 'danger';
+	public const LAYOUT_PRIMARY = 'primary';
+	public const LAYOUT_LINK = 'link';
+
+	/**
+	 * Styles the button as a button for a dangerous operation, like deleting records.
+	 *
+	 * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeDangerous(bool $enable = true): self;
+
+
+	/**
+	 * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makePrimary(bool $enable = true): self;
+
+
+	/**
+	 * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeSuccess(bool $enable = true): self;
+
+
+	/**
+	 * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeDeveloper(bool $enable = true): self;
+
+
+	/**
+	 * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeWarning(bool $enable = true): self;
+
+
+	/**
+	 * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeInfo(bool $enable = true): self;
+
+
+	/**
+	 * @param bool $enable Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeInverse(bool $enable = true): self;
+
+
+	/**
+	 * Sets the button's layout to the specified type.
+	 *
+	 * @param string $layoutID
+	 * @param bool $enabled Can be used as a toggle. If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeLayout(string $layoutID, bool $enabled = true): self;
+
+
+	/**
+	 * Sets the button's layout when it is active.
+	 *
+	 * @param string $layoutID
+	 * @return $this
+	 */
+	public function makeActiveLayout(string $layoutID): self;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/ButtonSizeInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use UI\Traits\ButtonSizeTrait as ButtonSizeTrait;
+
+/**
+ * @see ButtonSizeTrait
+ */
+interface ButtonSizeInterface
+{
+	/** @var array<int,array<string,string>> */
+	public const BUTTON_SIZES_TABLE = [
+		2 => array(
+		            self::SIZE_LARGE => 'large',
+		            self::SIZE_SMALL => 'small',
+		            self::SIZE_MINI => 'mini'
+		        ),
+		4 => array(
+		            self::SIZE_LARGE => 'lg',
+		            self::SIZE_SMALL => 'sm',
+		            self::SIZE_MINI => 'xs'
+		        ),
+	];
+
+	public const SIZE_MINI = 'mini';
+	public const SIZE_LARGE = 'large';
+	public const SIZE_SMALL = 'small';
+	public const ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION = 66601;
+	public const ERROR_UNKNOWN_BOOTSTRAP_SIZE = 66602;
+
+	/**
+	 * @return $this
+	 */
+	public function makeSmall(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeMini(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeLarge(): self;
+
+
+	/**
+	 * @param string $size
+	 * @return $this
+	 */
+	public function makeSize(string $size): self;
+
+
+	public function getSize(): ?string;
+
+
+	public function isLarge(): bool;
+
+
+	public function isSmall(): bool;
+
+
+	public function isMini(): bool;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Interfaces/ButtonSizeInterface.php`
 
 ```php
@@ -7770,6 +8557,90 @@ interface CapturableInterface
 
 
 ```
+###  Path: `/src/classes/UI/Interfaces/CapturableInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+
+interface CapturableInterface
+{
+	public function startCapture(): self;
+
+
+	public function endCapture(): self;
+
+
+	public function endCaptureAppend(): self;
+
+
+	/**
+	 * @param string|number|StringableInterface|NULL $content
+	 * @return self
+	 */
+	public function setContent($content): self;
+
+
+	/**
+	 * @param string|number|StringableInterface|NULL $content
+	 * @return self
+	 */
+	public function appendContent($content): self;
+
+
+	public function getContent(): string;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/ClientConfirmable.php`
+
+```php
+namespace ;
+
+interface UI_Interfaces_ClientConfirmable
+{
+	/**
+	 * Adds a confirmation message to the element, as a dialog that is shown
+	 * before the action is executed.
+	 *
+	 * @param string|number|UI_Renderable_Interface|NULL $message
+	 * @param boolean $withInput Whether to have the user confirm the operation by typing a confirmation string.
+	 * @return $this
+	 */
+	public function makeConfirm($message, bool $withInput = false): self;
+
+
+	public function getConfirmMessage(): UI_ClientConfirmable_Message;
+
+
+	public function getURL(): string;
+
+
+	public function isClickable(): bool;
+
+
+	public function isSubmittable(): bool;
+
+
+	public function isLinked(): bool;
+
+
+	public function getJavascript(): string;
+
+
+	public function getUI(): UI;
+
+
+	public function isConfirm(): bool;
+
+
+	public function isDangerous(): bool;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Interfaces/ClientConfirmable.php`
 
 ```php
@@ -7863,6 +8734,152 @@ interface UI_Interfaces_Conditional
 
 
 	public function getInvalidReason(): string;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/Conditional.php`
+
+```php
+namespace ;
+
+use Application\Revisionable\RevisionableInterface as RevisionableInterface;
+
+interface UI_Interfaces_Conditional
+{
+	/**
+	 * @param bool $statement
+	 * @param string $reason
+	 * @return $this
+	 */
+	public function requireTrue(bool $statement, string $reason = ''): self;
+
+
+	/**
+	 * @param bool $statement
+	 * @param string $reason
+	 * @return $this
+	 */
+	public function requireFalse(bool $statement, string $reason = ''): self;
+
+
+	/**
+	 * @param RevisionableInterface $revisionable
+	 * @return $this
+	 */
+	public function requireChanging(RevisionableInterface $revisionable): self;
+
+
+	/**
+	 * @param Application_LockableRecord_Interface $record
+	 * @return $this
+	 */
+	public function requireEditable(Application_LockableRecord_Interface $record): self;
+
+
+	/**
+	 * @return bool
+	 */
+	public function isValid(): bool;
+
+
+	public function getInvalidReason(): string;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/ListBuilderInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use Application\FilterSettings\FilterSettingsInterface as FilterSettingsInterface;
+use Application\Interfaces\FilterCriteriaInterface as FilterCriteriaInterface;
+use DateTime as DateTime;
+use UI_DataGrid as UI_DataGrid;
+use UI_Page_Sidebar as UI_Page_Sidebar;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+/**
+ * Interface for classes that build a list of records.
+ *
+ * @package User Interface
+ * @package Data Grids
+ * @see BaseListBuilder
+ */
+interface ListBuilderInterface extends UI_Renderable_Interface
+{
+	public function getDataGrid(): UI_DataGrid;
+
+
+	public function isColumnEnabled(string $colName): bool;
+
+
+	public function disableColumn(string $colName): self;
+
+
+	public function getFilterCriteria(): FilterCriteriaInterface;
+
+
+	/**
+	 * @return \Application\FilterSettings\FilterSettingsInterface|NULL Can be `null` if there are no records to filter.
+	 */
+	public function getFilterSettings(): ?FilterSettingsInterface;
+
+
+	/**
+	 * Gets the filter criteria with all applied filters and settings.
+	 * @return FilterCriteriaInterface
+	 */
+	public function getFilteredCriteria(): FilterCriteriaInterface;
+
+
+	public function getFullViewTitle(): string;
+
+
+	public function getEmptyMessage(): string;
+
+
+	public function enableAdvancedMode(bool $enabled): self;
+
+
+	public function addHiddenVars(array $vars): self;
+
+
+	public function addHiddenVar(string $name, $value): self;
+
+
+	public function disableEntryActions(): self;
+
+
+	public function disableMultiActions(): self;
+
+
+	public function setListID(string $id): self;
+
+
+	public function handleActions(): self;
+
+
+	public function addFilterSettings(UI_Page_Sidebar $sidebar): self;
+
+
+	public function renderDate(?DateTime $date = null): string;
+
+
+	public function adjustLabel(string $label): string;
+
+
+	public function getRecordTypeLabelSingular(): string;
+
+
+	public function getRecordTypeLabelPlural(): string;
+
+
+	public function getPrimaryColumnName(): string;
+
+
+	public function debug(bool $enabled = true): self;
 }
 
 
@@ -8053,6 +9070,110 @@ interface MessageLayoutInterface
 
 
 ```
+###  Path: `/src/classes/UI/Interfaces/MessageLayoutInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use UI_Icon as UI_Icon;
+
+interface MessageLayoutInterface
+{
+	/**
+	 * @return $this
+	 */
+	public function makeDismissable(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeNotDismissable(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSlimLayout(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInline(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeError(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSuccess(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeWarning(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInfo(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeLargeLayout(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeDefaultLayout(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function enableIcon(): self;
+
+
+	/**
+	 * @return $this
+	 */
+	public function disableIcon(): self;
+
+
+	/**
+	 * @param UI_Icon $icon
+	 * @return $this
+	 */
+	public function setCustomIcon(UI_Icon $icon): self;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/MessageWrapperInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use UI_Message as UI_Message;
+
+interface MessageWrapperInterface extends MessageLayoutInterface
+{
+	public function getMessage(): UI_Message;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Interfaces/MessageWrapperInterface.php`
 
 ```php
@@ -8092,6 +9213,125 @@ interface NamedItemInterface
 	 * @return string|null
 	 */
 	public function getName(): ?string;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/NamedItemInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+/**
+ * Interface for elements that can be given a name.
+ *
+ * @package User Interface
+ * @subpackage Interfaces
+ */
+interface NamedItemInterface
+{
+	/**
+	 * Sets the element's name, which can be used to retrieve it when used in collections.
+	 * @param string $name
+	 * @return $this
+	 */
+	public function setName(string $name): self;
+
+
+	/**
+	 * @return string|null
+	 */
+	public function getName(): ?string;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/PageTemplateInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+/**
+ * Template class: this class is instantiated for each
+ * template file, and is the context of the template
+ * in $this, when not using a class based template.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see \UI_Page_Template
+ */
+interface PageTemplateInterface
+{
+	/**
+	 * @param array<string,mixed> $vars
+	 * @return $this
+	 */
+	public function setVars(array $vars): self;
+
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @return $this
+	 */
+	public function setVar(string $name, $value): self;
+
+
+	public function getVar(string $name, $default = null);
+
+
+	/**
+	 * Retrieves the variable, and ensures that it is an instance
+	 * of the specified class.
+	 *
+	 * @template ClassInstanceType
+	 * @param string $name
+	 * @param class-string<ClassInstanceType> $className
+	 * @return ClassInstanceType
+	 */
+	public function getObjectVar(string $name, string $className);
+
+
+	public function getBoolVar(string $name): bool;
+
+
+	public function getArrayVar(string $name): array;
+
+
+	public function getStringVar(string $name): string;
+
+
+	public function printVar(string $name, $default = null): self;
+
+
+	public function getLogoutURL(): string;
+
+
+	/**
+	 * @param array<string,string|int|float> $params
+	 * @return string
+	 */
+	public function buildURL(array $params = []): string;
+
+
+	public function getImageURL(string $imageName): string;
+
+
+	/**
+	 * Checks if the specified variable has been set.
+	 */
+	public function hasVar(string $name): bool;
+
+
+	public function hasVarNonEmpty(string $name): bool;
+
+
+	public function getAppNameShort(): string;
+
+
+	public function getAppName(): string;
 }
 
 
@@ -8218,6 +9458,84 @@ interface UI_Renderable_Interface extends RenderableInterface
 
 
 	public function getRenderer(): UI_Themes_Theme_ContentRenderer;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/Renderable.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\RenderableInterface as RenderableInterface;
+
+/**
+ * Interface for renderable elements, which can generate HTML.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Renderable
+ * @see UI_Traits_RenderableGeneric
+ */
+interface UI_Renderable_Interface extends RenderableInterface
+{
+	public function getPage(): UI_Page;
+
+
+	public function getTheme(): UI_Themes_Theme;
+
+
+	public function getUI(): UI;
+
+
+	public function getInstanceID(): string;
+
+
+	public function getRenderer(): UI_Themes_Theme_ContentRenderer;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/StatusElementContainer.php`
+
+```php
+namespace ;
+
+/**
+ * Interface for UI elements that allow status elements
+ * to be added, like warning icons and the like.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Traits_StatusElementContainer
+ */
+interface UI_Interfaces_StatusElementContainer
+{
+	/**
+	 * @param UI_Icon $icon
+	 * @return UI_Interfaces_StatusElementContainer
+	 */
+	public function addStatusIcon(UI_Icon $icon);
+
+
+	/**
+	 * @param UI_Renderable_Interface $element
+	 * @return UI_Interfaces_StatusElementContainer
+	 */
+	public function addStatusElement(UI_Renderable_Interface $element);
+
+
+	public function hasStatusElements(): bool;
+
+
+	/**
+	 * @return UI_Renderable_Interface[]
+	 */
+	public function getStatusElements(): array;
 }
 
 
@@ -8359,6 +9677,135 @@ interface UI_Interfaces_Statuses_Status extends Application_Interfaces_Iconizabl
 
 
 	public function isDangerous(): bool;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/Statuses/Status.php`
+
+```php
+namespace ;
+
+use UI\CriticalityEnum as CriticalityEnum;
+
+interface UI_Interfaces_Statuses_Status extends Application_Interfaces_Iconizable
+{
+	/**
+	 * The ID of the status, as specified when it was created, e.g. "warning".
+	 *
+	 * @return string
+	 */
+	public function getID(): string;
+
+
+	public function getLabel(): string;
+
+
+	/**
+	 * @param string $label
+	 * @return $this
+	 */
+	public function setLabel(string $label);
+
+
+	/**
+	 * @param mixed|UI_Renderable_Interface $tooltip
+	 * @return $this
+	 * @throws Application_Exception
+	 */
+	public function setTooltip($tooltip);
+
+
+	public function getBadge(): UI_Label;
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInformation();
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeWarning();
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSuccess();
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeDangerous();
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInactive();
+
+
+	/**
+	 * @param string $criticality
+	 * @return $this
+	 * @see CriticalityEnum
+	 */
+	public function setCriticality(string $criticality);
+
+
+	public function getCriticality(): string;
+
+
+	public function isCriticality(string $criticality): bool;
+
+
+	public function isSuccess(): bool;
+
+
+	public function isWarning(): bool;
+
+
+	public function isInformation(): bool;
+
+
+	public function isInactive(): bool;
+
+
+	public function isDangerous(): bool;
+}
+
+
+```
+###  Path: `/src/classes/UI/Interfaces/TooltipableInterface.php`
+
+```php
+namespace UI\Interfaces;
+
+use AppUtils\Interfaces\RenderableInterface as RenderableInterface;
+use UI\TooltipInfo as TooltipInfo;
+use UI\Traits\TooltipableTrait as TooltipableTrait;
+
+/**
+ * Interface for UI elements that can be assigned a tooltip text.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ *
+ * @see TooltipableTrait
+ */
+interface TooltipableInterface extends RenderableInterface
+{
+	public function setTooltip(?TooltipInfo $tooltip): self;
+
+
+	public function hasTooltip(): bool;
+
+
+	public function getTooltip(): ?TooltipInfo;
 }
 
 
@@ -10584,6 +12031,80 @@ class UI_Statuses_Generic extends UI_Statuses
 
 
 ```
+###  Path: `/src/classes/UI/Statuses/Generic.php`
+
+```php
+namespace ;
+
+/**
+ * Utility class for handling generic status cases, where
+ * it is not necessary to create a custom status class.
+ *
+ * Usage:
+ *
+ * 1. Instantiate the class
+ * 2. Register possible states with `addStatus()`
+ *
+ * @package User Interface
+ * @subpackage Statuses
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_Statuses_Generic extends UI_Statuses
+{
+	public function addStatus(string $id, string $label): UI_Interfaces_Statuses_Status
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Statuses/GenericSelectable.php`
+
+```php
+namespace ;
+
+/**
+ * Utility class for handling generic status cases, where
+ * it is not necessary to create a custom status class. Supports
+ * selecting an active state.
+ *
+ * Usage:
+ *
+ * 1. Instantiate the class.
+ * 2. Register possible states with `addStatus()`.
+ * 3. Set the default state to use with `setDefaultID()`.
+ *
+ * @package User Interface
+ * @subpackage Statuses
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_Statuses_GenericSelectable extends UI_Statuses_Selectable
+{
+	public function addStatus(string $id, string $label): UI_Interfaces_Statuses_Status
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $id
+	 * @return $this
+	 */
+	public function setDefaultID(string $id)
+	{
+		/* ... */
+	}
+
+
+	public function getDefaultID(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Statuses/GenericSelectable.php`
 
 ```php
@@ -10715,6 +12236,265 @@ abstract class UI_Statuses_Selectable extends UI_Statuses
 	 * @throws UI_Exception
 	 */
 	public function getActive(): UI_Interfaces_Statuses_Status
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Statuses/Selectable.php`
+
+```php
+namespace ;
+
+/**
+ * This adds the functionality to select an active state to
+ * the statuses manager.
+ *
+ * @package User Interface
+ * @subpackage Statuses
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class UI_Statuses_Selectable extends UI_Statuses
+{
+	public const ERROR_CANNOT_SELECT_INVALID_STATUS = 87401;
+
+	abstract public function getDefaultID(): string;
+
+
+	/**
+	 * Retrieves the default status to use, when none
+	 * has been specifically selected.
+	 *
+	 * @return UI_Interfaces_Statuses_Status
+	 * @throws UI_Exception
+	 */
+	public function getDefault(): UI_Interfaces_Statuses_Status
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes a status active by its ID.
+	 *
+	 * @param string $id
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function selectByID(string $id)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the specified status the active one.
+	 *
+	 * @param UI_Interfaces_Statuses_Status $status
+	 * @return $this
+	 * @throws UI_Exception
+	 *
+	 * @see UI_Statuses_Selectable::ERROR_CANNOT_SELECT_INVALID_STATUS
+	 */
+	public function select(UI_Interfaces_Statuses_Status $status)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether a status has been specifically selected.
+	 * @return bool
+	 */
+	public function hasActive(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getActiveID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the currently active status, or the default
+	 * status if none has been specifically selected.
+	 *
+	 * @return UI_Interfaces_Statuses_Status
+	 * @throws UI_Exception
+	 */
+	public function getActive(): UI_Interfaces_Statuses_Status
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Statuses/Status.php`
+
+```php
+namespace ;
+
+use UI\CriticalityEnum as CriticalityEnum;
+
+/**
+ * Container for an individual status.
+ *
+ * @package User Interface
+ * @subpackage Statuses
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
+{
+	use Application_Traits_Iconizable;
+
+	const DEFAULT_CRITICALITY = CriticalityEnum::INFO;
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $label
+	 * @return $this
+	 */
+	public function setLabel(string $label)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param mixed|UI_Renderable_Interface $tooltip
+	 * @return $this
+	 * @throws Application_Exception
+	 */
+	public function setTooltip($tooltip)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Converts the status to a badge/label.
+	 *
+	 * @return UI_Label
+	 * @throws Application_Exception
+	 */
+	public function getBadge(): UI_Label
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInformation()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeWarning()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSuccess()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeDangerous()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInactive()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $criticality
+	 * @return $this
+	 */
+	public function setCriticality(string $criticality)
+	{
+		/* ... */
+	}
+
+
+	public function getCriticality(): string
+	{
+		/* ... */
+	}
+
+
+	public function isCriticality(string $criticality): bool
+	{
+		/* ... */
+	}
+
+
+	public function isSuccess(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isWarning(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isInformation(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isInactive(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isDangerous(): bool
 	{
 		/* ... */
 	}
@@ -11383,6 +13163,23 @@ abstract class BaseTarget
 
 
 ```
+###  Path: `/src/classes/UI/Targets/BaseTarget.php`
+
+```php
+namespace UI\Targets;
+
+use AppUtils\HTMLTag as HTMLTag;
+
+abstract class BaseTarget
+{
+	public function getLinkTag(): HTMLTag
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Targets/ClickTarget.php`
 
 ```php
@@ -11406,6 +13203,83 @@ class ClickTarget extends BaseTarget
 
 
 	public function setStatement(string $statement): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Targets/ClickTarget.php`
+
+```php
+namespace UI\Targets;
+
+use AppUtils\HTMLTag as HTMLTag;
+use JSHelper as JSHelper;
+
+class ClickTarget extends BaseTarget
+{
+	public static function create(string $statement): self
+	{
+		/* ... */
+	}
+
+
+	public function getStatement(): string
+	{
+		/* ... */
+	}
+
+
+	public function setStatement(string $statement): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Targets/URLTarget.php`
+
+```php
+namespace UI\Targets;
+
+use AppUtils\HTMLTag as HTMLTag;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+
+class URLTarget extends BaseTarget
+{
+	/**
+	 * @param string|AdminURLInterface $url
+	 * @param bool $newTab
+	 * @return self
+	 */
+	public static function create($url, bool $newTab): self
+	{
+		/* ... */
+	}
+
+
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTarget(): ?string
+	{
+		/* ... */
+	}
+
+
+	public function setTarget(?string $target): self
+	{
+		/* ... */
+	}
+
+
+	public function makeNewTab(): self
 	{
 		/* ... */
 	}
@@ -11674,6 +13548,36 @@ trait ActivatableTrait
 
 
 ```
+###  Path: `/src/classes/UI/Traits/ActivatableTrait.php`
+
+```php
+namespace UI\Traits;
+
+use UI\Interfaces\ActivatableInterface as ActivatableInterface;
+
+/**
+ * @see ActivatableInterface
+ */
+trait ActivatableTrait
+{
+	/**
+	 * @param bool $active
+	 * @return $this
+	 */
+	public function makeActive(bool $active = true): self
+	{
+		/* ... */
+	}
+
+
+	public function isActive(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Traits/ButtonDecoratorInterface.php`
 
 ```php
@@ -11692,6 +13596,447 @@ use UI_Interfaces_Button as UI_Interfaces_Button;
 interface ButtonDecoratorInterface extends UI_Interfaces_Button
 {
 	public function getButtonInstance(): UI_Button;
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/ButtonDecoratorInterface.php`
+
+```php
+namespace UI\Traits;
+
+use UI_Button as UI_Button;
+use UI_Interfaces_Button as UI_Interfaces_Button;
+
+/**
+ * Interface for classes using the {@see ButtonDecoratorTrait}.
+ *
+ * @package User Interface
+ * @subpackage Traits
+ * @see ButtonDecoratorTrait
+ */
+interface ButtonDecoratorInterface extends UI_Interfaces_Button
+{
+	public function getButtonInstance(): UI_Button;
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/ButtonDecoratorTrait.php`
+
+```php
+namespace UI\Traits;
+
+use UI as UI;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI_Button as UI_Button;
+use UI_ClientConfirmable_Message as UI_ClientConfirmable_Message;
+use UI_Exception as UI_Exception;
+use UI_Icon as UI_Icon;
+use UI_Interfaces_Button as UI_Interfaces_Button;
+use UI_Page as UI_Page;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+use UI_Themes_Theme as UI_Themes_Theme;
+use UI_Themes_Theme_ContentRenderer as UI_Themes_Theme_ContentRenderer;
+
+/**
+ * Trait that can be used to add all button interface methods,
+ * without extending the {@see UI_Button} class. Instead, all
+ * methods are wrapper methods around a button instance.
+ *
+ * ## Usage
+ *
+ * - Use this trait.
+ * - Implement the matching interface {@see ButtonDecoratorInterface}.
+ * - Implement the {@see self::_getButtonInstance()} method.
+ * - When rendering, use the button instance.
+ *
+ * @package User Interface
+ * @subpackage Traits
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see ButtonDecoratorInterface
+ */
+trait ButtonDecoratorTrait
+{
+	final public function getButtonInstance(): UI_Button
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Turns the button into a submit button.
+	 *
+	 * @param string $name
+	 * @param string|int|float|UI_Renderable_Interface $value
+	 * @return $this
+	 */
+	public function makeSubmit(string $name, $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $title
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setTitle($title): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $tooltip
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setTooltip($tooltip): self
+	{
+		/* ... */
+	}
+
+
+	public function makeDangerous(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makePrimary(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makeSuccess(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makeDeveloper(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makeWarning(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makeInfo(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makeInverse(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makeLayout(string $layoutID, bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function makeActiveLayout(string $layoutID): self
+	{
+		/* ... */
+	}
+
+
+	public function setID(string $id): self
+	{
+		/* ... */
+	}
+
+
+	public function setLabel($label): self
+	{
+		/* ... */
+	}
+
+
+	public function makeActive(bool $active = true): self
+	{
+		/* ... */
+	}
+
+
+	public function isActive(): bool
+	{
+		/* ... */
+	}
+
+
+	public function disable($reason = ''): UI_Interfaces_Button
+	{
+		/* ... */
+	}
+
+
+	public function isDisabled(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function isSubmittable(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $statement
+	 * @return $this
+	 */
+	public function click(string $statement): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|AdminURLInterface $url
+	 * @param string $target
+	 * @return $this
+	 */
+	public function link($url, string $target = ''): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $text
+	 * @return $this
+	 */
+	public function setLoadingText($text): self
+	{
+		/* ... */
+	}
+
+
+	public function getTooltip(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * NOTE: This is not type hinted on purpose
+	 * to stay compatible with the
+	 * `HTML_Common2::hasClass()` method.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public function hasClass(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	public function hasClasses(): bool
+	{
+		/* ... */
+	}
+
+
+	public function addClasses(array $names): self
+	{
+		/* ... */
+	}
+
+
+	public function getClasses(): array
+	{
+		/* ... */
+	}
+
+
+	public function addClass($name): self
+	{
+		/* ... */
+	}
+
+
+	public function removeClass(string $name): self
+	{
+		/* ... */
+	}
+
+
+	public function classesToString(): string
+	{
+		/* ... */
+	}
+
+
+	public function classesToAttribute(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $message
+	 * @param bool $withInput
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function makeConfirm($message, bool $withInput = false): self
+	{
+		/* ... */
+	}
+
+
+	public function getConfirmMessage(): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	public function isClickable(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isLinked(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getJavascript(): string
+	{
+		/* ... */
+	}
+
+
+	public function isConfirm(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isDangerous(): bool
+	{
+		/* ... */
+	}
+
+
+	public function setIcon(?UI_Icon $icon): self
+	{
+		/* ... */
+	}
+
+
+	public function hasIcon(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getIcon(): ?UI_Icon
+	{
+		/* ... */
+	}
+
+
+	public function isLocked(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getLockReason(): string
+	{
+		/* ... */
+	}
+
+
+	public function makeLockable($lockable = true): self
+	{
+		/* ... */
+	}
+
+
+	public function isLockable(): bool
+	{
+		/* ... */
+	}
+
+
+	public function lock($reason): self
+	{
+		/* ... */
+	}
+
+
+	public function unlock(): self
+	{
+		/* ... */
+	}
+
+
+	public function getPage(): UI_Page
+	{
+		/* ... */
+	}
+
+
+	public function getTheme(): UI_Themes_Theme
+	{
+		/* ... */
+	}
+
+
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	public function getInstanceID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRenderer(): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
 }
 
 
@@ -12234,6 +14579,209 @@ trait ButtonLayoutTrait
 
 
 ```
+###  Path: `/src/classes/UI/Traits/ButtonLayoutTrait.php`
+
+```php
+namespace UI\Traits;
+
+use UI\Interfaces\ButtonLayoutInterface as ButtonLayoutInterface;
+
+/**
+ * Trait to implement the interface {@see ButtonLayoutInterface}.
+ *
+ * @package User Interface
+ * @subpackage Traits
+ *
+ * @see ButtonLayoutInterface
+ */
+trait ButtonLayoutTrait
+{
+	/**
+	 * @return $this
+	 */
+	public function makeInfo(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Styles the button as a success button.
+	 *
+	 * @return $this
+	 */
+	public function makeSuccess(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Styles the button as a warning button for potentially dangerous operations.
+	 *
+	 * @return $this
+	 */
+	public function makeWarning(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Styles the button as an inverted button.
+	 *
+	 * @return $this
+	 */
+	public function makeInverse(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the button's layout to the specified type.
+	 *
+	 * @param string $layoutID
+	 * @param bool $enabled If set to false, the layout will not be applied.
+	 * @return $this
+	 */
+	public function makeLayout(string $layoutID, bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the button's layout when it is active.
+	 *
+	 * @param string $layoutID
+	 * @return $this
+	 */
+	public function makeActiveLayout(string $layoutID): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Styles the button as a primary button.
+	 *
+	 * @return $this
+	 */
+	public function makePrimary(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Styles the button as a button for a dangerous operation, like deleting records.
+	 *
+	 * @return $this
+	 */
+	public function makeDangerous(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Styles the button for developers.
+	 *
+	 * @return $this
+	 */
+	public function makeDeveloper(bool $enabled = true): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/ButtonSizeTrait.php`
+
+```php
+namespace UI\Traits;
+
+use UI as UI;
+use UI\Interfaces\ButtonSizeInterface as ButtonSizeInterface;
+use UI_Exception as UI_Exception;
+
+/**
+ * @see ButtonSizeInterface
+ */
+trait ButtonSizeTrait
+{
+	/**
+	 * @return $this
+	 */
+	public function makeMini(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSmall(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeLarge(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $size
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function makeSize(string $size): self
+	{
+		/* ... */
+	}
+
+
+	public function getSize(): ?string
+	{
+		/* ... */
+	}
+
+
+	public function isLarge(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isSmall(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isMini(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getSizeClass(): ?string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Traits/ButtonSizeTrait.php`
 
 ```php
@@ -12370,6 +14918,58 @@ trait CapturableTrait
 
 
 ```
+###  Path: `/src/classes/UI/Traits/CapturableTrait.php`
+
+```php
+namespace UI\Traits;
+
+use AppUtils\OutputBuffering as OutputBuffering;
+use AppUtils\OutputBuffering_Exception as OutputBuffering_Exception;
+use UI_Exception as UI_Exception;
+
+trait CapturableTrait
+{
+	/**
+	 * Starts output buffering to capture the content to use for the section's body.
+	 * @return $this
+	 * @throws OutputBuffering_Exception
+	 * @see self::endCapture()
+	 */
+	public function startCapture(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Stops the output buffering started with {@link self::startCapture()}.
+	 *
+	 * @return $this
+	 * @throws OutputBuffering_Exception
+	 * @throws UI_Exception
+	 */
+	public function endCapture(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Like {@see self::endCapture()}, but appends the captured content
+	 * to any existing content in the section.
+	 *
+	 * @return $this
+	 * @throws OutputBuffering_Exception
+	 * @throws UI_Exception
+	 */
+	public function endCaptureAppend(): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Traits/ClientConfirmable.php`
 
 ```php
@@ -12411,6 +15011,154 @@ trait UI_Traits_ClientConfirmable
 
 
 	public function isConfirm(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/ClientConfirmable.php`
+
+```php
+namespace ;
+
+/**
+ * @see UI_Interfaces_ClientConfirmable
+ */
+trait UI_Traits_ClientConfirmable
+{
+	/**
+	 * Adds a confirmation dialog with the specified message
+	 * before the button action is executed. Automatically
+	 * styles the confirmation dialog according to the button
+	 * style, e.g. if it's a danger button the dialog will be
+	 * a dangerous operation dialog.
+	 *
+	 * @param string|number|UI_Renderable_Interface|NULL $message Can contain HTML code.
+	 * @param boolean $withInput Whether to have the user confirm the operation by typing a confirmation string.
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function makeConfirm($message, bool $withInput = false): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the confirmation message instance to be able to configure it further.
+	 * If none exists yet, it is created.
+	 *
+	 * @return UI_ClientConfirmable_Message
+	 */
+	public function getConfirmMessage(): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	public function isConfirm(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/Conditional.php`
+
+```php
+namespace ;
+
+use Application\Application as Application;
+use Application\Revisionable\RevisionableInterface as RevisionableInterface;
+
+trait UI_Traits_Conditional
+{
+	/**
+	 * The element will only be shown if the specified condition evaluates to true.
+	 *
+	 * @param bool $enabled
+	 * @param string $reason
+	 * @return $this
+	 */
+	public function requireTrue(bool $enabled, string $reason = ''): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $rightName
+	 * @return $this
+	 * @throws Application_Exception
+	 */
+	public function requireRight(string $rightName): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|string[] $rightNames
+	 * @return $this
+	 * @throws Application_Exception
+	 */
+	public function requireRights($rightNames): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * The element will only be shown if the specified condition evaluates to false.
+	 *
+	 * @param bool $enabled
+	 * @param string $reason
+	 * @return $this
+	 */
+	public function requireFalse(bool $enabled, string $reason = ''): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * The button will only be shown if the lockable item is editable.
+	 * @param Application_LockableRecord_Interface $record
+	 * @return $this
+	 */
+	public function requireEditable(Application_LockableRecord_Interface $record): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Requires the revisionable to be in a state that allows changes.
+	 * @param RevisionableInterface $revisionable
+	 * @return $this
+	 */
+	public function requireChanging(RevisionableInterface $revisionable): self
+	{
+		/* ... */
+	}
+
+
+	public function isValid(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the validation message (if any) that details
+	 * why this item is invalid.
+	 *
+	 * @return string
+	 */
+	public function getInvalidReason(): string
 	{
 		/* ... */
 	}
@@ -12646,6 +15394,198 @@ trait MessageWrapperTrait
 
 
 ```
+###  Path: `/src/classes/UI/Traits/MessageWrapperTrait.php`
+
+```php
+namespace UI\Traits;
+
+use UI_Icon as UI_Icon;
+
+trait MessageWrapperTrait
+{
+	/**
+	 * @return $this
+	 */
+	public function makeDismissable(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeNotDismissable(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSlimLayout(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInline(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeError(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSuccess(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeWarning(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeInfo(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeLargeLayout(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeDefaultLayout(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function enableIcon(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function disableIcon(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function setCustomIcon(UI_Icon $icon): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/RenderableGeneric.php`
+
+```php
+namespace ;
+
+/**
+ * Trait used to implement the interface methods for a renderable
+ * object in a generic way, without requiring a UI instance or
+ * page to be set. Uses the active global UI instance.
+ *
+ * The only method left to implement is the actual `render()` method.
+ *
+ * @package UI
+ * @subpackage Traits
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Renderable_Interface
+ */
+trait UI_Traits_RenderableGeneric
+{
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	public function getTheme(): UI_Themes_Theme
+	{
+		/* ... */
+	}
+
+
+	public function getInstanceID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRenderer(): UI_Themes_Theme_ContentRenderer
+	{
+		/* ... */
+	}
+
+
+	public function getPage(): UI_Page
+	{
+		/* ... */
+	}
+
+
+	public function display(): void
+	{
+		/* ... */
+	}
+
+
+	public function __toString()
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Traits/RenderableGeneric.php`
 
 ```php
@@ -12746,6 +15686,77 @@ interface ScriptInjectableInterface
 
 
 ```
+###  Path: `/src/classes/UI/Traits/ScriptInjectableInterface.php`
+
+```php
+namespace UI\Traits;
+
+use UI as UI;
+use UI\ClientResourceCollection as ClientResourceCollection;
+
+/**
+ * Interface for all objects that have client resources
+ * to inject into a UI instance.
+ *
+ * @package UserInterface
+ * @subpackage Traits
+ * @author Sebastian Mordziol <s.mordziol@mistralys.com>
+ *
+ * @see ScriptInjectableTrait
+ */
+interface ScriptInjectableInterface
+{
+	/**
+	 * @param UI $ui
+	 * @return $this
+	 */
+	public function injectUIScripts(UI $ui): self;
+
+
+	/**
+	 * @param UI $ui
+	 * @return ClientResourceCollection
+	 */
+	public function getUIScripts(UI $ui): ClientResourceCollection;
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/ScriptInjectableTrait.php`
+
+```php
+namespace UI\Traits;
+
+use UI as UI;
+use UI\ClientResourceCollection as ClientResourceCollection;
+
+/**
+ * Implementation of the matching interface for any objects
+ * that add client resources. Uses a {@see ClientResourceCollection}
+ * to keep track of the resources added by the class.
+ *
+ * @package UserInterface
+ * @subpackage Traits
+ * @author Sebastian Mordziol <s.mordziol@mistralys.com>
+ *
+ * @see ScriptInjectableInterface
+ */
+trait ScriptInjectableTrait
+{
+	public function injectUIScripts(UI $ui): self
+	{
+		/* ... */
+	}
+
+
+	public function getUIScripts(UI $ui): ClientResourceCollection
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Traits/ScriptInjectableTrait.php`
 
 ```php
@@ -12828,6 +15839,98 @@ trait UI_Traits_StatusElementContainer
 	 * @return UI_Renderable_Interface[]
 	 */
 	public function getStatusElements(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/StatusElementContainer.php`
+
+```php
+namespace ;
+
+/**
+ * Interface for UI elements that allow status elements
+ * to be added, like warning icons and the like.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Interfaces_StatusElementContainer
+ */
+trait UI_Traits_StatusElementContainer
+{
+	/**
+	 * @param UI_Icon $icon
+	 * @return $this
+	 */
+	public function addStatusIcon(UI_Icon $icon)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param UI_Renderable_Interface $element
+	 * @return $this
+	 */
+	public function addStatusElement(UI_Renderable_Interface $element)
+	{
+		/* ... */
+	}
+
+
+	public function hasStatusElements(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return UI_Renderable_Interface[]
+	 */
+	public function getStatusElements(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Traits/TooltipableTrait.php`
+
+```php
+namespace UI\Traits;
+
+use UI\TooltipInfo as TooltipInfo;
+
+/**
+ * @package Application
+ * @subpackage UserInterface
+ * @see TooltipableInterface
+ */
+trait TooltipableTrait
+{
+	/**
+	 * @param TooltipInfo|NULL $tooltip
+	 * @return $this
+	 */
+	public function setTooltip(?TooltipInfo $tooltip): self
+	{
+		/* ... */
+	}
+
+
+	public function hasTooltip(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getTooltip(): ?TooltipInfo
 	{
 		/* ... */
 	}
@@ -14047,6 +17150,6 @@ class UI
 ```
 ---
 **File Statistics**
-- **Size**: 245.12 KB
-- **Lines**: 14053
+- **Size**: 295.44 KB
+- **Lines**: 17156
 File: `modules/ui/architecture-core.md`

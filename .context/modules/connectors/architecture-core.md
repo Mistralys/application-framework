@@ -101,6 +101,79 @@ abstract class BaseConnector implements ConnectorInterface
 
 
 ```
+###  Path: `/src/classes/Connectors/Connector/BaseConnector.php`
+
+```php
+namespace Connectors\Connector;
+
+use AppUtils\ClassHelper as ClassHelper;
+use AppUtils\ConvertHelper as ConvertHelper;
+use Application_Request as Application_Request;
+use Application_Traits_Loggable as Application_Traits_Loggable;
+use Application_Traits_Simulatable as Application_Traits_Simulatable;
+use Connectors_Request as Connectors_Request;
+use Connectors_Request_Method as Connectors_Request_Method;
+use Connectors_Request_URL as Connectors_Request_URL;
+use Connectors_Response as Connectors_Response;
+
+abstract class BaseConnector implements ConnectorInterface
+{
+	use Application_Traits_Simulatable;
+	use Application_Traits_Loggable;
+
+	public function isLiveRequestsEnabled(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	abstract public function getURL(): string;
+
+
+	public function getActiveResponse(): ?Connectors_Response
+	{
+		/* ... */
+	}
+
+
+	public function requireActiveResponse(): Connectors_Response
+	{
+		/* ... */
+	}
+
+
+	public function addParam(string $name, string|int|float|bool $value): ConnectorInterface
+	{
+		/* ... */
+	}
+
+
+	public function setDebug(bool $state = true): ConnectorInterface
+	{
+		/* ... */
+	}
+
+
+	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+
+
+	public function createMethod(string $nameOrClass, ...$constructorArgs): BaseConnectorMethod
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/Connectors/Connector/BaseConnectorMethod.php`
 
 ```php
@@ -140,6 +213,148 @@ abstract class BaseConnectorMethod implements Application_Interfaces_Loggable
 
 
 	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Connectors/Connector/BaseConnectorMethod.php`
+
+```php
+namespace Connectors\Connector;
+
+use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
+use Application_Traits_Loggable as Application_Traits_Loggable;
+use Connectors_Request_Method as Connectors_Request_Method;
+use Connectors_Request_URL as Connectors_Request_URL;
+use Connectors_Response as Connectors_Response;
+
+/**
+ * Base class for connector methods.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class BaseConnectorMethod implements Application_Interfaces_Loggable
+{
+	use Application_Traits_Loggable;
+
+	/**
+	 * Retrieves the ID of the method.
+	 * @return string
+	 */
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the type of HTTP method used to communicate with the server.
+	 * @return string
+	 */
+	abstract public function getHTTPMethod(): string;
+
+
+	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Connectors/Connector/ConnectorException.php`
+
+```php
+namespace Connectors\Connector;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+use Connectors\ConnectorsException as ConnectorsException;
+use Connectors_Request as Connectors_Request;
+use Connectors_Response as Connectors_Response;
+use HTTP_Request2_Response as HTTP_Request2_Response;
+use JsonException as JsonException;
+use Throwable as Throwable;
+
+/**
+ * Connector-specific exception, which gives access to all
+ * available information, from the request to the response.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class ConnectorException extends ConnectorsException
+{
+	public const ERROR_NO_ACTIVE_RESPONSE_AVAILABLE = 42401;
+
+	public function getConnector(): ConnectorInterface
+	{
+		/* ... */
+	}
+
+
+	public function setRequest(Connectors_Request $request): self
+	{
+		/* ... */
+	}
+
+
+	public function hasRequest(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getRequest(): ?Connectors_Request
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param HTTP_Request2_Response $response
+	 * @return $this
+	 */
+	public function setResponse(HTTP_Request2_Response $response): self
+	{
+		/* ... */
+	}
+
+
+	public function hasResponse(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getResponse(): ?HTTP_Request2_Response
+	{
+		/* ... */
+	}
+
+
+	public function setConnectorResponse(Connectors_Response $response): self
+	{
+		/* ... */
+	}
+
+
+	public function getConnectorResponse(): ?Connectors_Response
+	{
+		/* ... */
+	}
+
+
+	public function hasConnectorResponse(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getDeveloperInfo(): string
 	{
 		/* ... */
 	}
@@ -351,6 +566,114 @@ interface ConnectorInterface extends Application_Interfaces_Simulatable, Applica
 
 
 ```
+###  Path: `/src/classes/Connectors/Connector/ConnectorInterface.php`
+
+```php
+namespace Connectors\Connector;
+
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
+use Application_Interfaces_Simulatable as Application_Interfaces_Simulatable;
+use Connectors_Response as Connectors_Response;
+
+/**
+ * Base class for connector implementations: offers a number
+ * of utility methods that can be used by the individual
+ * connectors and defines the common interface that connectors
+ * have to conform to.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+interface ConnectorInterface extends Application_Interfaces_Simulatable, Application_Interfaces_Loggable
+{
+	/**
+	 * Checks if live requests are enabled. They are enabled
+	 * by default but turned off in simulation mode.
+	 *
+	 * With the <code>live-requests</code> boolean request
+	 * parameter, they can be turned on explicitly.
+	 *
+	 * @return bool
+	 */
+	public function isLiveRequestsEnabled(): bool;
+
+
+	/**
+	 * Retrieves the connector's ID (name). e.g. <code>Editor</code>.
+	 * This is the name of the connector file without the extension
+	 * (case-sensitive).
+	 *
+	 * @return string
+	 */
+	public function getID(): string;
+
+
+	/**
+	 * Retrieves the URL to connect to.
+	 *
+	 * @return string
+	 */
+	public function getURL(): string;
+
+
+	/**
+	 * Retrieves the response object from the last request.
+	 * @return Connectors_Response|null
+	 */
+	public function getActiveResponse(): ?Connectors_Response;
+
+
+	public function requireActiveResponse(): Connectors_Response;
+
+
+	/**
+	 * Adds a parameter to be added to the target URL
+	 * that the request will call. This is separate
+	 * from the data array provided to {@link getData()},
+	 * which is sent via POST.
+	 *
+	 * @param string $name
+	 * @param string|int|float|bool $value
+	 * @return ConnectorInterface
+	 */
+	public function addParam(string $name, string|int|float|bool $value): ConnectorInterface;
+
+
+	/**
+	 * @param bool $state
+	 * @return $this
+	 */
+	public function setDebug(bool $state = true): ConnectorInterface;
+
+
+	public function getLogIdentifier(): string;
+
+
+	/**
+	 * Creates a new connector method instance, which is
+	 * loaded for the current connector type.
+	 *
+	 * ## Legacy class names
+	 *
+	 * For legacy methods, the class name follows this scheme:
+	 *
+	 * ```
+	 * Connectors_Connector_(ConnectorName)_Method_(MethodName)
+	 * ```
+	 *
+	 * @param string|class-string<BaseConnectorMethod> $nameOrClass
+	 * @param mixed ...$constructorArgs Additional arguments to pass to the method constructor.
+	 *                                  Note: The connector instance is always passed as the
+	 *                                  first argument.
+	 * @return BaseConnectorMethod
+	 * @throws BaseClassHelperException
+	 */
+	public function createMethod(string $nameOrClass, ...$constructorArgs): BaseConnectorMethod;
+}
+
+
+```
 ###  Path: `/src/classes/Connectors/Connector/Method/Delete.php`
 
 ```php
@@ -367,6 +690,58 @@ use Connectors\Connector\BaseConnectorMethod as BaseConnectorMethod;
 abstract class Connectors_Connector_Method_Delete extends BaseConnectorMethod
 {
 	public function getHTTPMethod(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Connectors/Connector/Method/Delete.php`
+
+```php
+namespace ;
+
+use Connectors\Connector\BaseConnectorMethod as BaseConnectorMethod;
+
+/**
+ * Base class for POST API methods.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class Connectors_Connector_Method_Delete extends BaseConnectorMethod
+{
+	public function getHTTPMethod(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Connectors/Connector/Method/Get.php`
+
+```php
+namespace ;
+
+use Connectors\Connector\BaseConnectorMethod as BaseConnectorMethod;
+
+/**
+ * Base class for GET API methods.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class Connectors_Connector_Method_Get extends BaseConnectorMethod
+{
+	public function getHTTPMethod(): string
+	{
+		/* ... */
+	}
+
+
+	public function getValidResponseCodes()
 	{
 		/* ... */
 	}
@@ -426,6 +801,52 @@ abstract class Connectors_Connector_Method_Post extends BaseConnectorMethod
 
 
 ```
+###  Path: `/src/classes/Connectors/Connector/Method/Post.php`
+
+```php
+namespace ;
+
+use Connectors\Connector\BaseConnectorMethod as BaseConnectorMethod;
+
+/**
+ * Base class for POST API methods.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class Connectors_Connector_Method_Post extends BaseConnectorMethod
+{
+	public function getHTTPMethod(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Connectors/Connector/Method/Put.php`
+
+```php
+namespace ;
+
+use Connectors\Connector\BaseConnectorMethod as BaseConnectorMethod;
+
+/**
+ * Base class for POST API methods.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class Connectors_Connector_Method_Put extends BaseConnectorMethod
+{
+	public function getHTTPMethod(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/Connectors/Connector/Method/Put.php`
 
 ```php
@@ -476,6 +897,74 @@ class StubFailureMethod extends Connectors_Connector_Method_Get
 	 * @throws ConnectorException
 	 */
 	public function failFetchData()
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Connectors/Connector/Stub/Method/StubFailureMethod.php`
+
+```php
+namespace Connectors\Connector\Stub\Method;
+
+use Connectors\Connector\ConnectorException as ConnectorException;
+use Connectors_Connector_Method_Get as Connectors_Connector_Method_Get;
+
+/**
+ * Pigeon API method: Retrieves all words available in the
+ * dictionary (placeholders for global information, like
+ * phone numbers).
+ *
+ * @package Connectors
+ * @subpackage Stub
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class StubFailureMethod extends Connectors_Connector_Method_Get
+{
+	public const ERROR_CONNECTION_DID_NOT_FAIL = 70101;
+	public const ERROR_CONNECTION_FAILED = 70102;
+
+	/**
+	 * @return never
+	 * @throws ConnectorException
+	 */
+	public function failFetchData()
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Connectors/Connector/StubConnector.php`
+
+```php
+namespace Connectors\Connector;
+
+use AppUtils\ClassHelper as ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use Connectors\Connector\Stub\Method\StubFailureMethod as StubFailureMethod;
+
+/**
+ * @package Connectors
+ * @subpackage Stub
+ */
+class StubConnector extends BaseConnector
+{
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return never
+	 * @throws BaseClassHelperException
+	 * @throws ConnectorException
+	 */
+	public function executeFailRequest()
 	{
 		/* ... */
 	}
@@ -1547,6 +2036,6 @@ class Connectors_ResponseCode extends BasicEnum
 ```
 ---
 **File Statistics**
-- **Size**: 31.25 KB
-- **Lines**: 1553
+- **Size**: 41.21 KB
+- **Lines**: 2042
 File: `modules/connectors/architecture-core.md`
