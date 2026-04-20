@@ -67,7 +67,7 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
 
     /* START METHODS */
 
-    // region: Icon type methods
+    // region: Icon methods
     
     /**
      * @return $this
@@ -921,7 +921,7 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
      * @return $this
      */
     public function yes() : self { return $this->setType('check'); }
-    
+
     // endregion
 
     /* END METHODS */
