@@ -36,6 +36,13 @@ errors emitted during generation and prints them in a consolidated summary.
 ```
 src/classes/Application/Composer/
 ├── BuildMessages.php                   — Shared build-time message registry
+├── IconBuilder/
+│   ├── IconBuilder.php                 — Orchestrator: reads JSON, renders PHP+JS, writes target files
+│   ├── IconsReader.php                 — Parses custom-icons.json into IconDefinition value objects
+│   ├── IconDefinition.php              — Immutable VO: a single icon (ID, FA name, FA type prefix)
+│   ├── AbstractLanguageRenderer.php    — Base class for PHP/JS method renderers
+│   ├── PHPRenderer.php                 — Renders PHP icon accessor methods (camelCase)
+│   └── JSRenderer.php                  — Renders JS icon accessor methods (PascalCase)
 ├── ModulesOverview/
 │   ├── ModulesOverviewGenerator.php    — Orchestrates modules-overview generation
 │   ├── ModuleContextFileFinder.php     — Discovers module-context.yaml files
@@ -55,6 +62,57 @@ src/classes/Application/Composer/
         ├── DecorateGlossaryEvent.php          — Offline event: collect custom sections
         └── BaseDecorateGlossaryListener.php   — Base class for listener implementations
 ```
+
+## IconBuilder subpackage
+
+A build-time code generator that reads icon definitions from a JSON source file
+and writes typed accessor methods into a PHP class and a JS object. Applications
+use this to define custom FontAwesome icons that are available as fluent method
+calls at both server and client level.
+
+### Adding a new custom icon
+
+1. **Edit `themes/custom-icons.json`** in the application root. Add a key–value
+   entry where the key is the icon ID and the value specifies the FontAwesome
+   icon name and type prefix:
+
+   ```json
+   {
+     "my-feature": {
+       "icon": "wand-magic-sparkles",
+       "type": "fas"
+     }
+   }
+   ```
+
+   | Field    | Description | Examples |
+   |----------|-------------|----------|
+   | **key**  | Icon ID. Hyphens and spaces are normalised to underscores. | `my-feature`, `mail_builder` |
+   | `icon`   | FontAwesome icon name (without prefix). | `wand-magic-sparkles`, `university` |
+   | `type`   | FontAwesome style prefix. | `fas` (solid), `far` (regular), `fab` (brands), `fa` (default) |
+
+2. **Run `composer rebuild-icons`** (or `composer build` / `composer build-dev`,
+   which include this step). The builder replaces the code between the
+   `/* START METHODS */` and `/* END METHODS */` markers in both target files.
+
+3. **Use the generated methods.** The icon ID `my-feature` produces:
+   - PHP: `MyApp::icon()->myFeature()` (camelCase)
+   - JS: `application.Icon().MyFeature()` (PascalCase)
+
+### Reserved IDs
+
+The ID `spinner` is excluded from generation because it has special runtime
+behaviour and must not be overwritten.
+
+### Target files
+
+The application's `ComposerScripts::rebuildIcons()` method wires the builder
+to the correct paths. Typical targets:
+
+| File | Role |
+|------|------|
+| `assets/classes/<AppNamespace>/CustomIcon.php` | PHP icon class extending `UI_Icon` |
+| `themes/default/js/ui/custom-icon.js` | JS icon object |
 
 ## `BuildMessages`
 
@@ -320,6 +378,6 @@ composer test-filter -- Composer
 ```
 ---
 **File Statistics**
-- **Size**: 12.21 KB
-- **Lines**: 326
+- **Size**: 14.7 KB
+- **Lines**: 384
 File: `modules/composer/overview.md`
