@@ -137,6 +137,7 @@
   "scripts": {
     "post-autoload-dump": "Application\\Composer\\ComposerScripts::clearCaches",
     "clear-caches": "Application\\Composer\\ComposerScripts::clearCaches",
+    "rebuild-icons": "Application\\Composer\\ComposerScripts::rebuildIcons",
     "build": [
       "@composer dumpautoload",
       "Application\\Composer\\ComposerScripts::build",

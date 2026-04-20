@@ -13,6 +13,7 @@ use Application\API\APIManager;
 use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
 use Application\CacheControl\CacheManager;
+use Application\Composer\IconBuilder\IconBuilder;
 use Application\Composer\KeywordGlossary\KeywordGlossaryGenerator;
 use Application\Composer\ModulesOverview\ModulesOverviewGenerator;
 use Application\EventHandler\OfflineEvents\Index\EventIndexer;
@@ -44,6 +45,7 @@ class ComposerScripts
         self::generateOpenAPISpec();
         self::generateHtaccess();
         self::generateCSSClassesJS();
+        self::rebuildIcons();
         self::updateContextGenerateDate();
         self::updateModuleDocumentation();
     }
@@ -219,6 +221,34 @@ class ComposerScripts
         echo '- Generating clientside CSS classes reference...'.PHP_EOL;
 
         new CSSClassesGenerator()->generate();
+
+        echo '  DONE.'.PHP_EOL;
+    }
+
+    public static function rebuildIcons() : void
+    {
+        self::init();
+
+        self::doRebuildIcons();
+    }
+
+    private static function doRebuildIcons() : void
+    {
+        echo '- Rebuilding icon methods...'.PHP_EOL;
+
+        $root = rtrim(FolderInfo::factory(__DIR__.'/../../../../')->getPath(), '/');
+
+        $result = (new IconBuilder(
+            $root.'/src/themes/default/icons.json',
+            $root.'/src/classes/UI/Icon.php',
+            $root.'/src/themes/default/js/ui/icon.js'
+        ))->build();
+
+        if(!$result->isValid())
+        {
+            echo sprintf('  ERROR: %s'.PHP_EOL, $result->getErrorMessage());
+            return;
+        }
 
         echo '  DONE.'.PHP_EOL;
     }
