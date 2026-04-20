@@ -1586,6 +1586,28 @@ class UI_DataGrid_Action_Confirm extends UI_DataGrid_Action_Default
 
 
 ```
+###  Path: `/src/classes/UI/DataGrid/Action/Confirm.php`
+
+```php
+namespace ;
+
+class UI_DataGrid_Action_Confirm extends UI_DataGrid_Action_Default
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/DataGrid/Action/Default.php`
+
+```php
+namespace ;
+
+class UI_DataGrid_Action_Default extends UI_DataGrid_Action
+{
+}
+
+
+```
 ###  Path: `/src/classes/UI/DataGrid/Action/Default.php`
 
 ```php
@@ -1604,6 +1626,32 @@ namespace ;
 
 class UI_DataGrid_Action_Javascript extends UI_DataGrid_Action
 {
+}
+
+
+```
+###  Path: `/src/classes/UI/DataGrid/Action/Javascript.php`
+
+```php
+namespace ;
+
+class UI_DataGrid_Action_Javascript extends UI_DataGrid_Action
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/DataGrid/Action/Separator.php`
+
+```php
+namespace ;
+
+class UI_DataGrid_Action_Separator extends UI_DataGrid_Action
+{
+	public function render(): string
+	{
+		/* ... */
+	}
 }
 
 
@@ -2373,6 +2421,115 @@ class ColumnSettingStorage
 
 
 ```
+###  Path: `/src/classes/UI/DataGrid/Column/ColumnSettingStorage.php`
+
+```php
+namespace ;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+use Application\Application as Application;
+
+/**
+ * Specialized data grid column storage class used
+ * to store column settings for a specific user.
+ *
+ * It uses the user settings to store the column settings,
+ * using data key prefixes based on the column and grid IDs.
+ *
+ * @package User Interface
+ * @subpackage Data Grids
+ */
+class ColumnSettingStorage
+{
+	public const SETTING_HIDDEN = 'hidden';
+	public const SETTING_ORDER = 'order';
+
+	public function setHiddenForUser(bool $hidden, ?Application_User $user = null): ColumnSettingStorage
+	{
+		/* ... */
+	}
+
+
+	public function isHiddenForUser(?Application_User $user = null): bool
+	{
+		/* ... */
+	}
+
+
+	public function setSetting(string $name, string $value, ?Application_User $user): ColumnSettingStorage
+	{
+		/* ... */
+	}
+
+
+	public function getSetting(string $name, ?Application_User $user): string
+	{
+		/* ... */
+	}
+
+
+	public function setOrder(int $order, ?Application_User $user = null): self
+	{
+		/* ... */
+	}
+
+
+	public function getOrder(?Application_User $user = null): int
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/DataGrid/Column/MultiSelect.php`
+
+```php
+namespace ;
+
+use AppUtils\OutputBuffering as OutputBuffering;
+
+class UI_DataGrid_Column_MultiSelect extends UI_DataGrid_Column
+{
+	public const ERROR_COLUMN_CANNOT_BE_EDITABLE = 513131;
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public function renderCell(UI_DataGrid_Entry $entry): string
+	{
+		/* ... */
+	}
+
+
+	public function renderHeaderCell(bool $duplicate = false): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $clientClassName
+	 * @return UI_DataGrid_Column
+	 * @throws UI_DataGrid_Exception
+	 */
+	public function setEditable(string $clientClassName): UI_DataGrid_Column
+	{
+		/* ... */
+	}
+
+
+	public function isAction(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/DataGrid/Column/MultiSelect.php`
 
 ```php
@@ -2728,6 +2885,51 @@ class UI_DataGrid_Entry_Heading extends UI_DataGrid_Entry
 
 
 ```
+###  Path: `/src/classes/UI/DataGrid/Entry/Heading.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\OutputBuffering as OutputBuffering;
+
+class UI_DataGrid_Entry_Heading extends UI_DataGrid_Entry
+{
+	public function isCountable(): bool
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	public function setSubline(string|StringableInterface|null $subline): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/DataGrid/Entry/Merged.php`
+
+```php
+namespace ;
+
+class UI_DataGrid_Entry_Merged extends UI_DataGrid_Entry
+{
+	public function render(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/DataGrid/Entry/Merged.php`
 
 ```php
@@ -2999,6 +3201,74 @@ interface ListBuilderScreenInterface extends AdminScreenInterface
 
 
 ```
+###  Path: `/src/classes/UI/DataGrid/ListBuilder/ListBuilderScreenInterface.php`
+
+```php
+namespace UI\DataGrid\ListBuilder;
+
+use Application\Interfaces\Admin\AdminScreenInterface as AdminScreenInterface;
+use UI\Interfaces\ListBuilderInterface as ListBuilderInterface;
+
+/**
+ * Interface for admin screens that use a {@see ListBuilderInterface}
+ * instance to generate a data grid of items.
+ *
+ * @package User Interface
+ * @subpackage List Builder
+ * @see ListBuilderScreenTrait
+ */
+interface ListBuilderScreenInterface extends AdminScreenInterface
+{
+	/**
+	 * Creates an instance of the list builder to use.
+	 * @return ListBuilderInterface
+	 */
+	public function createListBuilder(): ListBuilderInterface;
+
+
+	/**
+	 * Gets the ID of the list to be displayed, which can
+	 * be used to share its settings.
+	 *
+	 * @return string
+	 */
+	public function getListID(): string;
+
+
+	/**
+	 * Gets the fully configured ListBuilder instance.
+	 * @return ListBuilderInterface
+	 */
+	public function getBuilder(): ListBuilderInterface;
+}
+
+
+```
+###  Path: `/src/classes/UI/DataGrid/ListBuilder/ListBuilderScreenTrait.php`
+
+```php
+namespace UI\DataGrid\ListBuilder;
+
+use UI\Interfaces\ListBuilderInterface as ListBuilderInterface;
+use UI_Themes_Theme_ContentRenderer as UI_Themes_Theme_ContentRenderer;
+
+/**
+ * Trait used to help implement the {@see ListBuilderScreenInterface}.
+ *
+ * @package User Interface
+ * @subpackage List Builder
+ * @see ListBuilderScreenInterface
+ */
+trait ListBuilderScreenTrait
+{
+	public function getBuilder(): ListBuilderInterface
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/DataGrid/ListBuilder/ListBuilderScreenTrait.php`
 
 ```php
@@ -3200,6 +3470,58 @@ class UI_DataGrid_Row_Sums extends UI_DataGrid_Row
 
 
 ```
+###  Path: `/src/classes/UI/DataGrid/Row/Sums.php`
+
+```php
+namespace ;
+
+class UI_DataGrid_Row_Sums extends UI_DataGrid_Row
+{
+	/**
+	 * Defines a column sum to be generated via a callback function.
+	 *
+	 * @param string|UI_DataGrid_Column $colNameOrInstance
+	 * @param callable $callback
+	 * @param mixed[] $args Any additional arguments for the callback.
+	 * @return UI_DataGrid_Row_Sums
+	 */
+	public function makeCallback($colNameOrInstance, $callback, array $args = []): UI_DataGrid_Row_Sums
+	{
+		/* ... */
+	}
+
+
+	public function getEntry(): UI_DataGrid_Entry
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/DataGrid/Row/Sums/ColumnDef.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
+use AppUtils\Traits\OptionableTrait as OptionableTrait;
+
+abstract class UI_DataGrid_Row_Sums_ColumnDef implements OptionableInterface
+{
+	use OptionableTrait;
+
+	public function getDataKey(): string
+	{
+		/* ... */
+	}
+
+
+	abstract public function resolveContent(): string;
+}
+
+
+```
 ###  Path: `/src/classes/UI/DataGrid/Row/Sums/ColumnDef.php`
 
 ```php
@@ -3246,8 +3568,31 @@ class UI_DataGrid_Row_Sums_ColumnDef_Callback extends UI_DataGrid_Row_Sums_Colum
 
 
 ```
+###  Path: `/src/classes/UI/DataGrid/Row/Sums/ColumnDef/Callback.php`
+
+```php
+namespace ;
+
+use Application\Application as Application;
+
+class UI_DataGrid_Row_Sums_ColumnDef_Callback extends UI_DataGrid_Row_Sums_ColumnDef
+{
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	public function resolveContent(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ---
 **File Statistics**
-- **Size**: 60.56 KB
-- **Lines**: 3254
+- **Size**: 66.61 KB
+- **Lines**: 3599
 File: `modules/ui/datagrid/architecture.md`

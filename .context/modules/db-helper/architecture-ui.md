@@ -168,9 +168,6 @@ use Application\Admin\RequestTypes\RequestTypeInterface as RequestTypeInterface;
 use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
 
-/**
- * @implements RequestTypeInterface<DBHelperRecordInterface>
- */
 abstract class BaseDBRecordRequestType extends BaseRequestType
 {
 	abstract public function getCollection(): DBHelperCollectionInterface;
@@ -1138,6 +1135,6 @@ trait RecordStatusScreenTrait
 ```
 ---
 **File Statistics**
-- **Size**: 28.28 KB
-- **Lines**: 1144
+- **Size**: 28.22 KB
+- **Lines**: 1141
 File: `modules/db-helper/architecture-ui.md`

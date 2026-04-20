@@ -390,6 +390,80 @@ class UI_PropertiesGrid_Property_Amount extends UI_PropertiesGrid_Property
 
 
 ```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/Amount.php`
+
+```php
+namespace ;
+
+class UI_PropertiesGrid_Property_Amount extends UI_PropertiesGrid_Property
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/Boolean.php`
+
+```php
+namespace ;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+use AppUtils\ConvertHelper_Exception as ConvertHelper_Exception;
+
+class UI_PropertiesGrid_Property_Boolean extends UI_PropertiesGrid_Property
+{
+	const TYPE_TRUEFALSE = 'truefalse';
+	const TYPE_YESNO = 'yesno';
+	const TYPE_ENABLEDDISABLED = 'enableddisabled';
+	const TYPE_ACTIVEINACTIVE = 'activeinactive';
+	const COLORS_DEFAULT = 'default';
+	const COLORS_NEUTRAL = 'neutral';
+
+	public function makeColorsNeutral(): UI_PropertiesGrid_Property_Boolean
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeYesNo()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeEnabledDisabled()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeActiveInactive()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $labelTrue
+	 * @param string $labelFalse
+	 * @return $this
+	 */
+	public function setLabels(string $labelTrue, string $labelFalse)
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/PropertiesGrid/Property/Boolean.php`
 
 ```php
@@ -466,6 +540,42 @@ class UI_PropertiesGrid_Property_ByteSize extends UI_PropertiesGrid_Property_Reg
 
 
 ```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/ByteSize.php`
+
+```php
+namespace ;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+
+class UI_PropertiesGrid_Property_ByteSize extends UI_PropertiesGrid_Property_Regular
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/DateTime.php`
+
+```php
+namespace ;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+
+class UI_PropertiesGrid_Property_DateTime extends UI_PropertiesGrid_Property_Regular
+{
+	public function withTime(): UI_PropertiesGrid_Property_DateTime
+	{
+		/* ... */
+	}
+
+
+	public function withDiff(): UI_PropertiesGrid_Property_DateTime
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/PropertiesGrid/Property/DateTime.php`
 
 ```php
@@ -506,6 +616,23 @@ class UI_PropertiesGrid_Property_Header extends UI_PropertiesGrid_Property
 
 
 ```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/Header.php`
+
+```php
+namespace ;
+
+use AppUtils\OutputBuffering as OutputBuffering;
+
+class UI_PropertiesGrid_Property_Header extends UI_PropertiesGrid_Property
+{
+	public function render(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/PropertiesGrid/Property/MarkdownGridProperty.php`
 
 ```php
@@ -517,6 +644,44 @@ use UI_StringBuilder as UI_StringBuilder;
 
 class MarkdownGridProperty extends UI_PropertiesGrid_Property_Merged
 {
+}
+
+
+```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/MarkdownGridProperty.php`
+
+```php
+namespace UI\PropertiesGrid\Property;
+
+use Application\MarkdownRenderer\MarkdownRenderer as MarkdownRenderer;
+use UI_PropertiesGrid_Property_Merged as UI_PropertiesGrid_Property_Merged;
+use UI_StringBuilder as UI_StringBuilder;
+
+class MarkdownGridProperty extends UI_PropertiesGrid_Property_Merged
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/Merged.php`
+
+```php
+namespace ;
+
+use AppUtils\OutputBuffering as OutputBuffering;
+
+class UI_PropertiesGrid_Property_Merged extends UI_PropertiesGrid_Property
+{
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	public function addClass(string $class): self
+	{
+		/* ... */
+	}
 }
 
 
@@ -564,6 +729,37 @@ class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merg
 
 
 ```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/Message.php`
+
+```php
+namespace ;
+
+use UI\Interfaces\MessageWrapperInterface as MessageWrapperInterface;
+use UI\Traits\MessageWrapperTrait as MessageWrapperTrait;
+
+class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merged implements MessageWrapperInterface
+{
+	use MessageWrapperTrait;
+
+	public function getMessage(): UI_Message
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/Regular.php`
+
+```php
+namespace ;
+
+class UI_PropertiesGrid_Property_Regular extends UI_PropertiesGrid_Property
+{
+}
+
+
+```
 ###  Path: `/src/classes/UI/PropertiesGrid/Property/Regular.php`
 
 ```php
@@ -598,8 +794,31 @@ class TagsGridProperty extends UI_PropertiesGrid_Property
 
 
 ```
+###  Path: `/src/classes/UI/PropertiesGrid/Property/TagsGridProperty.php`
+
+```php
+namespace UI\PropertiesGrid\Property;
+
+use Application\Tags\Taggables\TaggableInterface as TaggableInterface;
+use UI_PropertiesGrid_Property as UI_PropertiesGrid_Property;
+use UI_StringBuilder as UI_StringBuilder;
+
+/**
+ * Displays all tags of a tabbable object.
+ *
+ * NOTE: Shown only if the tagging is enabled for the object.
+ *
+ * @package User Interface
+ * @subpackage Properties Grid
+ */
+class TagsGridProperty extends UI_PropertiesGrid_Property
+{
+}
+
+
+```
 ---
 **File Statistics**
-- **Size**: 12.85 KB
-- **Lines**: 606
+- **Size**: 16.73 KB
+- **Lines**: 825
 File: `modules/ui/properties-grid/architecture.md`

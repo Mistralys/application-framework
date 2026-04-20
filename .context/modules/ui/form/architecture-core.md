@@ -2119,6 +2119,99 @@ class BasicTime implements StringableInterface
 
 
 ```
+###  Path: `/src/classes/UI/Form/Element/DateTimePicker/BasicTime.php`
+
+```php
+namespace Application\UI\Form\Element\DateTimePicker;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use UI_Exception as UI_Exception;
+
+class BasicTime implements StringableInterface
+{
+	public const ERROR_INVALID_TIME = 145701;
+
+	public function getAsString(): string
+	{
+		/* ... */
+	}
+
+
+	public function getHour(): ?int
+	{
+		/* ... */
+	}
+
+
+	public function getMinutes(): ?int
+	{
+		/* ... */
+	}
+
+
+	public function __toString(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/Datepicker.php`
+
+```php
+namespace ;
+
+use AppLocalize\Localization as Localization;
+use AppUtils\ConvertHelper\JSONConverter as JSONConverter;
+
+/**
+ * Bootstrap-based datepicker element for selecting dates.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author   Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see http://eternicode.github.io/bootstrap-datepicker
+ * @see https://github.com/eternicode/bootstrap-datepicker
+ */
+class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputText
+{
+	public const REGEX_DATE = '%\A[0-9]{2}/[0-9]{2}/[0-9]{2}\z%m';
+
+	public function __toString()
+	{
+		/* ... */
+	}
+
+
+	public function getPlaceholder()
+	{
+		/* ... */
+	}
+
+
+	public function getRegex(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves a date object for a value of the element,
+	 * or null otherwise (if the value is empty, for ex.).
+	 *
+	 * @param string|NULL $value
+	 * @return null|DateTime
+	 */
+	public function getDate(?string $value): ?DateTime
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Element/Datepicker.php`
 
 ```php
@@ -2216,6 +2309,125 @@ class HTML_QuickForm2_Element_ExpandableSelect extends HTML_QuickForm2_Element_S
 
 
 	public function __toString(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/ExpandableSelect.php`
+
+```php
+namespace ;
+
+/**
+ * Multiple selection select element with integrated controls
+ * to select and deselect elements, as well as to expand or
+ * collapse the select to show or hide elements.
+ *
+ * @package Application
+ * @subpackage Forms
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class HTML_QuickForm2_Element_ExpandableSelect extends HTML_QuickForm2_Element_Select
+{
+	/**
+	 * Sets the maximum amount of elements to show in the
+	 * select element.
+	 *
+	 * @param int $size
+	 * @return $this
+	 */
+	public function setMaxSize(int $size): self
+	{
+		/* ... */
+	}
+
+
+	public function getMaxSize(): int
+	{
+		/* ... */
+	}
+
+
+	public function getSize(): int
+	{
+		/* ... */
+	}
+
+
+	public function __toString(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/HTMLDatePicker.php`
+
+```php
+namespace ;
+
+/**
+ * Element that is used to handle generate HTML input with type date.
+ * All browsers (except IE) will open calendar as input
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Emre Celebi <emre.celebi@ionos.com>
+ */
+class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element_Input
+{
+	public const REGEX_GROUP_DATE = '([0-9]{4}-[0-9]{2}-[0-9]{2})';
+	public const ERROR_INVALID_DATE_VALUE = 145801;
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public static function isValidDateString(string $date): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return DateTime|null
+	 * @throws UI_Exception {@see self::ERROR_INVALID_DATE_VALUE}
+	 */
+	public function getDate(): ?DateTime
+	{
+		/* ... */
+	}
+
+
+	public function getYear(): ?int
+	{
+		/* ... */
+	}
+
+
+	public function getMonth(): ?int
+	{
+		/* ... */
+	}
+
+
+	public function getDay(): ?int
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|DateTime|NULL $value
+	 * @return $this
+	 */
+	public function setValue($value): self
 	{
 		/* ... */
 	}
@@ -2385,6 +2597,98 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Contain
 
 
 ```
+###  Path: `/src/classes/UI/Form/Element/HTMLDateTimePicker.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper as ClassHelper;
+
+/**
+ * EXPERIMENTAL! Element that is used to handle generate HTML input with type date and time together.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Emre Celebi <emre.celebi@ionos.com>
+ */
+class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Container_Group
+{
+	public const ELEMENT_NAME_DATE = 'date';
+	public const ELEMENT_NAME_TIME = 'time';
+	public const CSS_FILE_NAME = 'forms/date-picker.css';
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|DateTime|array|NULL $value A date string in the format <code>Y-m-d H:i</code>,
+	 *          a <code>DateTime</code> instance, or an array with keys
+	 *          <code>date</code> and <code>time</code>.
+	 * @return $this
+	 */
+	public function setValue($value): self
+	{
+		/* ... */
+	}
+
+
+	public function getDateElement(): HTML_QuickForm2_Element_HTMLDatePicker
+	{
+		/* ... */
+	}
+
+
+	public function getTimeElement(): HTML_QuickForm2_Element_HTMLTimePicker
+	{
+		/* ... */
+	}
+
+
+	public static function parseDateTimeString(string $string, bool $timeOptional): ?array
+	{
+		/* ... */
+	}
+
+
+	public function getDate(): ?DateTime
+	{
+		/* ... */
+	}
+
+
+	public function getDateString(): ?string
+	{
+		/* ... */
+	}
+
+
+	public function getValue(): ?string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string
+	 * @see UI_Form_Renderer_RenderType_SelfRenderingGroup Rendered like a regular element.
+	 */
+	public function __toString()
+	{
+		/* ... */
+	}
+
+
+	public function setTimeOptional(bool $optional = true): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Element/HTMLTimePicker.php`
 
 ```php
@@ -2445,6 +2749,279 @@ class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element_Inp
 	 * @return $this
 	 */
 	public function setValue($value): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/HTMLTimePicker.php`
+
+```php
+namespace ;
+
+use Application\UI\Form\Element\DateTimePicker\BasicTime as BasicTime;
+
+/**
+ * Element that is used to handle generate HTML input with type time.
+ * All browsers(except IE) will open time selection menu as input
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Emre Celebi <emre.celebi@ionos.com>
+ */
+class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element_Input
+{
+	public const REGEX_GROUP_TIME = '([0-9]{2}):([0-9]{2})';
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTime(): ?BasicTime
+	{
+		/* ... */
+	}
+
+
+	public function getHour(): ?int
+	{
+		/* ... */
+	}
+
+
+	public function getMinutes(): ?int
+	{
+		/* ... */
+	}
+
+
+	public static function parseTimeString(string $string): ?array
+	{
+		/* ... */
+	}
+
+
+	public function getValue(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|DateTime|BasicTime|NULL $value
+	 * @return $this
+	 */
+	public function setValue($value): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/ImageUploader.php`
+
+```php
+namespace ;
+
+use AppUtils\ImageHelper as ImageHelper;
+use AppUtils\ImageHelper_Exception as ImageHelper_Exception;
+use AppUtils\ImageHelper_Size as ImageHelper_Size;
+use AppUtils\NumberInfo as NumberInfo;
+use AppUtils\OutputBuffering as OutputBuffering;
+use Application\Media\Collection\MediaCollection as MediaCollection;
+
+/**
+ * Element that is used to handle SPIN image uploads: handles an image upload
+ * in its own dialog window and processes image transformations directly.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Input
+{
+	public const THUMBNAIL_WIDTH = 75;
+	public const THUMBNAIL_HEIGHT = 75;
+
+	/**
+	 * Retrieves the default, empty value for image uploader elements.
+	 * This is an array with three keys:
+	 *
+	 * - name
+	 * - state
+	 * - id
+	 *
+	 * @return array{name:string,state:string,id:string}
+	 */
+	public static function getDefaultData(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Overridden to allow storing the image upload field's
+	 * array value from the three input elements it is made of.
+	 *
+	 * @return $this
+	 * @throws Application_Exception
+	 *
+	 * @see HTML_QuickForm2_Element_Input::setValue()
+	 */
+	public function setValue($value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Override regular method: image upload fields return an array
+	 * value with three keys: name, state and id.
+	 *
+	 * @see HTML_QuickForm2_Node::getValue()
+	 */
+	public function getValue()
+	{
+		/* ... */
+	}
+
+
+	public function __toString()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the media instance for the current value of the uploader, if any.
+	 * @return Application_Media_DocumentInterface|NULL
+	 */
+	public function getMedia(): ?Application_Media_DocumentInterface
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the media document for the specified uploader value.
+	 * @param array|NULL $value
+	 * @return Application_Media_DocumentInterface|NULL
+	 */
+	public static function getMediaByValue(?array $value): ?Application_Media_DocumentInterface
+	{
+		/* ... */
+	}
+
+
+	public static function isValidMedia($value)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Checks if the specified image file name is a supported
+	 * image type by checking its extension. Returns the extension
+	 * if it is supported, false otherwise.
+	 *
+	 * @param string $fileName
+	 * @return boolean|string
+	 */
+	public static function isSupportedFile($fileName)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Upgrades the uploaded media file to a regular media document
+	 * if a file has been uploaded. Has no effect otherwise, and can
+	 * safely be called if the media has already been upgraded.
+	 *
+	 * Note: This is called automatically by the form in the
+	 * postValidation routine, and does not need to be called manually.
+	 *
+	 * @see UI_Form::postValidation()
+	 */
+	public function upgradeMedia(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Ensures that the image dimensions are even sized (width and height).
+	 */
+	public function addRuleEvenSized()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a rule for a minimum image size, with optionally a recommendation
+	 * to upload it double that.
+	 *
+	 * @param int $width
+	 * @param int $height
+	 * @return HTML_QuickForm2_Rule_Callback
+	 */
+	public function addRuleMinSize($width = 0, $height = 0)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a recommendation to upload the image in double
+	 * resolution. Requires the min size rule to be added.
+	 */
+	public function makeDoubleResolution()
+	{
+		/* ... */
+	}
+
+
+	public function isDoubleResolution()
+	{
+		/* ... */
+	}
+
+
+	public function hasMinSizeRule()
+	{
+		/* ... */
+	}
+
+
+	public function getAutoComments()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Checks whether the element has an even sized rule.
+	 * @return boolean
+	 */
+	public function hasEvenSizedRule()
+	{
+		/* ... */
+	}
+
+
+	public function validate_evenSized($value, HTML_QuickForm2_Rule_Callback $rule): bool
+	{
+		/* ... */
+	}
+
+
+	public function validate_minSize($value, $width, $height, HTML_QuickForm2_Rule_Callback $rule): bool
 	{
 		/* ... */
 	}
@@ -2745,6 +3322,260 @@ class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
 
 
 ```
+###  Path: `/src/classes/UI/Form/Element/Multiselect.php`
+
+```php
+namespace ;
+
+/**
+ * Bootstrap-based multiple select element that implements the
+ * interface of the bootstrap multiselect plugin.
+ *
+ * @package Application
+ * @subpackage Forms
+ * @author   Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see https://github.com/davidstutz/bootstrap-multiselect
+ * @see http://davidstutz.github.io/bootstrap-multiselect
+ */
+class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
+{
+	public function __toString()
+	{
+		/* ... */
+	}
+
+
+	public function setFilterPlaceholder($text)
+	{
+		/* ... */
+	}
+
+
+	public function enableFiltering()
+	{
+		/* ... */
+	}
+
+
+	public function setMaxHeight($height)
+	{
+		/* ... */
+	}
+
+
+	public function setMultiOption($name, $value)
+	{
+		/* ... */
+	}
+
+
+	public function makeBlock()
+	{
+		/* ... */
+	}
+
+
+	public function enableSelectAll()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * When the element is shown inline, the dropdown menu is
+	 * opened as a block element in the page, not as a hover
+	 * menu.
+	 */
+	public function makeInline()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a class to the container element of the button and dropdown menu.
+	 * Use this when you need to be able to style the dropdown menu, for example,
+	 * since by default it is not wrapped in another element.
+	 *
+	 * @param string $className
+	 * @return HTML_QuickForm2_Element_Multiselect
+	 */
+	public function addContainerClass($className)
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/Switch.php`
+
+```php
+namespace ;
+
+use UI\Interfaces\ButtonSizeInterface as ButtonSizeInterface;
+use UI\Traits\ButtonSizeTrait as ButtonSizeTrait;
+
+/**
+ * Twitter Bootstrap-based switch element that acts like a checkbox.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input implements ButtonSizeInterface
+{
+	use ButtonSizeTrait;
+
+	public const ELEMENT_TYPE = 'switch';
+
+	/**
+	 * Sets the label for the ON state of the button
+	 * @param string $label
+	 * @return $this
+	 */
+	public function setOnLabel(string $label): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the label for the OFF state of the button
+	 * @param string $label
+	 * return $this
+	 */
+	public function setOffLabel(string $label): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Checks if the switch is checked/active.
+	 * @return boolean
+	 */
+	public function isChecked(): bool
+	{
+		/* ... */
+	}
+
+
+	public function __toString()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the clientside javascript statement to execute when
+	 * the switch value changes.
+	 *
+	 * Example:
+	 *
+	 * ```php
+	 * $switch->setOnchangeHandler(
+	 *     'SomeClass.MethodName()',
+	 *     '"string"'
+	 * );
+	 * ```
+	 *
+	 * @param string $statement
+	 * @param string|null $data A javascript compatible value as a string.
+	 * @return $this
+	 */
+	public function setOnchangeHandler(string $statement, ?string $data = null): self
+	{
+		/* ... */
+	}
+
+
+	public function setValue($value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the switch display "yes" and "no" instead of the
+	 * default "on" and "off" button labels.
+	 *
+	 * NOTE: does not change the internal values: these stay
+	 * "true" and "false", unless the $includeValue parameter
+	 * is set to true.
+	 *
+	 * @param bool $includeValue If true, the values will be set to "yes" and "no".
+	 * @return $this
+	 */
+	public function makeYesNo(bool $includeValue = false): self
+	{
+		/* ... */
+	}
+
+
+	public function makeEnabledDisabled(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeActiveInactive(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeOnOff(): self
+	{
+		/* ... */
+	}
+
+
+	public function setOnIcon(UI_Icon $icon): self
+	{
+		/* ... */
+	}
+
+
+	public function setOffIcon(UI_Icon $icon): self
+	{
+		/* ... */
+	}
+
+
+	public function makeWithIcons(bool $useIcons = true): self
+	{
+		/* ... */
+	}
+
+
+	public function getValue(): string
+	{
+		/* ... */
+	}
+
+
+	public function setOnValue(string $value): self
+	{
+		/* ... */
+	}
+
+
+	public function setOffValue(string $value): self
+	{
+		/* ... */
+	}
+
+
+	public function setValues(string $onValue, string $offValue): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Element/Switch.php`
 
 ```php
@@ -3007,6 +3838,443 @@ class HTML_QuickForm2_Element_TreeSelect extends HTML_QuickForm2_Element
 	 * @return string[]
 	 */
 	public function getValues(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/TreeSelect.php`
+
+```php
+namespace ;
+
+use UI\Tree\TreeRenderer as TreeRenderer;
+
+class HTML_QuickForm2_Element_TreeSelect extends HTML_QuickForm2_Element
+{
+	public const ERROR_TREE_NOT_SET = 149701;
+	public const ELEMENT_TYPE = 'treeselect';
+
+	public function setTree(TreeRenderer $renderer): self
+	{
+		/* ... */
+	}
+
+
+	public function getTree(): ?TreeRenderer
+	{
+		/* ... */
+	}
+
+
+	public function requireTree(): TreeRenderer
+	{
+		/* ... */
+	}
+
+
+	public function __toString(): string
+	{
+		/* ... */
+	}
+
+
+	public function makeRequired(): self
+	{
+		/* ... */
+	}
+
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Fetches the currently selected values from the tree.
+	 *
+	 * @return string[]
+	 * @throws HTML_QuickForm2_NotFoundException
+	 */
+	public function getRawValue(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array|mixed|NULL $value Flat, indexed array of tree node values or NULL for none. All other values are ignored.
+	 * @return $this
+	 */
+	public function setValue($value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the values that should be marked as selected
+	 * in the tree.
+	 *
+	 * Note: This is an alias for {@see self::setValue()},
+	 * as it is more intuitive to use.
+	 *
+	 * @param string[]|null $values
+	 * @return $this
+	 */
+	public function setValues(?array $values): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Fetches all currently selected values in the tree.
+	 *
+	 * Note: This is an alias for {@see self::getValue()},
+	 * as it is more intuitive to use.
+	 *
+	 * @return string[]
+	 */
+	public function getValues(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/UIButton.php`
+
+```php
+namespace ;
+
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+
+/**
+ * Twitter Bootstrap-based switch element that acts like a checkbox.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class HTML_QuickForm2_Element_UIButton extends HTML_QuickForm2_Element_Button
+{
+	public function getButtonInstance(): UI_Button
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $label
+	 * @return $this
+	 */
+	public function setLabel($label): self
+	{
+		/* ... */
+	}
+
+
+	public function __toString(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function makeSubmit(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $title
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setTitle($title): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $tooltip
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setTooltip($tooltip): self
+	{
+		/* ... */
+	}
+
+
+	public function makeDangerous(): self
+	{
+		/* ... */
+	}
+
+
+	public function makePrimary(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeSuccess(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeDeveloper(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeWarning(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeInfo(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeInverse(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $statement
+	 * @return $this
+	 */
+	public function click(string $statement): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|AdminURLInterface $url
+	 * @param string $target
+	 * @return $this
+	 */
+	public function link($url, string $target = ''): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $text
+	 * @return $this
+	 */
+	public function setLoadingText($text): self
+	{
+		/* ... */
+	}
+
+
+	public function getTooltip(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * NOTE: This is not type hinted on purpose
+	 * to stay compatible with the
+	 * `HTML_Common2::hasClass()` method.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public function hasClass(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	public function hasClasses(): bool
+	{
+		/* ... */
+	}
+
+
+	public function addClasses(array $names): self
+	{
+		/* ... */
+	}
+
+
+	public function getClasses(): array
+	{
+		/* ... */
+	}
+
+
+	public function classesToString(): string
+	{
+		/* ... */
+	}
+
+
+	public function classesToAttribute(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $message
+	 * @param bool $withInput
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function makeConfirm($message, bool $withInput = false): self
+	{
+		/* ... */
+	}
+
+
+	public function getConfirmMessage(): UI_ClientConfirmable_Message
+	{
+		/* ... */
+	}
+
+
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	public function isClickable(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isLinked(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getJavascript(): string
+	{
+		/* ... */
+	}
+
+
+	public function isConfirm(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isDangerous(): bool
+	{
+		/* ... */
+	}
+
+
+	public function setIcon(?UI_Icon $icon): self
+	{
+		/* ... */
+	}
+
+
+	public function hasIcon(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getIcon(): ?UI_Icon
+	{
+		/* ... */
+	}
+
+
+	public function isLocked(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getLockReason(): string
+	{
+		/* ... */
+	}
+
+
+	public function makeLockable($lockable = true): self
+	{
+		/* ... */
+	}
+
+
+	public function isLockable(): bool
+	{
+		/* ... */
+	}
+
+
+	public function lock($reason): self
+	{
+		/* ... */
+	}
+
+
+	public function unlock(): self
+	{
+		/* ... */
+	}
+
+
+	public function getPage(): UI_Page
+	{
+		/* ... */
+	}
+
+
+	public function getTheme(): UI_Themes_Theme
+	{
+		/* ... */
+	}
+
+
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	public function getInstanceID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRenderer(): UI_Themes_Theme_ContentRenderer
 	{
 		/* ... */
 	}
@@ -3606,6 +4874,312 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
 
 
 ```
+###  Path: `/src/classes/UI/Form/Element/VisualSelect.php`
+
+```php
+namespace ;
+
+use HTML\QuickForm2\Element\Select\SelectOption as SelectOption;
+use UI\ClientResourceCollection as ClientResourceCollection;
+use UI\Form\Element\VisualSelect\ImageSet as ImageSet;
+use UI\Form\Element\VisualSelect\VisualSelectOption as VisualSelectOption;
+use UI\Traits\ScriptInjectableInterface as ScriptInjectableInterface;
+use UI\Traits\ScriptInjectableTrait as ScriptInjectableTrait;
+
+/**
+ * Select element that lets the user choose an item from
+ * an image gallery (icons, for example). Includes filtering
+ * by search term, and choosing the text value from a traditional
+ * select element.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @method HTML_QuickForm2_Element_VisualSelect_Optgroup addOptgroup($label, $attributes = null)
+ * @method VisualSelectOption addOption($text, $value, $attributes = null)
+ * @method VisualSelectOption prependOption($text, $value, $attributes = null)
+ *
+ * @see template_default_ui_forms_elements_visual_select
+ */
+class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Select implements ScriptInjectableInterface
+{
+	use ScriptInjectableTrait;
+
+	public const ERROR_IMAGE_SET_ALREADY_EXISTS = 130901;
+	public const PROPERTY_SORTING_ENABLED = 'sorting-enabled';
+	public const PROPERTY_PLEASE_SELECT_LABEL = 'please-select-label';
+	public const PROPERTY_PLEASE_SELECT_ENABLED = 'please-select';
+
+	/**
+	 * Enables/disables the "Please select" entry to be able to
+	 * not choose any of the proposed images.
+	 *
+	 * @param boolean $enabled
+	 * @param string|number|UI_Renderable_Interface|NULL $selectLabel Optional when enabled: the label to use for the "Please select" image
+	 * @return HTML_QuickForm2_Element_VisualSelect
+	 * @throws UI_Exception
+	 */
+	public function setPleaseSelectEnabled(bool $enabled = true, $selectLabel = null): self
+	{
+		/* ... */
+	}
+
+
+	public function isPleaseSelectEnabled(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string
+	 * @throws UI_Exception
+	 * @see template_default_ui_forms_elements_visual_select
+	 */
+	public function __toString()
+	{
+		/* ... */
+	}
+
+
+	public function hasPleaseSelect(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getPleaseSelectLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param SelectOption[]|NULL $options
+	 * @param VisualSelectOption[]|NULL $result
+	 * @return VisualSelectOption[]
+	 */
+	public function getOptionsFlat(?array $options = null, ?array $result = null): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param bool $enabled
+	 * @return $this
+	 */
+	public function setSortingEnabled(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	public function isGroupingEnabled(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isFilteringEnabled(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the default, large size of the thumbnails.
+	 *
+	 * @param int $size
+	 * @return HTML_QuickForm2_Element_VisualSelect
+	 * @see HTML_QuickForm2_Element_VisualSelect::setSmallThunbnailSize()
+	 */
+	public function setLargeThumbnailSize(int $size): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the size of the thumbnails for long lists with
+	 * more items than the filtering threshold.
+	 *
+	 * @param int $size
+	 * @return HTML_QuickForm2_Element_VisualSelect
+	 * @see HTML_QuickForm2_Element_VisualSelect::setLargeThumbnailSize()
+	 */
+	public function setSmallThumbnailSize(int $size): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the amount of options from which the filtering
+	 * element will be shown.
+	 *
+	 * @param int $amount
+	 * @return HTML_QuickForm2_Element_VisualSelect
+	 */
+	public function setFilterThreshold(int $amount): self
+	{
+		/* ... */
+	}
+
+
+	public function getFilterThreshold(): int
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a checkered background to the images, to be able to
+	 * see when they have transparency.
+	 *
+	 * @param bool $checkered
+	 * @return $this
+	 */
+	public function makeCheckered(bool $checkered = true): self
+	{
+		/* ... */
+	}
+
+
+	public function isCheckered(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getThumbnailSize(): int
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds an image to select: simultaneously adds it to the
+	 * select element and the list of images.
+	 *
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param string $value
+	 * @param string $url
+	 * @param array<string,string> $attributes
+	 * @return VisualSelectOption
+	 * @throws HTML_QuickForm2_InvalidArgumentException
+	 */
+	public function addImage($label, string $value, string $url, array $attributes = []): VisualSelectOption
+	{
+		/* ... */
+	}
+
+
+	public function addImageSet(string $id, string $label): ImageSet
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return ImageSet[]
+	 */
+	public function getImageSets(): array
+	{
+		/* ... */
+	}
+
+
+	public function getActiveImageSet(): ?ImageSet
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeBlock(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a class to the container element of the button and dropdown menu.
+	 * Use this when you need to be able to style the dropdown menu, for example,
+	 * since by default it is not wrapped in another element.
+	 *
+	 * @param string $className
+	 * @return $this
+	 */
+	public function addContainerClass(string $className): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string[]
+	 */
+	public function getContainerClasses(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/VisualSelect/ImageSet.php`
+
+```php
+namespace UI\Form\Element\VisualSelect;
+
+use HTML_QuickForm2_Element_VisualSelect as HTML_QuickForm2_Element_VisualSelect;
+use HTML_QuickForm2_Element_VisualSelect_Optgroup as HTML_QuickForm2_Element_VisualSelect_Optgroup;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+class ImageSet
+{
+	public const ATTRIBUTE_SET_ID = 'data-image-set';
+	public const PROPERTY_IMAGE_SET = 'image-set';
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function addGroup(string $label): HTML_QuickForm2_Element_VisualSelect_Optgroup
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds an image to select: simultaneously adds it to the
+	 * select element and the list of images.
+	 *
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param string $value
+	 * @param string $url
+	 * @return $this
+	 */
+	public function addImage($label, string $value, string $url): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Element/VisualSelect/ImageSet.php`
 
 ```php
@@ -3698,6 +5272,106 @@ class HTML_QuickForm2_Element_VisualSelect_Optgroup extends HTML_QuickForm2_Elem
 
 
 	public function getElementID(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/VisualSelect/Optgroup.php`
+
+```php
+namespace ;
+
+use UI\Form\Element\VisualSelect\ImageSet as ImageSet;
+use UI\Form\Element\VisualSelect\VisualSelectOption as VisualSelectOption;
+
+/**
+ * Custom option group that adds methods specific to the
+ * visual selection element. Use the {@see HTML_QuickForm2_Element_VisualSelect_Optgroup::addImage()}
+ * method to add images, instead of the regular `addOption()`
+ * method.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @method VisualSelectOption addOption($text, $value, $attributes = null)
+ */
+class HTML_QuickForm2_Element_VisualSelect_Optgroup extends HTML_QuickForm2_Element_Select_Optgroup
+{
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param string $value
+	 * @param string $url
+	 * @return VisualSelectOption
+	 * @throws HTML_QuickForm2_InvalidArgumentException
+	 * @throws UI_Exception
+	 */
+	public function addImage($label, string $value, string $url): VisualSelectOption
+	{
+		/* ... */
+	}
+
+
+	public function getImageSetID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getElementID(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Element/VisualSelect/VisualSelectOption.php`
+
+```php
+namespace UI\Form\Element\VisualSelect;
+
+use HTML\QuickForm2\Element\Select\SelectOption as SelectOption;
+
+class VisualSelectOption extends SelectOption
+{
+	public const ATTRIBUTE_IMAGE_URL = 'image-url';
+	public const ATTRIBUTE_PLEASE_SELECT = 'data-please-select';
+
+	public function getImageURL(): string
+	{
+		/* ... */
+	}
+
+
+	public function setImageURL(string $url): self
+	{
+		/* ... */
+	}
+
+
+	public function hasImage(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isPleaseSelect(): bool
+	{
+		/* ... */
+	}
+
+
+	public function hasImageSet(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getImageSetID(): ?string
 	{
 		/* ... */
 	}
@@ -3919,6 +5593,40 @@ class UI_Form_Renderer_CommentGenerator
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper as ClassHelper;
+use Application\Application as Application;
+use Application\MarkdownRenderer\MarkdownRenderer as MarkdownRenderer;
+
+class UI_Form_Renderer_CommentGenerator
+{
+	public const PROPERTY_COMMENTS_CALLBACK = 'comments-callback';
+	public const PROPERTY_MARKDOWN_SUPPORT = 'markdown_support';
+
+	public function getComment(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType.php`
+
+```php
+namespace ;
+
+abstract class UI_Form_Renderer_CommentGenerator_DataType
+{
+	abstract public function addComments(): void;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType.php`
 
 ```php
@@ -3937,6 +5645,36 @@ abstract class UI_Form_Renderer_CommentGenerator_DataType
 namespace ;
 
 class UI_Form_Renderer_CommentGenerator_DataType_Date extends UI_Form_Renderer_CommentGenerator_DataType
+{
+	public function addComments(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType/Date.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_CommentGenerator_DataType_Date extends UI_Form_Renderer_CommentGenerator_DataType
+{
+	public function addComments(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType/Float.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_CommentGenerator_DataType_Float extends UI_Form_Renderer_CommentGenerator_DataType
 {
 	public function addComments(): void
 	{
@@ -3976,12 +5714,57 @@ class UI_Form_Renderer_CommentGenerator_DataType_ISODate extends UI_Form_Rendere
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType/ISODate.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_CommentGenerator_DataType_ISODate extends UI_Form_Renderer_CommentGenerator_DataType
+{
+	public function addComments(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType/Integer.php`
 
 ```php
 namespace ;
 
 class UI_Form_Renderer_CommentGenerator_DataType_Integer extends UI_Form_Renderer_CommentGenerator_DataType
+{
+	public function addComments(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType/Integer.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_CommentGenerator_DataType_Integer extends UI_Form_Renderer_CommentGenerator_DataType
+{
+	public function addComments(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/CommentGenerator/DataType/RegexHint.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_CommentGenerator_DataType_RegexHint extends UI_Form_Renderer_CommentGenerator_DataType
 {
 	public function addComments(): void
 	{
@@ -4196,9 +5979,245 @@ class UI_Form_Renderer_Element extends UI_Renderable
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/Element.php`
+
+```php
+namespace ;
+
+/**
+ * Renders the markup for form elements, and provides
+ * utility methods to customize this markup. This class
+ * is provided as argument to the element's render callback
+ * functions.
+ *
+ * @package Forms
+ * @subpackage Renderer
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Form::addRenderCallback()
+ * @see UI_Form_Renderer_RenderType_Default
+ */
+class UI_Form_Renderer_Element extends UI_Renderable
+{
+	const HTML_BELOW_COMMENT = 'below_comment';
+	const HTML_ABOVE_CONTROL = 'above_control';
+	const HTML_BELOW_CONTROL = 'below_control';
+
+	/**
+	 * Retrieves the form element being rendered.
+	 * @return HTML_QuickForm2_Node
+	 */
+	public function getFormElement(): HTML_QuickForm2_Node
+	{
+		/* ... */
+	}
+
+
+	public function isFrozen(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isStandalone(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabelID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the label with additional markup to
+	 * ensure that it can word wrap correctly, even if
+	 * the label is filled with underscores.
+	 *
+	 * @return string
+	 */
+	public function getLabelForHTML(): string
+	{
+		/* ... */
+	}
+
+
+	public function getElementHTML(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $html
+	 * @return $this
+	 */
+	public function setElementHTML(string $html): self
+	{
+		/* ... */
+	}
+
+
+	public function getDataType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getValue(): string
+	{
+		/* ... */
+	}
+
+
+	public function isRequired(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isStructural(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a class to the form element's control
+	 * group container DIV element.
+	 *
+	 * @param string $name
+	 * @return UI_Form_Renderer_Element
+	 *
+	 * @see UI_Form_Renderer_RenderType_Default
+	 */
+	public function addControlGroupClass(string $name): UI_Form_Renderer_Element
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds custom HTML to the element at the specified position.
+	 *
+	 * @param string $html
+	 * @param string $position
+	 * @param bool $whenFrozen Whether to add this when the element is frozen
+	 * @see UI_Form_Renderer_Element::HTML_BELOW_COMMENT
+	 * @see UI_Form_Renderer_Element::HTML_ABOVE_CONTROL
+	 * @see UI_Form_Renderer_Element::HTML_BELOW_CONTROL
+	 */
+	public function addHTML(
+		string $html,
+		string $position = self::HTML_BELOW_CONTROL,
+		bool $whenFrozen = false,
+	): UI_Form_Renderer_Element
+	{
+		/* ... */
+	}
+
+
+	public function addHTMLBelowComment(string $html, bool $whenFrozen = false): UI_Form_Renderer_Element
+	{
+		/* ... */
+	}
+
+
+	public function addHTMLBelowControl(string $html, bool $whenFrozen = false): UI_Form_Renderer_Element
+	{
+		/* ... */
+	}
+
+
+	public function addHTMLAboveControl(string $html, bool $whenFrozen = false): UI_Form_Renderer_Element
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds an icon that is shown next to the label of the element.
+	 *
+	 * @param UI_Icon $icon
+	 * @return UI_Form_Renderer_Element
+	 */
+	public function addIcon(UI_Icon $icon): UI_Form_Renderer_Element
+	{
+		/* ... */
+	}
+
+
+	public function getFormRenderer(): UI_Form_Renderer
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/ElementCallback.php`
 
 ```php
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/ElementCallback.php`
+
+```php
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/ElementFilter.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_ElementFilter
+{
+	public const ERROR_UNKNOWN_ELEMENT = 64501;
+
+	public function getByID(string $id): UI_Form_Renderer_ElementFilter_RenderDef
+	{
+		/* ... */
+	}
+
+
+	public function hasErrors(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string[]
+	 */
+	public function getRegularElementIDs(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return UI_Form_Renderer_ElementFilter_RenderDef[]
+	 */
+	public function getFiltered(): array
+	{
+		/* ... */
+	}
+}
+
 
 ```
 ###  Path: `/src/classes/UI/Form/Renderer/ElementFilter.php`
@@ -4476,6 +6495,240 @@ class UI_Form_Renderer_ElementFilter_RenderDef
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/ElementFilter/RenderDef.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper as ClassHelper;
+
+class UI_Form_Renderer_ElementFilter_RenderDef
+{
+	/**
+	 * The level at which this form element is being rendered,
+	 * zero-based, zero being the form itself. Elements in
+	 * groups and the like have accordingly higher levels.
+	 *
+	 * @return int
+	 */
+	public function getLevel(): int
+	{
+		/* ... */
+	}
+
+
+	public function getRenderer(): UI_Form_Renderer
+	{
+		/* ... */
+	}
+
+
+	public function hasError(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isSection(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getErrorMessage(): string
+	{
+		/* ... */
+	}
+
+
+	public function getElementLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function getElementTypeID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTypeClass(): string
+	{
+		/* ... */
+	}
+
+
+	public function isRegularElement(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isStandalone(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isContainerElement(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getElementComment(): string
+	{
+		/* ... */
+	}
+
+
+	public function getDataType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getElementValue(): string
+	{
+		/* ... */
+	}
+
+
+	public function isStructural(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getElementID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabelID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getElementHTML(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRel(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRelValues(): array
+	{
+		/* ... */
+	}
+
+
+	public function isDummy(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isLast(): bool
+	{
+		/* ... */
+	}
+
+
+	public function makeLast(): void
+	{
+		/* ... */
+	}
+
+
+	public function setSection(UI_Form_Renderer_Sections_Section $section): void
+	{
+		/* ... */
+	}
+
+
+	public function getSection(): ?UI_Form_Renderer_Sections_Section
+	{
+		/* ... */
+	}
+
+
+	public function getSectionID(): string
+	{
+		/* ... */
+	}
+
+
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getTypeRenderer(): UI_Form_Renderer_RenderType
+	{
+		/* ... */
+	}
+
+
+	public function getElement(): HTML_QuickForm2_Node
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves a property of the element available only at runtime.
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function getRuntimeProperty(string $name)
+	{
+		/* ... */
+	}
+
+
+	public function getAttribute(string $name): string
+	{
+		/* ... */
+	}
+
+
+	public function resolveComments(): string
+	{
+		/* ... */
+	}
+
+
+	public function getSubDefs(): array
+	{
+		/* ... */
+	}
+
+
+	public function isRequired(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isFrozen(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/Registry.php`
 
 ```php
@@ -4498,6 +6751,95 @@ class UI_Form_Renderer_Registry implements Application_Interfaces_Loggable
 
 
 	public function injectJS(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/Registry.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_Registry implements Application_Interfaces_Loggable
+{
+	use Application_Traits_Loggable;
+
+	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+
+
+	public function setEnabled(bool $enabled): void
+	{
+		/* ... */
+	}
+
+
+	public function injectJS(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType.php`
+
+```php
+namespace ;
+
+abstract class UI_Form_Renderer_RenderType
+{
+	public function getRenderDef(): UI_Form_Renderer_ElementFilter_RenderDef
+	{
+		/* ... */
+	}
+
+
+	public function getRenderer(): UI_Form_Renderer
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	abstract public function includeInRegistry(): bool;
+
+
+	public function renderMarkupError(): string
+	{
+		/* ... */
+	}
+
+
+	public function renderMarkupComments(): string
+	{
+		/* ... */
+	}
+
+
+	public function getHTML(): string
+	{
+		/* ... */
+	}
+
+
+	public function renderMarkupHeader(string $label, int $level): string
+	{
+		/* ... */
+	}
+
+
+	public function getSubElements(): UI_Form_Renderer_ElementFilter
 	{
 		/* ... */
 	}
@@ -4593,6 +6935,69 @@ class UI_Form_Renderer_RenderType_Button extends UI_Form_Renderer_RenderType
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Button.php`
+
+```php
+namespace ;
+
+/**
+ * A button is detected by checking the element's `rel`
+ * attribute. This is set automatically by form element
+ * type in the render def.
+ *
+ * @package User Interface
+ * @subpackage Forms
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Form::REL_BUTTON
+ * @see UI_Form_Renderer_ElementFilter_RenderDef::$relByType
+ * @see UI_Form_Renderer_ElementFilter_RenderDef::getTypeClass()
+ */
+class UI_Form_Renderer_RenderType_Button extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Default.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\ClassableInterface as ClassableInterface;
+use AppUtils\Traits\ClassableTrait as ClassableTrait;
+
+/**
+ * Renderer for all non-special form elements: this handles all regular
+ * HTML QuickForm elements (like text input, select, etc...).
+ *
+ * These elements can be customized using callbacks, via the
+ * {@see UI_Form_Renderer_Element} class. To add a render callback for
+ * an element, see the {@see UI_Form::addRenderCallback()} method.
+ *
+ * @package Forms
+ * @subpackage Renderer
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Form_Renderer_Element
+ * @see UI_Form::addRenderCallback()
+ */
+class UI_Form_Renderer_RenderType_Default extends UI_Form_Renderer_RenderType implements ClassableInterface
+{
+	use ClassableTrait;
+
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/RenderType/Default.php`
 
 ```php
@@ -4643,12 +7048,57 @@ class UI_Form_Renderer_RenderType_Group extends UI_Form_Renderer_RenderType
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Group.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Group extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/RenderType/Header.php`
 
 ```php
 namespace ;
 
 class UI_Form_Renderer_RenderType_Header extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Header.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Header extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Hint.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Hint extends UI_Form_Renderer_RenderType
 {
 	public function includeInRegistry(): bool
 	{
@@ -4688,6 +7138,36 @@ class UI_Form_Renderer_RenderType_Html extends UI_Form_Renderer_RenderType
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Html.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Html extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/LayoutlessGroup.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_LayoutlessGroup extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/RenderType/LayoutlessGroup.php`
 
 ```php
@@ -4709,6 +7189,36 @@ class UI_Form_Renderer_RenderType_LayoutlessGroup extends UI_Form_Renderer_Rende
 namespace ;
 
 class UI_Form_Renderer_RenderType_Paragraph extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Paragraph.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Paragraph extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Radio.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Radio extends UI_Form_Renderer_RenderType
 {
 	public function includeInRegistry(): bool
 	{
@@ -4753,12 +7263,62 @@ class UI_Form_Renderer_RenderType_SelfRenderingGroup extends UI_Form_Renderer_Re
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/SelfRenderingGroup.php`
+
+```php
+namespace ;
+
+/**
+ * A group of elements that has a custom renderer:
+ * The group's HTML is rendered by the group instance
+ * itself. It is effectively treated as a default,
+ * single element.
+ *
+ * @package UserInterface
+ * @subpackage Forms
+ */
+class UI_Form_Renderer_RenderType_SelfRenderingGroup extends UI_Form_Renderer_RenderType_Default
+{
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/RenderType/Static.php`
 
 ```php
 namespace ;
 
 class UI_Form_Renderer_RenderType_Static extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Static.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Static extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Subheader.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Subheader extends UI_Form_Renderer_RenderType
 {
 	public function includeInRegistry(): bool
 	{
@@ -4791,6 +7351,51 @@ namespace ;
 class UI_Form_Renderer_RenderType_Tab extends UI_Form_Renderer_RenderType
 {
 	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/RenderType/Tab.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_RenderType_Tab extends UI_Form_Renderer_RenderType
+{
+	public function includeInRegistry(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/Sections.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_Sections
+{
+	public function create(UI_Form_Renderer_ElementFilter_RenderDef $renderDef): UI_Form_Renderer_Sections_Section
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return UI_Form_Renderer_Sections_Section[]
+	 */
+	public function getAll(): array
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
 	{
 		/* ... */
 	}
@@ -4917,6 +7522,119 @@ class UI_Form_Renderer_Sections_Section implements UI_Renderable_Interface
 
 
 ```
+###  Path: `/src/classes/UI/Form/Renderer/Sections/Section.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_Sections_Section implements UI_Renderable_Interface
+{
+	use UI_Traits_RenderableGeneric;
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getJSExpand(): string
+	{
+		/* ... */
+	}
+
+
+	public function getJSCollapse(): string
+	{
+		/* ... */
+	}
+
+
+	public function isCollapsed(): bool
+	{
+		/* ... */
+	}
+
+
+	public function appendContent(string $content): void
+	{
+		/* ... */
+	}
+
+
+	public function registerElement(UI_Form_Renderer_ElementFilter_RenderDef $renderDef): void
+	{
+		/* ... */
+	}
+
+
+	public function makeLast(): void
+	{
+		/* ... */
+	}
+
+
+	public function makeStandalone(): void
+	{
+		/* ... */
+	}
+
+
+	public function hasErrors(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isRequired(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getFirstInvalid(): ?UI_Form_Renderer_ElementFilter_RenderDef
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/Tabs.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_Tabs
+{
+	public function create(
+		UI_Form_Renderer_ElementFilter_RenderDef $renderDef,
+		UI_Form_Renderer_ElementFilter $elements,
+	): UI_Form_Renderer_Tabs_Tab
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Renderer/Tabs.php`
 
 ```php
@@ -4988,6 +7706,73 @@ class UI_Form_Renderer_Tabs_Tab
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Renderer/Tabs/Tab.php`
+
+```php
+namespace ;
+
+class UI_Form_Renderer_Tabs_Tab
+{
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getDescription(): string
+	{
+		/* ... */
+	}
+
+
+	public function renderContent(): string
+	{
+		/* ... */
+	}
+
+
+	public function hasErrors(): bool
+	{
+		/* ... */
+	}
+
+
+	public function renderLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function renderAbstract(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Rule/Equals.php`
+
+```php
+namespace ;
+
+/**
+ * @category HTML
+ * @package  HTML_QuickForm2
+ * @link     http://pear.php.net/package/HTML_QuickForm2
+ */
+class HTML_QuickForm2_Rule_Equals extends HTML_QuickForm2_Rule
+{
 }
 
 
@@ -5123,6 +7908,41 @@ class UI_Form_Validator_Date extends UI_Form_Validator
 
 
 ```
+###  Path: `/src/classes/UI/Form/Validator/Date.php`
+
+```php
+namespace ;
+
+/**
+ * Specialized validator class used for date input fields. Validates
+ * the entry format, as well as the date itself.
+ *
+ * Also sets the data type so the type hints are displayed in
+ * the UI for the field type.
+ *
+ * @package Application
+ * @subpackage Forms
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @see UI_Form::addRuleDate()
+ */
+class UI_Form_Validator_Date extends UI_Form_Validator
+{
+	public const ERROR_INVALID_DATE_ELEMENT_TYPE = 553001;
+
+	public function getDataType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getDefaultValue(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Validator/Float.php`
 
 ```php
@@ -5155,6 +7975,80 @@ class UI_Form_Validator_Float extends UI_Form_Validator
 
 
 	public function getDataType(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Validator/Float.php`
+
+```php
+namespace ;
+
+use AppUtils\RegexHelper as RegexHelper;
+use UI\Form\FormException as FormException;
+
+/**
+ * Specialized validator class used for integer form elements:
+ * used to validate values according to the format requirements
+ * as well as minimum/maximum values if any.
+ *
+ * Also sets the data type so the type hints are displayed in
+ * the UI for the field type.
+ *
+ * @package Application
+ * @subpackage Forms
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @see UI_Form::addRuleFloat()
+ */
+class UI_Form_Validator_Float extends UI_Form_Validator
+{
+	public const ERROR_INVALID_FLOAT_CONFIGURATION = 74801;
+
+	public function getDefaultValue(): string
+	{
+		/* ... */
+	}
+
+
+	public function getDataType(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Validator/ISODate.php`
+
+```php
+namespace ;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+
+/**
+ * Specialized validator class used for date input fields. Validates
+ * the entry format, as well as the date itself.
+ *
+ * Also sets the data type so the type hints are displayed in
+ * the UI for the field type.
+ *
+ * @package Application
+ * @subpackage Forms
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @see UI_Form::addRuleDate()
+ */
+class UI_Form_Validator_ISODate extends UI_Form_Validator
+{
+	public function getDataType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getDefaultValue(): string
 	{
 		/* ... */
 	}
@@ -5236,6 +8130,69 @@ class UI_Form_Validator_Integer extends UI_Form_Validator
 
 
 ```
+###  Path: `/src/classes/UI/Form/Validator/Integer.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use AppUtils\RegexHelper as RegexHelper;
+
+/**
+ * Specialized validator class used for integer form elements:
+ * used to validate values according to the format requirements
+ * as well as minimum/maximum values if any.
+ *
+ * Also sets the data type so the type hints are displayed in
+ * the UI for the field type.
+ *
+ * @package Application
+ * @subpackage Forms
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @see UI_Form::addRuleInteger()
+ */
+class UI_Form_Validator_Integer extends UI_Form_Validator
+{
+	public const ERROR_INVALID_CONFIGURATION = 74901;
+
+	public function getDataType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getDefaultValue(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Form/Validator/Percent.php`
+
+```php
+namespace ;
+
+/**
+ * Specialized validator class used for percentage elements:
+ * validating the value according to the min/max settings.
+ *
+ * @package Application
+ * @subpackage Forms
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @see UI_Form::addRulePercent()
+ */
+class UI_Form_Validator_Percent extends UI_Form_Validator_Float
+{
+	public function getDataType(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Form/Validator/Percent.php`
 
 ```php
@@ -5262,6 +8219,6 @@ class UI_Form_Validator_Percent extends UI_Form_Validator_Float
 ```
 ---
 **File Statistics**
-- **Size**: 98.76 KB
-- **Lines**: 5268
+- **Size**: 146.43 KB
+- **Lines**: 8225
 File: `modules/ui/form/architecture-core.md`

@@ -91,6 +91,20 @@ class UncachedQuery
 
 
 ```
+###  Path: `/src/classes/DBHelper/Attributes/UncachedQuery.php`
+
+```php
+namespace DBHelper\Attributes;
+
+use Attribute as Attribute;
+
+#[Attribute]
+class UncachedQuery
+{
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/BaseCollection.php`
 
 ```php
@@ -396,6 +410,90 @@ abstract class BaseChildCollection extends DBHelper_BaseCollection implements Ch
 
 
 ```
+###  Path: `/src/classes/DBHelper/BaseCollection/BaseChildCollection.php`
+
+```php
+namespace DBHelper\BaseCollection;
+
+use DBHelper as DBHelper;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+use DBHelper_BaseCollection as DBHelper_BaseCollection;
+use DBHelper_Exception as DBHelper_Exception;
+
+/**
+ * DBHelper collection that requires a parent record to be bound
+ * from another DBHelper collection.
+ *
+ * > NOTE: Child collections can be nested, i.e. a child collection
+ * > can itself have further child collections.
+ *
+ * ## Usage
+ *
+ * 1. Extend this class, implement the abstract methods
+ * 2. When creating the collection, specify the parent record in your {@see DBHelper::createCollection()} call.
+ *
+ * @package DBHelper
+ * @subpackage Base Collection
+ */
+abstract class BaseChildCollection extends DBHelper_BaseCollection implements ChildCollectionInterface
+{
+	/**
+	 * This is only available if the collection has a parent collection.
+	 *
+	 * @return DBHelperRecordInterface
+	 */
+	public function getParentRecord(): DBHelperRecordInterface
+	{
+		/* ... */
+	}
+
+
+	final public function bindParentRecord(?DBHelperRecordInterface $record): void
+	{
+		/* ... */
+	}
+
+
+	public function getParentCollection(): DBHelperCollectionInterface
+	{
+		/* ... */
+	}
+
+
+	public function resetCollection(): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/ChildCollectionInterface.php`
+
+```php
+namespace DBHelper\BaseCollection;
+
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+
+interface ChildCollectionInterface extends DBHelperCollectionInterface
+{
+	/**
+	 * @return class-string<DBHelperCollectionInterface>
+	 */
+	public function getParentCollectionClass(): string;
+
+
+	/**
+	 * @return DBHelperRecordInterface Mandatory parent record for child collections.
+	 */
+	public function getParentRecord(): DBHelperRecordInterface;
+
+
+	public function getParentCollection(): DBHelperCollectionInterface;
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/BaseCollection/ChildCollectionInterface.php`
 
 ```php
@@ -440,6 +538,423 @@ class DBHelperCollectionException extends DBHelper_Exception
 	public const ERROR_MISSING_REQUIRED_KEYS = 16510;
 	public const ERROR_COLLECTION_ALREADY_HAS_PARENT = 16504;
 	public const ERROR_CREATE_RECORD_CANCELLED = 16509;
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/DBHelperCollectionException.php`
+
+```php
+namespace DBHelper\BaseCollection;
+
+use DBHelper_Exception as DBHelper_Exception;
+
+class DBHelperCollectionException extends DBHelper_Exception
+{
+	public const ERROR_NO_PARENT_RECORD_BOUND = 16505;
+	public const ERROR_IDTABLE_SAME_TABLE_NAME = 16501;
+	public const ERROR_CANNOT_START_TWICE = 16506;
+	public const ERROR_CANNOT_DELETE_OTHER_COLLECTION_RECORD = 16507;
+	public const ERROR_FILTER_SETTINGS_CLASS_NOT_FOUND = 16512;
+	public const ERROR_FILTER_CRITERIA_CLASS_NOT_FOUND = 16511;
+	public const ERROR_MISSING_REQUIRED_KEYS = 16510;
+	public const ERROR_COLLECTION_ALREADY_HAS_PARENT = 16504;
+	public const ERROR_CREATE_RECORD_CANCELLED = 16509;
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/DBHelperCollectionInterface.php`
+
+```php
+namespace DBHelper\BaseCollection;
+
+use AppUtils\Request as Request;
+use Application\Collection\IntegerCollectionInterface as IntegerCollectionInterface;
+use Application\EventHandler\Eventables\EventableListener as EventableListener;
+use DBHelper\BaseCollection\Event\AfterCreateRecordEvent as AfterCreateRecordEvent;
+use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent as AfterDeleteRecordEvent;
+use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent as BeforeCreateRecordEvent;
+use DBHelper\BaseFilterCriteria\IntegerCollectionFilteringInterface as IntegerCollectionFilteringInterface;
+use DBHelper\DBHelperFilterCriteriaInterface as DBHelperFilterCriteriaInterface;
+use DBHelper\DBHelperFilterSettingsInterface as DBHelperFilterSettingsInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+
+interface DBHelperCollectionInterface extends IntegerCollectionInterface, IntegerCollectionFilteringInterface
+{
+	public const SORT_DIR_ASC = 'ASC';
+	public const VALUE_UNDEFINED = '__undefined';
+	public const EVENT_BEFORE_CREATE_RECORD = 'BeforeCreateRecord';
+	public const EVENT_AFTER_DELETE_RECORD = 'AfterDeleteRecord';
+	public const SORT_DIR_DESC = 'DESC';
+	public const EVENT_AFTER_CREATE_RECORD = 'AfterCreateRecord';
+	public const OPTION_CUSTOM_RECORD_ID = '__custom_record_id';
+
+	/**
+	 * @return class-string<DBHelperRecordInterface>
+	 */
+	public function getRecordClassName(): string;
+
+
+	/**
+	 * @return class-string<DBHelperFilterCriteriaInterface>
+	 */
+	public function getRecordFiltersClassName(): string;
+
+
+	/**
+	 * @return class-string<DBHelperFilterSettingsInterface>
+	 */
+	public function getRecordFilterSettingsClassName(): string;
+
+
+	/**
+	 * @return string
+	 */
+	public function getRecordDefaultSortKey(): string;
+
+
+	/**
+	 * Retrieves the searchable columns as an associative array
+	 * with column name => human-readable label pairs.
+	 *
+	 * @return array<string,string>
+	 */
+	public function getRecordSearchableColumns(): array;
+
+
+	/**
+	 * The name of the table storing the records.
+	 *
+	 * @return string
+	 */
+	public function getRecordTableName(): string;
+
+
+	/**
+	 * The name of the database column storing the primary key.
+	 *
+	 * @return string
+	 */
+	public function getRecordPrimaryName(): string;
+
+
+	/**
+	 * @return string
+	 */
+	public function getRecordTypeName(): string;
+
+
+	/**
+	 * Human-readable label of the collection, e.g. "Products".
+	 *
+	 * @return string
+	 */
+	public function getCollectionLabel(): string;
+
+
+	/**
+	 * Human-readable label of the records, e.g. "Product".
+	 *
+	 * @return string
+	 */
+	public function getRecordLabel(): string;
+
+
+	/**
+	 * Attempts to retrieve a record by its ID as specified in the request.
+	 *
+	 * Uses the request parameter name as returned by {@see self::getRecordRequestPrimaryName()},
+	 * with {@see self::getRecordPrimaryName()} as fallback.
+	 *
+	 * @return DBHelperRecordInterface|NULL
+	 */
+	public function getByRequest(): ?DBHelperRecordInterface;
+
+
+	/**
+	 * Registers parameter names in the {@see Request} class to
+	 * validate request values for this collection. Automatically
+	 * called when using {@see self::getByRequest()}.
+	 *
+	 * @return void
+	 */
+	public function registerRequestParams(): void;
+
+
+	/**
+	 * Retrieves a single record by a specific record key.
+	 * Note that if the key is not unique, the first one
+	 * in the result set is used, using the default sorting
+	 * key.
+	 *
+	 * @param string $key
+	 * @param string $value
+	 * @return DBHelperRecordInterface|NULL
+	 */
+	public function getByKey(string $key, string $value): ?DBHelperRecordInterface;
+
+
+	/**
+	 * Checks whether a record with the specified ID exists in the database.
+	 *
+	 * @param integer $record_id
+	 * @return boolean
+	 */
+	public function idExists(int $record_id): bool;
+
+
+	/**
+	 * Creates a stub record of this collection, which can
+	 * be used to access the API that may not be available
+	 * statically.
+	 *
+	 * @return DBHelperRecordInterface
+	 */
+	public function createStubRecord(): DBHelperRecordInterface;
+
+
+	/**
+	 * Retrieves all records from the database, ordered by the default sorting key.
+	 *
+	 * @return DBHelperRecordInterface[]
+	 */
+	public function getAll(): array;
+
+
+	/**
+	 * Counts the number of records in total.
+	 * @return int
+	 */
+	public function countRecords(): int;
+
+
+	/**
+	 * Creates the filter criteria for this collection of records,
+	 * which is used to query the records.
+	 *
+	 * @return DBHelperFilterCriteriaInterface
+	 */
+	public function getFilterCriteria(): DBHelperFilterCriteriaInterface;
+
+
+	/**
+	 * Creates the filter settings for this collection of records,
+	 * which is used to configure the filtering options used in lists.
+	 *
+	 * @return DBHelperFilterSettingsInterface
+	 */
+	public function getFilterSettings(): DBHelperFilterSettingsInterface;
+
+
+	/**
+	 * Creates a new record with the specified data.
+	 *
+	 * > NOTE: This does not do any kind of validation,
+	 * > you have to ensure that the required keys are
+	 * > all present in the data set.
+	 *
+	 * > NOTE: It is possible to use the {@see DBHelperCollectionInterface::onBeforeCreateRecord()}
+	 * > method to verify the data, and cancel the event
+	 * > as needed.
+	 *
+	 * @param array<string,mixed> $data
+	 * @param bool $silent Whether to not execute any events after
+	 *                       creating the record. The _onCreated() method
+	 *                       will still be called, but the context will
+	 *                       reflect the silent flag to manually handle the
+	 *                       situation.
+	 * @param array<string,mixed> $options Options that are passed on to the record's
+	 *                       onCreated() method, and which can be used for
+	 *                       custom initialization routines.
+	 *                       Official options are:
+	 *                       - {@see self::OPTION_CUSTOM_RECORD_ID}: Specify a custom
+	 *                         ID to use for the record. Can fail if this is not available.
+	 * @return DBHelperRecordInterface
+	 */
+	public function createNewRecord(array $data = [], bool $silent = false, array $options = []): DBHelperRecordInterface;
+
+
+	/**
+	 * Whether the collection has a separate database table dedicated
+	 * to generating the record IDs.
+	 *
+	 * @return bool
+	 */
+	public function hasRecordIDTable(): bool;
+
+
+	/**
+	 * Listens to any new records being created, and allows
+	 * reviewing the data set before the record is added to
+	 * the database. It allows canceling the event if needed.
+	 *
+	 * > NOTE: If the aim is to validate the record's data set,
+	 * > you should register the data keys instead. This allows
+	 * > finer control, with per-key validation callbacks and more.
+	 * > See {@see DBHelper_BaseCollection::_registerKeys()}
+	 * > for details.
+	 *
+	 * @param callable(BeforeCreateRecordEvent) : void $callback
+	 * @return EventableListener
+	 * @see BeforeCreateRecordEvent
+	 */
+	public function onBeforeCreateRecord(callable $callback): EventableListener;
+
+
+	/**
+	 * Listens to any new records created in the collection.
+	 * This allows tasks to execute on the collection level
+	 * when records are created, as compared to the record's
+	 * own created event handled via {@see DBHelperRecordInterface::onCreated()}.
+	 *
+	 * @param callable(AfterCreateRecordEvent) : void $callback
+	 * @return EventableListener
+	 * @see AfterCreateRecordEvent
+	 */
+	public function onAfterCreateRecord(callable $callback): EventableListener;
+
+
+	/**
+	 * Listens to any records deleted from the collection.
+	 *
+	 * The callback gets an instance of the event:
+	 * {@see AfterDeleteRecordEvent}
+	 *
+	 * @param callable(AfterDeleteRecordEvent) : void $callback
+	 * @return EventableListener
+	 * @see AfterDeleteRecordEvent
+	 */
+	public function onAfterDeleteRecord(callable $callback): EventableListener;
+
+
+	/**
+	 * Deletes a record from the collection.
+	 *
+	 * @param DBHelperRecordInterface $record
+	 * @param bool $silent Whether to delete the record silently, without processing events afterwards.
+	 *                      The _onDeleted method will still be called for cleanup tasks, but the context
+	 *                      will reflect the silent state. The method implementation must check this manually.
+	 */
+	public function deleteRecord(DBHelperRecordInterface $record, bool $silent = false): void;
+
+
+	/**
+	 * Checks whether a record with the specified ID is loaded in memory.
+	 * @param int $recordID
+	 * @return bool
+	 */
+	public function isRecordLoaded(int $recordID): bool;
+
+
+	/**
+	 * Gets the name of the request parameter used to fetch
+	 * a collection record when using {@see DBHelperCollectionInterface::getByRequest()}.
+	 * Defaults to the same name as the primary key.
+	 *
+	 * @return string
+	 */
+	public function getRecordRequestPrimaryName(): string;
+
+
+	public function getRecordDefaultSortDir(): string;
+
+
+	/**
+	 * Called by the DBHelper once the collection configuration
+	 * has been completed.
+	 */
+	public function setupComplete(): void;
+
+
+	/**
+	 * If the collection has a parent record, it is returned here.
+	 *
+	 * > NOTE: You can check if the collection is a child collection
+	 * > with instanceof {@see BaseChildCollection}, then this method
+	 * > will no longer return `null`.
+	 *
+	 * @return DBHelperRecordInterface|NULL
+	 * @see BaseChildCollection::getParentRecord()
+	 */
+	public function getParentRecord(): ?DBHelperRecordInterface;
+
+
+	public function getInstanceID(): string;
+
+
+	/**
+	 * Retrieves the foreign keys that should be included in
+	 * all queries, as an associative array with key => value pairs.
+	 *
+	 * @return array<string,string>
+	 */
+	public function getForeignKeys(): array;
+
+
+	/**
+	 * Gets the names of the keys that are searchable
+	 * in this collection.
+	 *
+	 * @return string[]
+	 */
+	public function getRecordSearchableKeys(): array;
+
+
+	/**
+	 * Gets the human-readable labels of the searchable fields
+	 * in this collection.
+	 *
+	 * @return string[]
+	 */
+	public function getRecordSearchableLabels(): array;
+
+
+	/**
+	 * Retrieves the name of the data grid used to
+	 * display the collection items.
+	 *
+	 * It is used to namespace the grid's filter settings,
+	 * which allows inheriting settings between data grids
+	 * when using the same name.
+	 *
+	 * The CollectionList admin screen classes automatically
+	 * use this name.
+	 *
+	 * @return string
+	 *
+	 * @see RecordListScreenTrait
+	 */
+	public function getDataGridName(): string;
+
+
+	/**
+	 * Retrieves a record by its ID.
+	 *
+	 * @param int $record_id
+	 * @return DBHelperRecordInterface
+	 */
+	public function getByID(int $record_id): DBHelperRecordInterface;
+
+
+	/**
+	 * Refreshes all data currently loaded in memory with
+	 * data from the database.
+	 */
+	public function refreshRecordsData(): void;
+
+
+	/**
+	 * Resets the internal records instance cache.
+	 * Forces all records to be fetched anew from the
+	 * database as requested.
+	 *
+	 * > NOTE: Records that were already loaded are disposed,
+	 * > and may not be used anymore.
+	 *
+	 * @return $this
+	 */
+	public function resetCollection(): self;
 }
 
 
@@ -879,6 +1394,46 @@ class AfterCreateRecordEvent extends BaseEventableEvent
 
 
 ```
+###  Path: `/src/classes/DBHelper/BaseCollection/Event/AfterCreateRecordEvent.php`
+
+```php
+namespace DBHelper\BaseCollection\Event;
+
+use Application\EventHandler\Eventables\BaseEventableEvent as BaseEventableEvent;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+use DBHelper_BaseCollection_OperationContext_Create as DBHelper_BaseCollection_OperationContext_Create;
+
+class AfterCreateRecordEvent extends BaseEventableEvent
+{
+	public const EVENT_NAME = 'AfterCreateRecord';
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getCollection(): DBHelperCollectionInterface
+	{
+		/* ... */
+	}
+
+
+	public function getRecord(): DBHelperRecordInterface
+	{
+		/* ... */
+	}
+
+
+	public function getContext(): DBHelper_BaseCollection_OperationContext_Create
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/BaseCollection/Event/AfterDeleteRecordEvent.php`
 
 ```php
@@ -912,6 +1467,79 @@ class AfterDeleteRecordEvent extends BaseEventableEvent
 
 
 	public function getContext(): DBHelper_BaseCollection_OperationContext_Delete
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/Event/AfterDeleteRecordEvent.php`
+
+```php
+namespace DBHelper\BaseCollection\Event;
+
+use Application\EventHandler\Eventables\BaseEventableEvent as BaseEventableEvent;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+use DBHelper_BaseCollection_OperationContext_Delete as DBHelper_BaseCollection_OperationContext_Delete;
+
+class AfterDeleteRecordEvent extends BaseEventableEvent
+{
+	public const EVENT_NAME = 'AfterDeleteRecord';
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getCollection(): DBHelperCollectionInterface
+	{
+		/* ... */
+	}
+
+
+	public function getRecord(): DBHelperRecordInterface
+	{
+		/* ... */
+	}
+
+
+	public function getContext(): DBHelper_BaseCollection_OperationContext_Delete
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/Event/BeforeCreateRecordEvent.php`
+
+```php
+namespace DBHelper\BaseCollection\Event;
+
+use Application\EventHandler\Eventables\BaseEventableEvent as BaseEventableEvent;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+
+class BeforeCreateRecordEvent extends BaseEventableEvent
+{
+	public function getCollection(): DBHelperCollectionInterface
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	public function getRecordData(): array
+	{
+		/* ... */
+	}
+
+
+	public function getName(): string
 	{
 		/* ... */
 	}
@@ -1000,6 +1628,251 @@ class DBHelper_BaseCollection_Keys implements DisposableInterface
 
 
 	public function getChildDisposables(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/Keys.php`
+
+```php
+namespace ;
+
+use Application\Disposables\DisposableInterface as DisposableInterface;
+use Application\Disposables\DisposableTrait as DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait as EventableTrait;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+
+class DBHelper_BaseCollection_Keys implements DisposableInterface
+{
+	use Application_Traits_Loggable;
+	use EventableTrait;
+	use DisposableTrait;
+
+	public const ERROR_KEY_ALREADY_REGISTERED = 71401;
+
+	/**
+	 * @return DBHelper_BaseCollection_Keys_Key[]
+	 */
+	public function getAll(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return DBHelper_BaseCollection_Keys_Key[]
+	 */
+	public function getRequired(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $name
+	 * @return DBHelper_BaseCollection_Keys_Key
+	 * @throws DBHelper_Exception
+	 */
+	public function register(string $name): DBHelper_BaseCollection_Keys_Key
+	{
+		/* ... */
+	}
+
+
+	public function getChildDisposables(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/Keys/Key.php`
+
+```php
+namespace ;
+
+use AppUtils\Microtime as Microtime;
+use Application\AppFactory as AppFactory;
+use DBHelper\BaseRecord\BaseRecordException as BaseRecordException;
+
+class DBHelper_BaseCollection_Keys_Key
+{
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function isRequired(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the default value for the key.
+	 *
+	 * IMPORTANT: Also check with `hasDefault()` if
+	 * this default value should be used at all. Since
+	 * NULL is a valid default value, that is the only
+	 * way to check if it's an intentional NULL.
+	 *
+	 * @return string|null
+	 */
+	public function getDefault(): ?string
+	{
+		/* ... */
+	}
+
+
+	public function makeRequired(bool $required = true): DBHelper_BaseCollection_Keys_Key
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a callback to validate the key value. This must
+	 * throw an exception if the value does not match, or it
+	 * will have no effect.
+	 *
+	 * The callback method gets passed the following parameters:
+	 *
+	 * 1. The value to validate
+	 * 2. The full data set being validated (for lookups)
+	 * 3. The key instance
+	 *
+	 * If the value is not valid, the method must throw an exception.
+	 *
+	 * @param callable(mixed, array<string,mixed>, DBHelper_BaseCollection_Keys_Key) : void $callback
+	 * @return $this
+	 */
+	public function setValidation(callable $callback): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a regular expression validation for the key.
+	 *
+	 * The regex must be a full regex, including delimiters.
+	 *
+	 * @param string $regex
+	 * @return $this
+	 */
+	public function setRegexValidation(string $regex): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether a default value has been specified.
+	 *
+	 * @return bool
+	 */
+	public function hasDefault(): bool
+	{
+		/* ... */
+	}
+
+
+	public function setDefault(?string $default): DBHelper_BaseCollection_Keys_Key
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a generation callback function that will be used to generate
+	 * the key's value if none has been specified. Takes precedence before
+	 * any value set via {@see DBHelper_BaseCollection_Keys_Key::setDefault()}.
+	 *
+	 * The callback method gets the following parameters:
+	 *
+	 * 1. The key instance, {@see DBHelper_BaseCollection_Keys_Key}
+	 * 2. The full data set array (to enable lookups)
+	 *
+	 * The method must return the generated value.
+	 *
+	 * @param callable(DBHelper_BaseCollection_Keys_Key, array<string,mixed>): mixed $callback
+	 * @return $this
+	 */
+	public function setGenerator(callable $callback): DBHelper_BaseCollection_Keys_Key
+	{
+		/* ... */
+	}
+
+
+	public function hasGenerator(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Generates the key's value according to the generation
+	 * callback that was set via {@see DBHelper_BaseCollection_Keys_Key::setGenerator()}.
+	 *
+	 * @param array $data
+	 * @return mixed
+	 * @throws DBHelper_Exception
+	 *
+	 * @see DBHelper_BaseCollection_Keys_Key::setGenerator()
+	 * @see BaseRecordException::ERROR_CANNOT_GENERATE_KEY_VALUE
+	 */
+	public function generateValue(array $data): mixed
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Validates the value using the configured validation.
+	 *
+	 * @param mixed $value
+	 * @param array<string,mixed> $dataSet The full data set being used, for looking up other values for the validation.
+	 */
+	public function validate(mixed $value, array $dataSet): void
+	{
+		/* ... */
+	}
+
+
+	public function setMicrotimeGenerator(): self
+	{
+		/* ... */
+	}
+
+
+	public function setMicrotimeValidation(): self
+	{
+		/* ... */
+	}
+
+
+	public function setUserValidation(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string[] $allowedValues
+	 * @return $this
+	 */
+	public function setEnumValidation(array $allowedValues): self
+	{
+		/* ... */
+	}
+
+
+	public function setCurrentUserGenerator(): self
 	{
 		/* ... */
 	}
@@ -1261,6 +2134,89 @@ abstract class DBHelper_BaseCollection_OperationContext implements OptionableInt
 
 
 ```
+###  Path: `/src/classes/DBHelper/BaseCollection/OperationContext.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
+use AppUtils\Traits\OptionableTrait as OptionableTrait;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+
+/**
+ * Abstract base class for contexts used when a
+ * collection record is created or deleted, to
+ * ensure that the operation is authentic.
+ *
+ * @package Application
+ * @subpackage DBHelper
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class DBHelper_BaseCollection_OperationContext implements OptionableInterface
+{
+	use OptionableTrait;
+
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function makeSilent(): void
+	{
+		/* ... */
+	}
+
+
+	public function isSilent(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return DBHelperRecordInterface
+	 */
+	public function getRecord(): DBHelperRecordInterface
+	{
+		/* ... */
+	}
+
+
+	public function getCollection(): DBHelperCollectionInterface
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/OperationContext/Create.php`
+
+```php
+namespace ;
+
+/**
+ * Context class used when a collection record is deleted,
+ * to ensure that the delete operation is authentic.
+ *
+ * @package Application
+ * @subpackage DBHelper
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class DBHelper_BaseCollection_OperationContext_Create extends DBHelper_BaseCollection_OperationContext
+{
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/BaseCollection/OperationContext/Create.php`
 
 ```php
@@ -1294,6 +2250,44 @@ namespace ;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class DBHelper_BaseCollection_OperationContext_Delete extends DBHelper_BaseCollection_OperationContext
+{
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/OperationContext/Delete.php`
+
+```php
+namespace ;
+
+/**
+ * Context class used when a collection record is deleted,
+ * to ensure that the delete operation is authentic.
+ *
+ * @package Application
+ * @subpackage DBHelper
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class DBHelper_BaseCollection_OperationContext_Delete extends DBHelper_BaseCollection_OperationContext
+{
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseCollection/OperationContext/Save.php`
+
+```php
+namespace ;
+
+/**
+ * Context class used when a collection record has been saved
+ * after changes.
+ *
+ * @package Application
+ * @subpackage DBHelper
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class DBHelper_BaseCollection_OperationContext_Save extends DBHelper_BaseCollection_OperationContext
 {
 }
 
@@ -1446,6 +2440,73 @@ interface BaseCollectionFilteringInterface extends BaseCollectionInterface
 
 
 ```
+###  Path: `/src/classes/DBHelper/BaseFilterCriteria/BaseCollectionFilteringInterface.php`
+
+```php
+namespace DBHelper\BaseFilterCriteria;
+
+use Application\Collection\BaseCollectionInterface as BaseCollectionInterface;
+
+/**
+ * Interface for collections that provide filtering capabilities
+ * via filter criteria classes. It exposes methods needed by the
+ * filter criteria to interact with the collection.
+ *
+ * > NOTE: This is the base interface. Use the type-specific
+ * > interfaces that extend this one for your collections:
+ * >
+ * > - {@see IntegerCollectionFilteringInterface}
+ * > - {@see StringCollectionFilteringInterface}
+ *
+ * @package DBHelper
+ * @subpackage FilterCriteria
+ */
+interface BaseCollectionFilteringInterface extends BaseCollectionInterface
+{
+	public function getRecordPrimaryName(): string;
+
+
+	public function getRecordTableName(): string;
+
+
+	public function getForeignKeys(): array;
+
+
+	public function getRecordSearchableKeys(): array;
+
+
+	public function getRecordDefaultSortKey(): string;
+
+
+	public function getRecordDefaultSortDir(): string;
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseFilterCriteria/IntegerCollectionFilteringInterface.php`
+
+```php
+namespace DBHelper\BaseFilterCriteria;
+
+use Application\Collection\IntegerCollectionInterface as IntegerCollectionInterface;
+
+/**
+ * Interface for integer-based collections that provide filtering
+ * capabilities via filter criteria classes.
+ *
+ * > NOTE: This does not add any own methods. It brings together
+ * > the base filter collection interface and the integer collection
+ * > interface for type safety.
+ *
+ * @package DBHelper
+ * @subpackage FilterCriteria
+ */
+interface IntegerCollectionFilteringInterface extends BaseCollectionFilteringInterface, IntegerCollectionInterface
+{
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/BaseFilterCriteria/IntegerCollectionFilteringInterface.php`
 
 ```php
@@ -1549,6 +2610,101 @@ class DBHelper_BaseFilterCriteria_Record
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseFilterCriteria/Record.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper as ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use Application\Collection\IntegerCollectionItemInterface as IntegerCollectionItemInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+
+class DBHelper_BaseFilterCriteria_Record
+{
+	/**
+	 * Returns the underlying record object, in the minimum
+	 * form of an {@see IntegerCollectionItemInterface}.
+	 * You may want to use {@see self::getDBRecord()} instead.
+	 *
+	 * @return IntegerCollectionItemInterface
+	 */
+	public function getRecord(): IntegerCollectionItemInterface
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Assumes that the record is a {@see DBHelperRecordInterface},
+	 * and returns it. Throws an exception otherwise.
+	 *
+	 * > NOTE: Except in rare cases where a DB collection has been
+	 * > mocked, the records are of this type. You may safely use
+	 * > this method unless otherwise documented.
+	 *
+	 * @return DBHelperRecordInterface
+	 * @throws BaseClassHelperException
+	 */
+	public function getDBRecord(): DBHelperRecordInterface
+	{
+		/* ... */
+	}
+
+
+	public function getID(): int
+	{
+		/* ... */
+	}
+
+
+	public function hasColumn(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return array<string,string|int|float|NULL>
+	 */
+	public function getColumns(): array
+	{
+		/* ... */
+	}
+
+
+	public function getColumn(string $name): string
+	{
+		/* ... */
+	}
+
+
+	public function getColumnInt(string $name): int
+	{
+		/* ... */
+	}
+
+
+	public function getColumnDate(string $name): ?DateTime
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseFilterCriteria/StringCollectionFilteringInterface.php`
+
+```php
+namespace DBHelper\BaseFilterCriteria;
+
+interface StringCollectionFilteringInterface extends BaseCollectionFilteringInterface
+{
+	public function idExists(string $record_id): bool;
 }
 
 
@@ -1825,6 +2981,38 @@ abstract class BaseRecordDecorator implements RecordDecoratorInterface
 
 
 ```
+###  Path: `/src/classes/DBHelper/BaseRecord/BaseRecordDecorator.php`
+
+```php
+namespace DBHelper\BaseRecord;
+
+use Application\Disposables\DisposableTrait as DisposableTrait;
+use Application\EventHandler\Eventables\EventableTrait as EventableTrait;
+use Application_Traits_Loggable as Application_Traits_Loggable;
+use DBHelper\Traits\RecordDecoratorInterface as RecordDecoratorInterface;
+use DBHelper\Traits\RecordDecoratorTrait as RecordDecoratorTrait;
+
+/**
+ * Abstract base class that can be used to implement a record decorator.
+ * It uses the {@see RecordDecoratorTrait} to forward method calls to the
+ * decorated record.
+ *
+ * Alternatively, use the {@see RecordDecoratorTrait} directly in your own
+ * class along with the other traits used here.
+ *
+ * @package DBHelper
+ * @subpackage Decorators
+ */
+abstract class BaseRecordDecorator implements RecordDecoratorInterface
+{
+	use RecordDecoratorTrait;
+	use Application_Traits_Loggable;
+	use DisposableTrait;
+	use EventableTrait;
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/BaseRecord/BaseRecordException.php`
 
 ```php
@@ -1837,6 +3025,84 @@ class BaseRecordException extends DBHelper_Exception
 	public const ERROR_CANNOT_GENERATE_KEY_VALUE = 87601;
 	public const ERROR_RECORD_KEY_INVALID_MICROTIME = 87602;
 	public const ERROR_RECORD_KEY_INVALID_USER = 87603;
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseRecord/BaseRecordException.php`
+
+```php
+namespace DBHelper\BaseRecord;
+
+use DBHelper_Exception as DBHelper_Exception;
+
+class BaseRecordException extends DBHelper_Exception
+{
+	public const ERROR_CANNOT_GENERATE_KEY_VALUE = 87601;
+	public const ERROR_RECORD_KEY_INVALID_MICROTIME = 87602;
+	public const ERROR_RECORD_KEY_INVALID_USER = 87603;
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/BaseRecord/Event/KeyModifiedEvent.php`
+
+```php
+namespace DBHelper\BaseRecord\Event;
+
+use Application\EventHandler\Eventables\BaseEventableEvent as BaseEventableEvent;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+
+class KeyModifiedEvent extends BaseEventableEvent
+{
+	public const EVENT_NAME = 'KeyModified';
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRecord(): DBHelperRecordInterface
+	{
+		/* ... */
+	}
+
+
+	public function getKeyName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getOldValue()
+	{
+		/* ... */
+	}
+
+
+	public function getNewValue()
+	{
+		/* ... */
+	}
+
+
+	public function getKeyLabel(): ?string
+	{
+		/* ... */
+	}
+
+
+	public function isStructural(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isCustomField(): bool
+	{
+		/* ... */
+	}
 }
 
 
@@ -3447,6 +4713,82 @@ class DBHelper_DataTable_Events_KeysDeleted extends BaseEventableEvent
 
 
 ```
+###  Path: `/src/classes/DBHelper/DataTable/Events/KeysDeleted.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper as ClassHelper;
+use Application\EventHandler\Eventables\BaseEventableEvent as BaseEventableEvent;
+
+class DBHelper_DataTable_Events_KeysDeleted extends BaseEventableEvent
+{
+	public const EVENT_NAME = 'KeysDeleted';
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getKeyNames(): array
+	{
+		/* ... */
+	}
+
+
+	public function getDataTable(): DBHelper_DataTable
+	{
+		/* ... */
+	}
+
+
+	public function getSubject(): object
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/DataTable/Events/KeysSaved.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper as ClassHelper;
+use Application\EventHandler\Eventables\BaseEventableEvent as BaseEventableEvent;
+
+class DBHelper_DataTable_Events_KeysSaved extends BaseEventableEvent
+{
+	public const EVENT_NAME = 'KeysSaved';
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getKeyNames(): array
+	{
+		/* ... */
+	}
+
+
+	public function getDataTable(): DBHelper_DataTable
+	{
+		/* ... */
+	}
+
+
+	public function getSubject(): object
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/DataTable/Events/KeysSaved.php`
 
 ```php
@@ -3626,6 +4968,33 @@ abstract class BaseErrorRenderer implements RenderableInterface
 
 
 ```
+###  Path: `/src/classes/DBHelper/Exception/BaseErrorRenderer.php`
+
+```php
+namespace DBHelper\Exception;
+
+use AppUtils\ConvertHelper\JSONConverter as JSONConverter;
+use AppUtils\Interfaces\RenderableInterface as RenderableInterface;
+use AppUtils\StringBuilder as StringBuilder;
+use AppUtils\Traits\RenderableTrait as RenderableTrait;
+use DBHelper as DBHelper;
+use PDOException as PDOException;
+
+abstract class BaseErrorRenderer implements RenderableInterface
+{
+	use RenderableTrait;
+
+	abstract public function getEmptyMessageText(): string;
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/Exception/CLIErrorRenderer.php`
 
 ```php
@@ -3634,6 +5003,40 @@ namespace DBHelper\Exception;
 use DBHelper as DBHelper;
 
 class CLIErrorRenderer extends BaseErrorRenderer
+{
+	public function getEmptyMessageText(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/Exception/CLIErrorRenderer.php`
+
+```php
+namespace DBHelper\Exception;
+
+use DBHelper as DBHelper;
+
+class CLIErrorRenderer extends BaseErrorRenderer
+{
+	public function getEmptyMessageText(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/Exception/HTMLErrorRenderer.php`
+
+```php
+namespace DBHelper\Exception;
+
+use DBHelper as DBHelper;
+
+class HTMLErrorRenderer extends BaseErrorRenderer
 {
 	public function getEmptyMessageText(): string
 	{
@@ -3894,12 +5297,331 @@ class DBHelper_FetchOne extends DBHelper_FetchBase
 
 
 	/**
-	 * @return array<int|string,string|int|float|NULL>
+	 * @return array<int|string, mixed>
 	 */
 	public function fetch(): array
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/Interfaces/DBHelperRecordInterface.php`
+
+```php
+namespace DBHelper\Interfaces;
+
+use AppUtils\ConvertHelper_Exception as ConvertHelper_Exception;
+use AppUtils\Microtime as Microtime;
+use Application\Collection\IntegerCollectionItemInterface as IntegerCollectionItemInterface;
+use Application\Disposables\Attributes\DisposedAware as DisposedAware;
+use Application\Disposables\DisposableDisposedException as DisposableDisposedException;
+use Application\Disposables\DisposableInterface as DisposableInterface;
+use Application\EventHandler\Eventables\EventableListener as EventableListener;
+use Application_Users_User as Application_Users_User;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+use DBHelper\BaseRecord\BaseRecordException as BaseRecordException;
+use DBHelper_BaseCollection_OperationContext_Create as DBHelper_BaseCollection_OperationContext_Create;
+use DBHelper_BaseCollection_OperationContext_Delete as DBHelper_BaseCollection_OperationContext_Delete;
+use DBHelper_Exception as DBHelper_Exception;
+use DateTime as DateTime;
+
+interface DBHelperRecordInterface extends IntegerCollectionItemInterface, DisposableInterface
+{
+	public const STUB_ID = -1;
+
+	/**
+	 * Whether this is a stub record that is used only to
+	 * access information on this record type.
+	 *
+	 * @return boolean
+	 */
+	public function isStub(): bool;
+
+
+	/**
+	 * Retrieves the collection used to access records like this.
+	 * @return DBHelperCollectionInterface
+	 */
+	public function getCollection(): DBHelperCollectionInterface;
+
+
+	/**
+	 * @param string $name
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function getRecordKey(string $name, mixed $default = null): mixed;
+
+
+	/**
+	 * Retrieves a data key as an integer. Converts the value to int,
+	 * so beware using this on non-integer keys.
+	 *
+	 * @param string $name
+	 * @param int $default
+	 * @return int
+	 * @throws DisposableDisposedException
+	 */
+	public function getRecordIntKey(string $name, int $default = 0): int;
+
+
+	/**
+	 * Retrieves a data key as a DateTime object.
+	 * @param string $name
+	 * @param DateTime|null $default
+	 * @return DateTime|null
+	 */
+	public function getRecordDateKey(string $name, ?DateTime $default = null): ?DateTime;
+
+
+	public function getRecordMicrotimeKey(string $name): ?Microtime;
+
+
+	/**
+	 * Retrieves a data key as a DateTime object, throwing an exception if the key has no value.
+	 * @param string $name
+	 * @return Microtime
+	 * @throws BaseRecordException
+	 */
+	public function requireRecordMicrotimeKey(string $name): Microtime;
+
+
+	public function getRecordUserKey(string $name): ?Application_Users_User;
+
+
+	public function requireRecordUserKey(string $name): Application_Users_User;
+
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	public function getRecordData(): array;
+
+
+	/**
+	 * Gets a unique identifier for this record object instance.
+	 * @return string
+	 */
+	public function getInstanceID(): string;
+
+
+	/**
+	 * Reloads the record's data from the database.
+	 * @throws DisposableDisposedException
+	 * @throws BaseRecordException
+	 */
+	public function refreshData(): void;
+
+
+	public function getRecordTable(): string;
+
+
+	public function getRecordPrimaryName(): string;
+
+
+	public function getRecordTypeName(): string;
+
+
+	/**
+	 * Retrieves a data key as a float. Converts the value to float,
+	 * so beware using this on non-float keys.
+	 *
+	 * @param string $name
+	 * @param float $default
+	 * @return float
+	 * @throws DisposableDisposedException
+	 */
+	public function getRecordFloatKey(string $name, float $default = 0.0): float;
+
+
+	/**
+	 * Retrieves a data key, ensuring that it is a string.
+	 *
+	 * @param string $name
+	 * @param string $default
+	 * @return string
+	 * @throws DisposableDisposedException
+	 */
+	public function getRecordStringKey(string $name, string $default = ''): string;
+
+
+	/**
+	 * Treats a key as a string boolean value and returns
+	 * the current value as a boolean.
+	 *
+	 * @param string $name
+	 * @param boolean $default
+	 * @return boolean
+	 * @throws DisposableDisposedException
+	 * @throws ConvertHelper_Exception
+	 */
+	public function getRecordBooleanKey(string $name, bool $default = false): bool;
+
+
+	/**
+	 * Checks if the specified record key exists.
+	 * @param string $name
+	 * @return bool
+	 * @throws DisposableDisposedException
+	 */
+	public function recordKeyExists(string $name): bool;
+
+
+	/**
+	 * Converts a boolean value to its string representation to use
+	 * as internal value for a property.
+	 *
+	 * @param string $name
+	 * @param boolean $boolean
+	 * @param boolean $yesno Whether to use the "yes/no" notation. Otherwise, "true/false" is used.
+	 * @return boolean Whether the value has changed.
+	 * @throws DisposableDisposedException
+	 * @throws ConvertHelper_Exception
+	 */
+	public function setRecordBooleanKey(string $name, bool $boolean, bool $yesno = true): bool;
+
+
+	/**
+	 * @param string $name
+	 * @param DateTime $date
+	 * @return bool
+	 * @throws DisposableDisposedException
+	 * @throws ConvertHelper_Exception
+	 */
+	public function setRecordDateKey(string $name, DateTime $date): bool;
+
+
+	/**
+	 * Sets the value of a data key of the record. If the data key has been
+	 * registered, the {@see \DBHelper_BaseRecord::recordRegisteredKeyModified()}
+	 * and {@see \DBHelper_BaseRecord::recordRegisteredKeyBeforeModified() are
+	 * also called to notify of changes.
+	 *
+	 * @param string $name
+	 * @param mixed $value
+	 * @return boolean
+	 * @throws DisposableDisposedException
+	 * @throws ConvertHelper_Exception
+	 */
+	public function setRecordKey(string $name, mixed $value): bool;
+
+
+	/**
+	 * Throws an exception if the record does not have the specified key.
+	 * @param string $name
+	 * @return bool
+	 * @throws DisposableDisposedException
+	 * @throws BaseRecordException
+	 */
+	public function requireRecordKeyExists(string $name): bool;
+
+
+	/**
+	 * Whether the record has been modified since the last save, or
+	 * just the specified key.
+	 *
+	 * @param string|NULL $key A single data key to check, or any key if NULL.
+	 * @return boolean
+	 */
+	public function isModified(?string $key = null): bool;
+
+
+	/**
+	 * Checks whether any structural data keys have been modified.
+	 *
+	 * > NOTE: This method only works if the record has registered
+	 * > structural keys through the method {@see \DBHelper_BaseRecord::registerRecordKey()}.
+	 *
+	 * @return bool
+	 */
+	public function hasStructuralChanges(): bool;
+
+
+	/**
+	 * Retrieves the names of all keys that have been modified since the last save.
+	 * @return string[]
+	 */
+	public function getModifiedKeys(): array;
+
+
+	/**
+	 * Saves all changes in the record. Only the modified keys
+	 * are saved each time using the internal changes tracking.
+	 *
+	 * @param bool $silent Whether to not process the post save events.
+	 *                       The postSave() method will still be called, but
+	 *                       the context will reflect the silent mode. This
+	 *                       has to be checked manually.
+	 *
+	 * @return boolean Whether there was anything to save.
+	 * @throws DisposableDisposedException
+	 * @throws DBHelper_Exception
+	 */
+	public function save(bool $silent = false): bool;
+
+
+	/**
+	 * Like {@see self::save()}, but
+	 * returns $this instead of the boolean status.
+	 *
+	 * @param bool $silent
+	 * @return $this
+	 * @throws DisposableDisposedException
+	 * @throws DBHelper_Exception
+	 */
+	public function saveChained(bool $silent = false): self;
+
+
+	/**
+	 * Retrieves the record's parent record: this is only
+	 * relevant if the record's collection has a parent
+	 * collection. It will return NULL otherwise.
+	 *
+	 * @return DBHelperRecordInterface|NULL
+	 */
+	public function getParentRecord(): ?DBHelperRecordInterface;
+
+
+	/**
+	 * @return array<string,mixed>
+	 * @throws DisposableDisposedException
+	 */
+	public function getFormValues(): array;
+
+
+	/**
+	 * Adds a listener for the event {@see KeyModifiedEvent}.
+	 *
+	 * NOTE: The callback gets the event instance as sole argument.
+	 *
+	 * @param callable $callback
+	 * @return EventableListener
+	 */
+	public function onKeyModified(callable $callback): EventableListener;
+
+
+	/**
+	 * This is called once when the record has been created,
+	 * and allows the record to run any additional initializations
+	 * it may need.
+	 *
+	 * @param DBHelper_BaseCollection_OperationContext_Create $context
+	 */
+	public function onCreated(DBHelper_BaseCollection_OperationContext_Create $context): void;
+
+
+	/**
+	 * Called when the record has been deleted by the
+	 * collection.
+	 *
+	 * @param DBHelper_BaseCollection_OperationContext_Delete $context
+	 */
+	public function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context): void;
+
+
+	public function onBeforeDelete(DBHelper_BaseCollection_OperationContext_Delete $context): void;
 }
 
 
@@ -4380,6 +6102,197 @@ class ValueDefinition
 
 
 ```
+###  Path: `/src/classes/DBHelper/StatementBuilder/ValueDefinition.php`
+
+```php
+namespace DBHelper\StatementBuilder;
+
+use DBHelper_StatementBuilder_ValuesContainer as DBHelper_StatementBuilder_ValuesContainer;
+
+/**
+ * Stores information on a single placeholder value
+ * in a statement builder.
+ *
+ * @package DBHelper
+ * @subpackage StatementBuilder
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class ValueDefinition
+{
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getValue(): string
+	{
+		/* ... */
+	}
+
+
+	public function isWrapTicks(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isStringLiteral(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/StatementBuilder/ValuesContainer.php`
+
+```php
+namespace ;
+
+use DBHelper\StatementBuilder\ValueDefinition as ValueDefinition;
+
+/**
+ * Companion class to the statement builder, used to
+ * store placeholder names for fields, tables and more.
+ *
+ * @package DBHelper
+ * @subpackage StatementBuilder
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class DBHelper_StatementBuilder_ValuesContainer
+{
+	public const ERROR_UNKNOWN_PLACEHOLDER_NAME = 95501;
+	public const VALUE_TYPE_SYMBOL = 1;
+	public const VALUE_TYPE_INTEGER = 2;
+	public const VALUE_TYPE_STRING_LITERAL = 3;
+	public const VALUE_TYPE_RAW = 4;
+
+	/**
+	 * @param string $tableName
+	 * @param string $value
+	 * @return $this
+	 */
+	public function table(string $tableName, string $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $alias
+	 * @param string $value
+	 * @return $this
+	 */
+	public function alias(string $alias, string $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param int $value
+	 * @return $this
+	 */
+	public function int(string $name, int $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a placeholder for a raw value, which will be
+	 * inserted as-is, without any transformations.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @return $this
+	 */
+	public function val(string $name, string $value): self
+	{
+		/* ... */
+	}
+
+
+	public function text(string $name, string $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $fieldName
+	 * @param string $value
+	 * @return $this
+	 */
+	public function field(string $fieldName, string $value): self
+	{
+		/* ... */
+	}
+
+
+	public function hasValue(string $placeholderName): bool
+	{
+		/* ... */
+	}
+
+
+	public function getValueDef(string $placeholderName): ValueDefinition
+	{
+		/* ... */
+	}
+
+
+	public function getValue(string $placeholderName): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param DBHelper_StatementBuilder_ValuesContainer $container
+	 * @return $this
+	 */
+	public function setContainer(DBHelper_StatementBuilder_ValuesContainer $container): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Creates a new statement builder that inherits
+	 * this container's placeholder values.
+	 *
+	 * @param string $template
+	 * @return DBHelper_StatementBuilder
+	 */
+	public function statement(string $template): DBHelper_StatementBuilder
+	{
+		/* ... */
+	}
+
+
+	public function getField(string $name): ValueDefinition
+	{
+		/* ... */
+	}
+
+
+	public function getTable(string $name): ValueDefinition
+	{
+		/* ... */
+	}
+
+
+	public function getAlias(string $name): ValueDefinition
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/StatementBuilder/ValuesContainer.php`
 
 ```php
@@ -4681,6 +6594,24 @@ trait AfterRecordCreatedEventTrait
 
 
 ```
+###  Path: `/src/classes/DBHelper/Traits/AfterRecordCreatedEventTrait.php`
+
+```php
+namespace DBHelper\Traits;
+
+use AppUtils\ClassHelper as ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+use DBHelper\BaseCollection\Event\AfterCreateRecordEvent as AfterCreateRecordEvent;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+use DBHelper_BaseCollection_OperationContext_Create as DBHelper_BaseCollection_OperationContext_Create;
+
+trait AfterRecordCreatedEventTrait
+{
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/Traits/BeforeCreateEventTrait.php`
 
 ```php
@@ -4694,6 +6625,142 @@ use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent as BeforeCreateRecordE
 
 trait BeforeCreateEventTrait
 {
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/Traits/BeforeCreateEventTrait.php`
+
+```php
+namespace DBHelper\Traits;
+
+use AppUtils\ClassHelper as ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use DBHelper\BaseCollection\DBHelperCollectionException as DBHelperCollectionException;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent as BeforeCreateRecordEvent;
+
+trait BeforeCreateEventTrait
+{
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/Traits/LooseDBRecordInterface.php`
+
+```php
+namespace DBHelper\Traits;
+
+use DBHelper_Exception as DBHelper_Exception;
+use DateTime as DateTime;
+
+/**
+ * Interface for the {@see LooseDBRecordTrait} trait.
+ *
+ * @package DBHelper
+ * @subpackage LooseRecord
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see LooseDBRecordTrait
+ */
+interface LooseDBRecordInterface
+{
+	public const ERROR_CANNOT_LOAD_RECORD = 66701;
+	public const ERROR_COULD_NOT_SAVE_DATA = 66702;
+	public const ERROR_UNKNOWN_DATA_KEY = 66703;
+
+	/**
+	 * The name of the database table in which the records are stored.
+	 * @return string
+	 */
+	public function getRecordTable(): string;
+
+
+	/**
+	 * Name of the table column in which the primary keys are stored.
+	 * @return string
+	 */
+	public function getRecordPrimaryName(): string;
+
+
+	/**
+	 * The record's ID.
+	 * @return int
+	 */
+	public function getID(): int;
+
+
+	/**
+	 * Saves the record to the database, if it has been modified.
+	 * @return bool
+	 * @throws DBHelper_Exception
+	 *
+	 * @see LooseDBRecordInterface::ERROR_COULD_NOT_SAVE_DATA
+	 */
+	public function save(): bool;
+
+
+	/**
+	 * Checks whether any changes are pending to be saved.
+	 * @return bool
+	 */
+	public function isModified(): bool;
+
+
+	/**
+	 * Retrieves the specified column's value.
+	 *
+	 * > NOTE: Trying to retrieve the value of unknown
+	 * > columns will not throw an error. It will simply
+	 * > return an empty string.
+	 *
+	 * @param string $name
+	 * @return string
+	 */
+	public function getDataKey(string $name): string;
+
+
+	/**
+	 * Retrieves a data key value, and converts it to int.
+	 * @param string $name
+	 * @return int
+	 */
+	public function getDataKeyInt(string $name): int;
+
+
+	/**
+	 * Retrieves a data key value, and converts it to boolean.
+	 *
+	 * Supported column values are `true`, `false`, `yes`, `no`.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public function getDataKeyBool(string $name): bool;
+
+
+	/**
+	 * Retrieves a data key value, and converts it to a datetime instance.
+	 * @param string $name
+	 * @return DateTime
+	 */
+	public function getDataKeyDate(string $name): DateTime;
+
+
+	/**
+	 * Sets a data key value.
+	 *
+	 * NOTE: Will throw an exception if the column does
+	 * not exist in the record.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @return bool
+	 * @throws DBHelper_Exception
+	 *
+	 * @see LooseDBRecordInterface::ERROR_UNKNOWN_DATA_KEY
+	 */
+	public function setDataKey(string $name, string $value): bool;
 }
 
 
@@ -4928,6 +6995,117 @@ trait LooseDBRecordTrait
 
 
 ```
+###  Path: `/src/classes/DBHelper/Traits/LooseDBRecordTrait.php`
+
+```php
+namespace ;
+
+use AppUtils\ConvertHelper\JSONConverter as JSONConverter;
+use DBHelper\Traits\LooseDBRecordInterface as LooseDBRecordInterface;
+
+/**
+ * Trait for working with database records, independently of a
+ * full-fledged DB records collection.
+ *
+ * Use this as a drop-in to load data from the database by ID,
+ * with everything required to access and update the data.
+ *
+ * ## Usage
+ *
+ * - Use the trait: {@see LooseDBRecordTrait}
+ * - Add the interface: {@see LooseDBRecordInterface}
+ *
+ * @package DBHelper
+ * @subpackage LooseRecord
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see LooseDBRecordInterface
+ */
+trait LooseDBRecordTrait
+{
+	abstract public function getRecordTable(): string;
+
+
+	abstract public function getRecordPrimaryName(): string;
+
+
+	public function getID(): int
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Saves the current data set of the record.
+	 *
+	 * @return bool Whether there were any changes to save.
+	 * @throws DBHelper_Exception If the record data could not be saved to the database.
+	 *
+	 * @see LooseDBRecordInterface::ERROR_COULD_NOT_SAVE_DATA
+	 */
+	public function save(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isModified(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getDataKey(string $name): string
+	{
+		/* ... */
+	}
+
+
+	public function getDataKeyInt(string $name): int
+	{
+		/* ... */
+	}
+
+
+	public function getDataKeyBool(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $name
+	 * @return DateTime
+	 * @throws Exception If the date could not be parsed.
+	 */
+	public function getDataKeyDate(string $name): DateTime
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a data key value.
+	 *
+	 * NOTE: The value is not saved directly in the database.
+	 * The `save()` method needs to be called separately.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @return bool
+	 * @throws DBHelper_Exception If the data key is not known.
+	 *
+	 * @see LooseDBRecordTrait::save()
+	 * @see LooseDBRecordInterface::ERROR_UNKNOWN_DATA_KEY
+	 */
+	public function setDataKey(string $name, string $value): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/DBHelper/Traits/RecordDecoratorInterface.php`
 
 ```php
@@ -4957,6 +7135,291 @@ use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
 interface RecordDecoratorInterface extends DBHelperRecordInterface
 {
 	public function getDecoratedRecord(): DBHelperRecordInterface;
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/Traits/RecordDecoratorInterface.php`
+
+```php
+namespace DBHelper\Traits;
+
+use DBHelper\BaseRecord\BaseRecordDecorator as BaseRecordDecorator;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+
+/**
+ * Interface for a class that acts as a decorator for a {@see DBHelperRecordInterface}.
+ *
+ * ## Usage via trait
+ *
+ * 1. Implement this interface in your decorator class.
+ * 2. Use the trait {@see RecordDecoratorTrait} to automatically forward method calls to the decorated record.
+ * 3. Use additional traits as illustrated by {@see BaseRecordDecorator}.
+ * 4. Implement the remaining methods.
+ *
+ * ## Usage via base class
+ *
+ * 1. Extend the class {@see BaseRecordDecorator}.
+ * 2. Implement the remaining interface methods.
+ *
+ * @package DBHelper
+ * @subpackage Decorators
+ */
+interface RecordDecoratorInterface extends DBHelperRecordInterface
+{
+	public function getDecoratedRecord(): DBHelperRecordInterface;
+}
+
+
+```
+###  Path: `/src/classes/DBHelper/Traits/RecordDecoratorTrait.php`
+
+```php
+namespace DBHelper\Traits;
+
+use AppUtils\Microtime as Microtime;
+use Application\EventHandler\Eventables\EventableListener as EventableListener;
+use Application_Users_User as Application_Users_User;
+use DBHelper\BaseCollection\DBHelperCollectionInterface as DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
+use DBHelper_BaseCollection_OperationContext_Create as DBHelper_BaseCollection_OperationContext_Create;
+use DBHelper_BaseCollection_OperationContext_Delete as DBHelper_BaseCollection_OperationContext_Delete;
+use DateTime as DateTime;
+
+/**
+ * Trait used to implement the {@see RecordDecoratorInterface} by forwarding
+ * method calls to the decorated record.
+ *
+ * > NOTE: Additional traits are typically used in conjunction with this trait,
+ * > as demonstrated by {@see BaseRecordDecorator}.
+ *
+ * @package DBHelper
+ * @subpackage Decorators
+ *
+ * @see RecordDecoratorInterface
+ */
+trait RecordDecoratorTrait
+{
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function isStub(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getCollection(): DBHelperCollectionInterface
+	{
+		/* ... */
+	}
+
+
+	public function getRecordKey(string $name, mixed $default = null): mixed
+	{
+		/* ... */
+	}
+
+
+	public function getRecordIntKey(string $name, int $default = 0): int
+	{
+		/* ... */
+	}
+
+
+	public function getRecordDateKey(string $name, ?DateTime $default = null): ?DateTime
+	{
+		/* ... */
+	}
+
+
+	public function getRecordMicrotimeKey(string $name): ?Microtime
+	{
+		/* ... */
+	}
+
+
+	public function requireRecordMicrotimeKey(string $name): Microtime
+	{
+		/* ... */
+	}
+
+
+	public function getRecordData(): array
+	{
+		/* ... */
+	}
+
+
+	public function getInstanceID(): string
+	{
+		/* ... */
+	}
+
+
+	public function refreshData(): void
+	{
+		/* ... */
+	}
+
+
+	public function getRecordTable(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRecordPrimaryName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRecordTypeName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRecordFloatKey(string $name, float $default = 0.0): float
+	{
+		/* ... */
+	}
+
+
+	public function getRecordStringKey(string $name, string $default = ''): string
+	{
+		/* ... */
+	}
+
+
+	public function getRecordBooleanKey(string $name, bool $default = false): bool
+	{
+		/* ... */
+	}
+
+
+	public function getRecordUserKey(string $name): ?Application_Users_User
+	{
+		/* ... */
+	}
+
+
+	public function requireRecordUserKey(string $name): Application_Users_User
+	{
+		/* ... */
+	}
+
+
+	public function recordKeyExists(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	public function setRecordBooleanKey(string $name, bool $boolean, bool $yesno = true): bool
+	{
+		/* ... */
+	}
+
+
+	public function setRecordDateKey(string $name, DateTime $date): bool
+	{
+		/* ... */
+	}
+
+
+	public function setRecordKey(string $name, mixed $value): bool
+	{
+		/* ... */
+	}
+
+
+	public function requireRecordKeyExists(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	public function isModified(?string $key = null): bool
+	{
+		/* ... */
+	}
+
+
+	public function hasStructuralChanges(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getModifiedKeys(): array
+	{
+		/* ... */
+	}
+
+
+	public function save(bool $silent = false): bool
+	{
+		/* ... */
+	}
+
+
+	public function saveChained(bool $silent = false): self
+	{
+		/* ... */
+	}
+
+
+	public function getParentRecord(): ?DBHelperRecordInterface
+	{
+		/* ... */
+	}
+
+
+	public function getFormValues(): array
+	{
+		/* ... */
+	}
+
+
+	public function onKeyModified(callable $callback): EventableListener
+	{
+		/* ... */
+	}
+
+
+	public function onCreated(DBHelper_BaseCollection_OperationContext_Create $context): void
+	{
+		/* ... */
+	}
+
+
+	public function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context): void
+	{
+		/* ... */
+	}
+
+
+	public function onBeforeDelete(DBHelper_BaseCollection_OperationContext_Delete $context): void
+	{
+		/* ... */
+	}
+
+
+	public function getChildDisposables(): array
+	{
+		/* ... */
+	}
+
+
+	public function getID(): int
+	{
+		/* ... */
+	}
 }
 
 
@@ -5305,8 +7768,100 @@ trait RecordKeyHandlersTrait
 
 
 ```
+###  Path: `/src/classes/DBHelper/Traits/RecordKeyHandlersTrait.php`
+
+```php
+namespace DBHelper\Traits;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+use AppUtils\Microtime as Microtime;
+use Application\AppFactory as AppFactory;
+use Application\Disposables\DisposableDisposedException as DisposableDisposedException;
+use Application_Users_User as Application_Users_User;
+use DBHelper\BaseRecord\BaseRecordException as BaseRecordException;
+use DateTime as DateTime;
+
+trait RecordKeyHandlersTrait
+{
+	/**
+	 * Retrieves a data key as an integer. Converts the value to int,
+	 * so beware using this on non-integer keys.
+	 *
+	 * @param string $name
+	 * @param int $default
+	 * @return int
+	 * @throws DisposableDisposedException
+	 */
+	public function getRecordIntKey(string $name, int $default = 0): int
+	{
+		/* ... */
+	}
+
+
+	public function getRecordFloatKey(string $name, float $default = 0.0): float
+	{
+		/* ... */
+	}
+
+
+	public function getRecordStringKey(string $name, string $default = ''): string
+	{
+		/* ... */
+	}
+
+
+	public function getRecordDateKey(string $name, ?DateTime $default = null): ?DateTime
+	{
+		/* ... */
+	}
+
+
+	public function getRecordMicrotimeKey(string $name): ?Microtime
+	{
+		/* ... */
+	}
+
+
+	public function requireRecordMicrotimeKey(string $name): Microtime
+	{
+		/* ... */
+	}
+
+
+	public function getRecordUserKey(string $name): ?Application_Users_User
+	{
+		/* ... */
+	}
+
+
+	public function requireRecordUserKey(string $name): Application_Users_User
+	{
+		/* ... */
+	}
+
+
+	public function getRecordBooleanKey(string $name, bool $default = false): bool
+	{
+		/* ... */
+	}
+
+
+	public function setRecordBooleanKey(string $name, bool $boolean, bool $yesno = true): bool
+	{
+		/* ... */
+	}
+
+
+	public function setRecordDateKey(string $name, DateTime $date): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ---
 **File Statistics**
-- **Size**: 112.42 KB
-- **Lines**: 5313
+- **Size**: 167.62 KB
+- **Lines**: 7868
 File: `modules/db-helper/architecture-core.md`

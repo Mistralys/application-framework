@@ -25,7 +25,10 @@ src/classes/Application/Composer/
 │   ├── ModulesOverviewGenerator.php    — Orchestrates modules-overview generation
 │   ├── ModuleContextFileFinder.php     — Discovers module-context.yaml files
 │   ├── ModuleInfo.php                  — Immutable VO: parsed module metadata
-│   └── ModulesOverviewRenderer.php     — Renders the Markdown overview table
+│   ├── ModuleInfoParser.php            — Parses module-context.yaml files into ModuleInfo VOs
+│   ├── ReadmeOverviewParser.php        — Extracts the Overview section from a module README.md
+│   ├── ModulesOverviewRenderer.php     — Renders the Markdown overview table
+│   └── ModuleJsonExportGenerator.php  — Subclassable base: exports module data as JSON
 └── KeywordGlossary/
     ├── KeywordGlossaryGenerator.php    — Orchestrates keyword-glossary generation
     ├── KeywordParser.php               — Parses "TERM (context)" keyword strings
@@ -73,6 +76,115 @@ root folder.
 chain, and collects every `module-context.yaml` file referenced. The framework
 and any application built on it can therefore auto-discover all modules without
 manual registration.
+
+### Parsing and error handling
+
+`ModuleInfoParser` handles all YAML loading and `moduleMetaData` validation.
+It never throws — all parse failures are routed through `BuildMessages` and
+`null` is returned:
+
+- **YAML parse error** → `BuildMessages::addError()` + `return null`
+- **Missing or non-array `moduleMetaData` section** → `BuildMessages::addWarning()` + `return null`
+- **Incomplete `moduleMetaData`** (missing `id`, `label`, or `description`) → `BuildMessages::addWarning()` + `return null`
+
+Callers such as `ModulesOverviewGenerator` simply skip `null` results;
+no try/catch is required and no output is written to stdout.
+
+### README overview extraction
+
+`ReadmeOverviewParser` is a utility that extracts the `## Overview` section text
+from any module's `README.md` file. It is used by application-level generators
+(e.g. `ModuleJsonExportGenerator`) to embed human-readable module summaries into
+generated documents.
+
+```php
+use Application\Composer\ModulesOverview\ReadmeOverviewParser;
+
+$overview = ReadmeOverviewParser::extractOverview('/path/to/module/README.md');
+// Returns the trimmed text between "## Overview" and the next "##" heading,
+// or null if the file does not exist or has no Overview section.
+```
+
+### JSON module export — `ModuleJsonExportGenerator`
+
+`ModuleJsonExportGenerator` is a generic, subclassable generator that encapsulates
+the full module-data export workflow. It discovers all `module-context.yaml` files,
+parses them, resolves README overviews and module briefs, builds the keyword
+glossary, fires `DecorateGlossaryEvent`, and writes a single JSON document.
+
+**Basic usage (framework default behaviour):**
+
+```php
+use Application\Composer\ModulesOverview\ModuleJsonExportGenerator;
+use AppUtils\FileHelper\FolderInfo;
+
+$generator = new ModuleJsonExportGenerator(FolderInfo::factory('/path/to/repo/root'));
+$generator->generate('/path/to/output/modules.json');
+
+// Pass true to include modules that have no README-Brief.md:
+$generator->generate('/path/to/output/modules.json', includeAll: true);
+```
+
+**JSON output structure:**
+
+```json
+{
+  "generatedAt": "2026-04-20T10:00:00+00:00",
+  "modules": [
+    {
+      "id": "my-module",
+      "label": "My Module",
+      "summary": "Short description from module-context.yaml",
+      "source": "vendor/my-package",
+      "description": "Overview section from README.md (or null)",
+      "relatedModules": ["other-module"],
+      "brief": "Full content of README-Brief.md (or null)"
+    }
+  ],
+  "glossary": [
+    { "term": "Widget", "context": "the core UI component", "relatedModules": ["my-module"] }
+  ],
+  "glossarySections": []
+}
+```
+
+**Subclassing contract — extension points:**
+
+Applications built on the framework typically subclass `ModuleJsonExportGenerator`
+and override one or both of the two protected hook methods. Neither hook needs to
+call `parent::`.
+
+| Hook method | Default behaviour | Override reason |
+|---|---|---|
+| `resolveModuleSource(ModuleInfo $module): string` | Returns `$module->getComposerPackage()` (e.g. `vendor/my-package`) | Override to return a human-readable source label (e.g. `'framework'` or `'hcp-editor'`) |
+| `resolveModuleBrief(ModuleInfo $module, string $sourcePath): ?string` | Looks for `README-Brief.md` in the module's source directory | Override to use a different file name, location, or resolution strategy |
+
+The `$sourcePath` parameter passed to `resolveModuleBrief()` is the **absolute** path
+to the module's source directory (trailing slash stripped). Use `$module` for
+identifier-based lookups or `$sourcePath` for filesystem-based ones.
+
+**Minimal subclass example:**
+
+```php
+use Application\Composer\ModulesOverview\ModuleJsonExportGenerator;
+use Application\Composer\ModulesOverview\ModuleInfo;
+
+class AppModuleJsonExportGenerator extends ModuleJsonExportGenerator
+{
+    protected function resolveModuleSource(ModuleInfo $module) : string
+    {
+        // Map composer package to a display label
+        return match($module->getComposerPackage()) {
+            'mistralys/application_framework' => 'framework',
+            default                           => 'app',
+        };
+    }
+}
+```
+
+> **Note:** No unit test exists for `ModuleJsonExportGenerator` yet. A follow-up
+> `ModuleJsonExportGeneratorTest` is recommended to cover the `generate()` workflow
+> end-to-end, the `$includeAll` flag behaviour, and hook method override scenarios.
 
 ## KeywordGlossary subpackage
 
@@ -164,6 +276,7 @@ The test suite lives under `tests/AppFrameworkTests/Composer/`:
 | `ModulesOverview/ModulesOverviewRendererTest.php` | `ModulesOverviewRenderer` | Unit |
 | `ModulesOverview/ModuleContextFileFinderTest.php` | `ModuleContextFileFinder` | Integration |
 | `ModulesOverview/ModulesOverviewGeneratorTest.php` | `ModulesOverviewGenerator` | Integration |
+| `ModulesOverview/ModuleJsonExportGeneratorTest.php` | `ModuleJsonExportGenerator` | _(planned — not yet implemented)_ |
 | `KeywordGlossary/KeywordGlossaryRendererTest.php` | `KeywordGlossaryRenderer` | Unit |
 | `KeywordGlossary/KeywordParserTest.php` | `KeywordParser` | Unit |
 | `KeywordGlossary/GlossarySectionTest.php` | `GlossarySection` + `GlossarySectionEntry` | Unit |

@@ -84,6 +84,6 @@ For the full standard Markdown syntax reference see <https://commonmark.org/help
 ```
 ---
 **File Statistics**
-- **Size**: 2.79 KB
-- **Lines**: 84
+- **Size**: 2.89 KB
+- **Lines**: 90
 File: `modules/markdown-renderer/overview.md`

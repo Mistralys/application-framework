@@ -161,6 +161,56 @@ class RegisterAIIndexCacheListener extends BaseRegisterCacheLocationsListener
 
 
 ```
+###  Path: `/src/classes/Application/AI/Cache/Events/RegisterAIIndexCacheListener.php`
+
+```php
+namespace Application\AI\Cache\Events;
+
+use Application\AI\Cache\AICacheLocation as AICacheLocation;
+use Application\API\Collection\APIMethodIndex as APIMethodIndex;
+use Application\CacheControl\Events\BaseRegisterCacheLocationsListener as BaseRegisterCacheLocationsListener;
+
+/**
+ * Registers the API method index cache location.
+ *
+ * @package Application
+ * @subpackage CacheControl
+ *
+ * @see APIMethodIndex::getCacheLocation()
+ */
+class RegisterAIIndexCacheListener extends BaseRegisterCacheLocationsListener
+{
+}
+
+
+```
+###  Path: `/src/classes/Application/AI/Cache/Strategies/FixedDurationStrategy.php`
+
+```php
+namespace Application\AI\Cache\Strategies;
+
+use AppUtils\FileHelper\JSONFile as JSONFile;
+use Application\AI\Cache\BaseAICacheStrategy as BaseAICacheStrategy;
+
+class FixedDurationStrategy extends BaseAICacheStrategy
+{
+	public const STRATEGY_ID = 'FixedDuration';
+	public const DURATION_1_MIN = 60;
+	public const DURATION_5_MIN = 300;
+	public const DURATION_15_MIN = 900;
+	public const DURATION_1_HOUR = 3600;
+	public const DURATION_6_HOURS = 21600;
+	public const DURATION_12_HOURS = 43200;
+	public const DURATION_24_HOURS = 86400;
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/Application/AI/Cache/Strategies/FixedDurationStrategy.php`
 
 ```php
@@ -208,8 +258,28 @@ class UncachedStrategy extends BaseAICacheStrategy
 
 
 ```
+###  Path: `/src/classes/Application/AI/Cache/Strategies/UncachedStrategy.php`
+
+```php
+namespace Application\AI\Cache\Strategies;
+
+use AppUtils\FileHelper\JSONFile as JSONFile;
+use Application\AI\Cache\BaseAICacheStrategy as BaseAICacheStrategy;
+
+class UncachedStrategy extends BaseAICacheStrategy
+{
+	public const STRATEGY_ID = 'Uncached';
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ---
 **File Statistics**
-- **Size**: 4.75 KB
-- **Lines**: 216
+- **Size**: 6.41 KB
+- **Lines**: 286
 File: `modules/ai/architecture-cache.md`
