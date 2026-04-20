@@ -99,6 +99,126 @@ class APIMethodDocTag extends BaseCustomTag
 
 
 ```
+###  Path: `/src/classes/Application/MarkdownRenderer/CustomTags/APIMethodDocTag.php`
+
+```php
+namespace Application\MarkdownRenderer\CustomTags;
+
+use AppUtils\AttributeCollection as AttributeCollection;
+use Application\API\APIManager as APIManager;
+use Application\MarkdownRenderer\BaseCustomTag as BaseCustomTag;
+
+/**
+ * Detects API Documentation tags:
+ *
+ * `{api: GetSomething}`
+ */
+class APIMethodDocTag extends BaseCustomTag
+{
+	/**
+	 * @param string $subject
+	 * @return APIMethodDocTag[]
+	 */
+	public static function findTags(string $subject): array
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	public function getMethodName(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/MarkdownRenderer/CustomTags/MediaTag.php`
+
+```php
+namespace Application\MarkdownRenderer\CustomTags;
+
+use AppUtils\AttributeCollection as AttributeCollection;
+use AppUtils\HTMLTag as HTMLTag;
+use Application\AppFactory as AppFactory;
+use Application\MarkdownRenderer\BaseCustomTag as BaseCustomTag;
+use Application\MarkdownRenderer\MarkdownRenderer as MarkdownRenderer;
+use Application_Media_Document as Application_Media_Document;
+use Application_Media_Document_Image as Application_Media_Document_Image;
+
+/**
+ * Detects media tags:
+ *
+ * <code>{media: 42}</code>
+ * <code>{media: 42 width="400"}</code>
+ * <code>{media: 42 title="Optional image title attribute"}</code>
+ * <code>{media: 42 thumbnail="no"}</code>
+ * <code>{media: 42 class="custom-style"}</code>
+ */
+class MediaTag extends BaseCustomTag
+{
+	public const DEFAULT_VISUAL_CLASS_NAME = 'visual';
+
+	public function getMediaID(): int
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $subject
+	 * @return MediaTag[]
+	 */
+	public static function findTags(string $subject): array
+	{
+		/* ... */
+	}
+
+
+	public function getDocument(): ?Application_Media_Document
+	{
+		/* ... */
+	}
+
+
+	public function getWidth(): ?int
+	{
+		/* ... */
+	}
+
+
+	public function getTitle(): ?string
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	public function getClasses(): array
+	{
+		/* ... */
+	}
+
+
+	public function isThumbnail(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/Application/MarkdownRenderer/CustomTags/MediaTag.php`
 
 ```php
@@ -282,6 +402,6 @@ class MarkdownRenderer implements OptionableInterface
 ```
 ---
 **File Statistics**
-- **Size**: 6.06 KB
-- **Lines**: 282
+- **Size**: 8.27 KB
+- **Lines**: 408
 File: `modules/markdown-renderer/architecture-core.md`

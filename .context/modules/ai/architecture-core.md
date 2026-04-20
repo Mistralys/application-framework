@@ -333,6 +333,35 @@ interface AIToolInterface extends StringPrimaryRecordInterface
 
 
 ```
+###  Path: `/src/classes/Application/AI/Tools/AIToolInterface.php`
+
+```php
+namespace Application\AI\Tools;
+
+use AppUtils\Interfaces\StringPrimaryRecordInterface as StringPrimaryRecordInterface;
+use Application\AI\Cache\AICacheStrategyInterface as AICacheStrategyInterface;
+
+interface AIToolInterface extends StringPrimaryRecordInterface
+{
+	public function getCacheStrategy(): AICacheStrategyInterface;
+
+
+	public function execute(): array;
+}
+
+
+```
+###  Path: `/src/classes/Application/AI/Tools/BaseAITool.php`
+
+```php
+namespace Application\AI\Tools;
+
+abstract class BaseAITool implements AIToolInterface
+{
+}
+
+
+```
 ###  Path: `/src/classes/Application/AI/Tools/BaseAITool.php`
 
 ```php
@@ -346,6 +375,6 @@ abstract class BaseAITool implements AIToolInterface
 ```
 ---
 **File Statistics**
-- **Size**: 7.47 KB
-- **Lines**: 352
+- **Size**: 8.07 KB
+- **Lines**: 381
 File: `modules/ai/architecture-core.md`

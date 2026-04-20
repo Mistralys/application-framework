@@ -938,6 +938,194 @@ class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
 
 
 ```
+###  Path: `/src/classes/UI/Page/Breadcrumb/Item.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper\ClassNotExistsException as ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException as ClassNotImplementsException;
+use Application\Interfaces\Admin\AdminAreaInterface as AdminAreaInterface;
+use Application\Interfaces\Admin\AdminModeInterface as AdminModeInterface;
+use Application\Interfaces\Admin\AdminSubmodeInterface as AdminSubmodeInterface;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+
+class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
+{
+	use UI_Traits_RenderableGeneric;
+
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the item link to the specified URL.
+	 *
+	 * @param string|AdminURLInterface|array<string,mixed> $urlOrParams
+	 * @return $this
+	 *
+	 * @throws ClassNotExistsException
+	 * @throws ClassNotImplementsException
+	 */
+	public function makeLinked($urlOrParams): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Turns the item into a javascript click link, which will
+	 * execute the specified javascript code when clicked.
+	 *
+	 * @param string|UI_Renderable_Interface $javascript
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function makeClickable($javascript): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the item link to the specified administration area.
+	 *
+	 * @param AdminAreaInterface $area
+	 * @param array<string,mixed> $params
+	 * @return $this
+	 * @throws ClassNotExistsException
+	 * @throws ClassNotImplementsException
+	 */
+	public function makeLinkedFromArea(AdminAreaInterface $area, array $params = []): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the item link to the specified administration mode.
+	 *
+	 * @param AdminModeInterface $mode
+	 * @param array<string,mixed> $params
+	 * @return $this
+	 *
+	 * @throws ClassNotExistsException
+	 * @throws ClassNotImplementsException
+	 */
+	public function makeLinkedFromMode(AdminModeInterface $mode, array $params = []): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the item link to the specified administration submode.
+	 *
+	 * @param AdminSubmodeInterface $submode
+	 * @param array<string,mixed> $params
+	 * @return $this
+	 */
+	public function makeLinkedFromSubmode(AdminSubmodeInterface $submode, array $params = []): self
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	public function getJavascript(): string
+	{
+		/* ... */
+	}
+
+
+	public function getMode(): string
+	{
+		/* ... */
+	}
+
+
+	public function isLinked(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isClickable(): bool
+	{
+		/* ... */
+	}
+
+
+	public function reset(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function setFirst(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function setLast(): self
+	{
+		/* ... */
+	}
+
+
+	public function isFirst(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isLast(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array<string,mixed> $params
+	 * @return $this
+	 *
+	 * @throws ClassNotExistsException
+	 * @throws ClassNotImplementsException
+	 */
+	public function makeLinkedRefresh(array $params = []): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Footer.php`
 
 ```php
@@ -1171,6 +1359,51 @@ abstract class UI_Page_Help_Item extends UI_Renderable implements OptionableInte
 
 
 ```
+###  Path: `/src/classes/UI/Page/Help/Item.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\ClassableInterface as ClassableInterface;
+use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
+use AppUtils\Traits\ClassableTrait as ClassableTrait;
+use AppUtils\Traits\OptionableTrait as OptionableTrait;
+
+abstract class UI_Page_Help_Item extends UI_Renderable implements OptionableInterface, ClassableInterface
+{
+	use OptionableTrait;
+	use ClassableTrait;
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Help/Item/Header.php`
+
+```php
+namespace ;
+
+class UI_Page_Help_Item_Header extends UI_Page_Help_Item
+{
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets and replaces the header's text.
+	 *
+	 * @param string|number|UI_Renderable_Interface $text
+	 * @return UI_Page_Help_Item_Header
+	 */
+	public function setText($text)
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Help/Item/Header.php`
 
 ```php
@@ -1226,6 +1459,82 @@ class UI_Page_Help_Item_Para extends UI_Page_Help_Item implements Application_In
 
 
 	public function makeHint(): UI_Page_Help_Item_Para
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Help/Item/Para.php`
+
+```php
+namespace ;
+
+class UI_Page_Help_Item_Para extends UI_Page_Help_Item implements Application_Interfaces_Iconizable
+{
+	use Application_Traits_Iconizable;
+
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets and replaces the paragraph's text.
+	 *
+	 * @param string|number|UI_Renderable_Interface $text
+	 * @return UI_Page_Help_Item_Para
+	 */
+	public function setText($text)
+	{
+		/* ... */
+	}
+
+
+	public function makeHint(): UI_Page_Help_Item_Para
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Help/Item/UnorderedListItem.php`
+
+```php
+namespace UI\Page\Help\Item;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use UI_Exception as UI_Exception;
+use UI_Page_Help_Item as UI_Page_Help_Item;
+
+class UnorderedListItem extends UI_Page_Help_Item
+{
+	/**
+	 * @param string|int|float|StringableInterface|NULL $item
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function addItem($item): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array<int,string|int|float|StringableInterface|NULL>|string|int|float|StringableInterface|NULL ...$items
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function addItems(...$items): self
+	{
+		/* ... */
+	}
+
+
+	public function getDefaultOptions(): array
 	{
 		/* ... */
 	}
@@ -1801,6 +2110,217 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
 
 
 ```
+###  Path: `/src/classes/UI/Page/Navigation/Item.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\ClassableInterface as ClassableInterface;
+use AppUtils\Traits\ClassableTrait as ClassableTrait;
+use UI\Interfaces\TooltipableInterface as TooltipableInterface;
+use UI\Traits\TooltipableTrait as TooltipableTrait;
+
+/**
+ * Base class for navigation items which should be extended
+ * to create new specialized navigation items.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconizable, ClassableInterface, UI_Interfaces_Conditional, Application_Interfaces_Loggable, TooltipableInterface
+{
+	use Application_Traits_Iconizable;
+	use ClassableTrait;
+	use UI_Traits_Conditional;
+	use Application_Traits_Loggable;
+	use TooltipableTrait;
+	use UI_Traits_RenderableGeneric;
+
+	public const ITEM_POSITION_INLINE = 'inline';
+	public const ITEM_POSITION_BELOW = 'below';
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $title
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setTitle($title): self
+	{
+		/* ... */
+	}
+
+
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTitle(): string
+	{
+		/* ... */
+	}
+
+
+	public function getAlias(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the positioning of the item. Some items may
+	 * be positioned directly below the navigation, while the
+	 * default is within the navigation.
+	 *
+	 * @return string
+	 *
+	 * @see UI_Page_Navigation_Item::ITEM_POSITION_BELOW
+	 * @see UI_Page_Navigation_Item::ITEM_POSITION_INLINE
+	 */
+	public function getPosition(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the item is placed below the navigation.
+	 * @return bool
+	 */
+	public function isPositionBelow(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a class that will be added to the navigation item's container element,
+	 * typically the <li> element in a list.
+	 *
+	 * @param string $class
+	 * @return $this
+	 */
+	public function addContainerClass(string $class): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string[]
+	 */
+	public function getContainerClasses(): array
+	{
+		/* ... */
+	}
+
+
+	abstract public function getType(): string;
+
+
+	/**
+	 * @param array<string,string> $attributes
+	 * @return string
+	 */
+	abstract public function render(array $attributes = []): string;
+
+
+	/**
+	 * Checks whether the current navigation item is
+	 * the active navigation item.
+	 *
+	 * Note: this is not detected automatically, your
+	 * driver has to specify this manually as there
+	 * is no way for navigation items to know this
+	 * for themselves (unless you extend an existing
+	 * navigation item and add this functionality for
+	 * your application).
+	 *
+	 * @return boolean
+	 * @see setActive()
+	 */
+	public function isActive(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the current navigation item to the specified
+	 * active state, or to active if not specified.
+	 *
+	 * @param bool $active
+	 * @see isActive()
+	 * @return $this
+	 */
+	public function setActive(bool $active = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the group for the navigation element: grouped elements
+	 * are displayed as a submenu with items, the title being the
+	 * label of the menu.
+	 *
+	 * @param string $title
+	 * @return $this
+	 */
+	public function setGroup(string $title): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * The title of the group the navigation element should be filed under.
+	 *
+	 * @return string
+	 */
+	public function getGroup(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets an alias for the item, so it can easily be accessed later
+	 * using the navigation's {@see UI_Page_Navigation::getItemByAlias()}
+	 * method.
+	 *
+	 * @param string $alias
+	 * @return $this
+	 * @see UI_Page_Navigation::getItemByAlias()
+	 */
+	public function setAlias(string $alias): self
+	{
+		/* ... */
+	}
+
+
+	public function initDone(): void
+	{
+		/* ... */
+	}
+
+
+	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Navigation/Item/ClickableNavItem.php`
 
 ```php
@@ -1823,6 +2343,186 @@ class UI_Page_Navigation_Item_Clickable extends UI_Page_Navigation_Item
 
 
 	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/Item/ClickableNavItem.php`
+
+```php
+namespace ;
+
+use AppUtils\AttributeCollection as AttributeCollection;
+
+class UI_Page_Navigation_Item_Clickable extends UI_Page_Navigation_Item
+{
+	public function setJSStatement(string $statement): self
+	{
+		/* ... */
+	}
+
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/Item/DropdownMenu.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+
+class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
+{
+	public function getMenu(): UI_Bootstrap_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|UI_Renderable_Interface|int|float $label
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setLabel($label): UI_Page_Navigation_Item_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Creates a split button for the menu, the menu itself
+	 * opening by clicking the caret, and the main button label
+	 * linking to its own destination.
+	 *
+	 * Use the {@link link()} or {@link click()} methods to
+	 * set the target of the button.
+	 *
+	 * @return $this
+	 */
+	public function makeSplit(): UI_Page_Navigation_Item_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Links the menu button to its own URL. Automatically
+	 * turns the button into a split button with the caret
+	 * used to access the menu.
+	 *
+	 * @param string|AdminURLInterface $url
+	 * @return UI_Page_Navigation_Item_DropdownMenu
+	 */
+	public function link($url): UI_Page_Navigation_Item_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Links the menu button to its own javascript statement.
+	 * Automatically turns the button into a split button with
+	 * the caret used to access the menu.
+	 *
+	 * @param string $statement
+	 * @return UI_Page_Navigation_Item_DropdownMenu
+	 */
+	public function click(string $statement): UI_Page_Navigation_Item_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes this the active menu item.
+	 * @return $this
+	 */
+	public function makeActive(): UI_Page_Navigation_Item_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a menu item that links to a regular URL.
+	 *
+	 * @param string $label
+	 * @param string|AdminURLInterface $url
+	 * @return UI_Bootstrap_DropdownAnchor
+	 * @throws UI_Exception
+	 */
+	public function addLink(string $label, $url): UI_Bootstrap_DropdownAnchor
+	{
+		/* ... */
+	}
+
+
+	public function setAutoActivate(bool $auto): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return UI_Bootstrap_DropdownMenu
+	 * @throws Application_Exception
+	 */
+	public function addSeparator(): UI_Bootstrap_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|int|float|StringableInterface|NULL $label
+	 * @return UI_Bootstrap_DropdownHeader
+	 */
+	public function addHeader($label): UI_Bootstrap_DropdownHeader
+	{
+		/* ... */
+	}
+
+
+	public function isActive(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function noCaret(): self
 	{
 		/* ... */
 	}
@@ -2012,6 +2712,37 @@ class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
 
 
 ```
+###  Path: `/src/classes/UI/Page/Navigation/Item/ExternalLink.php`
+
+```php
+namespace ;
+
+use AppUtils\AttributeCollection as AttributeCollection;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Page\Navigation\LinkItemBase as LinkItemBase;
+
+class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
+{
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Navigation/Item/HTML.php`
 
 ```php
@@ -2026,6 +2757,76 @@ class UI_Page_Navigation_Item_HTML extends UI_Page_Navigation_Item
 
 
 	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/Item/HTML.php`
+
+```php
+namespace ;
+
+class UI_Page_Navigation_Item_HTML extends UI_Page_Navigation_Item
+{
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/Item/InternalLink.php`
+
+```php
+namespace ;
+
+use AppUtils\AttributeCollection as AttributeCollection;
+use Application\Interfaces\Admin\AdminScreenInterface as AdminScreenInterface;
+use UI\Page\Navigation\LinkItemBase as LinkItemBase;
+
+class UI_Page_Navigation_Item_InternalLink extends LinkItemBase
+{
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+
+
+	public function getAdminScreen(): ?AdminScreenInterface
+	{
+		/* ... */
+	}
+
+
+	public function getURLPath(): string
+	{
+		/* ... */
+	}
+
+
+	public function isActive(): bool
 	{
 		/* ... */
 	}
@@ -2353,6 +3154,277 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 
 
 ```
+###  Path: `/src/classes/UI/Page/Navigation/Item/Search.php`
+
+```php
+namespace ;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+use Application\Application as Application;
+
+class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
+{
+	public const ERROR_INVALID_CALLBACK = 22101;
+	public const ERROR_INVALID_SCOPE = 22102;
+
+	public function getTemplateName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getPosition(): string
+	{
+		/* ... */
+	}
+
+
+	public function initDone(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the name of the currently selected
+	 * scope, if any. When not using scopes, this
+	 * will always return an empty string.
+	 *
+	 * @return string
+	 */
+	public function getSelectedScopeID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the current search terms, if any.
+	 *
+	 * @param string $scopeID
+	 * @return string
+	 */
+	public function getSearchTerms(string $scopeID = ''): string
+	{
+		/* ... */
+	}
+
+
+	public function getSelectedCountryID(string $scopeID = ''): string
+	{
+		/* ... */
+	}
+
+
+	public function getType(): string
+	{
+		/* ... */
+	}
+
+
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array<string,string> $attributes (Unused)
+	 * @return string
+	 *
+	 * @see template_default_ui_nav_search_inline
+	 * @see template_default_ui_nav_search_full_width
+	 */
+	public function render(array $attributes = []): string
+	{
+		/* ... */
+	}
+
+
+	public function getSubmitElementName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getSearchElementName(string $scope = ''): string
+	{
+		/* ... */
+	}
+
+
+	public function getScopeElementName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getCountrySelectionElementName(string $scope): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves all variables needed to persist the
+	 * current search settings, when it is needed to
+	 * inject these into another form for example.
+	 *
+	 * @return array<string,string>
+	 */
+	public function getPersistVars(): array
+	{
+		/* ... */
+	}
+
+
+	public function isSubmitted(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the search appear on the right hand side of the
+	 * navigation bar.
+	 *
+	 * @return $this
+	 */
+	public function makeRightAligned()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the search bar appear in full width right below the navigation.
+	 *
+	 * @return $this
+	 */
+	public function makeFullWidth()
+	{
+		/* ... */
+	}
+
+
+	public function isFullWidth(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return array<string,string>
+	 */
+	public function getHiddenVars(): array
+	{
+		/* ... */
+	}
+
+
+	public function getScopes(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a hidden variable to the search form.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @return UI_Page_Navigation_Item_Search
+	 */
+	public function addHiddenVar(string $name, $value)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a collection of hidden variables, from an
+	 * associative array with variable name => value pairs.
+	 *
+	 * @param array $vars
+	 * @return UI_Page_Navigation_Item_Search
+	 */
+	public function addHiddenVars($vars)
+	{
+		/* ... */
+	}
+
+
+	public function addHiddenPageVars(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a search scope: this will be added to a select
+	 * element to allow the user to select a subset of the
+	 * items that are searchable. The selected scope name
+	 * is passed on to the search callback function.
+	 *
+	 * @param string $name
+	 * @param string $label
+	 * @return UI_Page_Navigation_Item_Search
+	 */
+	public function addScope($name, $label)
+	{
+		/* ... */
+	}
+
+
+	public function getCountries(): array
+	{
+		/* ... */
+	}
+
+
+	public function addCountry($name, $label): UI_Page_Navigation_Item_Search
+	{
+		/* ... */
+	}
+
+
+	public function hasCountries(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the minimum amount of characters for a search to be valid.
+	 * @param int $length
+	 * @return UI_Page_Navigation_Item_Search
+	 */
+	public function setMinSearchLength($length)
+	{
+		/* ... */
+	}
+
+
+	public function hasScopes(): bool
+	{
+		/* ... */
+	}
+
+
+	public function setPreSelectedScope(string $preSelectedScope)
+	{
+		/* ... */
+	}
+
+
+	public function setPreSelectedSearchTerms(string $preSelectedSearchTerms)
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Navigation/LinkItemBase.php`
 
 ```php
@@ -2369,6 +3441,91 @@ abstract class LinkItemBase extends UI_Page_Navigation_Item
 
 
 	public function makeNewTab(): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/LinkItemBase.php`
+
+```php
+namespace UI\Page\Navigation;
+
+use UI_Page_Navigation_Item as UI_Page_Navigation_Item;
+
+abstract class LinkItemBase extends UI_Page_Navigation_Item
+{
+	public function setTarget(string $target): self
+	{
+		/* ... */
+	}
+
+
+	public function makeNewTab(): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/MetaNavigation.php`
+
+```php
+namespace UI\Page\Navigation;
+
+use Application\AppFactory as AppFactory;
+use Application\Application as Application;
+use Application_Driver as Application_Driver;
+use Application_User_Notepad as Application_User_Notepad;
+use UI as UI;
+use UI\Page\Navigation\MetaNavigation\DeveloperMenu as DeveloperMenu;
+use UI\Page\Navigation\MetaNavigation\UserMenu as UserMenu;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+use UI_Traits_RenderableGeneric as UI_Traits_RenderableGeneric;
+
+/**
+ * @see template_default_navigation_metanav
+ */
+class MetaNavigation implements UI_Renderable_Interface
+{
+	use UI_Traits_RenderableGeneric;
+
+	public const META_LOOKUP = 'lookup';
+	public const META_PRINT_PAGE = 'print-page';
+	public const META_NOTEPAD = 'notepad';
+	public const META_DEVELOPER = 'developer';
+	public const META_USER = 'user';
+	public const META_NEWS = 'news';
+
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	public function getNavigation(): UI_Page_Navigation
+	{
+		/* ... */
+	}
+
+
+	public function configure(): void
+	{
+		/* ... */
+	}
+
+
+	public function isDeveloperMenuEnabled(): bool
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
 	{
 		/* ... */
 	}
@@ -2462,6 +3619,55 @@ class DeveloperMenu
 
 
 ```
+###  Path: `/src/classes/UI/Page/Navigation/MetaNavigation/DeveloperMenu.php`
+
+```php
+namespace UI\Page\Navigation\MetaNavigation;
+
+use Application\Application as Application;
+use Application_Driver as Application_Driver;
+use Application_LockManager as Application_LockManager;
+use Application_Request as Application_Request;
+use Application_Session_Base as Application_Session_Base;
+use Application_User as Application_User;
+use UI as UI;
+use UI_Page_Navigation_Item_DropdownMenu as UI_Page_Navigation_Item_DropdownMenu;
+
+class DeveloperMenu
+{
+	public function configure(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/MetaNavigation/UserMenu.php`
+
+```php
+namespace UI\Page\Navigation\MetaNavigation;
+
+use Application\Application as Application;
+use Application_Bootstrap_Screen as Application_Bootstrap_Screen;
+use Application_Driver as Application_Driver;
+use Application_Request as Application_Request;
+use Application_User as Application_User;
+use Application_User_Notepad as Application_User_Notepad;
+use UI as UI;
+use UI_Bootstrap_DropdownMenu as UI_Bootstrap_DropdownMenu;
+use UI_Page_Navigation_Item_DropdownMenu as UI_Page_Navigation_Item_DropdownMenu;
+
+class UserMenu
+{
+	public function configure(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Navigation/MetaNavigation/UserMenu.php`
 
 ```php
@@ -2542,6 +3748,135 @@ abstract class NavConfigurator
 		?string $submode = null,
 		?string $action = null,
 	): ?AdminScreenInterface
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/NavConfigurator.php`
+
+```php
+namespace UI\Page\Navigation;
+
+use Application\Interfaces\Admin\AdminAreaInterface as AdminAreaInterface;
+use Application\Interfaces\Admin\AdminScreenInterface as AdminScreenInterface;
+use Application_Driver as Application_Driver;
+use UI\Page\Navigation\NavConfigurator\MenuConfigurator as MenuConfigurator;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Page_Navigation_Item as UI_Page_Navigation_Item;
+
+abstract class NavConfigurator
+{
+	public const DRIVER_CONFIGURATOR_CLASS_NAME = 'MainNavConfigurator';
+
+	public function getDriver(): Application_Driver
+	{
+		/* ... */
+	}
+
+
+	public function getNavigation(): UI_Page_Navigation
+	{
+		/* ... */
+	}
+
+
+	abstract public function configure(): void;
+
+
+	public function addArea(string $urlName, bool $withIcon = false): ?UI_Page_Navigation_Item
+	{
+		/* ... */
+	}
+
+
+	public function getAreaByURLName(string $urlName): ?AdminAreaInterface
+	{
+		/* ... */
+	}
+
+
+	public function addMenu($label): MenuConfigurator
+	{
+		/* ... */
+	}
+
+
+	public function getScreenByPath(
+		string $area,
+		?string $mode = null,
+		?string $submode = null,
+		?string $action = null,
+	): ?AdminScreenInterface
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/NavConfigurator/MenuConfigurator.php`
+
+```php
+namespace UI\Page\Navigation\NavConfigurator;
+
+use UI\Page\Navigation\NavConfigurator as NavConfigurator;
+use UI_Bootstrap_DropdownAnchor as UI_Bootstrap_DropdownAnchor;
+use UI_Page_Navigation_Item_DropdownMenu as UI_Page_Navigation_Item_DropdownMenu;
+
+class MenuConfigurator implements \Application_Interfaces_Loggable
+{
+	use \Application_Traits_Loggable;
+
+	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+
+
+	public function setAutoActivate(bool $auto): self
+	{
+		/* ... */
+	}
+
+
+	public function addAreaChained(string $urlName): self
+	{
+		/* ... */
+	}
+
+
+	public function addArea(string $urlName): ?UI_Bootstrap_DropdownAnchor
+	{
+		/* ... */
+	}
+
+
+	public function addPathChained(
+		string $area,
+		?string $mode = null,
+		?string $submode = null,
+		?string $action = null,
+	): self
+	{
+		/* ... */
+	}
+
+
+	public function addPath(
+		string $area,
+		?string $mode = null,
+		?string $submode = null,
+		?string $action = null,
+	): ?UI_Bootstrap_DropdownAnchor
+	{
+		/* ... */
+	}
+
+
+	public function addSeparator(): self
 	{
 		/* ... */
 	}
@@ -2724,6 +4059,162 @@ class QuickNavigation implements Application_Interfaces_Loggable
 
 
 ```
+###  Path: `/src/classes/UI/Page/Navigation/QuickNavigation.php`
+
+```php
+namespace UI\Page\Navigation;
+
+use AppUtils\NamedClosure as NamedClosure;
+use Application\Admin\Area\Events\UIHandlingCompleteEvent as UIHandlingCompleteEvent;
+use Application\EventHandler\EventManager as EventManager;
+use Application\Interfaces\Admin\AdminScreenInterface as AdminScreenInterface;
+use Application_Driver as Application_Driver;
+use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
+use Application_Traits_Loggable as Application_Traits_Loggable;
+use Closure as Closure;
+use UI as UI;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Page\Navigation\QuickNavigation\Items\ScreenNavItem as ScreenNavItem;
+use UI\Page\Navigation\QuickNavigation\Items\URLNavItem as URLNavItem;
+use UI\Page\Navigation\QuickNavigation\ScreenItemsContainer as ScreenItemsContainer;
+use UI_Exception as UI_Exception;
+use UI_Page_Header as UI_Page_Header;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+class QuickNavigation implements Application_Interfaces_Loggable
+{
+	use Application_Traits_Loggable;
+
+	public const ERROR_NO_ACTIVE_SCREEN_SET = 110701;
+	public const ERROR_NO_CONTAINER_FOR_SCREEN = 110702;
+	public const NAV_AREA_QUICK_NAVIGATION = 'area-quick-nav';
+
+	public function getUI(): UI
+	{
+		/* ... */
+	}
+
+
+	public function hasItems(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Gets all screen item containers that must be
+	 * rendered in the active admin screen. This is
+	 * all of them, except when the active screen
+	 * requested the exclusivity - then only the
+	 * active screen's items container is used.
+	 *
+	 * @return ScreenItemsContainer[]
+	 */
+	public function resolveContainers(): array
+	{
+		/* ... */
+	}
+
+
+	public function getActiveContainer(): ?ScreenItemsContainer
+	{
+		/* ... */
+	}
+
+
+	public function setWorkScreen(AdminScreenInterface $screen): void
+	{
+		/* ... */
+	}
+
+
+	public function makeExclusive(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param string|AdminURLInterface $url
+	 * @return URLNavItem
+	 * @throws UI_Exception
+	 */
+	public function addURL($label, $url): URLNavItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param array $params
+	 * @return ScreenNavItem
+	 * @throws UI_Exception
+	 */
+	public function addScreen($label, array $params = []): ScreenNavItem
+	{
+		/* ... */
+	}
+
+
+	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/QuickNavigation/BaseQuickNavItem.php`
+
+```php
+namespace UI\Page\Navigation\QuickNavigation;
+
+use AppUtils\Traits\RenderableTrait as RenderableTrait;
+use Application_Interfaces_Iconizable as Application_Interfaces_Iconizable;
+use Application_Traits_Iconizable as Application_Traits_Iconizable;
+use UI\Interfaces\TooltipableInterface as TooltipableInterface;
+use UI\Page\Navigation\QuickNavigation as QuickNavigation;
+use UI\Traits\TooltipableTrait as TooltipableTrait;
+use UI_Exception as UI_Exception;
+use UI_Interfaces_Conditional as UI_Interfaces_Conditional;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+use UI_Traits_Conditional as UI_Traits_Conditional;
+
+/**
+ * Abstract base class for navigation items in the quick navigation.
+ *
+ * @package UI
+ * @subpackage QuickNavigation
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class BaseQuickNavItem implements Application_Interfaces_Iconizable, UI_Interfaces_Conditional, TooltipableInterface
+{
+	use Application_Traits_Iconizable;
+	use UI_Traits_Conditional;
+	use TooltipableTrait;
+	use RenderableTrait;
+
+	public function next(): QuickNavigation
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	abstract public function injectNavigation(UI_Page_Navigation $navigation): void;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Navigation/QuickNavigation/BaseQuickNavItem.php`
 
 ```php
@@ -2849,6 +4340,119 @@ class ScreenNavItem extends BaseQuickNavItem
 
 
 ```
+###  Path: `/src/classes/UI/Page/Navigation/QuickNavigation/Items/ScreenNavItem.php`
+
+```php
+namespace UI\Page\Navigation\QuickNavigation\Items;
+
+use Application\Interfaces\Admin\AdminScreenInterface as AdminScreenInterface;
+use Application_Request as Application_Request;
+use UI\Page\Navigation\QuickNavigation as QuickNavigation;
+use UI\Page\Navigation\QuickNavigation\BaseQuickNavItem as BaseQuickNavItem;
+use UI_Exception as UI_Exception;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+/**
+ * Navigation item for adding a link to an admin screen
+ * in the application.
+ *
+ * @package UI
+ * @subpackage QuickNavigation
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class ScreenNavItem extends BaseQuickNavItem
+{
+	public function setAreaID(string $areaID): self
+	{
+		/* ... */
+	}
+
+
+	public function setModeID(string $modeID): self
+	{
+		/* ... */
+	}
+
+
+	public function setSubmodeID(string $submodeID): self
+	{
+		/* ... */
+	}
+
+
+	public function setActionID(string $actionID): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array<string,string> $params
+	 * @return $this
+	 */
+	public function setParams(array $params): self
+	{
+		/* ... */
+	}
+
+
+	public function setParam(string $name, string $value): self
+	{
+		/* ... */
+	}
+
+
+	public function injectNavigation(UI_Page_Navigation $navigation): void
+	{
+		/* ... */
+	}
+
+
+	public function makeNewTab(bool $newTab = true): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/QuickNavigation/Items/URLNavItem.php`
+
+```php
+namespace UI\Page\Navigation\QuickNavigation\Items;
+
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Page\Navigation\QuickNavigation as QuickNavigation;
+use UI\Page\Navigation\QuickNavigation\BaseQuickNavItem as BaseQuickNavItem;
+use UI_Exception as UI_Exception;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+/**
+ * Navigation item for adding a simple URL, with the
+ * option to make it open in a new tab.
+ *
+ * @package UI
+ * @subpackage QuickNavigation
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class URLNavItem extends BaseQuickNavItem
+{
+	public function injectNavigation(UI_Page_Navigation $navigation): void
+	{
+		/* ... */
+	}
+
+
+	public function makeNewTab(bool $external = true): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Navigation/QuickNavigation/Items/URLNavItem.php`
 
 ```php
@@ -2959,6 +4563,117 @@ class ScreenItemsContainer
 
 
 	public function injectElements(UI_Page_Navigation $navigation): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/QuickNavigation/ScreenItemsContainer.php`
+
+```php
+namespace UI\Page\Navigation\QuickNavigation;
+
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Page\Navigation\QuickNavigation as QuickNavigation;
+use UI\Page\Navigation\QuickNavigation\Items\ScreenNavItem as ScreenNavItem;
+use UI\Page\Navigation\QuickNavigation\Items\URLNavItem as URLNavItem;
+use UI_Exception as UI_Exception;
+use UI_Page_Navigation as UI_Page_Navigation;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+/**
+ * Container for navigation items tied to a specific
+ * administration screen, to keep them separate from
+ * each other.
+ *
+ * @package UI
+ * @subpackage QuickNavigation
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class ScreenItemsContainer
+{
+	public function hasItems(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getValidItems(): array
+	{
+		/* ... */
+	}
+
+
+	public function makeExclusive(): self
+	{
+		/* ... */
+	}
+
+
+	public function isExclusive(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param string|AdminURLInterface $url
+	 * @return URLNavItem
+	 *
+	 * @throws UI_Exception
+	 */
+	public function addURL($label, $url): URLNavItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param array $params
+	 * @return ScreenNavItem
+	 * @throws UI_Exception
+	 */
+	public function addScreen($label, array $params = []): ScreenNavItem
+	{
+		/* ... */
+	}
+
+
+	public function injectElements(UI_Page_Navigation $navigation): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Navigation/TextLinksNavigation.php`
+
+```php
+namespace UI\Page\Navigation;
+
+use Application\Themes\DefaultTemplate\UI\Nav\TextLinksNavigationTmpl as TextLinksNavigationTmpl;
+use UI_Page as UI_Page;
+use UI_Page_Navigation as UI_Page_Navigation;
+
+/**
+ * A navigation bar that displays text links.
+ *
+ * @package UI
+ * @subpackage Navigation
+ *
+ * @see TextLinksNavigationTmpl
+ */
+class TextLinksNavigation extends UI_Page_Navigation
+{
+	/**
+	 * @return class-string<TextLinksNavigationTmpl>
+	 */
+	public function getTemplateID(): string
 	{
 		/* ... */
 	}
@@ -3914,6 +5629,29 @@ abstract class UI_Page_Section_Content extends UI_Renderable implements Optionab
 
 
 ```
+###  Path: `/src/classes/UI/Page/Section/Content.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
+use AppUtils\Traits\OptionableTrait as OptionableTrait;
+
+/**
+ * Base class for section contents: these are specialized
+ * content types that are rendered automatically and can
+ * be freely added to a section.
+ *
+ * @package UI
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+abstract class UI_Page_Section_Content extends UI_Renderable implements OptionableInterface
+{
+	use OptionableTrait;
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Section/Content/HTML.php`
 
 ```php
@@ -3928,6 +5666,48 @@ class UI_Page_Section_Content_HTML extends UI_Page_Section_Content
 
 
 	public function getHTML()
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Section/Content/HTML.php`
+
+```php
+namespace ;
+
+class UI_Page_Section_Content_HTML extends UI_Page_Section_Content
+{
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	public function getHTML()
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Section/Content/Heading.php`
+
+```php
+namespace ;
+
+class UI_Page_Section_Content_Heading extends UI_Page_Section_Content
+{
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	public function getTitle()
 	{
 		/* ... */
 	}
@@ -3971,6 +5751,21 @@ class UI_Page_Section_Content_Separator extends UI_Page_Section_Content
 
 
 ```
+###  Path: `/src/classes/UI/Page/Section/Content/Separator.php`
+
+```php
+namespace ;
+
+class UI_Page_Section_Content_Separator extends UI_Page_Section_Content
+{
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Section/Content/Template.php`
 
 ```php
@@ -3991,6 +5786,161 @@ class UI_Page_Section_Content_Template extends UI_Page_Section_Content
 
 
 	public function getParams()
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Section/Content/Template.php`
+
+```php
+namespace ;
+
+class UI_Page_Section_Content_Template extends UI_Page_Section_Content
+{
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	public function getTemplateID()
+	{
+		/* ... */
+	}
+
+
+	public function getParams()
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Section/GroupControls.php`
+
+```php
+namespace UI\Page\Section;
+
+use Application\Formable\Event\ClientFormRenderedEvent as ClientFormRenderedEvent;
+use Application_Formable as Application_Formable;
+use Closure as Closure;
+use UI as UI;
+use UI\Event\PageRendered as PageRendered;
+use UI_Bootstrap_ButtonGroup as UI_Bootstrap_ButtonGroup;
+use UI_Button as UI_Button;
+use UI_Exception as UI_Exception;
+use UI_Page_Section as UI_Page_Section;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+use UI_Traits_RenderableGeneric as UI_Traits_RenderableGeneric;
+
+/**
+ * Helper class to handle the rendering of the collapse controls
+ * for a section group.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ */
+class GroupControls implements UI_Renderable_Interface
+{
+	use UI_Traits_RenderableGeneric;
+
+	public const CONTROLS_PREFIX = 'GROUP_CONTROLS_';
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a CSS style for the rendered element.
+	 *
+	 * @param string $name
+	 * @param string|int|float|NULL $value
+	 * @return $this
+	 */
+	public function setStyle(string $name, $value): self
+	{
+		/* ... */
+	}
+
+
+	public function setDisplayThreshold(int $threshold): self
+	{
+		/* ... */
+	}
+
+
+	public function getDisplayThreshold(): int
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $class
+	 * @return $this
+	 */
+	public function addClass(string $class): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeMini(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeSmall(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets / changes the name of the section group to render the controls for.
+	 * @param string|null $group
+	 * @return $this
+	 */
+	public function setGroup(?string $group): self
+	{
+		/* ... */
+	}
+
+
+	public function getPlaceholder(): string
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the tooltips to use for the collapse and expand buttons.
+	 *
+	 * @param string $expand
+	 * @param string $collapse
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setTooltips(string $expand, string $collapse): self
 	{
 		/* ... */
 	}
@@ -4191,6 +6141,71 @@ class SectionsRegistry
 
 
 ```
+###  Path: `/src/classes/UI/Page/Section/SectionsRegistry.php`
+
+```php
+namespace UI\Page\Section;
+
+use UI\Event\PageRendered as PageRendered;
+use UI_Page_Section as UI_Page_Section;
+
+/**
+ * Global registry of sections created in the current request.
+ * Offers methods to access the section instances to fetch
+ * information about them.
+ *
+ * > NOTE: This makes the most sense to be used at the end of
+ * > the request, when all sections are known. Look at the
+ * > event {@see PageRendered} for example.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ */
+class SectionsRegistry
+{
+	/**
+	 * Registers a section instance.
+	 *
+	 * @param UI_Page_Section $section
+	 * @return void
+	 */
+	public static function register(UI_Page_Section $section): void
+	{
+		/* ... */
+	}
+
+
+	public static function getAll(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $group
+	 * @return UI_Page_Section[]
+	 */
+	public static function getByGroup(string $group): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Fetches all sections that have been rendered in the
+	 * target group.
+	 *
+	 * @param string $group
+	 * @return UI_Page_Section[]
+	 */
+	public static function getRenderedByGroup(string $group): array
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Section/Type/Default.php`
 
 ```php
@@ -4198,6 +6213,38 @@ namespace ;
 
 class UI_Page_Section_Type_Default extends UI_Page_Section
 {
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Section/Type/Default.php`
+
+```php
+namespace ;
+
+class UI_Page_Section_Type_Default extends UI_Page_Section
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Section/Type/Developer.php`
+
+```php
+namespace ;
+
+class UI_Page_Section_Type_Developer extends UI_Page_Section
+{
+	/**
+	 * Adds a button to the developer panel.
+	 *
+	 * @param UI_Button $button
+	 * @return UI_Page_Section_Type_Developer
+	 */
+	public function addButton(UI_Button $button)
+	{
+		/* ... */
+	}
 }
 
 
@@ -4745,6 +6792,430 @@ interface UI_Page_Sidebar_ItemInterface
 
 
 ```
+###  Path: `/src/classes/UI/Page/Sidebar/Item.php`
+
+```php
+namespace ;
+
+abstract class UI_Page_Sidebar_Item extends UI_Renderable implements UI_Renderable_Interface, UI_Interfaces_Conditional, UI_Page_Sidebar_ItemInterface
+{
+	use UI_Traits_Conditional;
+
+	public function createTemplate(string $templateIDOrClass): UI_Page_Template
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Registers the position of the item in the sidebar. Called automatically
+	 * by the sidebar before it is rendered.
+	 *
+	 * @param UI_Page_Sidebar_ItemInterface|null $prev
+	 * @param UI_Page_Sidebar_ItemInterface|null $next
+	 * @return $this
+	 * @see UI_Page_Sidebar::getItems()
+	 */
+	public function registerPosition(
+		?UI_Page_Sidebar_ItemInterface $prev = null,
+		?UI_Page_Sidebar_ItemInterface $next = null,
+	): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Checks whether this is a separator item.
+	 * @return boolean
+	 */
+	public function isSeparator()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the previous item in the sidebar before this one, if any.
+	 * @return UI_Page_Sidebar_ItemInterface|NULL
+	 */
+	public function getPreviousSibling()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the next item in the sidebar after this one, if any.
+	 * @return UI_Page_Sidebar_ItemInterface|NULL
+	 */
+	public function getNextSibling()
+	{
+		/* ... */
+	}
+}
+
+interface UI_Page_Sidebar_ItemInterface
+{
+	public function isSeparator();
+
+
+	/**
+	 * @param UI_Page_Sidebar_ItemInterface|null $prev
+	 * @param UI_Page_Sidebar_ItemInterface|null $next
+	 * @return $this
+	 */
+	public function registerPosition(
+		?UI_Page_Sidebar_ItemInterface $prev = null,
+		?UI_Page_Sidebar_ItemInterface $next = null,
+	): self;
+
+
+	public function getPreviousSibling();
+
+
+	public function getNextSibling();
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/Button.php`
+
+```php
+namespace ;
+
+use AppUtils\ClassHelper\BaseClassHelperException as BaseClassHelperException;
+use AppUtils\Traits\ClassableTrait as ClassableTrait;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Interfaces\ActivatableInterface as ActivatableInterface;
+use UI\Interfaces\ButtonLayoutInterface as ButtonLayoutInterface;
+use UI\Traits\ButtonLayoutTrait as ButtonLayoutTrait;
+
+/**
+ * A single button in the sidebar.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see template_default_sidebar_button
+ */
+class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implements UI_Interfaces_Button
+{
+	use Application_Traits_Iconizable;
+	use ClassableTrait;
+	use UI_Traits_ClientConfirmable;
+	use ButtonLayoutTrait;
+
+	public const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
+	public const STATE_DISABLED = 'disabled';
+	public const STATE_ENABLED = 'enabled';
+	public const MODE_SUBMIT = 'submit';
+	public const MODE_NONE = 'none';
+	public const MODE_LINKED = 'linked';
+	public const MODE_CLICKABLE = 'clickable';
+
+	public function getName()
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|AdminURLInterface $url
+	 * @param string $target
+	 * @return $this
+	 * @see UI_Page_Sidebar_Item_Button::makeLinked()
+	 */
+	public function link($url, string $target = ''): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the button link to the specified URL.
+	 *
+	 * @param string|AdminURLInterface|array<string,string> $urlOrParams
+	 * @param boolean $newWindow Whether to open the link in a new tab/window
+	 * @return $this
+	 * @throws BaseClassHelperException
+	 */
+	public function makeLinked($urlOrParams, bool $newWindow = false): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the button's action is to open a URL.
+	 * @return boolean
+	 */
+	public function isLinked(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * The URL the button links to (if any).
+	 * @return string
+	 */
+	public function getURL(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $statement
+	 * @return $this
+	 */
+	public function click(string $statement): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Turns the button into a javascript click button, which will
+	 * execute the specified javascript code when clicked.
+	 *
+	 * @param string $javascript
+	 * @return $this
+	 */
+	public function makeClickable(string $javascript): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getJavascript(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves the name of the form being submitted by
+	 * this button (if any).
+	 *
+	 * @return string
+	 */
+	public function getFormName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the button's action is a javascript statement.
+	 * @return boolean
+	 */
+	public function isClickable(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isFormSubmit(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the button submit the specified form or datagrid on click.
+	 *
+	 * @param string|UI_Form|UI_DataGrid|Application_Interfaces_Formable $subject A form name, or supported form instance.
+	 * @param boolean $simulate Whether to submit in simulation mode.
+	 * @return $this
+	 * @throws Application_Exception
+	 */
+	public function makeClickableSubmit($subject, bool $simulate = false)
+	{
+		/* ... */
+	}
+
+
+	public function setOnClick(string $statement): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the button a submit button.
+	 *
+	 * @return $this
+	 */
+	public function makeSubmit(): self
+	{
+		/* ... */
+	}
+
+
+	public function isSubmittable(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Disables the button, so it gets displayed, but not clickable
+	 *
+	 * @param string|number|UI_Renderable_Interface $reason If specified, adds a tooltip that explains why the button is disabled.
+	 * @return $this
+	 * @throws UI_Exception
+	 *
+	 * @see enable()
+	 */
+	public function disable($reason = ''): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Restore the button's function after a "disable()" call.
+	 *
+	 * @see disable()
+	 * @return $this
+	 */
+	public function enable(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the button is disabled.
+	 * @return boolean
+	 */
+	public function isDisabled(): bool
+	{
+		/* ... */
+	}
+
+
+	public function isDangerous(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the button style to use. This depends on what the
+	 * template does with it, default is "normal".
+	 *
+	 * @param string $style
+	 * @return $this
+	 */
+	public function setStyle(string $style): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the tooltip text for the button, which will be
+	 * shown in the UI as help for the button's function.
+	 *
+	 * @param number|string|UI_Renderable_Interface $tooltip
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setTooltip($tooltip): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the value of the button's id attribute, overwrites the default ID.
+	 *
+	 * @param string $id
+	 * @return $this
+	 */
+	public function setID(string $id): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface $label
+	 * @return $this
+	 */
+	public function setLabel($label): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param number|string|UI_Renderable_Interface $text
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function setLoadingText($text): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Does the button have a tooltip text?
+	 * @return boolean
+	 */
+	public function hasTooltip(): bool
+	{
+		/* ... */
+	}
+
+
+	public function getTooltip(): string
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param bool $active
+	 * @return $this
+	 */
+	public function makeActive(bool $active = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return false
+	 */
+	public function isActive(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Sidebar/Item/Button.php`
 
 ```php
@@ -5095,6 +7566,98 @@ class UI_Page_Sidebar_Item_Custom extends UI_Page_Sidebar_LockableItem
 
 
 ```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/Custom.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+
+class UI_Page_Sidebar_Item_Custom extends UI_Page_Sidebar_LockableItem
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/DeveloperPanel.php`
+
+```php
+namespace ;
+
+use Application\Application as Application;
+
+class UI_Page_Sidebar_Item_DeveloperPanel extends UI_Page_Sidebar_Item
+{
+	public const ERROR_SOURCE_BUTTON_NOT_LINKED = 20601;
+
+	/**
+	 * Adds a button by converting an existing sidebar button
+	 * to a developer button. Keeps the original button's
+	 * settings (works with linked and form submit buttons).
+	 *
+	 * @param string $buttonName
+	 * @throws Application_Exception
+	 * @return UI_Page_Sidebar_Item_DeveloperPanel
+	 */
+	public function addConvertedButton($buttonName)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a button to submit a form, formable or datagrid.
+	 *
+	 * @param string|UI_Form|UI_DataGrid|Application_Formable $subject
+	 * @return UI_Page_Sidebar_Item_DeveloperPanel
+	 */
+	public function addSubmitButton($subject)
+	{
+		/* ... */
+	}
+
+
+	public function addButton(UI_Button $button)
+	{
+		/* ... */
+	}
+
+
+	public function addSeparator()
+	{
+		/* ... */
+	}
+
+
+	public function addHTML($code)
+	{
+		/* ... */
+	}
+
+
+	public function addHeading($title)
+	{
+		/* ... */
+	}
+
+
+	public function appendContent($content)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return UI_Page_Section_Type_Developer
+	 */
+	public function getSection(): UI_Page_Section_Type_Developer
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Sidebar/Item/DeveloperPanel.php`
 
 ```php
@@ -5241,6 +7804,73 @@ class UI_Page_Sidebar_Item_DropdownButton extends UI_Page_Sidebar_Item_Button
 
 
 ```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/DropdownButton.php`
+
+```php
+namespace ;
+
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+
+/**
+ * A dropdown button with a submenu.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_Page_Sidebar_Item_DropdownButton extends UI_Page_Sidebar_Item_Button
+{
+	public const MODE_DROPDOWN_MENU = 'dropmenu';
+
+	/**
+	 * Adds a link to the dropdown menu.
+	 *
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @param string|AdminURLInterface $url
+	 * @return UI_Bootstrap_DropdownAnchor
+	 * @throws UI_Exception
+	 */
+	public function addLink($label, $url): UI_Bootstrap_DropdownAnchor
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a header to the dropdown menu.
+	 *
+	 * @param string|number|UI_Renderable_Interface|NULL $label
+	 * @return UI_Bootstrap_DropdownHeader
+	 */
+	public function addHeader($label): UI_Bootstrap_DropdownHeader
+	{
+		/* ... */
+	}
+
+
+	public function getMenu(): UI_Bootstrap_DropdownMenu
+	{
+		/* ... */
+	}
+
+
+	public function hasCaret(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function noCaret(): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Sidebar/Item/FormTOC.php`
 
 ```php
@@ -5248,6 +7878,122 @@ namespace ;
 
 class UI_Page_Sidebar_Item_FormTOC extends UI_Page_Sidebar_Item
 {
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/FormTOC.php`
+
+```php
+namespace ;
+
+class UI_Page_Sidebar_Item_FormTOC extends UI_Page_Sidebar_Item
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/Message.php`
+
+```php
+namespace ;
+
+class UI_Page_Sidebar_Item_Message extends UI_Page_Sidebar_LockableItem
+{
+	/**
+	 * Sets the message, replacing the existing message if any.
+	 *
+	 * @param string|number|UI_Renderable_Interface $message
+	 * @return UI_Page_Sidebar_Item_Message
+	 */
+	public function setMessage($message): UI_Page_Sidebar_Item_Message
+	{
+		/* ... */
+	}
+
+
+	public function isValid(): bool
+	{
+		/* ... */
+	}
+
+
+	public function makeSlimLayout()
+	{
+		/* ... */
+	}
+
+
+	public function makeLargeLayout()
+	{
+		/* ... */
+	}
+
+
+	public function makeDefaultLayout()
+	{
+		/* ... */
+	}
+
+
+	public function isSlimLayout()
+	{
+		/* ... */
+	}
+
+
+	public function makeDismissable()
+	{
+		/* ... */
+	}
+
+
+	public function makeNotDismissable()
+	{
+		/* ... */
+	}
+
+
+	public function enableIcon(bool $icon = true)
+	{
+		/* ... */
+	}
+
+
+	public function setCustomIcon(UI_Icon $icon)
+	{
+		/* ... */
+	}
+
+
+	public function disableIcon()
+	{
+		/* ... */
+	}
+
+
+	public function makeInfo()
+	{
+		/* ... */
+	}
+
+
+	public function makeWarning()
+	{
+		/* ... */
+	}
+
+
+	public function makeError()
+	{
+		/* ... */
+	}
+
+
+	public function makeSuccess()
+	{
+		/* ... */
+	}
 }
 
 
@@ -5368,6 +8114,17 @@ class UI_Page_Sidebar_Item_Separator extends UI_Page_Sidebar_Item
 
 
 ```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/Separator.php`
+
+```php
+namespace ;
+
+class UI_Page_Sidebar_Item_Separator extends UI_Page_Sidebar_Item
+{
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Sidebar/Item/Template.php`
 
 ```php
@@ -5400,6 +8157,55 @@ class UI_Page_Sidebar_Item_Template extends UI_Page_Sidebar_LockableItem
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Sidebar/Item/Template.php`
+
+```php
+namespace ;
+
+class UI_Page_Sidebar_Item_Template extends UI_Page_Sidebar_LockableItem
+{
+	/**
+	 * @return UI_Page_Template
+	 */
+	public function getTemplate(): UI_Page_Template
+	{
+		/* ... */
+	}
+
+
+	public function setVars($vars)
+	{
+		/* ... */
+	}
+
+
+	public function setVar($name, $value)
+	{
+		/* ... */
+	}
+
+
+	public function disable()
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/Sidebar/LockableItem.php`
+
+```php
+namespace ;
+
+abstract class UI_Page_Sidebar_LockableItem extends UI_Page_Sidebar_Item implements Application_LockableItem_Interface
+{
+	use Application_Traits_LockableItem;
+	use Application_Traits_LockableStatus;
 }
 
 
@@ -5548,6 +8354,131 @@ class UI_Page_StepsNavigator implements UI_Renderable_Interface
 	 * @return mixed|null
 	 */
 	public function getOption(string $name, $default = null)
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Page/StepsNavigator/Step.php`
+
+```php
+namespace ;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+
+/**
+ * Container for individual steps in the navigator.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_Page_StepsNavigator_Step
+{
+	public function getName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $id
+	 * @return $this
+	 */
+	public function setID(string $id): self
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function addClass(string $class): self
+	{
+		/* ... */
+	}
+
+
+	public function hasClass(string $class): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param string|int|float|NULL $value
+	 * @return $this
+	 */
+	public function setAttribute(string $name, $value): self
+	{
+		/* ... */
+	}
+
+
+	public function getAttribute(string $name)
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Turns the step into a linked text.
+	 * @param string|AdminURLInterface $url
+	 * @return $this
+	 */
+	public function link($url): self
+	{
+		/* ... */
+	}
+
+
+	public function isEnabled(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param bool $enabled
+	 * @return $this
+	 */
+	public function setEnabled(bool $enabled = true): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Enables the step, so it becomes clickable in the UI.
+	 * @return $this
+	 */
+	public function makeEnabled(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Enables the step and marks it as the active one.
+	 *
+	 * @return $this
+	 * @throws UI_Exception
+	 */
+	public function makeActive(): self
+	{
+		/* ... */
+	}
+
+
+	public function render(): string
 	{
 		/* ... */
 	}
@@ -6023,6 +8954,17 @@ abstract class UI_Page_Template_Custom extends UI_Page_Template
 
 
 ```
+###  Path: `/src/classes/UI/Page/Template/Custom.php`
+
+```php
+namespace ;
+
+abstract class UI_Page_Template_Custom extends UI_Page_Template
+{
+}
+
+
+```
 ###  Path: `/src/classes/UI/Page/Title.php`
 
 ```php
@@ -6244,6 +9186,6 @@ class UI_Page_Title extends UI_Renderable implements Application_Interfaces_Icon
 ```
 ---
 **File Statistics**
-- **Size**: 113.33 KB
-- **Lines**: 6250
+- **Size**: 164.08 KB
+- **Lines**: 9192
 File: `modules/ui/page/architecture.md`

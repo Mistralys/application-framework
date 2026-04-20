@@ -92,6 +92,8 @@ final class KeywordGlossaryGeneratorTest extends ApplicationTestCase
 
         $yaml = "moduleMetaData:\n" .
                 '  id: "' . $moduleId . '"' . "\n" .
+                '  label: "' . $moduleId . '"' . "\n" .
+                '  description: "Fixture module for testing."' . "\n" .
                 "  keywords:\n" .
                 $keywordLines;
 

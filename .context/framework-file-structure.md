@@ -469,14 +469,18 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── GlossarySection.php
             │   │   ├── GlossarySectionEntry.php
             │   │   ├── KeywordEntry.php
+            │   │   ├── KeywordGlossaryBuilder.php
             │   │   ├── KeywordGlossaryGenerator.php
             │   │   ├── KeywordGlossaryRenderer.php
             │   │   ├── KeywordParser.php
             │   ├── ModulesOverview/
             │   │   ├── ModuleContextFileFinder.php
             │   │   ├── ModuleInfo.php
+            │   │   ├── ModuleInfoParser.php
+            │   │   ├── ModuleJsonExportGenerator.php
             │   │   ├── ModulesOverviewGenerator.php
             │   │   ├── ModulesOverviewRenderer.php
+            │   │   ├── ReadmeOverviewParser.php
             │   ├── README.md
             │   ├── module-context.yaml
             ├── ConfigSettings/
@@ -2054,6 +2058,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 100.88 KB
-- **Lines**: 2056
+- **Size**: 101.28 KB
+- **Lines**: 2064
 File: `framework-file-structure.md`

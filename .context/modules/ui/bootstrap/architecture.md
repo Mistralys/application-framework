@@ -491,6 +491,93 @@ abstract class BaseItem extends UI_Bootstrap implements Application_Interfaces_I
 
 
 ```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/BaseItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection;
+
+use Application_Interfaces_Iconizable as Application_Interfaces_Iconizable;
+use Application_Traits_Iconizable as Application_Traits_Iconizable;
+use UI_Bootstrap as UI_Bootstrap;
+
+/**
+ * @property BigSelectionWidget $parent
+ */
+abstract class BaseItem extends UI_Bootstrap implements Application_Interfaces_Iconizable
+{
+	use Application_Traits_Iconizable;
+
+	public const CLASS_NAME_ENTRY = BigSelectionCSS::ITEM_ENTRY;
+
+	/**
+	 * Sets an optional reference ID for the item, which can be
+	 * used to uniquely identify it.
+	 *
+	 * For example, when creating a list of products, using the
+	 * product ID as reference ID will allow finding the item
+	 * again using the product ID.
+	 *
+	 * @param string $referenceID
+	 * @return $this
+	 */
+	public function setReferenceID(string $referenceID): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getReferenceID(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/BigSelectionCSS.php`
+
+```php
+namespace UI\Bootstrap\BigSelection;
+
+/**
+ * CSS class constants for the BigSelection widget and its items.
+ *
+ * This class provides a centralized location for all CSS class names
+ * used by the BigSelection widget, making it easy to maintain and adjust
+ * the styling across the entire component.
+ */
+class BigSelectionCSS
+{
+	public const WIDGET = 'bigselection';
+	public const WIDGET_WRAPPER = 'bigselection-wrapper';
+	public const WIDGET_HEIGHT_LIMITED = 'bigselection-height-limited';
+	public const WIDGET_SIZE_SMALL = 'size-small';
+	public const ITEM_ENTRY = 'bigselection-entry';
+	public const ITEM_HEADER = 'bigselection-header';
+	public const ITEM_SEPARATOR = 'bigselection-separator';
+	public const ANCHOR = 'bigselection-anchor';
+	public const LABEL = 'bigselection-label';
+	public const DESCRIPTION = 'bigselection-description';
+	public const META_CONTROLS_LIST = 'bigselection-meta-controls';
+	public const META_CONTROL_ITEM = 'bigselection-meta-control';
+	public const FILTERING_ENABLED = 'bigselection-filtering-enabled';
+	public const FILTERING_CONTAINER = 'bigselection-filtering';
+	public const SEARCH_INPUT = 'bigselection-search-terms';
+	public const CLEAR_BUTTON = 'bigselection-clear-btn';
+	public const STATE_ACTIVE = 'active';
+
+	/** @see src/themes/default/js/ui/bigselection/static.js */
+	public const RESOURCES_JS_HANDLER = 'ui/bigselection/static.js';
+
+	/** @see src/themes/default/css/ui-bigselection.css */
+	public const RESOURCES_STYLE_SHEET = 'ui-bigselection.css';
+}
+
+
+```
 ###  Path: `/src/classes/UI/Bootstrap/BigSelection/BigSelectionCSS.php`
 
 ```php
@@ -816,6 +903,315 @@ class BigSelectionWidget extends UI_Bootstrap implements OptionableInterface
 
 
 ```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/BigSelectionWidget.php`
+
+```php
+namespace UI\Bootstrap\BigSelection;
+
+use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\NumberInfo as NumberInfo;
+use AppUtils\Traits\OptionableTrait as OptionableTrait;
+use Application_Exception as Application_Exception;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Bootstrap\BigSelection\Item\HeaderItem as HeaderItem;
+use UI\Bootstrap\BigSelection\Item\RegularItem as RegularItem;
+use UI\Bootstrap\BigSelection\Item\SeparatorItem as SeparatorItem;
+use UI_Bootstrap as UI_Bootstrap;
+use UI_Exception as UI_Exception;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+use template_default_ui_bootstrap_big_selection as template_default_ui_bootstrap_big_selection;
+
+/**
+ * @package Application
+ * @subpackage User Interface
+ *
+ * @property BaseItem[] $children
+ *
+ * @see BigSelectionCSS All CSS classes used by the widget and theme resource files.
+ * @see template_default_ui_bootstrap_big_selection Template that renders the widget.
+ */
+class BigSelectionWidget extends UI_Bootstrap implements OptionableInterface
+{
+	use OptionableTrait;
+
+	public const OPTION_FILTERING_THRESHOLD = 'filteringThreshold';
+	public const OPTION_FILTERING_ENABLED = 'filteringEnabled';
+	public const OPTION_EMPTY_MESSAGE = 'emptyMessage';
+	public const OPTION_HEIGHT_LIMITED = 'heightLimited';
+
+	public function getDefaultOptions(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the list scroll if it becomes too long.
+	 *
+	 * @param string|int|float|NULL $maxHeight Height value parsable by {@see NumberInfo}. Set to NULL to disable.
+	 * @return $this
+	 * @see BigSelectionWidget::isHeightLimited()
+	 */
+	public function makeHeightLimited($maxHeight): self
+	{
+		/* ... */
+	}
+
+
+	public function getMaxHeight(): ?NumberInfo
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the list is limited in height.
+	 *
+	 * @return bool
+	 * @see BigSelectionWidget::makeHeightLimited()
+	 */
+	public function isHeightLimited(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the message text to show when the list is empty.
+	 *
+	 * @param string|number|UI_Renderable_Interface $message
+	 * @return BigSelectionWidget
+	 */
+	public function setEmptyMessage($message): BigSelectionWidget
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds controls to filter the list by search terms.
+	 *
+	 * @param bool $enable
+	 * @return BigSelectionWidget
+	 */
+	public function enableFiltering(bool $enable = true): BigSelectionWidget
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the filtering widget should be shown (it also
+	 * depends on the filtering threshold, the minimum number
+	 * of items to display it).
+	 *
+	 * @return bool
+	 * @see BigSelectionWidget::setFilteringThreshold()
+	 */
+	public function isFilteringEnabled(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether filtering is enabled, and there are enough
+	 * items to actually display the filtering widget.
+	 *
+	 * @return bool
+	 */
+	public function isFilteringInUse(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Counts the number of items in the selection.
+	 *
+	 * @return int
+	 */
+	public function countItems(): int
+	{
+		/* ... */
+	}
+
+
+	public function getFilteringThreshold(): int
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the number of items from which the filtering
+	 * widget is displayed if filtering is enabled.
+	 *
+	 * @param int $amount
+	 * @return BigSelectionWidget
+	 */
+	public function setFilteringThreshold(int $amount): BigSelectionWidget
+	{
+		/* ... */
+	}
+
+
+	public function getEmptyMessage(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Makes the items smaller.
+	 *
+	 * @return BigSelectionWidget
+	 */
+	public function makeSmall(): BigSelectionWidget
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface $label
+	 * @return RegularItem
+	 * @throws Application_Exception
+	 * @throws UI_Exception
+	 */
+	public function prependItem($label): RegularItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface $title
+	 * @return HeaderItem
+	 * @throws Application_Exception
+	 * @throws UI_Exception
+	 */
+	public function prependHeader($title): HeaderItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|number|UI_Renderable_Interface $label
+	 * @param string $url
+	 * @return RegularItem
+	 * @throws Application_Exception
+	 * @throws UI_Exception
+	 */
+	public function prependLink($label, string $url): RegularItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a link to the list. Shortcut for adding the item and setting the link.
+	 *
+	 * @param string|number|UI_Renderable_Interface $label
+	 * @param string|AdminURLInterface $url
+	 * @return RegularItem
+	 */
+	public function addLink($label, $url): RegularItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds an item to the list.
+	 * Can be further configured via the returned instance.
+	 *
+	 * @param string|number|UI_Renderable_Interface $label
+	 * @return RegularItem
+	 * @throws Application_Exception
+	 * @throws UI_Exception
+	 */
+	public function addItem($label): RegularItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|int|float|StringableInterface $title
+	 * @return HeaderItem
+	 * @throws Application_Exception
+	 */
+	public function addHeader(string|int|float|StringableInterface $title): HeaderItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a separator line to the list.
+	 *
+	 * @return SeparatorItem
+	 * @throws UI_Exception
+	 */
+	public function addSeparator(): SeparatorItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Prepends a separator line to the list.
+	 *
+	 * @return SeparatorItem
+	 * @throws UI_Exception
+	 */
+	public function prependSeparator(): SeparatorItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Retrieves all items that have been added.
+	 *
+	 * @return BaseItem[]
+	 */
+	public function getItems(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/HeaderItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+use UI_Exception as UI_Exception;
+
+class HeaderItem extends BaseItem
+{
+	/**
+	 * @param string|int|float|StringableInterface $title
+	 * @throws UI_Exception
+	 */
+	public function setTitle(string|int|float|StringableInterface $title): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/HeaderItem.php`
 
 ```php
@@ -935,6 +1331,118 @@ class RegularItem extends BaseItem
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/RegularItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use AppUtils\AttributeCollection as AttributeCollection;
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+use UI_Exception as UI_Exception;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+class RegularItem extends BaseItem
+{
+	public const ATTRIBUTE_DESCRIPTION = 'description';
+	public const ATTRIBUTE_HREF = 'href';
+	public const ATTRIBUTE_ONCLICK = 'onclick';
+
+	/**
+	 * Changes the label after instantiating the item.
+	 *
+	 * @param string|number|UI_Renderable_Interface $label
+	 * @return RegularItem
+	 * @throws UI_Exception
+	 */
+	public function setLabel($label): RegularItem
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a description that will be shown along with the label.
+	 *
+	 * @param string|number|UI_Renderable_Interface $text
+	 * @return RegularItem
+	 * @throws UI_Exception
+	 */
+	public function setDescription($text): RegularItem
+	{
+		/* ... */
+	}
+
+
+	public function getDescription(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a control to the meta area of the item (typically floating on the right side).
+	 *
+	 * @param string|StringableInterface $control
+	 * @param AttributeCollection|null $attributes Optional attributes for the meta-control element.
+	 * @return $this
+	 */
+	public function addMetaControl($control, ?AttributeCollection $attributes = null): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|AdminURLInterface $url
+	 * @return $this
+	 */
+	public function makeLinked($url): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeActive(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeClickable($statement): RegularItem
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/SeparatorItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+
+class SeparatorItem extends BaseItem
+{
 }
 
 
@@ -1125,6 +1633,51 @@ use UI\Interfaces\NamedItemInterface as NamedItemInterface;
  */
 interface ButtonGroupItemInterface extends ButtonSizeInterface, ActivatableInterface, RenderableInterface, NamedItemInterface
 {
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/ButtonGroup/ButtonGroupItemInterface.php`
+
+```php
+namespace UI\Bootstrap\ButtonGroup;
+
+use AppUtils\Interfaces\RenderableInterface as RenderableInterface;
+use UI\Interfaces\ActivatableInterface as ActivatableInterface;
+use UI\Interfaces\ButtonSizeInterface as ButtonSizeInterface;
+use UI\Interfaces\NamedItemInterface as NamedItemInterface;
+
+/**
+ * Interface for items that can be added to a button group.
+ *
+ * @package User Interface
+ * @subpackage Interfaces
+ */
+interface ButtonGroupItemInterface extends ButtonSizeInterface, ActivatableInterface, RenderableInterface, NamedItemInterface
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/Dropdown/AJAXLoader.php`
+
+```php
+namespace UI\Bootstrap\Dropdown;
+
+use AppUtils\ArrayDataCollection as ArrayDataCollection;
+use AppUtils\ConvertHelper\JSONConverter as JSONConverter;
+use UI as UI;
+
+class AJAXLoader
+{
+	/**
+	 * Renders the placeholder for the menu.
+	 * @return string
+	 */
+	public function renderPlaceholder(): string
+	{
+		/* ... */
+	}
 }
 
 
@@ -1955,6 +2508,28 @@ abstract class UI_Bootstrap_Tab_Renderer extends UI_Renderable
 
 
 ```
+###  Path: `/src/classes/UI/Bootstrap/Tab/Renderer.php`
+
+```php
+namespace ;
+
+abstract class UI_Bootstrap_Tab_Renderer extends UI_Renderable
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/Tab/Renderer/Link.php`
+
+```php
+namespace ;
+
+class UI_Bootstrap_Tab_Renderer_Link extends UI_Bootstrap_Tab_Renderer
+{
+}
+
+
+```
 ###  Path: `/src/classes/UI/Bootstrap/Tab/Renderer/Link.php`
 
 ```php
@@ -1972,6 +2547,28 @@ class UI_Bootstrap_Tab_Renderer_Link extends UI_Bootstrap_Tab_Renderer
 namespace ;
 
 class UI_Bootstrap_Tab_Renderer_Menu extends UI_Bootstrap_Tab_Renderer
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/Tab/Renderer/Menu.php`
+
+```php
+namespace ;
+
+class UI_Bootstrap_Tab_Renderer_Menu extends UI_Bootstrap_Tab_Renderer
+{
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/Tab/Renderer/Toggle.php`
+
+```php
+namespace ;
+
+class UI_Bootstrap_Tab_Renderer_Toggle extends UI_Bootstrap_Tab_Renderer
 {
 }
 
@@ -2117,6 +2714,6 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
 ```
 ---
 **File Statistics**
-- **Size**: 38.76 KB
-- **Lines**: 2123
+- **Size**: 51.41 KB
+- **Lines**: 2720
 File: `modules/ui/bootstrap/architecture.md`

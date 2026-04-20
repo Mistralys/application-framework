@@ -1,8 +1,8 @@
 # Modules Overview
 
-> Auto-generated on 2026-04-01 14:26:33. Do not edit manually.
+> Auto-generated on 2026-04-20 14:20:40. Do not edit manually.
 
-Total: 22 modules across 1 package.
+Total: 23 modules across 1 package.
 
 ## mistralys/application_framework
 
