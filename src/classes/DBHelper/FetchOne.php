@@ -60,7 +60,7 @@ class DBHelper_FetchOne extends DBHelper_FetchBase
     }
     
     /**
-     * @return array<int|string,string|int|float|NULL>
+     * @return array<int|string, mixed>
      */
     public function fetch() : array
     {

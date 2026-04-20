@@ -286,3 +286,35 @@ composer analyze-save
 
 This is equivalent to running `composer analyze` and writing the output to `phpstan-result.txt`.
 
+---
+
+## Module Context YAML (`module-context.yaml`)
+
+### Required fields
+
+Every `module-context.yaml` file **must** include all three of these fields inside its `moduleMetaData` section:
+
+| Field | Purpose |
+|---|---|
+| `id` | Unique machine-readable module identifier (used for glossary and overview indexing). |
+| `label` | Human-readable display name. |
+| `description` | Short description of the module's purpose. |
+
+### Silent-skip behaviour
+
+`ModuleInfoParser::parseFile()` is the single authoritative parser for all `module-context.yaml` files consumed by framework build generators (`KeywordGlossaryGenerator`, `ModulesOverviewGenerator`, and application-level generators). Its validation rules are:
+
+1. The file must contain a `moduleMetaData` key that is an array.
+2. All three fields — `id`, `label`, and `description` — must be present.
+
+**If any required field is absent, the parser returns `null` and emits a `BuildMessages` warning; the file is silently skipped.** No exception is thrown. As a consequence:
+
+- A module whose `module-context.yaml` has `id` and `keywords` but lacks `label` or `description` will **not** appear in the keyword glossary, even though the keywords are present.
+- The same module will also be absent from the modules overview and any downstream JSON export.
+
+To diagnose a missing module after `composer build`, inspect the build output for `ModuleInfoParser` warnings.
+
+### Optional fields
+
+`keywords` and `relatedModules` are optional and default to an empty array when omitted.
+

@@ -8,22 +8,21 @@ declare(strict_types=1);
 
 namespace Application\Composer\KeywordGlossary;
 
-use Application\Composer\BuildMessages;
 use Application\Composer\KeywordGlossary\Events\DecorateGlossaryEvent;
 use Application\Composer\ModulesOverview\ModuleContextFileFinder;
+use Application\Composer\ModulesOverview\ModuleInfoParser;
 use Application\EventHandler\OfflineEvents\OfflineEventsManager;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Orchestrates the keyword-glossary generation workflow.
  *
  * Discovers all `module-context.yaml` files via {@see ModuleContextFileFinder},
- * extracts `moduleMetaData.id` and `moduleMetaData.keywords` from each,
- * builds a de-duplicated {@see KeywordEntry} map, fires
- * {@see DecorateGlossaryEvent} via the offline events manager to collect
+ * delegates parsing to {@see ModuleInfoParser} to obtain {@see ModuleInfo} value
+ * objects from each (files lacking `id`, `label`, or `description` are skipped),
+ * delegates keyword deduplication and sorting to {@see KeywordGlossaryBuilder},
+ * fires {@see DecorateGlossaryEvent} via the offline events manager to collect
  * custom {@see GlossarySection} instances, renders the Markdown document
  * via {@see KeywordGlossaryRenderer}, and writes it to the specified output path.
  *
@@ -70,91 +69,21 @@ final class KeywordGlossaryGenerator
     {
         $finder = new ModuleContextFileFinder($this->rootFolder);
         $files  = $finder->findAll();
+        $parser = new ModuleInfoParser($this->rootFolder);
 
-        // Keys are lowercase keyword strings; first-seen casing is preserved.
-        /** @var array<string, KeywordEntry> $map */
-        $map = array();
+        $modules = array();
 
         foreach($files as $file)
         {
-            try
+            $info = $parser->parseFile($file);
+
+            if($info !== null)
             {
-                $data = Yaml::parseFile($file->getPath());
-            }
-            catch(ParseException $e)
-            {
-                BuildMessages::addMessage(
-                    'KeywordGlossaryGenerator',
-                    BuildMessages::LEVEL_WARNING,
-                    'Failed to parse ' . $file->getPath() . ' — ' . $e->getMessage()
-                );
-
-                if($this->onProgress !== null) {
-                    ($this->onProgress)('WARNING: Failed to parse ' . $file->getPath() . ' — ' . $e->getMessage());
-                }
-
-                continue;
-            }
-
-            if(!is_array($data) || !isset($data['moduleMetaData']) || !is_array($data['moduleMetaData']))
-            {
-                continue;
-            }
-
-            $meta = $data['moduleMetaData'];
-
-            if(!isset($meta['id']))
-            {
-                continue;
-            }
-
-            $moduleId = (string)$meta['id'];
-
-            $keywords = array();
-
-            if(isset($meta['keywords']) && is_array($meta['keywords']))
-            {
-                $keywords = array_map('strval', $meta['keywords']);
-            }
-
-            foreach($keywords as $rawKeyword)
-            {
-                $parsed = KeywordParser::parse($rawKeyword);
-
-                if($parsed['keyword'] === '') {
-                    continue;
-                }
-
-                $lowerKey = strtolower($parsed['keyword']);
-
-                if(isset($map[$lowerKey]))
-                {
-                    if(
-                        $this->onProgress !== null
-                        && strcasecmp($parsed['context'], $map[$lowerKey]->getContext()) !== 0
-                    ) {
-                        ($this->onProgress)(
-                            'WARNING: Keyword conflict for "' . $parsed['keyword'] . '": '
-                            . '"' . $map[$lowerKey]->getContext() . '" (module: ' . implode(', ', $map[$lowerKey]->getModuleIds()) . ') '
-                            . 'vs "' . $parsed['context'] . '" (module: ' . $moduleId . ')'
-                        );
-                    }
-
-                    $map[$lowerKey] = $map[$lowerKey]->addModuleId($moduleId);
-                }
-                else
-                {
-                    $map[$lowerKey] = new KeywordEntry($parsed['keyword'], $parsed['context'], array($moduleId));
-                }
+                $modules[] = $info;
             }
         }
 
-        $entries = array_values($map);
-
-        usort($entries, static function(KeywordEntry $a, KeywordEntry $b) : int {
-            return strcasecmp($a->getKeyword(), $b->getKeyword());
-        });
-
+        $entries  = (new KeywordGlossaryBuilder($modules, $this->onProgress))->build();
         $sections = $this->collectSections();
         $markdown = (new KeywordGlossaryRenderer($entries, $sections))->render();
 
