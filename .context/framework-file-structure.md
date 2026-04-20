@@ -462,6 +462,13 @@ _SOURCE: Tree of PHP Class Files_
             │   ├── BuildMessages.php
             │   ├── CSSClassesGenerator.php
             │   ├── ComposerScripts.php
+            │   ├── IconBuilder/
+            │   │   ├── AbstractLanguageRenderer.php
+            │   │   ├── IconBuilder.php
+            │   │   ├── IconDefinition.php
+            │   │   ├── IconsReader.php
+            │   │   ├── JSRenderer.php
+            │   │   ├── PHPRenderer.php
             │   ├── KeywordGlossary/
             │   │   ├── Events/
             │   │   │   ├── BaseDecorateGlossaryListener.php
@@ -1833,6 +1840,10 @@ _SOURCE: Tree of PHP Class Files_
             │   ├── module-context.yaml
             ├── HTMLElement.php
             ├── Icon.php
+            ├── Icons/
+            │   ├── IconCollection.php
+            │   ├── IconInfo.php
+            │   ├── README.md
             ├── Interfaces/
             │   ├── ActivatableInterface.php
             │   ├── Badge.php

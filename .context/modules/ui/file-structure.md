@@ -178,6 +178,10 @@ _SOURCE: UI Module File Structure_
                 ├── module-context.yaml
             └── HTMLElement.php
             └── Icon.php
+            └── Icons/
+                ├── IconCollection.php
+                ├── IconInfo.php
+                ├── README.md
             └── Interfaces/
                 ├── ActivatableInterface.php
                 ├── Badge.php

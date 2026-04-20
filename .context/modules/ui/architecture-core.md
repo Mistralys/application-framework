@@ -30,6 +30,9 @@ _SOURCE: UI singleton, root-level components, interfaces and traits_
             └── Form.php
             └── HTMLElement.php
             └── Icon.php
+            └── Icons/
+                ├── IconCollection.php
+                ├── IconInfo.php
             └── Interfaces/
                 ├── ActivatableInterface.php
                 ├── Badge.php
@@ -7679,6 +7682,257 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
 
 
 	public function setHidden(bool $hidden = true): self
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Icons/IconCollection.php`
+
+```php
+namespace UI\Icons;
+
+use AppUtils\FileHelper\JSONFile as JSONFile;
+
+/**
+ * Singleton registry of all available icons — both framework standard icons
+ * and application custom icons. On first access the collection loads and
+ * merges the two JSON sources, normalises IDs (hyphens/spaces → underscores),
+ * and sorts the result alphabetically by icon ID.
+ *
+ * Custom icons with the same ID as a standard icon replace the standard entry,
+ * allowing applications to override framework icons.
+ *
+ * @package UI
+ * @subpackage Icons
+ * @see IconInfo
+ */
+class IconCollection
+{
+	public static function getInstance(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Resets the singleton instance to null.
+	 *
+	 * @internal For use in tests only — allows each test to start with a
+	 *           fresh collection instance and prevents state leaking between
+	 *           test cases.
+	 * @return void
+	 */
+	public static function resetInstance(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns all available icons sorted alphabetically by ID.
+	 *
+	 * @return IconInfo[]
+	 */
+	public function getAll(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns only the framework standard icons, sorted alphabetically by ID.
+	 *
+	 * @return IconInfo[]
+	 */
+	public function getStandardIcons(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns only the application custom icons, sorted alphabetically by ID.
+	 *
+	 * @return IconInfo[]
+	 */
+	public function getCustomIcons(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Checks whether an icon with the given ID exists in the collection.
+	 *
+	 * @param string $iconID
+	 * @return bool
+	 */
+	public function idExists(string $iconID): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the {@see IconInfo} for the given icon ID.
+	 *
+	 * NOTE: The ID must be in its normalised form — hyphens and spaces
+	 * converted to underscores (e.g. `time_tracker`, not `time-tracker`).
+	 * To look up an icon using an un-normalised key, normalise it first via
+	 * {@see IconInfo::normaliseID()}. Use {@see self::idExists()}
+	 * to test existence before calling this method.
+	 *
+	 * @param string $iconID Normalised icon ID (underscores, no hyphens/spaces).
+	 * @return IconInfo
+	 * @throws \RuntimeException When no icon with the given ID exists.
+	 */
+	public function getByID(string $iconID): IconInfo
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the total number of icons in the collection.
+	 *
+	 * @return int
+	 */
+	public function countIcons(): int
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Icons/IconInfo.php`
+
+```php
+namespace UI\Icons;
+
+use UI_Icon as UI_Icon;
+
+/**
+ * Read-only value object for a single available icon. Holds the icon's
+ * ID, FA icon name, FA prefix, and whether it is a custom (application)
+ * icon or a standard (framework) icon. Provides a factory method to
+ * create the matching {@see UI_Icon} instance.
+ *
+ * @package UI
+ * @subpackage Icons
+ * @see IconCollection
+ */
+class IconInfo
+{
+	/**
+	 * @return string
+	 */
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getIconName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getPrefix(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function isCustom(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function isStandard(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Creates a UI_Icon instance with this icon's type pre-configured.
+	 *
+	 * When the prefix is empty, {@see UI_Icon::setType()} is called with
+	 * one argument only (matching the generated method convention). When a
+	 * prefix is present it is passed as the second argument.
+	 *
+	 * @return UI_Icon
+	 */
+	public function createIcon(): UI_Icon
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Normalises an icon ID by replacing hyphens and spaces with underscores.
+	 *
+	 * This is the canonical normalisation method used by both the runtime
+	 * registry ({@see IconCollection}) and the build-time code generator
+	 * ({@see \Application\Composer\IconBuilder\IconsReader}). Always delegate
+	 * to this method rather than repeating the inline formula.
+	 *
+	 * Example:
+	 * ```php
+	 * IconInfo::normaliseID('time-tracker');  // → 'time_tracker'
+	 * IconInfo::normaliseID('my icon name');  // → 'my_icon_name'
+	 * IconInfo::normaliseID('already_ok');    // → 'already_ok'
+	 * ```
+	 *
+	 * @param string $id Raw icon ID (may contain hyphens or spaces).
+	 * @return string Normalised icon ID with underscores only.
+	 * @since 1.0.0
+	 */
+	public static function normaliseID(string $id): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the method name used in the icon classes, derived by
+	 * converting the underscore-separated ID to camelCase.
+	 *
+	 * Examples: `attention_required` → `attentionRequired`, `add` → `add`.
+	 *
+	 * @return string
+	 */
+	public function getMethodName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the full icon name including prefix, e.g. `far:sun`.
+	 * When the prefix is empty, only the icon name is returned, e.g. `rocket`.
+	 *
+	 * @return string
+	 */
+	public function getFullIconName(): string
 	{
 		/* ... */
 	}

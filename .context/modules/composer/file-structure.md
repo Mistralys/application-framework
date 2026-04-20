@@ -10,6 +10,13 @@ _SOURCE: Tree of PHP Class Files_
                 └── BuildMessages.php
                 └── CSSClassesGenerator.php
                 └── ComposerScripts.php
+                └── IconBuilder/
+                    ├── AbstractLanguageRenderer.php
+                    ├── IconBuilder.php
+                    ├── IconDefinition.php
+                    ├── IconsReader.php
+                    ├── JSRenderer.php
+                    ├── PHPRenderer.php
                 └── KeywordGlossary/
                     ├── Events/
                     │   ├── BaseDecorateGlossaryListener.php

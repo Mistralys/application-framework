@@ -7862,6 +7862,6 @@ trait RecordKeyHandlersTrait
 ```
 ---
 **File Statistics**
-- **Size**: 167.62 KB
+- **Size**: 167.6 KB
 - **Lines**: 7868
 File: `modules/db-helper/architecture-core.md`
