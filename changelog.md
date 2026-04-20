@@ -1,5 +1,11 @@
 # Application Framework Changelog
 
+## v7.1.1 - Module Metadata Exporter
+- Composer: Added `ModuleJsonExportGenerator` to export module info as JSON.
+- Composer: Added `ModuleInfoParser` for unified module context extraction.
+- Composer: Added `ReadmeOverviewParser` to extract brief descriptions from readmes.
+- Composer: Extracted glossary generation into `KeywordGlossaryBuilder`.
+
 ## v7.1.0 - OpenAPI Generator & API Cache (Breaking-S)
 - API: Added automatic OpenAPI 3.1 spec generation from registered API methods.
 - API: New `GetOpenAPISpec` method serves the generated spec as raw JSON.
