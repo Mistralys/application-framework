@@ -33,7 +33,7 @@ class IDListParameter extends BaseAPIParameter
      */
     public function getDefaultValue(): array
     {
-        return $this->defaultValue;
+        return $this->defaultValue ?? array();
     }
 
     /**
