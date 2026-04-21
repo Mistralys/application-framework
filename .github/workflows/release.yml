@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]*.[0-9]*.[0-9]*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate tag format
+        run: |
+          if [[ ! "${{ github.ref_name }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag '${{ github.ref_name }}' does not match version format X.Y.Z"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract release notes
+        id: changelog
+        run: |
+          # Extract the title from the topmost ## heading
+          TITLE=$(grep -m1 '^## ' changelog.md | sed 's/^## v[^ ]* - //')
+          echo "title=${TITLE}" >> "$GITHUB_OUTPUT"
+
+          # Extract the section body between the first and second ## headings,
+          # trimming leading blank lines.
+          awk '
+            /^## / {
+              if (found) exit
+              found = 1
+              next
+            }
+            found { print }
+          ' changelog.md | awk 'NF{p=1} p' > /tmp/section.md
+
+          # Build the release body
+          {
+            echo "Included in this release:"
+            echo ""
+            cat /tmp/section.md
+          } > /tmp/release-body.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ steps.changelog.outputs.title }}" \
+            --notes-file /tmp/release-body.md \
+            --latest
