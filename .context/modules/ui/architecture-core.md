@@ -7699,8 +7699,8 @@ use AppUtils\FileHelper\JSONFile as JSONFile;
 /**
  * Singleton registry of all available icons — both framework standard icons
  * and application custom icons. On first access the collection loads and
- * merges the two JSON sources, normalises IDs (hyphens/spaces → underscores),
- * and sorts the result alphabetically by icon ID.
+ * merges the two JSON sources, normalises IDs (hyphens/spaces → underscores,
+ * all characters lowercased), and sorts the result alphabetically by icon ID.
  *
  * Custom icons with the same ID as a standard icon replace the standard entry,
  * allowing applications to override framework icons.
@@ -7779,8 +7779,8 @@ class IconCollection
 	/**
 	 * Returns the {@see IconInfo} for the given icon ID.
 	 *
-	 * NOTE: The ID must be in its normalised form — hyphens and spaces
-	 * converted to underscores (e.g. `time_tracker`, not `time-tracker`).
+	 * NOTE: The ID must be in its normalised form — lowercase, hyphens and spaces
+	 * converted to underscores (e.g. `time_tracker`, not `Time-Tracker`).
 	 * To look up an icon using an un-normalised key, normalise it first via
 	 * {@see IconInfo::normaliseID()}. Use {@see self::idExists()}
 	 * to test existence before calling this method.
@@ -7900,10 +7900,12 @@ class IconInfo
 	 * IconInfo::normaliseID('time-tracker');  // → 'time_tracker'
 	 * IconInfo::normaliseID('my icon name');  // → 'my_icon_name'
 	 * IconInfo::normaliseID('already_ok');    // → 'already_ok'
+	 * IconInfo::normaliseID('apiClients');    // → 'apiclients'
+	 * IconInfo::normaliseID('API_Keys');      // → 'api_keys'
 	 * ```
 	 *
 	 * @param string $id Raw icon ID (may contain hyphens or spaces).
-	 * @return string Normalised icon ID with underscores only.
+	 * @return string Normalised icon ID: lowercase, underscores only.
 	 * @since 1.0.0
 	 */
 	public static function normaliseID(string $id): string
@@ -17404,6 +17406,6 @@ class UI
 ```
 ---
 **File Statistics**
-- **Size**: 295.44 KB
-- **Lines**: 17156
+- **Size**: 300.54 KB
+- **Lines**: 17410
 File: `modules/ui/architecture-core.md`
