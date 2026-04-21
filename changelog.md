@@ -8,6 +8,8 @@
 - Composer: Added `rebuild-icons` command.
 - Composer: Added `IconBuilder` to sync PHP and JS icon methods with JSON definitions.
 - Icons: Added `IconCollection` and `IconInfo` for programmatic access to icon properties.
+- Icons: Fixed misnamed icons in `IconCollection` and `icons.json`.
+- Docs: Added CTX documentation for the Icon Builder.
 
 ## v7.1.0 - OpenAPI Generator & API Cache (Breaking-S)
 - API: Added automatic OpenAPI 3.1 spec generation from registered API methods.
