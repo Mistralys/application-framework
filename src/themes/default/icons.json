@@ -15,11 +15,11 @@
     "icon": "plus-circle",
     "type": ""
   },
-  "apiClients": {
+  "api_clients": {
     "icon": "project-diagram",
     "type": "fas"
   },
-  "apiKeys": {
+  "api_keys": {
     "icon": "key",
     "type": "fas"
   },

@@ -13,8 +13,8 @@ use AppUtils\FileHelper\JSONFile;
 /**
  * Singleton registry of all available icons — both framework standard icons
  * and application custom icons. On first access the collection loads and
- * merges the two JSON sources, normalises IDs (hyphens/spaces → underscores),
- * and sorts the result alphabetically by icon ID.
+ * merges the two JSON sources, normalises IDs (hyphens/spaces → underscores,
+ * all characters lowercased), and sorts the result alphabetically by icon ID.
  *
  * Custom icons with the same ID as a standard icon replace the standard entry,
  * allowing applications to override framework icons.
@@ -124,8 +124,8 @@ class IconCollection
     /**
      * Returns the {@see IconInfo} for the given icon ID.
      *
-     * NOTE: The ID must be in its normalised form — hyphens and spaces
-     * converted to underscores (e.g. `time_tracker`, not `time-tracker`).
+     * NOTE: The ID must be in its normalised form — lowercase, hyphens and spaces
+     * converted to underscores (e.g. `time_tracker`, not `Time-Tracker`).
      * To look up an icon using an un-normalised key, normalise it first via
      * {@see IconInfo::normaliseID()}. Use {@see self::idExists()}
      * to test existence before calling this method.
@@ -183,7 +183,8 @@ class IconCollection
 
     /**
      * Parses a single icons JSON file and adds its entries to the collection.
-     * Each icon ID is normalised by replacing hyphens and spaces with underscores.
+     * Each icon ID is normalised by lowercasing and replacing hyphens and
+     * spaces with underscores.
      *
      * @param string $path     Absolute path to the JSON file.
      * @param bool   $isCustom Whether these icons are custom (application) icons.

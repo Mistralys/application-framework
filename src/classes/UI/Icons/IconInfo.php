@@ -113,15 +113,17 @@ class IconInfo
      * IconInfo::normaliseID('time-tracker');  // → 'time_tracker'
      * IconInfo::normaliseID('my icon name');  // → 'my_icon_name'
      * IconInfo::normaliseID('already_ok');    // → 'already_ok'
+     * IconInfo::normaliseID('apiClients');    // → 'apiclients'
+     * IconInfo::normaliseID('API_Keys');      // → 'api_keys'
      * ```
      *
      * @param string $id Raw icon ID (may contain hyphens or spaces).
-     * @return string Normalised icon ID with underscores only.
+     * @return string Normalised icon ID: lowercase, underscores only.
      * @since 1.0.0
      */
     public static function normaliseID(string $id) : string
     {
-        return str_replace(array('-', ' '), '_', $id);
+        return strtolower(str_replace(array('-', ' '), '_', $id));
     }
 
     /**
