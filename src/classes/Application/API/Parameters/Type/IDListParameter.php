@@ -19,7 +19,7 @@ use AppUtils\ConvertHelper;
  * @package API
  * @subpackage Parameters
  *
- * @property int[] $defaultValue
+ * @property int[]|null $defaultValue
  */
 class IDListParameter extends BaseAPIParameter
 {

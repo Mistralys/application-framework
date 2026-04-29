@@ -105,7 +105,6 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
      * though they can never be reached at runtime.
      *
      * @return string|int|float|bool|array|object
-     * @phpstan-return never
      */
     public function requireValue() : string|int|float|bool|array|object
     {

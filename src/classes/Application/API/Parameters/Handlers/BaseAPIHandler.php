@@ -46,12 +46,9 @@ abstract class BaseAPIHandler implements APIHandlerInterface
      *
      * The return type is declared as `string|int|float|bool|array|object`
      * rather than `never` because PHP does not permit `never` on a method that
-     * subclasses may override with a non-`never` return type. The
-     * `@phpstan-return never` annotation makes the termination contract
-     * explicit for static analysis tooling.
+     * subclasses may override with a non-`never` return type.
      *
      * @return string|int|float|bool|array|object
-     * @phpstan-return never
      */
     public function requireValue(): string|int|float|bool|array|object
     {

@@ -54,7 +54,7 @@ use AppUtils\ConvertHelper;
  * @package API
  * @subpackage Parameters
  *
- * @property string[] $defaultValue
+ * @property string[]|null $defaultValue
  */
 class StringListParameter extends BaseAPIParameter
 {
