@@ -1,0 +1,114 @@
+## ---------------------------------------------------------------
+## COUNTRIES — Country Management Module
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "countries"
+  label: "Countries"
+  description: "Country management following the DBHelper Collection/Record pattern. Application_Countries (singleton collection) manages Application_Countries_Country records, supporting lookup by ID or ISO code, ISO aliases (e.g. uk→gb), invariant country (zz) handling, locale code parsing, and filter criteria. Includes admin UI for country CRUD, AI tool integrations, domain events, user rights, and UI components (navigator, selector, button bar, flag icons)."
+  keywords:
+    - Application_Countries (singleton collection class extending DBHelper_BaseCollection; entry point for all country operations)
+    - Application_Countries_Country (record class extending DBHelper_BaseRecord; represents a single country with ISO code, label, and locale bridge)
+    - CountriesCollection (utility wrapper for working with a resolved set of Application_Countries_Country instances; not a DBHelper collection)
+    - invariant country (special ISO code zz representing language-independent content; excluded by excludeInvariant filters)
+    - ISO alias (alternative ISO code mapped to the canonical code during lookup; rejected during creation)
+    - LocaleCode (parses locale strings like de_DE into language and country components)
+    - CountrySettingsManager (Formable-based settings manager for country record editing)
+    - Navigator (UI widget rendering a button bar for country selection)
+    - Selector (form element for choosing countries from a filterable list)
+    - ButtonBar (persistent country selection widget storing user choice in user settings)
+  relatedModules:
+    - "countries-api"
+    - "db-helper"
+    - "event-handler"
+    - "ui"
+    - "ai"
+
+documents:
+  -
+    description: 'Countries - Overview'
+    outputPath: 'modules/countries/overview.md'
+    sources:
+      - type: file
+        description: "Countries Module Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'Countries - Core Architecture (Public API)'
+    outputPath: 'modules/countries/architecture-core.md'
+    sources:
+      - type: file
+        description: "Application_Countries, Application_Countries_Country, CountriesCollection, CountrySettingsManager, FilterCriteria, FilterSettings, LocaleCode, CountryException, Navigator, Selector, ButtonBar, Icon"
+        sourcePaths:
+          - ./
+          - ./Country
+        filePattern: "*.php"
+        excludePatterns:
+          - 'Admin/'
+          - 'AI/'
+          - 'API/'
+          - 'Event/'
+          - 'Rights/'
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Countries - Admin UI Architecture (Public API)'
+    outputPath: 'modules/countries/architecture-admin.md'
+    sources:
+      - type: file
+        description: "CountryAdminURLs, MainAdminURLs, CountryScreens, CountryRequestType, CountriesArea, screen modes, create wizard steps, view screens, mode/view traits"
+        sourcePaths:
+          - ./Admin
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Countries - AI Tools, Events, Rights (Public API)'
+    outputPath: 'modules/countries/architecture-supporting.md'
+    sources:
+      - type: file
+        description: "CountryAITools, ListCountriesTool, GetCountryConfigTool, IgnoredCountriesUpdatedEvent, CountryRightsInterface, CountryRightsTrait, CountryScreenRights"
+        sourcePaths:
+          - ./AI
+          - ./Event
+          - ./Rights
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Countries - File Structure'
+    outputPath: 'modules/countries/file-structure.md'
+    sources:
+      - type: tree
+        description: 'Countries Module File Tree'
+        sourcePaths: [ ./ ]
+        filePattern: '*.php'
+        renderFormat: ascii
+        showCharCount: false
+        maxDepth: 5

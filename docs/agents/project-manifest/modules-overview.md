@@ -1,8 +1,8 @@
 # Modules Overview
 
-> Auto-generated on 2026-04-20 15:06:35. Do not edit manually.
+> Auto-generated on 2026-04-29 08:35:34. Do not edit manually.
 
-Total: 23 modules across 1 package.
+Total: 25 modules across 1 package.
 
 ## mistralys/application_framework
 
@@ -17,6 +17,8 @@ Total: 23 modules across 1 package.
 | `application-sets` | Application Sets | Configuration-level system to control which administration areas are enabled per application instance, supporting multiple feature configurations. | `src/classes/Application/AppSets/` | `.context/modules/application-sets/` | db-helper |
 | `composer` | Application Composer | Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase, generate the OpenAPI 3.1 specification JSON, generate the API .htaccess for RESTful URL rewriting, and rebuild application custom icon methods from JSON definitions. Includes a shared BuildMessages registry for build-time notices. All steps are orchestrated by ComposerScripts::build(). | `src/classes/Application/Composer/` | `.context/modules/composer/` | event-handler |
 | `connectors` | Connectors | Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods. | `src/classes/Connectors/` | `.context/modules/connectors/` | — |
+| `countries` | Countries | Country management following the DBHelper Collection/Record pattern. Application_Countries (singleton collection) manages Application_Countries_Country records, supporting lookup by ID or ISO code, ISO aliases (e.g. uk→gb), invariant country (zz) handling, locale code parsing, and filter criteria. Includes admin UI for country CRUD, AI tool integrations, domain events, user rights, and UI components (navigator, selector, button bar, flag icons). | `src/classes/Application/Countries/` | `.context/modules/countries/` | countries-api, db-helper, event-handler, ui, ai |
+| `countries-api` | Countries API | Reusable trait-based infrastructure for country parameter handling in API methods. Provides two complementary patterns: AppCountryAPITrait (singular — resolves one Application_Countries_Country from countryID or countryISO) and AppCountriesAPITrait (plural — resolves Application_Countries_Country[] from countryIDs or countryISOs). Both enforce mutual exclusivity via OrRule. Parameter classes live in Params/; OrRule components live in ParamSets/. | `src/classes/Application/Countries/API/` | `.context/modules/countries/api/` | countries, api, api-parameters |
 | `db-helper` | DBHelper | Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations. | `src/classes/DBHelper/` | `.context/modules/db-helper/` | event-handler, ui, ui-datagrid, application-sets |
 | `event-handler` | Event Handling | Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners. | `src/classes/Application/EventHandler/` | `.context/modules/event-handler/` | ui, ui-form, db-helper, composer |
 | `markdown-renderer` | Markdown Renderer | Converts Markdown text to styled HTML using CommonMark with GFM extensions, extended with custom tags for media library images and API documentation links. | `src/classes/Application/MarkdownRenderer/` | `.context/modules/markdown-renderer/` | ui |
@@ -41,6 +43,8 @@ Total: 23 modules across 1 package.
 - **api-parameters** → api, api-openapi, api-cache
 - **application-sets** → db-helper
 - **composer** → event-handler
+- **countries** → countries-api, db-helper, event-handler, ui, ai
+- **countries-api** → countries, api, api-parameters
 - **db-helper** → event-handler, ui, ui-datagrid, application-sets
 - **event-handler** → ui, ui-form, db-helper, composer
 - **markdown-renderer** → ui

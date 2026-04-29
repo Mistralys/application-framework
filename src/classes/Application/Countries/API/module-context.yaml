@@ -1,0 +1,94 @@
+## ---------------------------------------------------------------
+## COUNTRIES / API — Country Parameter Trait Infrastructure
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "countries-api"
+  label: "Countries API"
+  description: "Reusable trait-based infrastructure for country parameter handling in API methods. Provides two complementary patterns: AppCountryAPITrait (singular — resolves one Application_Countries_Country from countryID or countryISO) and AppCountriesAPITrait (plural — resolves Application_Countries_Country[] from countryIDs or countryISOs). Both enforce mutual exclusivity via OrRule. Parameter classes live in Params/; OrRule components live in ParamSets/."
+  keywords:
+    - AppCountryAPITrait (mix-in for API methods that need a single country parameter)
+    - AppCountriesAPITrait (mix-in for API methods that need multiple country parameters)
+    - AppCountryParamsContainer (single-country handler container — resolves to one country)
+    - AppCountriesParamsContainer (plural handler container — resolves to country array)
+    - AppCountriesParamInterface (plural interface declaring getCountries())
+    - AppCountryParamInterface (singular interface declaring getCountry())
+    - AppCountryIDsValidation (per-ID validation for country ID lists)
+    - countryID / countryISO (single-country parameter names)
+    - countryIDs / countryISOs (multi-country parameter names)
+  relatedModules:
+    - "countries"
+    - "api"
+    - "api-parameters"
+
+documents:
+  -
+    description: 'Countries API - Overview'
+    outputPath: 'modules/countries/api/overview.md'
+    sources:
+      - type: file
+        description: "Countries API README"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'Countries API - Core Architecture (Public API)'
+    outputPath: 'modules/countries/api/architecture-core.md'
+    sources:
+      - type: file
+        description: "AppCountryAPIInterface, AppCountryAPITrait, AppCountryParamsContainer, AppCountriesAPIInterface, AppCountriesAPITrait, AppCountriesParamsContainer, CountriesAPIGroup, CountryAPIException, GetAppCountriesAPI"
+        sourcePaths:
+          - ./
+          - ./Methods
+        filePattern: "*.php"
+        excludePatterns:
+          - 'Params/'
+          - 'ParamSets/'
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Countries API - Params (Public API)'
+    outputPath: 'modules/countries/api/architecture-params.md'
+    sources:
+      - type: file
+        description: "AppCountryParamInterface, AppCountriesParamInterface, AppCountryIDParam, AppCountryISOParam, AppCountryIDsParam, AppCountryIDsValidation, AppCountryIDsHandler, AppCountryIDHandler, AppCountryISOHandler"
+        sourcePaths:
+          - ./Params
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Countries API - ParamSets (Public API)'
+    outputPath: 'modules/countries/api/architecture-paramsets.md'
+    sources:
+      - type: file
+        description: "Singular: AppCountryParamRule, AppCountryRuleHandler, CountryIDSet, CountryISOSet, AppCountryParamSetInterface, BaseAppCountryParamSet — Plural: AppCountriesParamRule, AppCountriesRuleHandler, CountryIDsSet, CountryISOsSet, AppCountriesParamSetInterface, BaseAppCountriesParamSet"
+        sourcePaths:
+          - ./ParamSets
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
