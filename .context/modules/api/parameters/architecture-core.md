@@ -481,6 +481,7 @@ use Application\API\Parameters\Type\BooleanParameter as BooleanParameter;
 use Application\API\Parameters\Type\IDListParameter as IDListParameter;
 use Application\API\Parameters\Type\IntegerParameter as IntegerParameter;
 use Application\API\Parameters\Type\JSONParameter as JSONParameter;
+use Application\API\Parameters\Type\StringListParameter as StringListParameter;
 use Application\API\Parameters\Type\StringParameter as StringParameter;
 
 class ParamTypeSelector
@@ -498,6 +499,21 @@ class ParamTypeSelector
 
 
 	public function string(): StringParameter
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * List of strings as an array.
+	 *
+	 * Accepts a comma-separated string or an array of strings.
+	 * Each item is whitespace-trimmed; empty strings are filtered out.
+	 * Null and all-empty input resolves to null.
+	 *
+	 * @return StringListParameter
+	 */
+	public function stringList(): StringListParameter
 	{
 		/* ... */
 	}
@@ -591,6 +607,6 @@ interface ReservedParamInterface extends APIParameterInterface
 ```
 ---
 **File Statistics**
-- **Size**: 13.12 KB
-- **Lines**: 597
+- **Size**: 13.52 KB
+- **Lines**: 613
 File: `modules/api/parameters/architecture-core.md`

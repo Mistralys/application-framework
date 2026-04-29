@@ -16,6 +16,7 @@ use Application\API\Parameters\Type\BooleanParameter;
 use Application\API\Parameters\Type\IDListParameter;
 use Application\API\Parameters\Type\IntegerParameter;
 use Application\API\Parameters\Type\JSONParameter;
+use Application\API\Parameters\Type\StringListParameter;
 use Application\API\Parameters\Type\StringParameter;
 
 class ParamTypeSelector
@@ -52,6 +53,24 @@ class ParamTypeSelector
     public function string() : StringParameter
     {
         $param = new StringParameter($this->name, $this->label);
+
+        $this->manager->registerParam($param);
+
+        return $param;
+    }
+
+    /**
+     * List of strings as an array.
+     *
+     * Accepts a comma-separated string or an array of strings.
+     * Each item is whitespace-trimmed; empty strings are filtered out.
+     * Null and all-empty input resolves to null.
+     *
+     * @return StringListParameter
+     */
+    public function stringList() : StringListParameter
+    {
+        $param = new StringListParameter($this->name, $this->label);
 
         $this->manager->registerParam($param);
 

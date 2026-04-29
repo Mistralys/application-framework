@@ -12,6 +12,14 @@ use Application_Countries_Country;
 use AppUtils\ClassHelper;
 
 /**
+ * Container for the single-country API parameter handlers.
+ *
+ * Manages the country ID, country ISO, and OrRule handlers,
+ * resolving to a single {@see Application_Countries_Country} record.
+ *
+ * @package Application
+ * @subpackage Countries
+ *
  * @method AppCountryAPIInterface getMethod()
  */
 class AppCountryParamsContainer extends BaseParamsHandlerContainer

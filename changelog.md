@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v7.2.1 - Multi-Countries API Trait
+- Countries: Added a trait for selecting multiple countries by ID or ISO.
+
 ## v7.2.0 - Module Metadata Exporter & Icon Builder
 - Composer: Added `ModuleJsonExportGenerator` to export module info as JSON.
 - Composer: Added `ModuleInfoParser` for unified module context extraction.

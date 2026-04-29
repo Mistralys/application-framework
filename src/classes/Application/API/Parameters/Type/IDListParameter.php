@@ -19,10 +19,11 @@ use AppUtils\ConvertHelper;
  * @package API
  * @subpackage Parameters
  *
- * @property int[] $defaultValue
+ * @property int[]|null $defaultValue
  */
 class IDListParameter extends BaseAPIParameter
 {
+    use ListParameterTrait;
     public function getTypeLabel(): string
     {
         return t('ID List');
@@ -47,10 +48,10 @@ class IDListParameter extends BaseAPIParameter
 
     /**
      * @param array<int|string,int|float|string>|string|null $value
-     * @return BaseAPIParameter
+     * @return $this
      * @throws APIParameterException
      */
-    public function selectValue(float|int|bool|array|string|null $value): BaseAPIParameter
+    public function selectValue(float|int|bool|array|string|null $value): self
     {
         return parent::selectValue($this->filterValues($this->requireValidType($value)));
     }
@@ -75,34 +76,7 @@ class IDListParameter extends BaseAPIParameter
         return $result;
     }
 
-    /**
-     * @param mixed $value
-     * @return array<int|string,mixed>
-     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
-     */
-    private function requireValidType(mixed $value) : array
-    {
-        if($value === null) {
-            return array();
-        }
 
-        if(is_array($value)) {
-            return $value;
-        }
-
-        if(is_string($value)) {
-            return ConvertHelper::explodeTrim(',', $value);
-        }
-
-        throw new APIParameterException(
-            'Invalid parameter value.',
-            sprintf(
-                'Expected an array or comma-separated string, given: [%s].',
-                gettype($value)
-            ),
-            APIParameterException::ERROR_INVALID_PARAM_VALUE
-        );
-    }
 
     /**
      * @return int[]|null

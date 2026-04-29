@@ -13,6 +13,8 @@ _SOURCE: StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDL
                         └── IDListParameter.php
                         └── IntegerParameter.php
                         └── JSONParameter.php
+                        └── ListParameterTrait.php
+                        └── StringListParameter.php
                         └── StringParam/
                             ├── StringValidations.php
                         └── StringParameter.php
@@ -113,6 +115,8 @@ use Application\API\Parameters\Validation\ParamValidationInterface as ParamValid
  */
 class IDListParameter extends BaseAPIParameter
 {
+	use ListParameterTrait;
+
 	public function getTypeLabel(): string
 	{
 		/* ... */
@@ -140,10 +144,10 @@ class IDListParameter extends BaseAPIParameter
 
 	/**
 	 * @param array<int|string,int|float|string>|string|null $value
-	 * @return BaseAPIParameter
+	 * @return $this
 	 * @throws APIParameterException
 	 */
-	public function selectValue(float|int|bool|array|string|null $value): BaseAPIParameter
+	public function selectValue(float|int|bool|array|string|null $value): self
 	{
 		/* ... */
 	}
@@ -281,6 +285,134 @@ class JSONParameter extends BaseAPIParameter
 
 	/**
 	 * @return array<int|string,mixed>|null
+	 */
+	public function getValue(): ?array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Parameters/Type/ListParameterTrait.php`
+
+```php
+namespace Application\API\Parameters\Type;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+use Application\API\Parameters\APIParameterException as APIParameterException;
+
+/**
+ * Shared input normalisation logic for list-type API parameters.
+ *
+ * Used by {@see IDListParameter} and {@see StringListParameter} to
+ * convert raw API input values into arrays.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+trait ListParameterTrait
+{
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Parameters/Type/StringListParameter.php`
+
+```php
+namespace Application\API\Parameters\Type;
+
+use AppUtils\ConvertHelper as ConvertHelper;
+use Application\API\Parameters\APIParameterException as APIParameterException;
+use Application\API\Parameters\BaseAPIParameter as BaseAPIParameter;
+use Application\API\Parameters\Validation\ParamValidationInterface as ParamValidationInterface;
+
+/**
+ * API Parameter: List of strings as an array.
+ *
+ * Accepts a comma-separated string or an array of strings. Each item is
+ * whitespace-trimmed, and empty strings (including items that become empty
+ * after trimming) are filtered out.
+ *
+ * **Null and empty resolution:**
+ * - A `null` request value resolves to `null` (parameter absent).
+ * - An empty string `""` resolves to `null`.
+ * - An array or comma-separated string where all items are empty after trimming
+ *   resolves to `null`.
+ *
+ * **Usage example:**
+ * ```php
+ * // Register the parameter on an API method
+ * $param = $this->manageParams()
+ *     ->addParam('tags', t('Tags'))
+ *     ->stringList();
+ *
+ * // The request value "foo, bar, baz" resolves to ['foo', 'bar', 'baz']
+ * // The request value "  , , " resolves to null (all-empty after trim)
+ * // The request value null resolves to null (parameter absent)
+ *
+ * // Set a default value
+ * $param->setDefaultValue('foo, bar');        // ['foo', 'bar']
+ * $param->setDefaultValue(['foo', 'bar']);     // ['foo', 'bar']
+ * $param->setDefaultValue(null);              // [] (empty array, no default)
+ *
+ * // Force a specific value regardless of request or default
+ * $param->selectValue('foo, bar');            // ['foo', 'bar']
+ * $param->selectValue(null);                  // [] (empty array)
+ * ```
+ *
+ * **`@property` note:** The `@property string[] $defaultValue` annotation
+ * overrides the parent's `mixed`-typed `$defaultValue` property for IDE
+ * type-narrowing purposes. It is not a promoted property.
+ *
+ * @package API
+ * @subpackage Parameters
+ *
+ * @property string[] $defaultValue
+ */
+class StringListParameter extends BaseAPIParameter
+{
+	use ListParameterTrait;
+
+	public function getTypeLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string[]
+	 */
+	public function getDefaultValue(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array<int|string,mixed>|string|null $default A comma-separated string or an array of strings. Set to `NULL` to reset to an empty array. Other value types are rejected.
+	 * @return $this
+	 * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
+	 */
+	public function setDefaultValue(int|float|bool|string|array|null $default): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array<int|string,mixed>|string|null $value A comma-separated string or an array of strings. Set to `NULL` to reset to an empty array. Other value types are rejected.
+	 * @return $this
+	 * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
+	 */
+	public function selectValue(float|int|bool|array|string|null $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return string[]|null
 	 */
 	public function getValue(): ?array
 	{
@@ -495,6 +627,6 @@ class StringParameter extends BaseAPIParameter
 ```
 ---
 **File Statistics**
-- **Size**: 11.4 KB
-- **Lines**: 501
+- **Size**: 14.53 KB
+- **Lines**: 605
 File: `modules/api/parameters/architecture-types.md`

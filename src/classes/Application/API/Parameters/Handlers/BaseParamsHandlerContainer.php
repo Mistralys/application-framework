@@ -87,6 +87,25 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
 
     abstract protected function isValidValueType(string|int|float|bool|array|object $value) : bool;
 
+    /**
+     * Requires that at least one handler resolves a valid value.
+     *
+     * When a value is resolved and passes {@see isValidValueType()}, it is
+     * returned directly. When no value is available, `->send()` is called on
+     * the error response, which **terminates PHP request execution** — no code
+     * after `requireValue()` runs in that case.
+     *
+     * Subclasses override this method to narrow the return type (e.g. to
+     * `Application_Countries_Country` or `Application_Countries_Country[]`).
+     * The subclass body calls `parent::requireValue()` and then applies a
+     * type-narrowing guard. Because the parent return type is declared as
+     * `string|int|float|bool|array|object` (not `never`) — PHP does not permit
+     * `never` on a method that subclasses override with a narrower return —
+     * the guard and its fallback branch are required by PHP's type system even
+     * though they can never be reached at runtime.
+     *
+     * @return string|int|float|bool|array|object
+     */
     public function requireValue() : string|int|float|bool|array|object
     {
         $value = $this->resolveValue();

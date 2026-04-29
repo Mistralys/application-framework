@@ -42,6 +42,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 1.52 KB
-- **Lines**: 41
+- **Size**: 1.84 KB
+- **Lines**: 48
 File: `modules/composer/file-structure.md`

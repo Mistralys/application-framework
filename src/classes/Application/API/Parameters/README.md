@@ -17,7 +17,8 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 
 - **Typed Parameters:** Concrete parameter classes for common data types:
   `StringParameter`, `IntegerParameter`, `BooleanParameter`, `JSONParameter`,
-  `IDListParameter`. Each enforces type-specific parsing and default values.
+  `IDListParameter`, `StringListParameter`. Each enforces type-specific parsing
+  and default values.
 - **Common Types:** Reusable domain-specific parameter types built on top of
   the base types: `AliasParameter`, `AlphabeticalParameter`,
   `AlphanumericParameter`, `DateParameter`, `EmailParameter`, `LabelParameter`,
@@ -62,7 +63,7 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 | `Handlers/` | Internal pipeline: param handlers, rule handlers, and handler containers. |
 | `Reserved/` | Framework-reserved parameters (method name, API version). |
 | `Rules/` | Cross-parameter constraint rules and the rule type selector. |
-| `Type/` | Core typed parameter classes (string, integer, boolean, JSON, ID list). |
+| `Type/` | Core typed parameter classes (string, integer, boolean, JSON, ID list, string list). |
 | `Validation/` | Per-parameter validation types and result collection. |
 | `ValueLookup/` | Selectable value support for parameters with fixed value sets. |
 

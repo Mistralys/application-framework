@@ -159,6 +159,8 @@ _SOURCE: API Module File Structure_
                     │   ├── IDListParameter.php
                     │   ├── IntegerParameter.php
                     │   ├── JSONParameter.php
+                    │   ├── ListParameterTrait.php
+                    │   ├── StringListParameter.php
                     │   ├── StringParam/
                     │   │   ├── StringValidations.php
                     │   ├── StringParameter.php
@@ -211,6 +213,6 @@ _SOURCE: API Module File Structure_
 ```
 ---
 **File Statistics**
-- **Size**: 10.68 KB
-- **Lines**: 217
+- **Size**: 10.74 KB
+- **Lines**: 218
 File: `modules/api/file-structure.md`

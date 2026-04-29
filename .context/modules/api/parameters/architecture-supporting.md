@@ -260,6 +260,23 @@ abstract class BaseAPIHandler implements APIHandlerInterface
 	}
 
 
+	/**
+	 * Requires that the handler resolves a value.
+	 *
+	 * Returns the resolved value when one is available. When no value is
+	 * available, `->send()` is called on the error response, which
+	 * **terminates PHP request execution** — no code after `requireValue()`
+	 * runs in that case.
+	 *
+	 * The return type is declared as `string|int|float|bool|array|object`
+	 * rather than `never` because PHP does not permit `never` on a method that
+	 * subclasses may override with a non-`never` return type. The
+	 * `@phpstan-return never` annotation makes the termination contract
+	 * explicit for static analysis tooling.
+	 *
+	 * @return string|int|float|bool|array|object
+	 * @phpstan-return never
+	 */
 	public function requireValue(): string|int|float|bool|array|object
 	{
 		/* ... */
@@ -279,7 +296,15 @@ abstract class BaseAPIHandler implements APIHandlerInterface
 	 * This is called when no value has been selected directly.
 	 * The value must be resolved from the parameter itself.
 	 *
-	 * @return mixed
+	 * **Null-return contract:** Implementations MUST return `null`
+	 * when the handler has no value to contribute (parameter absent,
+	 * value empty, or rule not registered). {@see BaseParamsHandlerContainer::resolveValue()}
+	 * iterates all registered handlers and uses "first non-null wins"
+	 * semantics — returning a non-null value (including an empty array)
+	 * will be treated as a successful resolution and prevent subsequent
+	 * handlers from being consulted.
+	 *
+	 * @return mixed The resolved value, or `null` if this handler has no value.
 	 */
 	abstract protected function resolveValueFromSubject(): mixed;
 }
@@ -398,6 +423,26 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
 	abstract protected function isValidValueType(string|int|float|bool|array|object $value): bool;
 
 
+	/**
+	 * Requires that at least one handler resolves a valid value.
+	 *
+	 * When a value is resolved and passes {@see isValidValueType()}, it is
+	 * returned directly. When no value is available, `->send()` is called on
+	 * the error response, which **terminates PHP request execution** — no code
+	 * after `requireValue()` runs in that case.
+	 *
+	 * Subclasses override this method to narrow the return type (e.g. to
+	 * `Application_Countries_Country` or `Application_Countries_Country[]`).
+	 * The subclass body calls `parent::requireValue()` and then applies a
+	 * type-narrowing guard. Because the parent return type is declared as
+	 * `string|int|float|bool|array|object` (not `never`) — PHP does not permit
+	 * `never` on a method that subclasses override with a narrower return —
+	 * the guard and its fallback branch are required by PHP's type system even
+	 * though they can never be reached at runtime.
+	 *
+	 * @return string|int|float|bool|array|object
+	 * @phpstan-return never
+	 */
 	public function requireValue(): string|int|float|bool|array|object
 	{
 		/* ... */
@@ -729,6 +774,6 @@ trait SelectableValueParamTrait
 ```
 ---
 **File Statistics**
-- **Size**: 17.7 KB
-- **Lines**: 735
+- **Size**: 19.36 KB
+- **Lines**: 772
 File: `modules/api/parameters/architecture-supporting.md`
