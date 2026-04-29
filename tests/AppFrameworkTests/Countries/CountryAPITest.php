@@ -6,7 +6,7 @@ namespace AppFrameworkTests\Countries;
 
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
-use application\assets\classes\TestDriver\API\TestGetCountryBySetAPI;
+use TestDriver\API\TestGetCountryBySetAPI;
 use Application\Countries\API\AppCountryAPIInterface;
 use Application_Countries;
 use AppLocalize\Localization\Country\CountryDE;

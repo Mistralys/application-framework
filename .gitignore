@@ -51,5 +51,11 @@ VERSION
 phpstan.result.txt
 phpstan-result.txt
 .phpunit.cache/test-results
+
+# Ledger Workflow Temp Files
 /docs/agents/**/work.md
 /docs/agents/**/work/
+/docs/agents/**/work-packages-draft.md
+/docs/agents/**/pipeline-configuration.md
+/docs/agents/**/dependency-analysis.md
+

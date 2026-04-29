@@ -1044,6 +1044,229 @@
                 }
             }
         },
+        "/api/TestGetCountries": {
+            "post": {
+                "operationId": "TestGetCountries",
+                "summary": "Test API method for resolving multiple countries individually (no OrRule).",
+                "description": "Test API method for resolving multiple countries individually (no OrRule).",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "countryIDs",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "default": []
+                        },
+                        "description": "One or more application country IDs, as a comma-separated list or array."
+                    },
+                    {
+                        "name": "countryISOs",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": []
+                        },
+                        "description": "One or more two-letter country ISO codes (e.g. de, en, fr), as a comma-separated list or array. Case insensitive."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "countryIDs": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "countryIDs": [
+                                        42,
+                                        99
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestGetCountries"
+                }
+            }
+        },
+        "/api/TestGetCountriesBySet": {
+            "post": {
+                "operationId": "TestGetCountriesBySet",
+                "summary": "Test API method for resolving multiple countries via an OrRule param set (mutual exclusivity).",
+                "description": "Test API method for resolving multiple countries via an OrRule param set (mutual exclusivity).",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "countryIDs",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "default": []
+                        },
+                        "description": "One or more application country IDs, as a comma-separated list or array."
+                    },
+                    {
+                        "name": "countryISOs",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": []
+                        },
+                        "description": "One or more two-letter country ISO codes (e.g. de, en, fr), as a comma-separated list or array. Case insensitive."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "countryIDs": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "countryIDs": [
+                                        42,
+                                        99
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestGetCountriesBySet"
+                },
+                "x-validation-rules": [
+                    {
+                        "id": "OR",
+                        "label": "Selecting countries",
+                        "description": "At least one of the following parameters must be provided: countryIDs, countryISOs.",
+                        "parameters": [
+                            "countryIDs",
+                            "countryISOs"
+                        ]
+                    }
+                ]
+            }
+        },
         "/api/TestGetCountry": {
             "post": {
                 "operationId": "TestGetCountry",

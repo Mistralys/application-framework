@@ -15,36 +15,40 @@ use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use application\assets\classes\TestDriver\APIClasses\TestDriverAPIGroup;
-use Application\Countries\API\AppCountryAPIInterface;
-use Application\Countries\API\AppCountryAPITrait;
+use Application\Countries\API\AppCountriesAPIInterface;
+use Application\Countries\API\AppCountriesAPITrait;
 use AppUtils\ArrayDataCollection;
 
 /**
- * Country API method that allows selecting a country either
- * by ID or ISO code. Neither parameter is mandatory.
+ * Test API method that registers country IDs and ISO parameters
+ * individually (without an OrRule), allowing isolated testing of
+ * each parameter path.
  *
  * @package TestDriver
  * @subpackage API
  *
- * @see CountryAPITests
- * @see TestGetCountryBySetAPI
+ * @see AppCountriesAPITraitTest
+ * @see TestGetCountriesBySetAPI
  */
-class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface, JSONResponseInterface, AppCountryAPIInterface
+class TestGetCountriesAPI
+    extends BaseAPIMethod
+    implements
+    RequestRequestInterface,
+    JSONResponseInterface,
+    AppCountriesAPIInterface
 {
     use RequestRequestTrait;
     use JSONResponseTrait;
-    use AppCountryAPITrait;
+    use AppCountriesAPITrait;
 
-    public const string METHOD_NAME = 'TestGetCountry';
-
+    public const string METHOD_NAME = 'TestGetCountries';
+    public const string VERSION_1_0 = '1.0';
+    public const string CURRENT_VERSION = self::VERSION_1_0;
     public const array VERSIONS = array(
         self::VERSION_1_0
     );
 
-    public const string VERSION_1_0 = '1.0';
-    public const string CURRENT_VERSION = self::VERSION_1_0;
-
-    const string KEY_COUNTRY_ID = 'countryID';
+    const string KEY_COUNTRY_IDS = 'countryIDs';
 
     public function getMethodName(): string
     {
@@ -53,7 +57,7 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     public function getDescription(): string
     {
-        return 'This is a test API method to get country information.';
+        return 'Test API method for resolving multiple countries individually (no OrRule).';
     }
 
     public function getRelatedMethodNames(): array
@@ -78,8 +82,8 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     protected function init(): void
     {
-        $this->manageAppCountryParams()->manageID()->register();
-        $this->manageAppCountryParams()->manageISO()->register();
+        $this->manageAppCountriesParams()->manageIDs()->register();
+        $this->manageAppCountriesParams()->manageISOs()->register();
     }
 
     protected function collectRequestData(string $version): void
@@ -88,13 +92,18 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
-        $response->setKey(self::KEY_COUNTRY_ID, $this->manageAppCountryParams()->resolveValue()?->getID());
+        $countries = $this->manageAppCountriesParams()->resolveValue();
+
+        $response->setKey(
+            self::KEY_COUNTRY_IDS,
+            array_map(static fn($c) => $c->getID(), $countries)
+        );
     }
 
     public function getExampleJSONResponse(): array
     {
         return array(
-            self::KEY_COUNTRY_ID => 42
+            self::KEY_COUNTRY_IDS => array(42, 99)
         );
     }
 

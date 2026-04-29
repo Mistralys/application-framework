@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace application\assets\classes\TestDriver\API;
+namespace TestDriver\API;
 
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\Groups\APIGroupInterface;
