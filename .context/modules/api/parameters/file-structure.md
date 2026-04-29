@@ -57,6 +57,8 @@ _SOURCE: API Parameters File Structure_
                         ├── IDListParameter.php
                         ├── IntegerParameter.php
                         ├── JSONParameter.php
+                        ├── ListParameterTrait.php
+                        ├── StringListParameter.php
                         ├── StringParam/
                         │   ├── StringValidations.php
                         ├── StringParameter.php
@@ -78,6 +80,6 @@ _SOURCE: API Parameters File Structure_
 ```
 ---
 **File Statistics**
-- **Size**: 3.91 KB
-- **Lines**: 84
+- **Size**: 3.97 KB
+- **Lines**: 85
 File: `modules/api/parameters/file-structure.md`

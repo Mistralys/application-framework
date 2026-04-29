@@ -188,6 +188,8 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── IDListParameter.php
             │   │   │   ├── IntegerParameter.php
             │   │   │   ├── JSONParameter.php
+            │   │   │   ├── ListParameterTrait.php
+            │   │   │   ├── StringListParameter.php
             │   │   │   ├── StringParam/
             │   │   │   │   ├── StringValidations.php
             │   │   │   ├── StringParameter.php
@@ -504,6 +506,9 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   └── GetCountryConfigTool.php
             │   │   │   └── ListCountriesTool.php
             │   ├── API/
+            │   │   ├── AppCountriesAPIInterface.php
+            │   │   ├── AppCountriesAPITrait.php
+            │   │   ├── AppCountriesParamsContainer.php
             │   │   ├── AppCountryAPIInterface.php
             │   │   ├── AppCountryAPITrait.php
             │   │   ├── AppCountryParamsContainer.php
@@ -512,18 +517,34 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── Methods/
             │   │   │   ├── GetAppCountriesAPI.php
             │   │   ├── ParamSets/
+            │   │   │   ├── AppCountriesParamRule.php
+            │   │   │   ├── AppCountriesParamSetInterface.php
+            │   │   │   ├── AppCountriesRuleHandler.php
             │   │   │   ├── AppCountryParamRule.php
             │   │   │   ├── AppCountryParamSetInterface.php
             │   │   │   ├── AppCountryRuleHandler.php
+            │   │   │   ├── BaseAppCountriesParamSet.php
             │   │   │   ├── BaseAppCountryParamSet.php
             │   │   │   ├── CountryIDSet.php
+            │   │   │   ├── CountryIDsSet.php
             │   │   │   ├── CountryISOSet.php
+            │   │   │   ├── CountryISOsSet.php
             │   │   ├── Params/
-            │   │   │   └── AppCountryIDHandler.php
-            │   │   │   └── AppCountryIDParam.php
-            │   │   │   └── AppCountryISOHandler.php
-            │   │   │   └── AppCountryISOParam.php
-            │   │   │   └── AppCountryParamInterface.php
+            │   │   │   ├── AppCountriesParamInterface.php
+            │   │   │   ├── AppCountryIDHandler.php
+            │   │   │   ├── AppCountryIDParam.php
+            │   │   │   ├── AppCountryIDsHandler.php
+            │   │   │   ├── AppCountryIDsParam.php
+            │   │   │   ├── AppCountryIDsValidation.php
+            │   │   │   ├── AppCountryISOHandler.php
+            │   │   │   ├── AppCountryISOParam.php
+            │   │   │   ├── AppCountryISOsHandler.php
+            │   │   │   ├── AppCountryISOsParam.php
+            │   │   │   ├── AppCountryISOsValidation.php
+            │   │   │   ├── AppCountryParamInterface.php
+            │   │   │   ├── README.md
+            │   │   ├── README.md
+            │   │   ├── module-context.yaml
             │   ├── Admin/
             │   │   ├── CountryAdminURLs.php
             │   │   ├── CountryRequestType.php
@@ -565,11 +586,13 @@ _SOURCE: Tree of PHP Class Files_
             │   ├── FilterSettings.php
             │   ├── LocaleCode.php
             │   ├── Navigator.php
+            │   ├── README.md
             │   ├── Rights/
             │   │   ├── CountryRightsInterface.php
             │   │   ├── CountryRightsTrait.php
             │   │   ├── CountryScreenRights.php
             │   ├── Selector.php
+            │   ├── module-context.yaml
             ├── CustomProperties/
             │   ├── CustomProperties.php
             │   ├── Presets/
@@ -2069,6 +2092,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 101.28 KB
-- **Lines**: 2064
+- **Size**: 103.1 KB
+- **Lines**: 2097
 File: `framework-file-structure.md`
