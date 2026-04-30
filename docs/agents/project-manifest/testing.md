@@ -132,6 +132,7 @@ All test execution goes through Composer scripts defined in `composer.json`:
 | `composer test-filter -- <pattern>` | Run tests matching a name filter | `composer test-filter -- CollectionTest::testSomeMethod` |
 | `composer test-suite -- <name>` | Run all tests in a named suite | `composer test-suite -- "Framework Tests"` |
 | `composer test-group -- <group>` | Run tests in a PHPUnit group | `composer test-group -- SomeGroup` |
+| `composer seed-tests` | Seed system users into the test database | `composer seed-tests` |
 
 All scripts pass `--no-progress` to PHPUnit by default (except `composer test`).
 
@@ -202,6 +203,14 @@ The test bootstrap (`tests/bootstrap.php`):
 
 This means the full application stack is available in tests (database, services, configuration).
 
+### Transaction Shutdown Handler
+
+During `_boot()`, `TestSuiteBootstrap` calls `registerTransactionCleanupHandler()`, which registers a PHP shutdown function that invokes `DBHelper::rollbackConditional()`. This handler fires whenever the PHP process exits — including after a crash, fatal error, or `Ctrl-C` during a test run.
+
+**Why this matters:** If a test process dies mid-transaction (e.g., due to an out-of-memory error or an unhandled signal), InnoDB keeps the row locks held by that transaction until it times out. Subsequent test runs that try to acquire the same locks stall for the full `innodb_lock_wait_timeout` duration (default: 50 seconds). The shutdown handler ensures those locks are released immediately by rolling back any open transaction when the process terminates.
+
+`DBHelper::rollbackConditional()` is guarded by `isTransactionStarted()` — it is a no-op when no transaction is active, so there is no risk of interfering with a test run that completed normally.
+
 ---
 
 ## Framework Test Application
@@ -223,6 +232,24 @@ Edit `test-db-config.php` and set the correct database host, name, user, and pas
 Edit `test-ui-config.php` and adjust `TESTS_BASE_URL` to the URL at which `tests/application` is reachable on the local webserver.
 
 `test-cas-config.php` is only required when `TESTS_SESSION_TYPE` is set to `CAS` in `test-ui-config.php`. For most local runs the default `NoAuth` session type is sufficient and the CAS config can be left as-is.
+
+### Seeding the Test Database
+
+After importing `tests/sql/testsuite.sql`, the test database must also be seeded with system users before running the test suite:
+
+```
+composer seed-tests
+```
+
+This command runs `tests/seed-test-db.php`, which calls `TestSuiteBootstrap::seedSystemUsers()`. The method starts a transaction, executes the `InitSystemUsers` installer task to insert the required system user records, and commits on success (rolling back on any failure).
+
+**If system users are missing when the test suite boots**, `TestSuiteBootstrap::configureUsers()` throws a `BootException` (error code `175001`) with a message listing the missing user IDs and directing the developer to run `composer seed-tests`. You will see an error similar to:
+
+```
+BootException: System users [2, 5] are missing from the test database. Run: composer seed-tests
+```
+
+Re-run `composer seed-tests` to resolve it. Seeding is a one-time operation per database instance; it only needs to be repeated if the database is dropped and re-imported.
 
 ---
 

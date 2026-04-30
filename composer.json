@@ -150,6 +150,7 @@
     "test-file": "php vendor/bin/phpunit --no-progress",
     "test-suite": "php vendor/bin/phpunit --no-progress --testsuite",
     "test-filter": "php vendor/bin/phpunit --no-progress --filter",
-    "test-group": "php vendor/bin/phpunit --no-progress --group"
+    "test-group": "php vendor/bin/phpunit --no-progress --group",
+    "seed-tests": "php tests/seed-test-db.php"
   }
 }
