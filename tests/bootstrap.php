@@ -18,7 +18,9 @@ use Application\Bootstrap\Screen\TestSuiteBootstrap;
  */
 const APP_ROOT = __DIR__.'/application';
 
-const TESTS_ROOT = __DIR__;
+if(!defined('TESTS_ROOT')) {
+    define('TESTS_ROOT', __DIR__);
+}
 
 /**
  * The folder in which the Application libraries
