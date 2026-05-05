@@ -1,5 +1,13 @@
 # Application Framework Changelog
 
+## v7.2.2 - Test Infrastructure Improvements
+- Composer: Added `seed-tests` command to populate the test database with system users.
+- Tests: `TestSuiteBootstrap` now validates required DB constants and seeds system users during boot.
+- Tests: Added shutdown handler to roll back any open transaction on unexpected process exit.
+- Tests: Replaced fatal `die()` with a typed `BootException` when the tests root folder is missing.
+- DBHelper: `BaseErrorRenderer` now reports the active database connection, not the boot-time default.
+- DBHelper: Fixed empty parameter block being printed for queries with no bound parameters.
+
 ## v7.2.1 - Multi-Countries API Trait
 - Countries: Added a trait for selecting multiple countries by ID or ISO.
 
