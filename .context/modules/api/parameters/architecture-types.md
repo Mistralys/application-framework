@@ -111,7 +111,7 @@ use Application\API\Parameters\Validation\ParamValidationInterface as ParamValid
  * @package API
  * @subpackage Parameters
  *
- * @property int[] $defaultValue
+ * @property int[]|null $defaultValue
  */
 class IDListParameter extends BaseAPIParameter
 {
@@ -368,7 +368,7 @@ use Application\API\Parameters\Validation\ParamValidationInterface as ParamValid
  * @package API
  * @subpackage Parameters
  *
- * @property string[] $defaultValue
+ * @property string[]|null $defaultValue
  */
 class StringListParameter extends BaseAPIParameter
 {
@@ -627,6 +627,6 @@ class StringParameter extends BaseAPIParameter
 ```
 ---
 **File Statistics**
-- **Size**: 14.53 KB
-- **Lines**: 605
+- **Size**: 15.13 KB
+- **Lines**: 633
 File: `modules/api/parameters/architecture-types.md`
