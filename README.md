@@ -98,6 +98,21 @@ For the full development build (includes module glossary and keyword index):
 composer build-dev
 ```
 
+### Seed test database
+
+Populates the test database with the system users required by the test
+suite. Run this once after importing `tests/sql/testsuite.sql` (or
+whenever the system-user records are missing from the test DB).
+
+```bash
+composer seed-tests
+```
+
+The command requires the test database to be accessible and configured
+(see `tests/application/config/test-db-config.php`). On failure it
+prints a human-readable error message and exits with code 1, making it
+safe to use in CI pipelines.
+
 ### Clear caches
 
 Clears all caches used by the framework, including the dynamic

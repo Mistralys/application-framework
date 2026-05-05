@@ -33,7 +33,7 @@ abstract class BaseErrorRenderer implements RenderableInterface
 
         $this->line($message);
 
-        $this->line('Database: '.APP_DB_USER . '@' .APP_DB_NAME . ' on '.APP_DB_HOST);
+        $this->line('Database: '.$this->resolveConnectionInfo());
 
         if(isset($this->exception)) {
             $this->line('PDO exception type: '.get_class($this->exception));
@@ -46,6 +46,38 @@ abstract class BaseErrorRenderer implements RenderableInterface
         {
             $this->dumpSQL();
             $this->analyzeQuery($query[0], $query[1]);
+        }
+    }
+
+    /**
+     * Resolves the active database connection info as a human-readable string
+     * in the form <code>username@name on host</code>.
+     *
+     * The primary path calls {@see DBHelper::getSelectedDB()} so that the
+     * correct database is reported even when a non-default database (e.g. the
+     * test database) is selected at the time of the error.
+     *
+     * If {@see DBHelper::getSelectedDB()} throws — which can happen during
+     * early boot before any database has been selected — the method falls back
+     * to the boot-time constants <code>APP_DB_USER</code>,
+     * <code>APP_DB_NAME</code>, and <code>APP_DB_HOST</code>.
+     * <code>\Throwable</code> is caught (rather than a narrower type) to guard
+     * against both <code>DBHelper_Exception</code> and any unexpected
+     * <code>Error</code> subclass that could surface inside the try block.
+     *
+     * @return string Connection info string, e.g. <code>app_user@mydb on localhost</code>.
+     */
+    private function resolveConnectionInfo(): string
+    {
+        try
+        {
+            $db = DBHelper::getSelectedDB();
+            return $db['username'] . '@' . $db['name'] . ' on ' . $db['host'];
+        }
+        catch(\Throwable $e)
+        {
+            // Fallback to boot-time constants if no DB is selected yet
+            return APP_DB_USER . '@' . APP_DB_NAME . ' on ' . APP_DB_HOST;
         }
     }
 
@@ -66,6 +98,9 @@ abstract class BaseErrorRenderer implements RenderableInterface
 
     abstract protected function styleError(string $text) : string;
 
+    /**
+     * @param array<string,mixed> $values
+     */
     private function analyzeQuery(string $sql, array $values) : void
     {
         $this->nl();
@@ -78,6 +113,12 @@ abstract class BaseErrorRenderer implements RenderableInterface
 
         if(isset($params[1][0])) {
             $paramNames = array_unique($params[1]);
+        }
+
+        if(empty($paramNames) && empty($values))
+        {
+            $this->line('(none)');
+            return;
         }
 
         $tokens = array();
@@ -110,7 +151,7 @@ abstract class BaseErrorRenderer implements RenderableInterface
             }
         }
 
-        if(!$errors) {
+        if($errors) {
             $this->line('NOTE: Placeholders have inconsistencies.');
         }
 

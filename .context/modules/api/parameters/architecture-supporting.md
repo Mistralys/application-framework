@@ -270,12 +270,9 @@ abstract class BaseAPIHandler implements APIHandlerInterface
 	 *
 	 * The return type is declared as `string|int|float|bool|array|object`
 	 * rather than `never` because PHP does not permit `never` on a method that
-	 * subclasses may override with a non-`never` return type. The
-	 * `@phpstan-return never` annotation makes the termination contract
-	 * explicit for static analysis tooling.
+	 * subclasses may override with a non-`never` return type.
 	 *
 	 * @return string|int|float|bool|array|object
-	 * @phpstan-return never
 	 */
 	public function requireValue(): string|int|float|bool|array|object
 	{
@@ -441,7 +438,6 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
 	 * though they can never be reached at runtime.
 	 *
 	 * @return string|int|float|bool|array|object
-	 * @phpstan-return never
 	 */
 	public function requireValue(): string|int|float|bool|array|object
 	{
@@ -774,6 +770,6 @@ trait SelectableValueParamTrait
 ```
 ---
 **File Statistics**
-- **Size**: 19.36 KB
-- **Lines**: 772
+- **Size**: 19.88 KB
+- **Lines**: 780
 File: `modules/api/parameters/architecture-supporting.md`

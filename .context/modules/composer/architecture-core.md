@@ -245,6 +245,7 @@ use Application\API\APIManager as APIManager;
 use Application\Admin\Index\AdminScreenIndexer as AdminScreenIndexer;
 use Application\AppFactory as AppFactory;
 use Application\AppFactory\ClassCacheHandler as ClassCacheHandler;
+use Application\Bootstrap\Screen\TestSuiteBootstrap as TestSuiteBootstrap;
 use Application\CacheControl\CacheManager as CacheManager;
 use Application\Composer\IconBuilder\IconBuilder as IconBuilder;
 use Application\Composer\KeywordGlossary\KeywordGlossaryGenerator as KeywordGlossaryGenerator;
@@ -283,6 +284,31 @@ class ComposerScripts
 
 
 	public static function doClearCaches(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @throws \Application_Exception
+	 * @throws \Throwable
+	 */
+	public static function seedTests(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Internal seed helper. Direct callers must pre-define the
+	 * <code>APP_SEED_MODE</code> constant and call {@see self::init()}
+	 * before invoking this method. Use {@see self::seedTests()} as the
+	 * proper public entry point — it handles both prerequisites automatically.
+	 *
+	 * @throws \Application_Exception
+	 * @throws \Throwable
+	 */
+	public static function doSeedTests(): void
 	{
 		/* ... */
 	}
@@ -1411,6 +1437,6 @@ final class ReadmeOverviewParser
 ```
 ---
 **File Statistics**
-- **Size**: 25.3 KB
-- **Lines**: 1081
+- **Size**: 33.37 KB
+- **Lines**: 1417
 File: `modules/composer/architecture-core.md`
