@@ -241,7 +241,7 @@ After importing `tests/sql/testsuite.sql`, the test database must also be seeded
 composer seed-tests
 ```
 
-This command runs `tests/seed-test-db.php`, which calls `TestSuiteBootstrap::seedSystemUsers()`. The method starts a transaction, executes the `InitSystemUsers` installer task to insert the required system user records, and commits on success (rolling back on any failure).
+This command invokes `Application\Composer\ComposerScripts::seedTests()`. Before booting the framework, it defines the `APP_SEED_MODE` constant, which causes `TestSuiteBootstrap::_boot()` to skip the `configureUsers()` user-existence check. After bootstrap, it calls `TestSuiteBootstrap::seedSystemUsers()`, which starts a transaction, executes the `InitSystemUsers` installer task to insert the required system user records, and commits on success (rolling back on any failure).
 
 **If system users are missing when the test suite boots**, `TestSuiteBootstrap::configureUsers()` throws a `BootException` (error code `175001`) with a message listing the missing user IDs and directing the developer to run `composer seed-tests`. You will see an error similar to:
 

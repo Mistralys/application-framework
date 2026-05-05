@@ -12,6 +12,7 @@ use Application\Admin\Index\AdminScreenIndexer;
 use Application\API\APIManager;
 use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
+use Application\Bootstrap\Screen\TestSuiteBootstrap;
 use Application\CacheControl\CacheManager;
 use Application\Composer\IconBuilder\IconBuilder;
 use Application\Composer\KeywordGlossary\KeywordGlossaryGenerator;
@@ -97,6 +98,37 @@ class ComposerScripts
         ClassCacheHandler::clearClassCache();
 
         CacheManager::getInstance()->clearAll();
+
+        echo '  DONE.'.PHP_EOL;
+    }
+
+    /**
+     * @throws \Application_Exception
+     * @throws \Throwable
+     */
+    public static function seedTests() : void
+    {
+        define('APP_SEED_MODE', true);
+
+        self::init();
+
+        self::doSeedTests();
+    }
+
+    /**
+     * Internal seed helper. Direct callers must pre-define the
+     * <code>APP_SEED_MODE</code> constant and call {@see self::init()}
+     * before invoking this method. Use {@see self::seedTests()} as the
+     * proper public entry point — it handles both prerequisites automatically.
+     *
+     * @throws \Application_Exception
+     * @throws \Throwable
+     */
+    public static function doSeedTests() : void
+    {
+        echo '- Seeding test database...'.PHP_EOL;
+
+        TestSuiteBootstrap::seedSystemUsers();
 
         echo '  DONE.'.PHP_EOL;
     }

@@ -37,7 +37,10 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
         $this->configureDatabase();
         $this->registerTransactionCleanupHandler();
         $this->configurePaths();
-        $this->configureUsers();
+
+        if (!defined('APP_SEED_MODE')) {
+            $this->configureUsers();
+        }
     }
 
     private function configureDatabase(): void
@@ -142,6 +145,7 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
      *
      * <pre>composer seed-tests</pre>
      *
+     * @see ComposerScripts::seedTests()
      * @return void
      * @throws \Application_Exception If the {@see InitSystemUsers} task ID is
      *                                not found in the installer task registry.
