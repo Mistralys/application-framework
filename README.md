@@ -70,12 +70,36 @@ You will find it in the `tests/application` folder.
 
 **Installation**
 
+The quickest way to set up the example application is with the interactive
+setup command:
+
+```bash
+composer setup
+```
+
+This will prompt you for database and UI settings, create the database if
+it does not exist, import `tests/sql/testsuite.sql`, and seed the test data
+automatically. Re-running the command is safe — existing values are shown as
+defaults and pressing Enter preserves them.
+
+<details>
+<summary>Manual setup (alternative)</summary>
+
 1. Import the SQL file `tests/sql/testsuite.sql` into a database.
 2. Open the folder `tests/application/config`.
 3. Copy `test-db-config.dist.php` to `test-db-config.php`.
 4. Copy `test-ui-config.dist.php` to `test-ui-config.php`.
 5. Edit the settings in both files.
-6. Access the `tests/application` folder via the webserver.
+6. Run `composer seed-tests` to seed the test data.
+
+</details>
+
+After setup, access the `tests/application` folder via the webserver.
+
+> **Note:** The generated config files (`test-db-config.php`,
+> `test-ui-config.php`) are listed in `.gitignore` and must never be
+> committed to version control — they contain local credentials and are
+> derived from the `.dist.php` templates.
 
 ## Composer commands
 
@@ -96,6 +120,29 @@ For the full development build (includes module glossary and keyword index):
 
 ```bash
 composer build-dev
+```
+
+### Setup
+
+Interactive one-command setup for the local development environment.
+Prompts for database and UI settings, generates `test-db-config.php` and
+`test-ui-config.php` from their `.dist.php` templates, creates the database
+if it does not exist, imports `tests/sql/testsuite.sql`, and runs
+`composer seed-tests` automatically on completion.
+
+```bash
+composer setup
+```
+
+Re-running the command is safe (idempotent): existing config values are read
+back and shown as defaults; pressing Enter without typing preserves them.
+If the database connection fails, the script re-prompts for credentials until
+a successful connection is established.
+
+The script can also be invoked directly:
+
+```bash
+php tools/setup-local.php
 ```
 
 ### Seed test database
@@ -121,6 +168,121 @@ class cache.
 ```bash
 composer clear-caches
 ```
+
+## Developer Tools
+
+The `tools/` directory contains local-development CLI scripts. These are
+version-controlled and intended for developer use only — they are not part
+of the framework runtime.
+
+### Setup Script
+
+`tools/setup-local.php` is the interactive local-environment setup script
+(see [`composer setup`](#setup) above). It can be run directly with
+`php tools/setup-local.php` or via `composer setup`.
+
+**Generated files and version control**
+
+The script generates `tests/application/config/test-db-config.php` and
+`tests/application/config/test-ui-config.php` from their `.dist.php`
+counterparts. Both generated files are listed in `.gitignore` and **must not
+be committed** — they contain local database credentials. The `.dist.php`
+templates (which contain no credentials) are version-controlled and serve as
+the canonical structure reference.
+
+**CAS authentication mode**
+
+By default the setup script writes `TESTS_SESSION_TYPE = 'NoAuth'` into
+`test-ui-config.php`. This setting is not prompted interactively — it must be
+changed manually when CAS authentication is required.
+
+To enable CAS mode:
+
+1. Open `tests/application/config/test-ui-config.php` and change the constant:
+   ```php
+   const TESTS_SESSION_TYPE = 'CAS';
+   ```
+2. Copy the CAS configuration template and fill in your server details:
+   ```bash
+   cp tests/application/config/test-cas-config.dist.php \
+      tests/application/config/test-cas-config.php
+   ```
+3. Edit `test-cas-config.php` and set the following constants to match your
+   CAS / LDAP environment:
+
+   | Constant | Description |
+   |---|---|
+   | `APP_CAS_HOST` | CAS server hostname (e.g. `cas.example.com`) |
+   | `APP_CAS_PORT` | CAS server port (default `443`) |
+   | `TESTS_CAS_FIELD_EMAIL` | CAS response field for the user's email address |
+   | `TESTS_CAS_FIELD_FIRST_NAME` | CAS response field for given name |
+   | `TESTS_CAS_FIELD_LAST_NAME` | CAS response field for family name |
+   | `TESTS_CAS_FIELD_FOREIGN_ID` | CAS response field used as the external user ID |
+   | `APP_LDAP_HOST` / `APP_LDAP_PORT` | LDAP server connection details |
+   | `APP_LDAP_DN` / `APP_LDAP_USERNAME` / `APP_LDAP_PASSWORD` | LDAP bind credentials |
+
+> `test-cas-config.php` is gitignored alongside the other generated config
+> files — it must never be committed.
+
+### CLI Utility Library
+
+`tools/include/cli-utilities.php` is the shared helper library included by
+every script in `tools/`. It provides four console I/O functions:
+
+| Function | Signature | Description |
+|---|---|---|
+| `writeln` | `writeln(string $text = '') : void` | Writes a line to STDOUT followed by a newline. Pass an empty string for a blank line. |
+| `color` | `color(string $text, string $color) : string` | Wraps text in ANSI colour codes. Supported values: `green`, `red`, `yellow`, `cyan`, `bold`. Returns plain text (no ANSI codes) when the colour name is unrecognised, or when running on Windows (`PHP_OS_FAMILY === 'Windows'`). The Windows fallback is intentionally conservative — plain text is returned for all Windows environments to avoid a dependency on runtime terminal-capability detection. Modern terminals such as Windows Terminal and PowerShell 7+ do support ANSI, but detecting them reliably requires additional checks. |
+| `prompt` | `prompt(string $label, string $default = '') : string` | Displays a labelled prompt and reads a trimmed line from STDIN. Returns `$default` when the user submits an empty line. |
+| `promptPassword` | `promptPassword(string $label, string $default = '') : string` | Like `prompt`, but suppresses character echo on Unix-like systems via `stty -echo`. On Windows or when `stty` is unavailable, input is read with echo visible and a warning is shown. |
+
+All functions are guarded with `function_exists()` so the file can be safely
+included more than once.
+
+### Developer Menu
+
+An interactive numbered menu that groups the most common developer tasks in a
+single entry point. Launch it from the project root with:
+
+```bash
+# Unix
+./menu.sh
+
+# Windows
+menu.cmd
+
+# Direct (any platform)
+php tools/menu.php
+```
+
+If the `vendor/` directory is missing when the menu starts, `composer install`
+is run automatically before the menu is displayed.
+
+**Available options**
+
+| # | Label | Command invoked |
+|---|---|---|
+| 1 | Setup local environment | `php tools/setup-local.php` |
+| 2 | Build | `composer build` |
+| 3 | Run tests | `composer test` (full) or `composer test-filter -- <pattern>` |
+| 4 | Clear caches | `composer clear-caches` |
+| 5 | Seed test database | `composer seed-tests` |
+| 6 | PHPStan analysis | `composer analyze` |
+| 0 | Exit | — |
+
+Option **3 (Run tests)** sub-prompts for an optional filter pattern. Leaving it
+empty runs the full test suite; entering a pattern runs only matching tests.
+
+The menu loops after each action completes so you can run multiple tasks in
+sequence without re-launching the script.
+
+**Launchers**
+
+| File | Platform | Notes |
+|---|---|---|
+| `menu.sh` | Unix / macOS | Executable (`chmod +x`). Uses `#!/usr/bin/env bash` for portability. |
+| `menu.cmd` | Windows | Uses `cd /d "%~dp0"` to handle drive-letter differences. |
+| `tools/menu.php` | Any | Core implementation; can be invoked directly with `php`. |
 
 ## Build-Time Documentation Generators
 

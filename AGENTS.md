@@ -173,7 +173,65 @@ Run PHPStan via Composer scripts — **never invoke `vendor/bin/phpstan` directl
 
 ---
 
-## 9. Project Structure
+## 9. Developer Tools Quick Reference
+
+### Interactive Developer Menu
+
+Launch the menu-driven interface for common developer tasks from the project
+root:
+
+```bash
+# Unix / macOS
+./menu.sh
+
+# Windows
+menu.cmd
+
+# Direct (any platform)
+php tools/menu.php
+```
+
+If `vendor/` is missing the menu runs `composer install` automatically before
+showing any options.
+
+| Option | Action |
+|---|---|
+| 1 | Setup local environment (`php tools/setup-local.php`) |
+| 2 | Build (`composer build`) |
+| 3 | Run tests — sub-prompts for an optional filter pattern |
+| 4 | Clear caches (`composer clear-caches`) |
+| 5 | Seed test database (`composer seed-tests`) |
+| 6 | PHPStan analysis (`composer analyze`) |
+| 0 | Exit |
+
+### Local Environment Setup
+
+Interactive one-command setup for the local development environment:
+
+```bash
+composer setup
+```
+
+Prompts for database and UI settings, generates `test-db-config.php` and
+`test-ui-config.php` from their `.dist.php` templates, creates the database if
+it does not exist, imports `tests/sql/testsuite.sql`, and runs
+`composer seed-tests` on completion.
+
+Re-running is safe — existing values are shown as defaults and pressing Enter
+preserves them.
+
+The script can also be invoked directly:
+
+```bash
+php tools/setup-local.php
+```
+
+> **Note:** The generated config files (`test-db-config.php`, `test-ui-config.php`)
+> are listed in `.gitignore` and must never be committed.
+
+---
+
+## 10. Project Structure
 
 | Location | Contents |
 |---|---|
