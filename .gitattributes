@@ -1,0 +1,18 @@
+# Git attributes for the Application Framework repository.
+#
+# Enforces line-ending normalisation for files that are sensitive to
+# line endings (e.g. Unix shell scripts that must never acquire CRLF endings
+# even when committed from a Windows workstation).
+
+# Default: normalise all text files to LF in the repository
+* text=auto
+
+# Shell scripts — always store and check out with LF line endings.
+# This prevents the shebang line (#!/usr/bin/env bash) from being corrupted
+# into #!/usr/bin/env bash\r on Windows, which would cause the script to fail
+# on Unix with a "bad interpreter" error.
+*.sh text eol=lf
+
+# Windows batch files — always check out with CRLF line endings.
+*.cmd text eol=crlf
+*.bat text eol=crlf

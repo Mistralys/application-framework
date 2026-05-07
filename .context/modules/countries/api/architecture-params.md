@@ -456,6 +456,6 @@ interface AppCountryParamInterface extends APIParameterInterface
 ```
 ---
 **File Statistics**
-- **Size**: 13.34 KB
-- **Lines**: 469
+- **Size**: 13.18 KB
+- **Lines**: 462
 File: `modules/countries/api/architecture-params.md`

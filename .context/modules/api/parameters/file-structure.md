@@ -80,6 +80,6 @@ _SOURCE: API Parameters File Structure_
 ```
 ---
 **File Statistics**
-- **Size**: 3.97 KB
-- **Lines**: 85
+- **Size**: 4.03 KB
+- **Lines**: 86
 File: `modules/api/parameters/file-structure.md`

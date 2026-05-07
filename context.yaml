@@ -46,9 +46,33 @@ documents:
     outputPath: 'framework-core-system-overview.md'
     sources:
       - type: file
+        description: "Project README"
+        sourcePaths:
+          - ./README.md
+        filePattern: "README.md"
+      - type: file
         description: "Framework Documentation"
         sourcePaths:
           - ./docs/agents
         filePattern: "*.md"
         excludePatterns:
           - 'implementation-history/'
+
+  -
+    description: 'Application Framework - Developer Tools'
+    outputPath: 'framework-developer-tools.md'
+    sources:
+      - type: file
+        description: "Developer CLI scripts and shared utilities"
+        sourcePaths:
+          - ./tools
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: []
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true

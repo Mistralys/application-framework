@@ -2,6 +2,7 @@ parameters:
     level: 5
     bootstrapFiles:
         - ./tests/phpstan/constants.php
+        - ./tests/phpstan/cli-utilities-stubs.php
         - ./tests/bootstrap.php
     paths:
         - ./src

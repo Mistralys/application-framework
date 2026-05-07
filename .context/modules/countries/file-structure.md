@@ -100,6 +100,6 @@ _SOURCE: Countries Module File Tree_
 ```
 ---
 **File Statistics**
-- **Size**: 4.87 KB
-- **Lines**: 100
+- **Size**: 4.97 KB
+- **Lines**: 106
 File: `modules/countries/file-structure.md`

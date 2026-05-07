@@ -282,6 +282,6 @@ class CountryScreenRights
 ```
 ---
 **File Statistics**
-- **Size**: 7.05 KB
-- **Lines**: 282
+- **Size**: 7.16 KB
+- **Lines**: 288
 File: `modules/countries/architecture-supporting.md`

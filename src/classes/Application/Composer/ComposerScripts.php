@@ -102,37 +102,6 @@ class ComposerScripts
         echo '  DONE.'.PHP_EOL;
     }
 
-    /**
-     * @throws \Application_Exception
-     * @throws \Throwable
-     */
-    public static function seedTests() : void
-    {
-        define('APP_SEED_MODE', true);
-
-        self::init();
-
-        self::doSeedTests();
-    }
-
-    /**
-     * Internal seed helper. Direct callers must pre-define the
-     * <code>APP_SEED_MODE</code> constant and call {@see self::init()}
-     * before invoking this method. Use {@see self::seedTests()} as the
-     * proper public entry point — it handles both prerequisites automatically.
-     *
-     * @throws \Application_Exception
-     * @throws \Throwable
-     */
-    public static function doSeedTests() : void
-    {
-        echo '- Seeding test database...'.PHP_EOL;
-
-        TestSuiteBootstrap::seedSystemUsers();
-
-        echo '  DONE.'.PHP_EOL;
-    }
-
     public static function apiMethodIndex() : void
     {
         self::init();

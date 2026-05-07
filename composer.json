@@ -93,7 +93,7 @@
     "mistralys/version-parser": ">=2.1.1",
     "pear/http_request2": "^v2.5.1",
     "phpmailer/phpmailer": "^v6.9.1",
-    "shark/simple_html_dom": "dev-master",
+    "mistralys/simple_html_dom": "^2.0",
     "shuchkin/simplexlsxgen": ">=1.4.14",
     "shuchkin/simplexlsx": ">=1.1.13",
     "ccampbell/mousetrap": "dev-master",
@@ -151,6 +151,10 @@
     "test-suite": "php vendor/bin/phpunit --no-progress --testsuite",
     "test-filter": "php vendor/bin/phpunit --no-progress --filter",
     "test-group": "php vendor/bin/phpunit --no-progress --group",
-    "seed-tests": "Application\\Composer\\ComposerScripts::seedTests"
+    "seed-tests": [
+      "php tools/seed-truncate.php",
+      "php tools/seed-insert.php"
+    ],
+    "setup": "php tools/setup-local.php"
   }
 }

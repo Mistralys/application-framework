@@ -382,7 +382,7 @@
                                 "example": {
                                     "countries": {
                                         "de": {
-                                            "countryID": 1,
+                                            "countryID": 2,
                                             "isoCode": "de",
                                             "labelInvariant": "Germany",
                                             "codeAliases": [],
@@ -403,7 +403,7 @@
                                             }
                                         },
                                         "gb": {
-                                            "countryID": 4,
+                                            "countryID": 7,
                                             "isoCode": "gb",
                                             "labelInvariant": "United Kingdom",
                                             "codeAliases": [
@@ -550,12 +550,12 @@
                                 "example": {
                                     "locales": [
                                         {
-                                            "localeID": "de_AT",
+                                            "localeID": "de_DE",
                                             "languageCode": "de",
-                                            "countryCode": "at",
-                                            "label": "German (Austria)",
-                                            "labelInvariant": "German (Austria)",
-                                            "isAvailableForUI": false
+                                            "countryCode": "de",
+                                            "label": "German (Germany)",
+                                            "labelInvariant": "German (Germany)",
+                                            "isAvailableForUI": true
                                         }
                                     ]
                                 }
@@ -1305,11 +1305,7 @@
                                 "6",
                                 "7",
                                 "8",
-                                "9",
-                                "10",
-                                "11",
-                                "9999",
-                                "11828"
+                                "9"
                             ]
                         },
                         "description": "Application country ID."
@@ -1321,17 +1317,13 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "at",
                                 "ca",
-                                "ch",
                                 "de",
                                 "es",
                                 "fr",
                                 "gb",
                                 "it",
                                 "mx",
-                                "pl",
-                                "ro",
                                 "us",
                                 "zz"
                             ]
@@ -1431,11 +1423,7 @@
                                 "6",
                                 "7",
                                 "8",
-                                "9",
-                                "10",
-                                "11",
-                                "9999",
-                                "11828"
+                                "9"
                             ]
                         },
                         "description": "Application country ID."
@@ -1447,17 +1435,13 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "at",
                                 "ca",
-                                "ch",
                                 "de",
                                 "es",
                                 "fr",
                                 "gb",
                                 "it",
                                 "mx",
-                                "pl",
-                                "ro",
                                 "us",
                                 "zz"
                             ]

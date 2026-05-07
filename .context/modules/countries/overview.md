@@ -59,6 +59,6 @@ Country management for the Application Framework. Provides the `Application_Coun
 ```
 ---
 **File Statistics**
-- **Size**: 3.8 KB
-- **Lines**: 59
+- **Size**: 3.9 KB
+- **Lines**: 65
 File: `modules/countries/overview.md`

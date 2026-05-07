@@ -16,7 +16,6 @@ node_modules/
 /tests/application/storage/logs/
 /tests/application/storage/temp/
 /tests/application/tests
-/tools
 tests/application/themes/default/js/localization/cachekey.txt
 tests/application/themes/default/js/localization/md5.min.js
 tests/application/themes/default/js/localization/translator.js
@@ -55,6 +54,7 @@ phpstan-result.txt
 # Ledger Workflow Temp Files
 /docs/agents/**/work.md
 /docs/agents/**/work/
+/docs/agents/**/audit.md
 /docs/agents/**/work-packages-draft.md
 /docs/agents/**/pipeline-configuration.md
 /docs/agents/**/dependency-analysis.md

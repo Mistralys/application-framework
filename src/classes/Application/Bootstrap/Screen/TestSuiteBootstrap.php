@@ -11,6 +11,7 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Bootstrap_Screen;
 use AppUtils\FileHelper;
 use DBHelper;
+use DBHelper_OperationTypes;
 
 class TestSuiteBootstrap extends Application_Bootstrap_Screen
 {
@@ -23,12 +24,34 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
     // Thrown when one or more required APP_DB_TESTS_* constants are not defined in the test config.
     public const int ERROR_TEST_DB_CONSTANTS_MISSING = 175004;
 
+    public const array SEED_LOCALES = array('de_DE', 'en_UK');
+
+    // These 8 countries cover the framework's test needs without over-seeding.
+    // Note: 'gb' is the correct ISO 3166-1 alpha-2 code for United Kingdom;
+    // CountryCollection::filterCode() normalizes 'uk' → 'gb' for legacy lookups.
+    public const array SEED_COUNTRIES = array(
+        'de' => 'Germany',
+        'ca' => 'Canada',
+        'fr' => 'France',
+        'it' => 'Italy',
+        'es' => 'Spain',
+        'gb' => 'United Kingdom',
+        'us' => 'United States',
+        'mx' => 'Mexico',
+    );
+
     protected function _boot() : void
     {
         $this->disableAuthentication();
         $this->enableScriptMode();
 
-        $this->createEnvironment();
+        // In seed mode the application environment (session, driver, user
+        // authentication) is not needed and must not be started because the
+        // known_users table may be empty at this point.
+        if(!defined('APP_SEED_MODE'))
+        {
+            $this->createEnvironment();
+        }
 
         if (!defined('APP_TESTS_RUNNING')) {
             define('APP_TESTS_RUNNING', true);
@@ -36,9 +59,10 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
 
         $this->configureDatabase();
         $this->registerTransactionCleanupHandler();
-        $this->configurePaths();
 
-        if (!defined('APP_SEED_MODE')) {
+        if(!defined('APP_SEED_MODE'))
+        {
+            $this->configurePaths();
             $this->configureUsers();
         }
     }
@@ -142,10 +166,10 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
      * throwable is re-thrown.
      *
      * Invoke this method via the Composer helper before running the test suite:
+     * {@see \Application\Composer\ComposerScripts} (`composer seed-tests`).
      *
-     * <pre>composer seed-tests</pre>
-     *
-     * @see ComposerScripts::seedTests()
+     * @see self::seedLocales()
+     * @see self::seedCountries()
      * @return void
      * @throws \Application_Exception If the {@see InitSystemUsers} task ID is
      *                                not found in the installer task registry.
@@ -162,6 +186,122 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
             Application::createInstaller()
                 ->getTaskByID('InitSystemUsers')
                 ->process();
+
+            DBHelper::commitTransaction();
+        }
+        catch(\Throwable $e)
+        {
+            DBHelper::rollbackConditional();
+            throw $e;
+        }
+    }
+
+    /**
+     * Seeds the required application and content locales into the test database.
+     *
+     * Inserts the locales defined in {@see self::SEED_LOCALES} into both
+     * <code>locales_application</code> and <code>locales_content</code> tables
+     * via {@see DBHelper::insertDynamic()}. Each insert is guarded by a
+     * {@see DBHelper::recordExists()} check so the method is safe to call even
+     * on an already-seeded database (e.g. on a partial re-run). Operations are
+     * wrapped in a transaction.
+     *
+     * @return void
+     * @throws \Throwable Re-throws any exception after rolling back.
+     * @see self::SEED_LOCALES
+     * @see self::seedSystemUsers()
+     * @see self::seedCountries()
+     */
+    public static function seedLocales(): void
+    {
+        DBHelper::startTransaction();
+
+        try
+        {
+            foreach(self::SEED_LOCALES as $name)
+            {
+                if(!DBHelper::recordExists('locales_application', array('locale_name' => $name)))
+                {
+                    DBHelper::insertDynamic('locales_application', array('locale_name' => $name));
+                }
+
+                if(!DBHelper::recordExists('locales_content', array('locale_name' => $name)))
+                {
+                    DBHelper::insertDynamic('locales_content', array('locale_name' => $name));
+                }
+            }
+
+            DBHelper::commitTransaction();
+        }
+        catch(\Throwable $e)
+        {
+            DBHelper::rollbackConditional();
+            throw $e;
+        }
+    }
+
+    /**
+     * Truncates all base tables in the test database.
+     *
+     * Disables FK checks before truncating and re-enables them in a
+     * <code>finally</code> block so they are guaranteed to be restored even if
+     * a truncation fails mid-loop. This method does not use a transaction
+     * because MySQL TRUNCATE is a DDL statement that auto-commits.
+     *
+     * @return void
+     * @throws \DBHelper_Exception
+     */
+    public static function truncateAllTables(): void
+    {
+        DBHelper::execute(DBHelper_OperationTypes::TYPE_UPDATE, 'SET FOREIGN_KEY_CHECKS=0');
+
+        try
+        {
+            $entries = DBHelper::fetchAll("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'");
+
+            foreach($entries as $entry)
+            {
+                DBHelper::truncate($entry[key($entry)]);
+            }
+        }
+        finally
+        {
+            DBHelper::execute(DBHelper_OperationTypes::TYPE_UPDATE, 'SET FOREIGN_KEY_CHECKS=1');
+        }
+    }
+
+    /**
+     * Seeds the required countries into the test database.
+     *
+     * Creates the ZZ invariant country and the countries listed in
+     * {@see self::SEED_COUNTRIES}. Each regular country insert is guarded by
+     * an {@see Application_Countries::isoExists()} check so the method is safe
+     * to call even without a preceding {@see truncateAllTables()} (e.g. on a
+     * partial re-run). Operations are wrapped in a transaction.
+     *
+     * @return void
+     * @throws \Throwable Re-throws any exception after rolling back.
+     * @see self::SEED_COUNTRIES
+     * @see self::seedSystemUsers()
+     * @see self::seedLocales()
+     */
+    public static function seedCountries(): void
+    {
+        DBHelper::startTransaction();
+
+        try
+        {
+            $countries = AppFactory::createCountries();
+
+            $countries->createInvariantCountry();
+
+            foreach(self::SEED_COUNTRIES as $iso => $label)
+            {
+                if(!$countries->isoExists($iso))
+                {
+                    $countries->createNewCountry($iso, $label);
+                }
+            }
 
             DBHelper::commitTransaction();
         }

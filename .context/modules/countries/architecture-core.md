@@ -1471,6 +1471,6 @@ class Application_Countries_Selector extends Application_Formable_RecordSelector
 ```
 ---
 **File Statistics**
-- **Size**: 29.21 KB
-- **Lines**: 1471
+- **Size**: 29.31 KB
+- **Lines**: 1477
 File: `modules/countries/architecture-core.md`

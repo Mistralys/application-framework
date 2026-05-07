@@ -289,31 +289,6 @@ class ComposerScripts
 	}
 
 
-	/**
-	 * @throws \Application_Exception
-	 * @throws \Throwable
-	 */
-	public static function seedTests(): void
-	{
-		/* ... */
-	}
-
-
-	/**
-	 * Internal seed helper. Direct callers must pre-define the
-	 * <code>APP_SEED_MODE</code> constant and call {@see self::init()}
-	 * before invoking this method. Use {@see self::seedTests()} as the
-	 * proper public entry point — it handles both prerequisites automatically.
-	 *
-	 * @throws \Application_Exception
-	 * @throws \Throwable
-	 */
-	public static function doSeedTests(): void
-	{
-		/* ... */
-	}
-
-
 	public static function apiMethodIndex(): void
 	{
 		/* ... */
@@ -1437,6 +1412,6 @@ final class ReadmeOverviewParser
 ```
 ---
 **File Statistics**
-- **Size**: 33.37 KB
-- **Lines**: 1417
+- **Size**: 34.17 KB
+- **Lines**: 1440
 File: `modules/composer/architecture-core.md`
