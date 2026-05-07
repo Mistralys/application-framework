@@ -1,5 +1,15 @@
 # Application Framework Changelog
 
+## v7.2.3 - Developer Setup & Seed Rework
+- CLI: Added interactive `composer setup` command for local environment configuration.
+- CLI: Added developer menu (`menu.sh` / `menu.cmd` / `php tools/menu.php`) for common tasks.
+- Seed: Replaced monolithic `ComposerScripts::seedTests()` with process-isolated two-step pipeline.
+- Seed: Added locale and country seeding to `TestSuiteBootstrap`.
+- Seed: Removed `tests/sql/testsuite.sql` in favor of `docs/sql/pristine.sql`.
+- Composer: Swapped `shark/simple_html_dom` for `mistralys/simple_html_dom`.
+- PHPStan: Added CLI utility stubs for static analysis.
+- CTX: Updated generated documentation.
+
 ## v7.2.2 - Test Infrastructure Improvements
 - Composer: Added `seed-tests` command to populate the test database with system users.
 - Tests: `TestSuiteBootstrap` now validates required DB constants and seeds system users during boot.
