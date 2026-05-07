@@ -229,6 +229,6 @@ declared `never`. This is the correct pattern for this codebase.
 ```
 ---
 **File Statistics**
-- **Size**: 11.02 KB
-- **Lines**: 229
+- **Size**: 11.12 KB
+- **Lines**: 235
 File: `modules/countries/api/overview.md`

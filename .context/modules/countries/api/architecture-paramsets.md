@@ -446,6 +446,6 @@ class CountryISOsSet extends BaseAppCountriesParamSet
 ```
 ---
 **File Statistics**
-- **Size**: 13.03 KB
-- **Lines**: 446
+- **Size**: 13.15 KB
+- **Lines**: 452
 File: `modules/countries/api/architecture-paramsets.md`

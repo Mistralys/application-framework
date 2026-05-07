@@ -940,6 +940,6 @@ trait CountryViewTrait
 ```
 ---
 **File Statistics**
-- **Size**: 20.54 KB
-- **Lines**: 940
+- **Size**: 20.65 KB
+- **Lines**: 946
 File: `modules/countries/architecture-admin.md`

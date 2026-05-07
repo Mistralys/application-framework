@@ -340,6 +340,6 @@ class PHPRenderer extends AbstractLanguageRenderer
 ```
 ---
 **File Statistics**
-- **Size**: 8.2 KB
-- **Lines**: 340
+- **Size**: 8.32 KB
+- **Lines**: 346
 File: `modules/composer/architecture-icon-builder.md`

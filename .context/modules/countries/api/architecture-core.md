@@ -593,6 +593,6 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
 ```
 ---
 **File Statistics**
-- **Size**: 15.61 KB
-- **Lines**: 585
+- **Size**: 15.96 KB
+- **Lines**: 599
 File: `modules/countries/api/architecture-core.md`

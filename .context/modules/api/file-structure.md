@@ -213,6 +213,6 @@ _SOURCE: API Module File Structure_
 ```
 ---
 **File Statistics**
-- **Size**: 10.74 KB
-- **Lines**: 218
+- **Size**: 10.8 KB
+- **Lines**: 219
 File: `modules/api/file-structure.md`

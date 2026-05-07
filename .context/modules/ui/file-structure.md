@@ -367,6 +367,6 @@ _SOURCE: UI Module File Structure_
 ```
 ---
 **File Statistics**
-- **Size**: 15.34 KB
-- **Lines**: 369
+- **Size**: 15.49 KB
+- **Lines**: 373
 File: `modules/ui/file-structure.md`
