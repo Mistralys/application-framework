@@ -40,6 +40,10 @@ function ensureVendorInstalled() : void
         return;
     }
 
+    // Note: cli-utilities.php is not yet loaded at this point (it is require_once'd
+    // below, after this pre-flight check completes). Use bare echo/exit here rather
+    // than the shared writeln/color utilities to avoid a dependency on a file that
+    // may itself depend on vendor/ being present.
     echo 'vendor/ directory not found. Running composer install...' . PHP_EOL;
     passthru('composer install', $exitCode);
 

@@ -78,14 +78,14 @@ composer setup
 ```
 
 This will prompt you for database and UI settings, create the database if
-it does not exist, import `tests/sql/testsuite.sql`, and seed the test data
+it does not exist, import `docs/sql/pristine.sql`, and seed the test data
 automatically. Re-running the command is safe — existing values are shown as
 defaults and pressing Enter preserves them.
 
 <details>
 <summary>Manual setup (alternative)</summary>
 
-1. Import the SQL file `tests/sql/testsuite.sql` into a database.
+1. Import the SQL file `docs/sql/pristine.sql` into a database.
 2. Open the folder `tests/application/config`.
 3. Copy `test-db-config.dist.php` to `test-db-config.php`.
 4. Copy `test-ui-config.dist.php` to `test-ui-config.php`.
@@ -127,7 +127,7 @@ composer build-dev
 Interactive one-command setup for the local development environment.
 Prompts for database and UI settings, generates `test-db-config.php` and
 `test-ui-config.php` from their `.dist.php` templates, creates the database
-if it does not exist, imports `tests/sql/testsuite.sql`, and runs
+if it does not exist, imports `docs/sql/pristine.sql`, and runs
 `composer seed-tests` automatically on completion.
 
 ```bash
@@ -145,20 +145,31 @@ The script can also be invoked directly:
 php tools/setup-local.php
 ```
 
+> **Requires an interactive terminal (TTY).** Do not pipe or redirect input to
+> this command — `stty -echo` (used to suppress password echo) relies on an
+> attached TTY and will behave unexpectedly in non-interactive contexts.
+
 ### Seed test database
 
-Populates the test database with the system users required by the test
-suite. Run this once after importing `tests/sql/testsuite.sql` (or
-whenever the system-user records are missing from the test DB).
+Truncates all tables in the test database and re-populates them with the
+standard framework seed data (system users, locales, and countries).
+Run this once after importing `docs/sql/pristine.sql`, and again whenever
+the test database needs to be reset to a known state.
 
 ```bash
 composer seed-tests
 ```
 
+The command runs two process-isolated steps in sequence:
+
+1. `php tools/seed-truncate.php` — empties all base tables
+2. `php tools/seed-insert.php` — inserts system users, locales, and countries
+
 The command requires the test database to be accessible and configured
-(see `tests/application/config/test-db-config.php`). On failure it
-prints a human-readable error message and exits with code 1, making it
-safe to use in CI pipelines.
+(see `tests/application/config/test-db-config.php`). It is **idempotent**:
+running it on an already-seeded database produces the same result with
+no errors. On failure it prints a human-readable error message and exits
+with code 1, making it safe to use in CI pipelines.
 
 ### Clear caches
 
@@ -175,6 +186,24 @@ The `tools/` directory contains local-development CLI scripts. These are
 version-controlled and intended for developer use only — they are not part
 of the framework runtime.
 
+### Getting started as a contributor
+
+The fastest way to get your local environment up and running is the interactive
+developer menu. From the project root, run:
+
+```bash
+# Unix / macOS
+./menu.sh
+
+# Windows
+menu.cmd
+```
+
+The menu will automatically run `composer install` if `vendor/` is missing,
+then present a numbered list of common tasks. Choose **option 1** to run the
+interactive local-environment setup wizard, which configures the database and
+generates the required config files.
+
 ### Setup Script
 
 `tools/setup-local.php` is the interactive local-environment setup script
@@ -189,6 +218,15 @@ counterparts. Both generated files are listed in `.gitignore` and **must not
 be committed** — they contain local database credentials. The `.dist.php`
 templates (which contain no credentials) are version-controlled and serve as
 the canonical structure reference.
+
+**Platform and TTY notes**
+
+| Scenario | Behaviour |
+|---|---|
+| Unix / macOS (interactive TTY) | Password input is hidden via `stty -echo`. Ctrl-C restores echo via a `pcntl_signal` SIGINT handler. |
+| Windows | Password input is **visible in the terminal** — `stty` is not available on Windows. A warning is printed before the password prompt. |
+| Windows (some PHP builds) | `pcntl_signal` may not be compiled in. If you interrupt the script with Ctrl-C during a password prompt, terminal echo may remain suppressed. Run `stty echo` in your terminal to restore it manually. |
+| Non-interactive / piped context | The script is not designed for non-interactive use. Running it without an attached TTY (e.g. via pipe or CI) may leave echo enabled and produce garbled output. |
 
 **CAS authentication mode**
 

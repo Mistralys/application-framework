@@ -53,13 +53,13 @@ if (!function_exists('color'))
      *     reliably supports ANSI on Windows, the PHP_OS_FAMILY guard can be
      *     replaced with a capability check.
      *
-     * @param string $text  The text to colorize.
-     * @param string $color One of: green, red, yellow, cyan, bold.
+     * @param string $text The text to colorize.
+     * @param string $name One of: green, red, yellow, cyan, bold.
      * @return string The text wrapped in the appropriate ANSI escape sequence,
      *                or the plain text when the colour is unrecognised or the
      *                OS family is Windows.
      */
-    function color(string $text, string $color) : string
+    function color(string $text, string $name) : string
     {
         $codes = array(
             'green'  => "\033[32m",
@@ -69,7 +69,7 @@ if (!function_exists('color'))
             'bold'   => "\033[1m",
         );
 
-        if (!isset($codes[$color]))
+        if (!isset($codes[$name]))
         {
             return $text;
         }
@@ -85,7 +85,7 @@ if (!function_exists('color'))
             return $text;
         }
 
-        return $codes[$color] . $text . "\033[0m";
+        return $codes[$name] . $text . "\033[0m";
     }
 }
 
@@ -147,9 +147,41 @@ if (!function_exists('promptPassword'))
      * On Windows (or when stty is unavailable) input is read with echo visible
      * and a warning is displayed to the user.
      *
+     * **Known limitation — stty availability probe in non-interactive contexts:**
+     * The availability of `stty` is detected by calling
+     * `shell_exec('stty 2>/dev/null; echo $?')`. Because `shell_exec` returns
+     * `null` only when the function is disabled in `php.ini`, this probe returns
+     * a non-null string even when no TTY is attached (e.g. when the script is
+     * run in a piped or non-interactive context). As a result, `$sttyAvailable`
+     * will evaluate to `true` and the subsequent `stty -echo` call may silently
+     * fail, leaving echo enabled. This function is designed for interactive
+     * terminal use only. Do not call it in non-interactive or piped contexts
+     * where a TTY is not guaranteed to be present.
+     *
+     * **Echo-restore safety net on interrupt:**
+     * If the user presses Ctrl-C while this function is active, the `stty -echo`
+     * state would normally be left in place, suppressing all subsequent terminal
+     * output. `tools/setup-local.php` registers a `pcntl_signal(SIGINT, …)`
+     * handler that calls `stty echo` to restore echo before exiting. If you use
+     * `promptPassword()` in a new script, register a similar handler near the top
+     * of that script so echo is always restored on interrupt:
+     *
+     * ```php
+     * if (function_exists('pcntl_signal')) {
+     *     pcntl_signal(SIGINT, static function () : void {
+     *         shell_exec('stty echo 2>/dev/null');
+     *         writeln();
+     *         writeln('Interrupted.');
+     *         exit(130);
+     *     });
+     *     pcntl_async_signals(true);
+     * }
+     * ```
+     *
      * @param string $label   The label to display before the input cursor.
      * @param string $default The value to use when the user provides no input.
      * @return string The trimmed user input, or $default when input is empty.
+     * @see tools/setup-local.php SIGINT handler (pcntl_signal) for the echo-restore pattern.
      */
     function promptPassword(string $label, string $default = '') : string
     {

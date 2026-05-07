@@ -39,7 +39,7 @@ const SETUP_TPL_UI  = SETUP_CONFIG_DIR . '/test-ui-config.dist.php';
 const SETUP_DB_CONFIG  = SETUP_CONFIG_DIR . '/test-db-config.php';
 const SETUP_UI_CONFIG  = SETUP_CONFIG_DIR . '/test-ui-config.php';
 
-const SETUP_SQL_SCHEMA = SETUP_ROOT . '/tests/sql/testsuite.sql';
+const SETUP_SQL_SCHEMA = SETUP_ROOT . '/docs/sql/pristine.sql';
 
 // ============================================================================
 // SIGINT handler — restore terminal echo if interrupted during password input
@@ -75,9 +75,13 @@ if (function_exists('pcntl_signal'))
 function extractConstantValue(string $constant, string $content) : string
 {
     // String value: const NAME = 'value';
+    // stripslashes() is required here because replaceConfigConstant() writes values
+    // with addslashes() applied. Without stripping on read-back, re-running the script
+    // would addslashes() again on the already-escaped string, causing double-escaping
+    // of passwords containing single-quotes or backslashes (breaks AC8 idempotency).
     if (preg_match('/const\s+' . preg_quote($constant, '/') . '\s*=\s*\'(.*?)\'\s*;/s', $content, $m))
     {
-        return $m[1];
+        return stripslashes($m[1]);
     }
 
     // Integer value: const NAME = 123;
@@ -195,6 +199,7 @@ function collectDatabaseSettings(array $defaults) : array
     $password = promptPassword('Database password', $defaults['password']);
 
     // Re-prompt until the port is empty/null or a valid positive integer string.
+    $port = 'null';
     do
     {
         $portRaw = prompt('Database port (leave empty for null)', $defaults['port'] === 'null' ? '' : $defaults['port']);
@@ -205,9 +210,9 @@ function collectDatabaseSettings(array $defaults) : array
             break;
         }
 
-        if (!ctype_digit($portRaw))
+        if (!ctype_digit($portRaw) || (int)$portRaw <= 0)
         {
-            writeln(color('  Invalid port. Enter a numeric value or leave empty for null.', 'red'));
+            writeln(color('  Invalid port. Enter a positive numeric value or leave empty for null.', 'red'));
             $portRaw = '';
             continue;
         }
@@ -313,6 +318,18 @@ function testDatabaseConnection(array $settings) : PDO|false
  *   - Integer: const NAME = 42;
  *   - Null:    const NAME = null;
  *
+ * @note **Write/read escaping contract (string values only):**
+ *       Writing: `addslashes($value)` is applied first to produce a valid
+ *       single-quoted PHP string literal, then `str_replace('\\', '\\\\', …)` doubles
+ *       the backslashes a second time to compensate for `preg_replace()`'s own
+ *       backslash reduction in its replacement string (each `\\` pair becomes one
+ *       literal `\` in the output). The file therefore always receives the correct
+ *       `addslashes`-escaped form.
+ *       Reading: `extractConstantValue()` calls `stripslashes()` on the matched
+ *       string value so the original plaintext is recovered, preserving idempotency
+ *       when the script is re-run (AC8). Integer and null values are unaffected by
+ *       this contract — they bypass the `addslashes` / `str_replace` branch entirely.
+ *
  * @param string $content   The raw PHP source to process.
  * @param string $constant  The constant name to replace.
  * @param string $value     The new value as a string (e.g. 'root', '3306', 'null').
@@ -339,7 +356,17 @@ function replaceConfigConstant(
     {
         // addslashes() escapes \, ', ", and NUL — sufficient for the concrete
         // value types this script handles (hostnames, URLs, emails, passwords).
-        $replacement = 'const ' . $constant . " = '" . addslashes($value) . "';";
+        //
+        // IMPORTANT: preg_replace() interprets backslashes in its replacement string
+        // (each '\\' becomes one literal '\' in the output). addslashes() already
+        // doubles backslashes for PHP string syntax, but preg_replace then halves
+        // them again, clobbering the escaping. We therefore double the backslashes
+        // a second time so preg_replace writes the correct addslash-escaped form to
+        // the file. extractConstantValue() calls stripslashes() on read-back, which
+        // recovers the original plaintext value and preserves idempotency (AC8).
+        $escaped     = addslashes($value);
+        $escaped     = str_replace('\\', '\\\\', $escaped);
+        $replacement = 'const ' . $constant . " = '" . $escaped . "';";
     }
 
     // Replace any existing `const NAME = ...;` declaration on a single line.
@@ -351,6 +378,11 @@ function replaceConfigConstant(
 /**
  * Reads `test-db-config.dist.php`, replaces all constant values with the
  * provided settings, and writes the result to `test-db-config.php`.
+ *
+ * @warning The generated file (`test-db-config.php`) contains database credentials
+ *          in plaintext. It **must** be listed in `.gitignore` and must **never**
+ *          hold production credentials. It is intended exclusively for the local
+ *          development / test environment.
  *
  * @param array<string, string> $settings DB settings (host, name, user, password, port).
  * @return void
@@ -395,6 +427,10 @@ function generateDbConfig(array $settings) : void
  *
  * `TESTS_SESSION_TYPE` is always set to `'NoAuth'`; CAS must be configured
  * manually when needed.
+ *
+ * @warning The generated file (`test-ui-config.php`) must be listed in `.gitignore`
+ *          and must **never** contain production credentials or sensitive endpoint
+ *          URLs. It is intended exclusively for the local development / test environment.
  *
  * @param array<string, string> $settings UI settings (base_url, email).
  * @return void

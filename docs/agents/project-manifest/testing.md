@@ -132,7 +132,7 @@ All test execution goes through Composer scripts defined in `composer.json`:
 | `composer test-filter -- <pattern>` | Run tests matching a name filter | `composer test-filter -- CollectionTest::testSomeMethod` |
 | `composer test-suite -- <name>` | Run all tests in a named suite | `composer test-suite -- "Framework Tests"` |
 | `composer test-group -- <group>` | Run tests in a PHPUnit group | `composer test-group -- SomeGroup` |
-| `composer seed-tests` | Seed system users into the test database | `composer seed-tests` |
+| `composer seed-tests` | Truncate and fully re-seed the test database (users, locales, countries) | `composer seed-tests` |
 
 All scripts pass `--no-progress` to PHPUnit by default (except `composer test`).
 
@@ -227,7 +227,7 @@ The test suite requires local configuration files that are **not committed** to 
 2. Copy `tests/application/config/test-ui-config.dist.php` → `tests/application/config/test-ui-config.php`
 3. Copy `tests/application/config/test-cas-config.dist.php` → `tests/application/config/test-cas-config.php`
 
-Edit `test-db-config.php` and set the correct database host, name, user, and password. The database name defaults to `app_framework_testsuite`; import `tests/sql/testsuite.sql` to initialise it.
+Edit `test-db-config.php` and set the correct database host, name, user, and password. The database name defaults to `app_framework_testsuite`; import `docs/sql/pristine.sql` to initialise it.
 
 Edit `test-ui-config.php` and adjust `TESTS_BASE_URL` to the URL at which `tests/application` is reachable on the local webserver.
 
@@ -235,13 +235,20 @@ Edit `test-ui-config.php` and adjust `TESTS_BASE_URL` to the URL at which `tests
 
 ### Seeding the Test Database
 
-After importing `tests/sql/testsuite.sql`, the test database must also be seeded with system users before running the test suite:
+After importing `docs/sql/pristine.sql`, run `composer seed-tests` to populate the test database before running the test suite:
 
 ```
 composer seed-tests
 ```
 
-This command invokes `Application\Composer\ComposerScripts::seedTests()`. Before booting the framework, it defines the `APP_SEED_MODE` constant, which causes `TestSuiteBootstrap::_boot()` to skip the `configureUsers()` user-existence check. After bootstrap, it calls `TestSuiteBootstrap::seedSystemUsers()`, which starts a transaction, executes the `InitSystemUsers` installer task to insert the required system user records, and commits on success (rolling back on any failure).
+The command runs two process-isolated steps in sequence:
+
+1. **`php tools/seed-truncate.php`** — empties all base tables via `TestSuiteBootstrap::truncateAllTables()`, then exits. The process terminates, destroying all in-memory ORM caches.
+2. **`php tools/seed-insert.php`** — boots in a fresh process (no ORM cache state), then calls `TestSuiteBootstrap::seedSystemUsers()`, `TestSuiteBootstrap::seedLocales()`, and `TestSuiteBootstrap::seedCountries()` in that order.
+
+Because the insertion step starts in a new process, there are no stale ORM caches to invalidate.
+
+The command is **idempotent**: running `composer seed-tests` twice in succession produces the same result with no errors. It is safe to run on an already-seeded database at any time.
 
 **If system users are missing when the test suite boots**, `TestSuiteBootstrap::configureUsers()` throws a `BootException` (error code `175001`) with a message listing the missing user IDs and directing the developer to run `composer seed-tests`. You will see an error similar to:
 
@@ -249,7 +256,65 @@ This command invokes `Application\Composer\ComposerScripts::seedTests()`. Before
 BootException: System users [2, 5] are missing from the test database. Run: composer seed-tests
 ```
 
-Re-run `composer seed-tests` to resolve it. Seeding is a one-time operation per database instance; it only needs to be repeated if the database is dropped and re-imported.
+Re-run `composer seed-tests` to resolve it.
+
+### Seeding Locales
+
+`TestSuiteBootstrap::seedLocales()` inserts the two standard test locales (`de_DE`, `en_UK`) into both the `locales_application` and `locales_content` tables.
+
+```php
+TestSuiteBootstrap::seedLocales();
+```
+
+The method is **idempotent**: it uses `DBHelper::recordExists()` to check for each locale in both `locales_application` and `locales_content` before inserting, so it can be called on a non-empty database without throwing a duplicate-key exception.
+
+All operations are wrapped in a transaction; any failure triggers a `DBHelper::rollbackConditional()` and re-throws the original exception.
+
+### Seeding Countries
+
+`TestSuiteBootstrap::seedCountries()` populates the test database with a standard set of countries. Call it after `seedSystemUsers()` and `seedLocales()` when building a fully seeded test environment.
+
+```php
+TestSuiteBootstrap::seedCountries();
+```
+
+The method creates the ZZ invariant country (via `Application_Countries::createInvariantCountry()`, which is internally idempotent), then inserts each country defined in the `SEED_COUNTRIES` constant. Each insert is guarded by an `isoExists()` check, making the method safe to call even without a preceding `truncateAllTables()`.
+
+The eight countries seeded are:
+
+| ISO | Country |
+|---|---|
+| `de` | Germany |
+| `ca` | Canada |
+| `fr` | France |
+| `it` | Italy |
+| `es` | Spain |
+| `gb` | United Kingdom |
+| `us` | United States |
+| `mx` | Mexico |
+
+> **Note on `gb` vs `uk`:** `gb` is the correct ISO 3166-1 alpha-2 code for the United Kingdom. `CountryCollection::filterCode()` normalizes legacy `uk` lookups to `gb` automatically.
+
+All operations are wrapped in a transaction; any failure triggers a `DBHelper::rollbackConditional()` and re-throws the original exception.
+
+### Resetting the Test Database
+
+`TestSuiteBootstrap::truncateAllTables()` empties all base tables in the test database. Use it when you need to wipe and re-seed an already-populated database, for example when automating a fresh-seed flow programmatically.
+
+```php
+TestSuiteBootstrap::truncateAllTables();
+```
+
+**How it works:**
+
+1. Disables FK checks via `SET FOREIGN_KEY_CHECKS=0`.
+2. Fetches all base tables with `SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'` — this intentionally excludes views and temporary tables.
+3. Calls `DBHelper::truncate()` for each table.
+4. Re-enables FK checks in a `finally` block, guaranteeing restoration even if truncation fails mid-loop.
+
+The method does **not** use a database transaction. MySQL `TRUNCATE` is a DDL statement that auto-commits and cannot be rolled back, so wrapping it in `DBHelper::startTransaction()` would have no effect.
+
+> **Note:** `TRUNCATE` removes rows but leaves the table schema intact — `DBHelper::getTablesList()` remains accurate after truncation and does not return stale data.
 
 ---
 

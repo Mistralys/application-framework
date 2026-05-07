@@ -214,7 +214,7 @@ composer setup
 
 Prompts for database and UI settings, generates `test-db-config.php` and
 `test-ui-config.php` from their `.dist.php` templates, creates the database if
-it does not exist, imports `tests/sql/testsuite.sql`, and runs
+it does not exist, imports `docs/sql/pristine.sql`, and runs
 `composer seed-tests` on completion.
 
 Re-running is safe — existing values are shown as defaults and pressing Enter

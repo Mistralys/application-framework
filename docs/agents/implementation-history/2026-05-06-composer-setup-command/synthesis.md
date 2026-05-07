@@ -77,9 +77,9 @@ The Code Review pipeline for WP-002 applied three non-behavioral hardening edits
 
 2. **SQL schema idempotency should be verified.** `ensureDatabase()` always imports `testsuite.sql` on every setup run (even when the DB already exists). This is only safe if all DDL statements in `testsuite.sql` use `CREATE TABLE IF NOT EXISTS` and equivalent guards. This was flagged by QA and the Reviewer but was out of scope for this session — a dedicated audit of `testsuite.sql` DDL idempotency is recommended before the setup script is distributed to a team with an existing populated database.
 
-3. ~~**Database name input should be hardened.**~~ ✅ **IMPLEMENTED.** Added a `/^[a-zA-Z0-9_]+$/` guard with a re-prompt loop in `collectDatabaseSettings()` in `tools/setup-local.php`. Invalid names print a red error and re-prompt until a valid identifier is entered.
+3. **Database name input should be hardened.** `collectDatabaseSettings()` accepts any string as the database name and interpolates it unvalidated into SQL identifiers. A simple `ctype_alnum()` or `/^[a-zA-Z0-9_]+$/` guard before the PDO call would eliminate the residual SQL identifier injection risk at zero cost.
 
-4. ~~**Port input validation gap.**~~ ✅ **IMPLEMENTED.** Replaced the silent `(string)(int)` cast with a `ctype_digit()` guard and a re-prompt loop in `collectDatabaseSettings()` in `tools/setup-local.php`. Non-numeric port strings now print a red error and re-prompt; empty input still resolves to `null`.
+4. **Port input validation gap.** A non-numeric port string (e.g., `"abc"`) silently casts to integer `0` via `(string)(int)$portRaw`. A `ctype_digit()` guard before the cast with a re-prompt loop would prevent invalid port values from being written to the config file silently.
 
 5. **PHPUnit test suite coverage opportunity.** Neither `tools/include/cli-utilities.php` nor `tools/setup-local.php` have formal PHPUnit unit tests (vendor directory was not present in the sandbox). As standalone CLI utilities with no framework bootstrap dependency, they are straightforward to unit-test in isolation. Adding tests for `color()`, `writeln()`, `replaceConfigConstant()`, and `extractConstantValue()` would harden the library against future regressions.
 
@@ -92,8 +92,8 @@ The Code Review pipeline for WP-002 applied three non-behavioral hardening edits
 | Priority | Recommendation |
 |---|---|
 | High | Audit `tests/sql/testsuite.sql` DDL for idempotency (`IF NOT EXISTS` guards) before distributing `composer setup` to a team with an existing local database. |
-| ~~Medium~~ | ✅ DONE — Add a database name whitelist validator in `collectDatabaseSettings()` (resolves the Security Auditor's Medium SQL injection finding). |
-| ~~Medium~~ | ✅ DONE — Add port input validation in `collectDatabaseSettings()` using `ctype_digit()` with a re-prompt on invalid input. |
+| Medium | Add a database name whitelist validator in `collectDatabaseSettings()` (resolves the Security Auditor's Medium SQL injection finding). |
+| Medium | Add port input validation in `collectDatabaseSettings()` using `ctype_digit()` with a re-prompt on invalid input. |
 | Low | Add PHPUnit unit tests for `cli-utilities.php` functions and the `replaceConfigConstant()` / `extractConstantValue()` helpers in `setup-local.php`. |
 | Low | Harden `ensureDatabase()` SQL import with statement-by-statement execution and per-statement error reporting. |
 | Low | Evaluate replacing `shell_exec('stty ...')` with the PHP `readline` extension or `/dev/tty` stream approach if the setup script is ever adapted for CI/CD pipelines. |
