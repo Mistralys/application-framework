@@ -54,6 +54,7 @@ phpstan-result.txt
 # Ledger Workflow Temp Files
 /docs/agents/**/work.md
 /docs/agents/**/work/
+/docs/agents/**/audit.md
 /docs/agents/**/work-packages-draft.md
 /docs/agents/**/pipeline-configuration.md
 /docs/agents/**/dependency-analysis.md
