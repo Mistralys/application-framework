@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v7.2.4 - Connector Cache Hardening
+- Connectors: Cache file writing now better handles concurrent read/write operations.
+
 ## v7.2.3 - Developer Setup & Seed Rework
 - CLI: Added interactive `composer setup` command for local environment configuration.
 - CLI: Added developer menu (`menu.sh` / `menu.cmd` / `php tools/menu.php`) for common tasks.
