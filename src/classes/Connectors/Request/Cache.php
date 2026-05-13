@@ -90,6 +90,11 @@ class Connectors_Request_Cache implements Application_Interfaces_Loggable
     /**
      * Stores the response in the cache.
      *
+     * Uses an atomic write strategy: the serialized data is
+     * first written to a temporary file, then renamed to the
+     * target path. On POSIX systems, {@see rename()} is atomic,
+     * which prevents concurrent readers from seeing partial writes.
+     *
      * @param Connectors_Response $response
      * @throws FileHelper_Exception
      * @return $this
@@ -112,7 +117,17 @@ class Connectors_Request_Cache implements Application_Interfaces_Loggable
 
         $this->log(sprintf('Store response | Saving to file [%s].', basename($file)));
 
-        FileHelper::saveFile($file, $response->serialize());
+        // Write to a temporary file first, then rename atomically
+        // to prevent concurrent readers from seeing partial writes.
+        $tempFile = $file.'.'.getmypid().'.tmp';
+
+        FileHelper::saveFile($tempFile, $response->serialize());
+
+        if(!rename($tempFile, $file))
+        {
+            $this->log(sprintf('Store response | Atomic rename failed for [%s], cleaning up temp file.', basename($file)));
+            @unlink($tempFile);
+        }
 
         return $this;
     }
@@ -123,6 +138,14 @@ class Connectors_Request_Cache implements Application_Interfaces_Loggable
 
         $this->log(sprintf('Fetch response | Loading the cache file [%s].', basename($file)));
 
-        return Connectors_Response::unserialize(FileHelper::readContents($file));
+        $response = Connectors_Response::unserialize(FileHelper::readContents($file));
+
+        if($response === null)
+        {
+            $this->log(sprintf('Fetch response | Corrupt cache file [%s], deleting.', basename($file)));
+            @unlink($file);
+        }
+
+        return $response;
     }
 }
