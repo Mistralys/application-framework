@@ -140,6 +140,11 @@ class Connectors_Request_Cache implements Application_Interfaces_Loggable
 	/**
 	 * Stores the response in the cache.
 	 *
+	 * Uses an atomic write strategy: the serialized data is
+	 * first written to a temporary file, then renamed to the
+	 * target path. On POSIX systems, {@see rename()} is atomic,
+	 * which prevents concurrent readers from seeing partial writes.
+	 *
 	 * @param Connectors_Response $response
 	 * @throws FileHelper_Exception
 	 * @return $this

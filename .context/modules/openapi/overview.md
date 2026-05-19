@@ -1025,10 +1025,10 @@ scripts:
 
 ```shell
 # Regenerate the OpenAPI spec only:
-composer run generateOpenAPISpec
+composer generate-openapi-spec
 
 # Regenerate the .htaccess only:
-composer run generateHtaccess
+composer generate-htaccess
 ```
 
 Or in PHP:
@@ -1181,6 +1181,6 @@ API method collection alongside other built-in methods.
 ```
 ---
 **File Statistics**
-- **Size**: 48.79 KB
+- **Size**: 48.78 KB
 - **Lines**: 1187
 File: `modules/openapi/overview.md`

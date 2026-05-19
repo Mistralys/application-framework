@@ -1412,6 +1412,6 @@ final class ReadmeOverviewParser
 ```
 ---
 **File Statistics**
-- **Size**: 34.17 KB
-- **Lines**: 1440
+- **Size**: 33.44 KB
+- **Lines**: 1418
 File: `modules/composer/architecture-core.md`
