@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v7.2.5 - OpenAPI Path & Build Scripts
+- OpenAPI: Fixed spec path resolution using `APP_ROOT` instead of the incorrect `APP_INSTALL_FOLDER`.
+- Composer: Added `generate-openapi-spec` and `generate-htaccess` standalone build scripts.
+- CTX: Updated generated documentation.
+
 ## v7.2.4 - Connector Cache Hardening
 - Connectors: Cache file writing now better handles concurrent read/write operations.
 
