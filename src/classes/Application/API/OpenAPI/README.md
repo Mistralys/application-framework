@@ -1009,10 +1009,10 @@ scripts:
 
 ```shell
 # Regenerate the OpenAPI spec only:
-composer run generateOpenAPISpec
+composer generate-openapi-spec
 
 # Regenerate the .htaccess only:
-composer run generateHtaccess
+composer generate-htaccess
 ```
 
 Or in PHP:

@@ -138,6 +138,8 @@
     "post-autoload-dump": "Application\\Composer\\ComposerScripts::clearCaches",
     "clear-caches": "Application\\Composer\\ComposerScripts::clearCaches",
     "rebuild-icons": "Application\\Composer\\ComposerScripts::rebuildIcons",
+    "generate-openapi-spec": "Application\\Composer\\ComposerScripts::generateOpenAPISpec",
+    "generate-htaccess": "Application\\Composer\\ComposerScripts::generateHtaccess",
     "build": [
       "@composer dumpautoload",
       "Application\\Composer\\ComposerScripts::build",

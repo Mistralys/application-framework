@@ -169,6 +169,8 @@ Run PHPStan via Composer scripts — **never invoke `vendor/bin/phpstan` directl
 | Command | Purpose |
 |---|---|
 | `composer build` | Full build: autoload dump, module docs (keyword glossary, modules overview, API method index, offline event listeners), CTX generation |
+| `composer generate-openapi-spec` | Generates the OpenAPI specification file to `APP_ROOT/api/openapi.json` |
+| `composer generate-htaccess` | Generates the `.htaccess` file for the application |
 | `composer clear-caches` | Clears all framework caches including the dynamic class cache |
 
 ---

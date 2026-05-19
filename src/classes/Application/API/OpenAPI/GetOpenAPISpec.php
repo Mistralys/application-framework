@@ -199,15 +199,15 @@ class GetOpenAPISpec extends BaseAPIMethod implements RequestRequestInterface, J
     /**
      * Returns the absolute path to the pre-generated OpenAPI spec file.
      *
-     * Uses the `APP_INSTALL_FOLDER` constant when available, falling back to an
+     * Uses the `APP_ROOT` constant when available, falling back to an
      * empty string (which will cause a "not generated" error at runtime).
      *
      * @return string
      */
     private function resolveSpecPath(): string
     {
-        if(defined('APP_INSTALL_FOLDER')) {
-            return APP_INSTALL_FOLDER.'/'.OpenAPIGenerator::DEFAULT_OUTPUT_RELATIVE;
+        if(defined('APP_ROOT')) {
+            return APP_ROOT.'/'.OpenAPIGenerator::DEFAULT_OUTPUT_RELATIVE;
         }
 
         return '';

@@ -91,7 +91,7 @@ class OpenAPIGenerator
         $this->serverUrl = $serverUrl;
         $this->outputPath = $outputPath !== ''
             ? $outputPath
-            : (defined('APP_INSTALL_FOLDER') ? APP_INSTALL_FOLDER.'/'.self::DEFAULT_OUTPUT_RELATIVE : '');
+            : (defined('APP_ROOT') ? APP_ROOT.'/'.self::DEFAULT_OUTPUT_RELATIVE : '');
         $this->methodConverter = new MethodConverter();
         $this->schema = new OpenAPISchema();
     }
