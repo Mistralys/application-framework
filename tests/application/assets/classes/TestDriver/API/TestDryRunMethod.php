@@ -85,7 +85,7 @@ class TestDryRunMethod
         return $response->getData();
     }
 
-    public function getReponseKeyDescriptions(): array
+    public function getResponseKeyDescriptions(): array
     {
         return array();
     }

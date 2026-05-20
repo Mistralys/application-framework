@@ -456,6 +456,6 @@ class ResponseSerializer
 ```
 ---
 **File Statistics**
-- **Size**: 8.96 KB
-- **Lines**: 457
+- **Size**: 9.2 KB
+- **Lines**: 462
 File: `modules/connectors/architecture-request-response.md`

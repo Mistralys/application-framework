@@ -1532,7 +1532,7 @@ interface JSONResponseInterface extends APIMethodInterface
 	/**
 	 * @return KeyDescription[]
 	 */
-	public function getReponseKeyDescriptions(): array;
+	public function getResponseKeyDescriptions(): array;
 }
 
 
@@ -2066,6 +2066,6 @@ trait VersionedAPITrait
 ```
 ---
 **File Statistics**
-- **Size**: 45.38 KB
+- **Size**: 45.39 KB
 - **Lines**: 2072
 File: `modules/api/architecture-core.md`

@@ -329,7 +329,7 @@ across multiple methods.
 |---|---|---|
 | `200` | `$ref: APIEnvelope` | All methods |
 | `200` + example | `$ref: APIEnvelope` + `example` | Method implements `JSONResponseInterface` and `getExampleJSONResponse()` returns non-empty data |
-| `200` + key descriptions | `allOf[$ref: APIEnvelope]` + `properties.data` | Method implements `JSONResponseInterface` and provides `getReponseKeyDescriptions()` |
+| `200` + key descriptions | `allOf[$ref: APIEnvelope]` + `properties.data` | Method implements `JSONResponseInterface` and provides `getResponseKeyDescriptions()` |
 | `400` | `$ref: APIErrorEnvelope` | Always present |
 | `500` | `$ref: APIErrorEnvelope` | Always present |
 
@@ -340,7 +340,7 @@ For methods implementing `JSONResponseInterface`:
 - **Example responses** — if `getExampleJSONResponse()` returns non-empty data it is embedded
   as an `example` value in the content entry. If the method throws (e.g. because it requires
   database state), the exception is caught and the example is silently omitted.
-- **Key descriptions** — if `getReponseKeyDescriptions()` returns `KeyDescription` objects,
+- **Key descriptions** — if `getResponseKeyDescriptions()` returns `KeyDescription` objects,
   the success response schema is extended using `allOf` to annotate `data.*` property descriptions.
   Root-level envelope keys (`state`, `code`, `message`, `api`) are excluded. Paths may be
   specified as bare property names relative to the `data` object (e.g. `fieldName` or
@@ -730,23 +730,19 @@ directly unless building a custom response schema layer.
   types. This is an accepted trade-off; a stricter three-condition guard may be added in
   a future hardening pass.
 
-### Encouraging richer schemas: implement `getReponseKeyDescriptions()`
+### Encouraging richer schemas: implement `getResponseKeyDescriptions()`
 
 By default, `SchemaInferrer` infers property types from the example response array alone.
 For richer, more useful OpenAPI output, API method authors should implement
-`getReponseKeyDescriptions()` on their method class. The inferrer merges these descriptions
+`getResponseKeyDescriptions()` on their method class. The inferrer merges these descriptions
 into the generated schema, transforming generic `object` entries into documented, typed
 properties.
-
-> **Note:** The method name intentionally uses the historical typo `Reponse` (not `Response`)
-> to match the `JSONResponseInterface` definition. Do not "fix" the spelling in your
-> implementation — it would create an inconsistency with the interface.
 
 ```php
 use Application\API\OpenAPI\KeyDescription;
 use Application\API\Parameters\APIParamType;
 
-public function getReponseKeyDescriptions() : array
+public function getResponseKeyDescriptions() : array
 {
     // Preferred: paths relative to the data object (no `data.` prefix).
     // This is the format produced by KeyPath and used in all production methods.
@@ -762,7 +758,7 @@ public function getReponseKeyDescriptions() : array
 > still accepted and work identically. New code should omit the prefix — it is redundant
 > because these paths are always relative to the `data` object.
 
-Without `getReponseKeyDescriptions()`, the `data` property in the spec is a bare
+Without `getResponseKeyDescriptions()`, the `data` property in the spec is a bare
 `{ "type": "object" }`. With it, each declared key gets a `description` and inferred type,
 making the spec significantly more useful to consumers.
 
@@ -770,11 +766,11 @@ making the spec significantly more useful to consumers.
 
 Some endpoints return a response whose structure is not statically known at code time (e.g.
 endpoints that introspect internal registries, or endpoints that serve raw third-party data).
-For these, implement `getReponseKeyDescriptions()` but return an empty array and include a
+For these, implement `getResponseKeyDescriptions()` but return an empty array and include a
 comment explaining why static descriptions are not applicable:
 
 ```php
-public function getReponseKeyDescriptions() : array
+public function getResponseKeyDescriptions() : array
 {
     // No static response key descriptions — the response structure is determined at runtime
     // by the internal registry contents and cannot be declared statically.
@@ -1154,9 +1150,6 @@ API method collection alongside other built-in methods.
 
 ### Known limitations (future work)
 
-- `getReponseKeyDescriptions()` contains a typo (`Reponse` instead of `Response`). This
-  mirrors a pre-existing typo in `JSONResponseInterface`. Fix the interface typo in a future
-  refactoring pass; fixing only this class would create an inconsistency.
 - There is no defensive `filesize()` guard after `is_file()`. A 0-byte spec file would produce
   an empty response body with `Content-Type: application/json` — technically invalid JSON with
   no error surfaced. A `filesize($path) > 0` check before reading would be more robust.

@@ -67,13 +67,12 @@ final class GetOpenAPISpecTest extends TestCase
     }
 
     /**
-     * `getReponseKeyDescriptions()` returns an empty array for raw-spec endpoints.
-     * Note: using the misspelled method name matching the interface definition.
+     * `getResponseKeyDescriptions()` returns an empty array for raw-spec endpoints.
      */
-    public function test_getReponseKeyDescriptions_isEmptyArray(): void
+    public function test_getResponseKeyDescriptions_isEmptyArray(): void
     {
         $instance = $this->createGetOpenAPISpec();
-        $this->assertSame(array(), $instance->getReponseKeyDescriptions());
+        $this->assertSame(array(), $instance->getResponseKeyDescriptions());
     }
 
     /**

@@ -374,6 +374,7 @@ use Application\Countries\API\CountriesAPIGroup as CountriesAPIGroup;
 use Application\Locales\API\Methods\GetAppLocalesAPI as GetAppLocalesAPI;
 use Application_Countries as Application_Countries;
 use Application_Countries_Country as Application_Countries_Country;
+use Override as Override;
 
 /**
  * API method to retrieve the list of available tenants.
@@ -464,7 +465,8 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
 	}
 
 
-	public function getReponseKeyDescriptions(): array
+	#[Override]
+	public function getResponseKeyDescriptions(): array
 	{
 		/* ... */
 	}
@@ -493,6 +495,7 @@ use Application\Countries\API\CountriesAPIGroup as CountriesAPIGroup;
 use Application\Locales\API\Methods\GetAppLocalesAPI as GetAppLocalesAPI;
 use Application_Countries as Application_Countries;
 use Application_Countries_Country as Application_Countries_Country;
+use Override as Override;
 
 /**
  * API method to retrieve the list of available tenants.
@@ -583,7 +586,8 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
 	}
 
 
-	public function getReponseKeyDescriptions(): array
+	#[Override]
+	public function getResponseKeyDescriptions(): array
 	{
 		/* ... */
 	}
@@ -593,6 +597,6 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
 ```
 ---
 **File Statistics**
-- **Size**: 15.96 KB
-- **Lines**: 599
+- **Size**: 16.04 KB
+- **Lines**: 603
 File: `modules/countries/api/architecture-core.md`

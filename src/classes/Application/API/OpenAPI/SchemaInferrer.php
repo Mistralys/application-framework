@@ -50,7 +50,7 @@ class SchemaInferrer
      * so the caller can safely detect "nothing to infer."
      *
      * @param array<string, mixed> $fullExample The complete response array from `getExampleJSONResponse()`.
-     * @param KeyDescription[] $keyDescriptions Descriptions from `getReponseKeyDescriptions()`.
+     * @param KeyDescription[] $keyDescriptions Descriptions from `getResponseKeyDescriptions()`.
      * @return array<string, mixed> An OpenAPI schema object for the data payload, or `[]` when empty.
      */
     public function inferDataSchema(array $fullExample, array $keyDescriptions) : array

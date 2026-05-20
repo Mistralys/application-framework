@@ -25,6 +25,7 @@ use Application\API\Traits\JSONResponseInterface as JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait as JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface as RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait as RequestRequestTrait;
+use Override as Override;
 
 /**
  * API method that compiles information about all DBHelper collections
@@ -92,7 +93,8 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
 	}
 
 
-	public function getReponseKeyDescriptions(): array
+	#[Override]
+	public function getResponseKeyDescriptions(): array
 	{
 		/* ... */
 	}
@@ -102,6 +104,6 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
 ```
 ---
 **File Statistics**
-- **Size**: 2.24 KB
-- **Lines**: 108
+- **Size**: 2.28 KB
+- **Lines**: 110
 File: `modules/db-helper/architecture-api-methods.md`

@@ -37,6 +37,7 @@ use Application\API\Traits\JSONResponseTrait as JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface as RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait as RequestRequestTrait;
 use Application\API\Utilities\KeyDescription as KeyDescription;
+use Override as Override;
 
 /**
  * Framework-built-in API method that returns the pre-generated OpenAPI 3.1 specification
@@ -139,7 +140,8 @@ class GetOpenAPISpec extends BaseAPIMethod implements RequestRequestInterface, J
 	 *
 	 * @return KeyDescription[]
 	 */
-	public function getReponseKeyDescriptions(): array
+	#[Override]
+	public function getResponseKeyDescriptions(): array
 	{
 		/* ... */
 	}
@@ -610,7 +612,7 @@ use Application\API\Traits\JSONResponseInterface as JSONResponseInterface;
  * Methods implementing {@see JSONResponseInterface} additionally receive:
  * - An `example` value from `getExampleJSONResponse()` (when available; exceptions cause a silent skip).
  * - A richer `data` sub-schema inferred by {@see SchemaInferrer} from the example payload, augmented with
- *   property descriptions from `getReponseKeyDescriptions()`.
+ *   property descriptions from `getResponseKeyDescriptions()`.
  *
  * ## Error responses (400, 500)
  *
@@ -686,7 +688,7 @@ class SchemaInferrer
 	 * so the caller can safely detect "nothing to infer."
 	 *
 	 * @param array<string, mixed> $fullExample The complete response array from `getExampleJSONResponse()`.
-	 * @param KeyDescription[] $keyDescriptions Descriptions from `getReponseKeyDescriptions()`.
+	 * @param KeyDescription[] $keyDescriptions Descriptions from `getResponseKeyDescriptions()`.
 	 * @return array<string, mixed> An OpenAPI schema object for the data payload, or `[]` when empty.
 	 */
 	public function inferDataSchema(array $fullExample, array $keyDescriptions): array
@@ -763,6 +765,6 @@ class TypeMapper
 ```
 ---
 **File Statistics**
-- **Size**: 22.19 KB
-- **Lines**: 769
+- **Size**: 22.23 KB
+- **Lines**: 771
 File: `modules/openapi/architecture-core.md`

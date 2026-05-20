@@ -21,6 +21,7 @@ use Application\API\Traits\RequestRequestTrait;
 use Application\API\Utilities\KeyDescription;
 use AppUtils\ArrayDataCollection;
 use AppUtils\FileHelper\FolderInfo;
+use Override;
 
 /**
  * Framework-built-in API method that returns the pre-generated OpenAPI 3.1 specification
@@ -130,7 +131,8 @@ class GetOpenAPISpec extends BaseAPIMethod implements RequestRequestInterface, J
      *
      * @return KeyDescription[]
      */
-    public function getReponseKeyDescriptions(): array
+    #[Override]
+    public function getResponseKeyDescriptions(): array
     {
         return array();
     }

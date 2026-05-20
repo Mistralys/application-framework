@@ -240,7 +240,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             return;
         }
 
-        $keys = $this->method->getReponseKeyDescriptions();
+        $keys = $this->method->getResponseKeyDescriptions();
 
         if(empty($keys)) {
             return;

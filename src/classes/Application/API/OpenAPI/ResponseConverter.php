@@ -20,7 +20,7 @@ use Application\API\Traits\JSONResponseInterface;
  * Methods implementing {@see JSONResponseInterface} additionally receive:
  * - An `example` value from `getExampleJSONResponse()` (when available; exceptions cause a silent skip).
  * - A richer `data` sub-schema inferred by {@see SchemaInferrer} from the example payload, augmented with
- *   property descriptions from `getReponseKeyDescriptions()`.
+ *   property descriptions from `getResponseKeyDescriptions()`.
  *
  * ## Error responses (400, 500)
  *
@@ -88,7 +88,7 @@ class ResponseConverter
 
             // Use SchemaInferrer to produce a richer data sub-schema, combining type inference
             // from the example with property descriptions from key descriptions.
-            $keyDescriptions = $method->getReponseKeyDescriptions();
+            $keyDescriptions = $method->getResponseKeyDescriptions();
             $dataSchema = (new SchemaInferrer())->inferDataSchema($example ?? array(), $keyDescriptions);
 
             if(!empty($dataSchema)) {

@@ -1,9 +1,12 @@
 # Application Framework Changelog
 
+## v7.2.6 - Override Attribute Consistency
+- API: Added `#[Override]` attributes where relevant.
+- API: Fixed typo in `getResponseKeyDescriptions()`.
+
 ## v7.2.5 - OpenAPI Path & Build Scripts
-- OpenAPI: Fixed spec path resolution using `APP_ROOT` instead of the incorrect `APP_INSTALL_FOLDER`.
+- OpenAPI: Fixed in-app specification path resolution.
 - Composer: Added `generate-openapi-spec` and `generate-htaccess` standalone build scripts.
-- CTX: Updated generated documentation.
 
 ## v7.2.4 - Connector Cache Hardening
 - Connectors: Cache file writing now better handles concurrent read/write operations.
