@@ -57,6 +57,7 @@ documents:
         filePattern: "*.md"
         excludePatterns:
           - 'implementation-history/'
+          - 'plans/'
 
   -
     description: 'Application Framework - Developer Tools'

@@ -497,7 +497,7 @@ interface JSONResponseInterface extends APIMethodInterface
 	/**
 	 * @return KeyDescription[]
 	 */
-	public function getReponseKeyDescriptions(): array;
+	public function getResponseKeyDescriptions(): array;
 }
 
 
