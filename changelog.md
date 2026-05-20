@@ -1,8 +1,11 @@
 # Application Framework Changelog
 
-## v7.2.6 - Override Attribute Consistency
+## v7.2.6 - Override Attribute Consistency (Breaking-S)
 - API: Added `#[Override]` attributes where relevant.
 - API: Fixed typo in `getResponseKeyDescriptions()`.
+
+### Breaking Changes
+- The API method `getReponseKeyDescriptions()` has been renamed to `getResponseKeyDescriptions()` to fix a typo. Any callers in applications will have to update their call sites.
 
 ## v7.2.5 - OpenAPI Path & Build Scripts
 - OpenAPI: Fixed in-app specification path resolution.
