@@ -20,6 +20,7 @@ use Application\Locales\API\AppLocaleAPITrait;
 use Application\Locales\API\LocalesAPIGroup;
 use AppLocalize\Localization;
 use AppUtils\ArrayDataCollection;
+use Override;
 
 class GetAppLocalesAPI extends BaseAPIMethod
     implements
@@ -148,7 +149,8 @@ MARKDOWN;
         );
     }
 
-    public function getReponseKeyDescriptions(): array
+    #[Override]
+    public function getResponseKeyDescriptions(): array
     {
         return array(
             KeyDescription::create(

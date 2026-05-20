@@ -60,7 +60,7 @@ final class ResponseConverterTest extends TestCase
         $mock = $this->createStub(JSONResponseInterface::class);
         $mock->method('getResponseMime')->willReturn($responseMime);
         $mock->method('getExampleJSONResponse')->willReturn($example);
-        $mock->method('getReponseKeyDescriptions')->willReturn($keyDescriptions);
+        $mock->method('getResponseKeyDescriptions')->willReturn($keyDescriptions);
         return $mock;
     }
 
@@ -158,7 +158,7 @@ final class ResponseConverterTest extends TestCase
         $method = $this->createStub(JSONResponseInterface::class);
         $method->method('getResponseMime')->willReturn('application/json');
         $method->method('getExampleJSONResponse')->willThrowException(new RuntimeException('DB not connected'));
-        $method->method('getReponseKeyDescriptions')->willReturn(array());
+        $method->method('getResponseKeyDescriptions')->willReturn(array());
 
         $result = $this->converter->convertResponses($method);
         $content = $result[ResponseConverter::HTTP_200]['content'];

@@ -24,6 +24,7 @@ use Application_Countries_Country;
 use AppLocalize\Localization\Country\CountryDE;
 use AppLocalize\Localization\Country\CountryGB;
 use AppUtils\ArrayDataCollection;
+use Override;
 
 /**
  * API method to retrieve the list of available tenants.
@@ -190,7 +191,8 @@ MARKDOWN,
         return array();
     }
 
-    public function getReponseKeyDescriptions(): array
+    #[Override]
+    public function getResponseKeyDescriptions(): array
     {
         return array(
             KeyDescription::create(

@@ -124,7 +124,7 @@ class TestGetCountriesBySetAPI
         return array();
     }
 
-    public function getReponseKeyDescriptions(): array
+    public function getResponseKeyDescriptions(): array
     {
         return array();
     }

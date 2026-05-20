@@ -17,6 +17,7 @@ use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use AppUtils\ArrayDataCollection;
 use AppUtils\FileHelper;
+use Override;
 
 /**
  * API method that compiles information about all DBHelper collections
@@ -158,7 +159,8 @@ MARKDOWN;
         return array();
     }
 
-    public function getReponseKeyDescriptions(): array
+    #[Override]
+    public function getResponseKeyDescriptions(): array
     {
         // No static key descriptions applicable — the response is a dynamic list of collection
         // introspection objects generated at runtime by BaseCollection::describe(); the schema

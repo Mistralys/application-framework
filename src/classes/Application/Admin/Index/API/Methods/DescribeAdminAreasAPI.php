@@ -18,6 +18,7 @@ use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use AppUtils\ArrayDataCollection;
+use Override;
 
 /**
  * API method that compiles information about all administration areas
@@ -100,7 +101,8 @@ MARKDOWN;
         return array();
     }
 
-    public function getReponseKeyDescriptions(): array
+    #[Override]
+    public function getResponseKeyDescriptions(): array
     {
         // No static key descriptions applicable — the response is a dynamic, application-specific
         // tree of administration areas whose structure depends on the screens registered at runtime.

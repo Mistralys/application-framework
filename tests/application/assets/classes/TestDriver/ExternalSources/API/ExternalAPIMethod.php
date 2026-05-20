@@ -72,7 +72,7 @@ class ExternalAPIMethod extends BaseAPIMethod implements RequestRequestInterface
         return array();
     }
 
-    public function getReponseKeyDescriptions(): array
+    public function getResponseKeyDescriptions(): array
     {
         return array();
     }
