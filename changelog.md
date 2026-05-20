@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v7.2.6 - Override Attribute Consistency (Breaking-S)
+## v7.3.0 - Override Attribute Consistency (Breaking-S)
 - API: Added `#[Override]` attributes where relevant.
 - API: Fixed typo in `getResponseKeyDescriptions()`.
 
