@@ -205,6 +205,21 @@ abstract class BaseAPIParameter implements APIParameterInterface
         }
     }
 
+    /**
+     * Whether the parameter has a resolved value.
+     *
+     * Returns `true` when `getValue()` is not `null`, and `false` when the
+     * parameter is absent or invalid. Note that an **empty string** (`''`) is
+     * a valid non-null value — `hasValue()` returns `true` for it.
+     *
+     * This distinction is the core contract of {@see ClearableStringParameter}:
+     * callers must use `hasValue()` to detect whether the parameter was submitted
+     * at all, and `getValue() === ''` to detect an explicit clear intent. Treating
+     * an empty-string result as "no value" would incorrectly suppress the clear
+     * operation.
+     *
+     * @return bool
+     */
     public function hasValue() : bool
     {
         return $this->getValue() !== null;
