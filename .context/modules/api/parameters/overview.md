@@ -32,9 +32,14 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 ## Key Concepts
 
 - **Typed Parameters:** Concrete parameter classes for common data types:
-  `StringParameter`, `IntegerParameter`, `BooleanParameter`, `JSONParameter`,
-  `IDListParameter`, `StringListParameter`. Each enforces type-specific parsing
-  and default values.
+  `StringParameter`, `ClearableStringParameter`, `IntegerParameter`,
+  `BooleanParameter`, `JSONParameter`, `IDListParameter`, `StringListParameter`.
+  Each enforces type-specific parsing and default values.
+  `ClearableStringParameter` extends `StringParameter` with three-state
+  resolution semantics (`null` = absent, `''` = explicitly cleared, string =
+  value), which is useful for Update-style API methods that need to distinguish
+  between "not submitted" and "submitted as empty". Use
+  `ParamTypeSelector::clearableString()` to register this parameter type.
 - **Common Types:** Reusable domain-specific parameter types built on top of
   the base types: `AliasParameter`, `AlphabeticalParameter`,
   `AlphanumericParameter`, `DateParameter`, `EmailParameter`, `LabelParameter`,
@@ -79,7 +84,7 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 | `Handlers/` | Internal pipeline: param handlers, rule handlers, and handler containers. |
 | `Reserved/` | Framework-reserved parameters (method name, API version). |
 | `Rules/` | Cross-parameter constraint rules and the rule type selector. |
-| `Type/` | Core typed parameter classes (string, integer, boolean, JSON, ID list, string list). |
+| `Type/` | Core typed parameter classes (string, clearable string, integer, boolean, JSON, ID list, string list). |
 | `Validation/` | Per-parameter validation types and result collection. |
 | `ValueLookup/` | Selectable value support for parameters with fixed value sets. |
 

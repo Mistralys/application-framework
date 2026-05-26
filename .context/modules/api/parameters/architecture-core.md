@@ -420,6 +420,21 @@ abstract class BaseAPIParameter implements APIParameterInterface
 	}
 
 
+	/**
+	 * Whether the parameter has a resolved value.
+	 *
+	 * Returns `true` when `getValue()` is not `null`, and `false` when the
+	 * parameter is absent or invalid. Note that an **empty string** (`''`) is
+	 * a valid non-null value — `hasValue()` returns `true` for it.
+	 *
+	 * This distinction is the core contract of {@see ClearableStringParameter}:
+	 * callers must use `hasValue()` to detect whether the parameter was submitted
+	 * at all, and `getValue() === ''` to detect an explicit clear intent. Treating
+	 * an empty-string result as "no value" would incorrectly suppress the clear
+	 * operation.
+	 *
+	 * @return bool
+	 */
 	public function hasValue(): bool
 	{
 		/* ... */
@@ -478,6 +493,7 @@ use Application\API\Parameters\CommonTypes\LabelParameter as LabelParameter;
 use Application\API\Parameters\CommonTypes\MD5Parameter as MD5Parameter;
 use Application\API\Parameters\CommonTypes\NameOrTitleParameter as NameOrTitleParameter;
 use Application\API\Parameters\Type\BooleanParameter as BooleanParameter;
+use Application\API\Parameters\Type\ClearableStringParameter as ClearableStringParameter;
 use Application\API\Parameters\Type\IDListParameter as IDListParameter;
 use Application\API\Parameters\Type\IntegerParameter as IntegerParameter;
 use Application\API\Parameters\Type\JSONParameter as JSONParameter;
@@ -499,6 +515,25 @@ class ParamTypeSelector
 
 
 	public function string(): StringParameter
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * String parameter with three-state resolution semantics.
+	 *
+	 * Unlike {@see string()}, this type distinguishes between an absent
+	 * parameter and a present-but-empty parameter, enabling Update-style API
+	 * methods to explicitly clear optional metadata fields:
+	 *
+	 * - Key absent → `null`
+	 * - Key present but empty / whitespace-only (after trim) → `''`
+	 * - Key present with value → trimmed string
+	 *
+	 * @return ClearableStringParameter
+	 */
+	public function clearableString(): ClearableStringParameter
 	{
 		/* ... */
 	}
