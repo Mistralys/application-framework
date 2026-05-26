@@ -13,6 +13,7 @@ use Application\API\Parameters\CommonTypes\LabelParameter;
 use Application\API\Parameters\CommonTypes\MD5Parameter;
 use Application\API\Parameters\CommonTypes\NameOrTitleParameter;
 use Application\API\Parameters\Type\BooleanParameter;
+use Application\API\Parameters\Type\ClearableStringParameter;
 use Application\API\Parameters\Type\IDListParameter;
 use Application\API\Parameters\Type\IntegerParameter;
 use Application\API\Parameters\Type\JSONParameter;
@@ -53,6 +54,28 @@ class ParamTypeSelector
     public function string() : StringParameter
     {
         $param = new StringParameter($this->name, $this->label);
+
+        $this->manager->registerParam($param);
+
+        return $param;
+    }
+
+    /**
+     * String parameter with three-state resolution semantics.
+     *
+     * Unlike {@see string()}, this type distinguishes between an absent
+     * parameter and a present-but-empty parameter, enabling Update-style API
+     * methods to explicitly clear optional metadata fields:
+     *
+     * - Key absent → `null`
+     * - Key present but empty / whitespace-only (after trim) → `''`
+     * - Key present with value → trimmed string
+     *
+     * @return ClearableStringParameter
+     */
+    public function clearableString() : ClearableStringParameter
+    {
+        $param = new ClearableStringParameter($this->name, $this->label);
 
         $this->manager->registerParam($param);
 

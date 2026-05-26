@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v7.3.1 - String Parameter Max Length Validation
+- API Parameters: Added `StringParameter::setMaxLength()` for fluent max-length configuration.
+- API Parameters: Added a `ClearableStringParameter` to handle setting empty values.
+
 ## v7.3.0 - Override Attribute Consistency (Breaking-S)
 - API: Added `#[Override]` attributes where relevant.
 - API: Fixed typo in `getResponseKeyDescriptions()`.
