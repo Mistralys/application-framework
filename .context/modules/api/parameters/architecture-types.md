@@ -1,6 +1,6 @@
 # API Parameters - Parameter Types (Public API)
-_SOURCE: StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringValidations_
-# StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringValidations
+_SOURCE: StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, ListParameterTrait_
+# StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, ListParameterTrait
 ```
 // Structure of documents
 └── src/
@@ -10,6 +10,7 @@ _SOURCE: StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDL
                 └── Parameters/
                     └── Type/
                         └── BooleanParameter.php
+                        └── ClearableStringParameter.php
                         └── IDListParameter.php
                         └── IntegerParameter.php
                         └── JSONParameter.php
@@ -88,6 +89,42 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
 
 
 	public function getValue(): ?bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Parameters/Type/ClearableStringParameter.php`
+
+```php
+namespace Application\API\Parameters\Type;
+
+use Application\API\Parameters\Validation\ParamValidationInterface as ParamValidationInterface;
+
+/**
+ * Clearable string API parameter with three-state resolution semantics.
+ *
+ * Unlike {@see StringParameter}, this type distinguishes between an absent
+ * parameter and a present-but-empty parameter, enabling Update-style API
+ * methods to explicitly clear optional metadata fields:
+ *
+ * - **Absent** (key not in `$_REQUEST`) → `null`
+ * - **Present but empty** (empty string or whitespace-only after trim) → `''`
+ * - **Present with value** (non-empty after trim) → trimmed string
+ *
+ * Reading `$_REQUEST` directly via `array_key_exists()` is intentional:
+ * the framework's `RequestParam::get()` discards empty strings before the
+ * parameter type ever sees them, which would collapse the absent/empty
+ * distinction that this type relies on.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+class ClearableStringParameter extends StringParameter
+{
+	public function getTypeLabel(): string
 	{
 		/* ... */
 	}
@@ -549,6 +586,7 @@ use Application\API\Parameters\APIParameterException as APIParameterException;
 use Application\API\Parameters\BaseAPIParameter as BaseAPIParameter;
 use Application\API\Parameters\Type\StringParam\StringValidations as StringValidations;
 use Application\API\Parameters\Validation\ParamValidationInterface as ParamValidationInterface;
+use Application\API\Parameters\Validation\Type\MaxLengthValidation as MaxLengthValidation;
 use Application\API\Parameters\Validation\Type\RegexValidation as RegexValidation;
 
 /**
@@ -559,6 +597,24 @@ use Application\API\Parameters\Validation\Type\RegexValidation as RegexValidatio
  * - Empty strings will be treated as null values.
  * - Null values will be treated as null values.
  * - Other value types will be ignored, and a warning will be issued.
+ *
+ * ## Validator helper naming conventions
+ *
+ * This class exposes two styles of validator-registering helpers that coexist
+ * for historical reasons:
+ *
+ * - **`validateBy*` prefix** — procedural style; e.g. `validateByRegex()`.
+ *   Used for validators that apply a validation rule without altering a named
+ *   property of the parameter.
+ * - **`set*` prefix** — property-setter style; e.g. `setMaxLength()`.
+ *   Used for validators that correspond to a named, configurable attribute of
+ *   the parameter (the max length is a property of the string, not just a
+ *   validation rule).
+ *
+ * Both styles call `validateBy()` internally and return `$this` for fluent
+ * chaining. New helpers should follow the `set*` convention when they model a
+ * named parameter attribute, and `validateBy*` when they apply a standalone
+ * rule with no corresponding attribute.
  *
  * @package API
  * @subpackage Parameters
@@ -611,7 +667,27 @@ class StringParameter extends BaseAPIParameter
 	}
 
 
+	/**
+	 * Registers a regex validation that requires the string value to match
+	 * the given PCRE pattern.
+	 *
+	 * @param string $regex A valid PCRE regex pattern (e.g. `/^[a-z]+$/i`).
+	 * @return $this
+	 */
 	public function validateByRegex(string $regex): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Registers a max length validation that ensures the string value
+	 * does not exceed the specified number of characters (multibyte-safe).
+	 *
+	 * @param int $maxLength Maximum allowed character count.
+	 * @return $this
+	 */
+	public function setMaxLength(int $maxLength): self
 	{
 		/* ... */
 	}

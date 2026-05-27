@@ -5,7 +5,7 @@
 moduleMetaData:
   id: "api-parameters"
   label: "API Parameters"
-  description: "Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle."
+  description: "Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle."
   keywords:
     - ParamTypeSelector (fluent builder returned by addParam for choosing the parameter type)
     - common type (reusable domain-specific parameter preset like AliasParameter or EmailParameter)
@@ -63,7 +63,7 @@ documents:
     outputPath: 'modules/api/parameters/architecture-types.md'
     sources:
       - type: file
-        description: "StringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringValidations"
+        description: "StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, ListParameterTrait"
         sourcePaths:
           - ./Type
         filePattern: "*.php"
@@ -120,7 +120,7 @@ documents:
     outputPath: 'modules/api/parameters/architecture-validation.md'
     sources:
       - type: file
-        description: "ParamValidationInterface, BaseParamValidation, RequiredValidation, EnumValidation, RegexValidation, CallbackValidation, ValueExistsCallbackValidation, ParamValidationResults"
+        description: "ParamValidationInterface, BaseParamValidation, RequiredValidation, EnumValidation, RegexValidation, CallbackValidation, ValueExistsCallbackValidation, MaxLengthValidation, ParamValidationResults"
         sourcePaths:
           - ./Validation
         filePattern: "*.php"

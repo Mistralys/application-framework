@@ -12,6 +12,7 @@ use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
 use Application\API\Parameters\Type\StringParam\StringValidations;
 use Application\API\Parameters\Validation\ParamValidationInterface;
+use Application\API\Parameters\Validation\Type\MaxLengthValidation;
 use Application\API\Parameters\Validation\Type\RegexValidation;
 use AppUtils\RegexHelper;
 
@@ -23,6 +24,24 @@ use AppUtils\RegexHelper;
  * - Empty strings will be treated as null values.
  * - Null values will be treated as null values.
  * - Other value types will be ignored, and a warning will be issued.
+ *
+ * ## Validator helper naming conventions
+ *
+ * This class exposes two styles of validator-registering helpers that coexist
+ * for historical reasons:
+ *
+ * - **`validateBy*` prefix** — procedural style; e.g. `validateByRegex()`.
+ *   Used for validators that apply a validation rule without altering a named
+ *   property of the parameter.
+ * - **`set*` prefix** — property-setter style; e.g. `setMaxLength()`.
+ *   Used for validators that correspond to a named, configurable attribute of
+ *   the parameter (the max length is a property of the string, not just a
+ *   validation rule).
+ *
+ * Both styles call `validateBy()` internally and return `$this` for fluent
+ * chaining. New helpers should follow the `set*` convention when they model a
+ * named parameter attribute, and `validateBy*` when they apply a standalone
+ * rule with no corresponding attribute.
  *
  * @package API
  * @subpackage Parameters
@@ -96,9 +115,28 @@ class StringParameter extends BaseAPIParameter
         return new StringValidations($this);
     }
 
+    /**
+     * Registers a regex validation that requires the string value to match
+     * the given PCRE pattern.
+     *
+     * @param string $regex A valid PCRE regex pattern (e.g. `/^[a-z]+$/i`).
+     * @return $this
+     */
     public function validateByRegex(string $regex) : self
     {
         return $this->validateBy(new RegexValidation($regex));
+    }
+
+    /**
+     * Registers a max length validation that ensures the string value
+     * does not exceed the specified number of characters (multibyte-safe).
+     *
+     * @param int $maxLength Maximum allowed character count.
+     * @return $this
+     */
+    public function setMaxLength(int $maxLength) : self
+    {
+        return $this->validateBy(new MaxLengthValidation($maxLength));
     }
 
     protected function resolveValue(): ?string
@@ -131,7 +169,7 @@ class StringParameter extends BaseAPIParameter
     {
         $value = parent::getValue();
         if(is_string($value)) {
-            return parent::getValue();
+            return $value;
         }
 
         return null;

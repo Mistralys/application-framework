@@ -156,6 +156,7 @@ _SOURCE: API Module File Structure_
                     │   │   └── RequiredIfOtherValueEquals.php
                     ├── Type/
                     │   ├── BooleanParameter.php
+                    │   ├── ClearableStringParameter.php
                     │   ├── IDListParameter.php
                     │   ├── IntegerParameter.php
                     │   ├── JSONParameter.php
@@ -171,6 +172,7 @@ _SOURCE: API Module File Structure_
                     │   ├── Type/
                     │   │   └── CallbackValidation.php
                     │   │   └── EnumValidation.php
+                    │   │   └── MaxLengthValidation.php
                     │   │   └── RegexValidation.php
                     │   │   └── RequiredValidation.php
                     │   │   └── ValueExistsCallbackValidation.php

@@ -185,6 +185,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   │   └── RequiredIfOtherValueEquals.php
             │   │   ├── Type/
             │   │   │   ├── BooleanParameter.php
+            │   │   │   ├── ClearableStringParameter.php
             │   │   │   ├── IDListParameter.php
             │   │   │   ├── IntegerParameter.php
             │   │   │   ├── JSONParameter.php
@@ -200,6 +201,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── Type/
             │   │   │   │   └── CallbackValidation.php
             │   │   │   │   └── EnumValidation.php
+            │   │   │   │   └── MaxLengthValidation.php
             │   │   │   │   └── RegexValidation.php
             │   │   │   │   └── RequiredValidation.php
             │   │   │   │   └── ValueExistsCallbackValidation.php
