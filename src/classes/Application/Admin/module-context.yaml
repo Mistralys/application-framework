@@ -1,0 +1,205 @@
+## ---------------------------------------------------------------
+## ADMIN MODULE
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "admin"
+  label: "Administration Screens"
+  description: "Hierarchical administration screen system providing the Area → Mode → Submode → Action screen lifecycle, rendering pipeline, rights, locking, and navigation."
+  keywords:
+    - Skeleton (base class defining the full rendering lifecycle for every admin screen)
+    - Area (top-level admin section grouping related modes)
+    - Mode (primary screen within an area)
+    - Submode (secondary screen within a mode)
+    - Action (an operation executed within a submode or mode)
+    - AdminScreenIndex (build-time index of all registered admin screens)
+    - RequestType (typed request parameter helper for fetching records from HTTP requests)
+    - Wizard (multi-step screen flow with step validation and invalidation handling)
+    - WizardConfigurator (session orchestrator and URL builder for the Wizard Preselection API)
+    - WizardPreselection (typed key/value container for pre-populating wizard step fields before redirect)
+  relatedModules:
+    - ui
+    - event-handler
+    - application-sets
+
+documents:
+-
+  description: 'Admin - Overview'
+  outputPath: 'modules/admin/overview.md'
+  sources:
+    - type: file
+      description: "Admin Module Overview"
+      sourcePaths:
+        - README.md
+      filePattern: "README.md"
+
+-
+  description: 'Admin - Core Architecture'
+  outputPath: 'modules/admin/architecture-core.md'
+  sources:
+    - type: text
+      content: |
+        # Admin Module — Core Architecture
+
+        Public API surface of the admin screen system: the Skeleton base class,
+        area/mode/submode base classes, screen rights, request types, and URL helper.
+    - type: file
+      description: "Root-level classes and interfaces"
+      sourcePaths:
+        - ./
+      filePattern: "*.php"
+      excludePatterns:
+        - 'Area/'
+        - 'Index/'
+        - 'RequestTypes/'
+        - 'Screens/'
+        - 'Traits/'
+        - 'Welcome/'
+        - 'Wizard/'
+        - 'docs/'
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+    - type: file
+      description: "Area base classes and mode hierarchy"
+      sourcePaths:
+        - ./Area
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+    - type: file
+      description: "Request type helpers"
+      sourcePaths:
+        - ./RequestTypes
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+    - type: file
+      description: "Developer mode interface and trait"
+      sourcePaths:
+        - ./Traits
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'Admin - Screen Lifecycle Events'
+  outputPath: 'modules/admin/architecture-events.md'
+  sources:
+    - type: text
+      content: |
+        # Admin Module — Screen Lifecycle Events
+
+        Events dispatched during the admin screen rendering lifecycle
+        (before/after actions, breadcrumb, sidebar, content).
+    - type: file
+      description: "Screen lifecycle events"
+      sourcePaths:
+        - ./Screens
+        - ./Area/Events
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'Admin - Index and Sitemap'
+  outputPath: 'modules/admin/architecture-index.md'
+  sources:
+    - type: text
+      content: |
+        # Admin Module — Screen Index & Sitemap
+
+        Build-time screen discovery (AdminScreenIndexer) and the runtime
+        screen index (AdminScreenIndex) that powers navigation and API lookups.
+    - type: file
+      description: "Index and sitemap classes"
+      sourcePaths:
+        - ./Index
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'Admin - Wizard Support'
+  outputPath: 'modules/admin/architecture-wizard.md'
+  sources:
+    - type: text
+      content: |
+        # Admin Module — Wizard (Multi-Step) Support
+
+        Base classes and Preselection API for multi-step wizard flows: BaseWizardMode, Step,
+        and InvalidationHandler for step dependency management; WizardPreselection as a typed
+        key/value store for pre-populating step fields; WizardConfigurator as the session
+        orchestrator and URL builder that consumers use to redirect users to a pre-filled wizard.
+    - type: file
+      description: "Wizard classes"
+      sourcePaths:
+        - ./Wizard
+      filePattern: "*.php"
+      modifiers:
+        - name: php-content-filter
+          options:
+            method_visibility: [ "public" ]
+            exclude_methods: [ "__construct" ]
+            property_visibility: [ "public" ]
+            constant_visibility: [ "public" ]
+            keep_method_bodies: false
+            keep_doc_comments: true
+
+-
+  description: 'Admin - File Structure'
+  outputPath: 'modules/admin/file-structure.md'
+  sources:
+    - type: text
+      content: |
+        # Admin Module — File Structure
+    - type: tree
+      description: 'Admin module file tree'
+      sourcePaths: [ ./ ]
+      filePattern: '*.php'
+      notPath:
+        - 'docs/'
+      renderFormat: ascii
+      showCharCount: false
+      maxDepth: 4
