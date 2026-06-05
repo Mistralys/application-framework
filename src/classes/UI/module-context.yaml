@@ -21,6 +21,10 @@ moduleMetaData:
     - ui-client-resources
     - ui-properties-grid
     - ui-themes
+    - admin
+    - api-clients
+    - countries
+    - markdown-renderer
 
 documents:
 -

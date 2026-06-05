@@ -18,6 +18,7 @@ moduleMetaData:
     - "api"
     - "api-openapi"
     - "api-cache"
+    - "countries-api"
 
 documents:
   -
