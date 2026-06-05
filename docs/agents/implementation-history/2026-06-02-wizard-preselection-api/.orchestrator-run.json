@@ -1,0 +1,13 @@
+{
+  "thread_id": "2dd75ca1-7ad9-4e10-a2ac-4322c9c266ec",
+  "plan_path": "/Users/smordziol/Webserver/Workspaces/framework/DEV/application-framework/docs/agents/plans/2026-06-02-wizard-preselection-api/plan.md",
+  "slug": "2026-06-02-wizard-preselection-api",
+  "started_at": "2026-06-04T07:54:37.804761+00:00",
+  "is_resume": false,
+  "dry_run": false,
+  "log_filename": "20260604T075437-2026-06-02-wizard-preselection-api.jsonl",
+  "pid": 33781,
+  "result": "SUCCESS",
+  "error": null,
+  "duration_s": 3390.8
+}

@@ -128,6 +128,7 @@ return array (
     'welcome.overview' => 'Application\\Admin\\Welcome\\Screens\\OverviewMode',
     'welcome.settings' => 'Application\\Admin\\Welcome\\Screens\\SettingsMode',
     'wizardtest' => 'TestDriver_Area_WizardTest',
+    'wizardtest.preselection' => 'TestDriver_Area_WizardTest_Preselection',
     'wizardtest.wizard' => 'TestDriver_Area_WizardTest_Wizard',
   ),
   'flat' => 
@@ -2279,7 +2280,23 @@ return array (
       'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
-        0 => 'TestDriver_Area_WizardTest_Wizard',
+        0 => 'TestDriver_Area_WizardTest_Preselection',
+        1 => 'TestDriver_Area_WizardTest_Wizard',
+      ),
+    ),
+    'TestDriver_Area_WizardTest_Preselection' => 
+    array (
+      'id' => 'Preselection',
+      'urlName' => 'preselection',
+      'urlPath' => 'wizardtest.preselection',
+      'title' => 'Wizard Preselection Test',
+      'navigationTitle' => 'Preselection Test',
+      'requiredRight' => NULL,
+      'featureRights' => NULL,
+      'class' => 'TestDriver_Area_WizardTest_Preselection',
+      'path' => 'driver-classes:Area/WizardTest',
+      'subscreenClasses' => 
+      array (
       ),
     ),
     'TestDriver_Area_WizardTest_Wizard' => 
@@ -2936,10 +2953,29 @@ return array (
       'path' => 'driver-classes:Area',
       'subscreenClasses' => 
       array (
-        0 => 'TestDriver_Area_WizardTest_Wizard',
+        0 => 'TestDriver_Area_WizardTest_Preselection',
+        1 => 'TestDriver_Area_WizardTest_Wizard',
       ),
       'subscreens' => 
       array (
+        'preselection' => 
+        array (
+          'id' => 'Preselection',
+          'urlName' => 'preselection',
+          'urlPath' => 'wizardtest.preselection',
+          'title' => 'Wizard Preselection Test',
+          'navigationTitle' => 'Preselection Test',
+          'requiredRight' => NULL,
+          'featureRights' => NULL,
+          'class' => 'TestDriver_Area_WizardTest_Preselection',
+          'path' => 'driver-classes:Area/WizardTest',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
         'wizard' => 
         array (
           'id' => 'Wizard',

@@ -51,7 +51,9 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
    /**
     * @param Application_Interfaces_Admin_Wizardable $wizard
     * @param int $number
-    * @param array<string,mixed> $data
+    * @param array<string,mixed> $data Step-specific data; merged over {@see self::getDefaultData()}
+    *                                  so defaults fill any keys absent from $data, and supplied
+    *                                  values override defaults on overlap.
     */
     public function __construct(Application_Interfaces_Admin_Wizardable $wizard, int $number, array $data=array())
     {
@@ -59,15 +61,10 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
         $this->wizard = $wizard;
         $this->number = $number;
-        $this->data = $data;
+        $this->data = array_merge($this->getDefaultData(), $data);
         $this->instanceID = nextJSID();
         $this->monitoredSteps = $this->getMonitoredSteps();
         $this->id = ClassHelper::getClassTypeName($this);
-
-        if(!isset($this->data)) {
-            $this->data = $this->getDefaultData();
-            $this->setComplete(false);
-        }
 
         $this->init();
     }

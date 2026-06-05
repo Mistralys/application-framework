@@ -68,7 +68,7 @@ class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
     }
 
     public function changeCountry(string $isoCode) : void {
-        $this->setWizardSetting('country_id', Application_Countries::getInstance()->getByISO($isoCode)->getID());
+        $this->setWizardSetting(TestDriver_Area_WizardTest_Wizard_Step_Countries::VALUE_COUNTRY_ID, Application_Countries::getInstance()->getByISO($isoCode)->getID());
     }
 
     public function isUserAllowed() : bool
@@ -126,5 +126,22 @@ class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
     public function initSteps(string $reason) : void
     {
         parent::initSteps($reason);
+    }
+
+    /**
+     * Resets wizard state for test re-use.
+     *
+     * The wizard screen is a singleton cached by the driver's subscreen registry
+     * (see {@see Application_Traits_Admin_Screen::createSubscreen()}), so the same
+     * instance is shared across all tests in a test class. Call this method at the
+     * start of any test that needs to call {@see initWizard()} or
+     * {@see handleActions()} independently — it clears the steps array and nulls
+     * the session state so the next init starts from a clean slate.
+     */
+    public function resetForTest() : void
+    {
+        $this->steps = array();
+        $this->sessionID = '';
+        $this->sessionData = array();
     }
 }
