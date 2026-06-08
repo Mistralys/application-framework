@@ -642,6 +642,6 @@ interface ReservedParamInterface extends APIParameterInterface
 ```
 ---
 **File Statistics**
-- **Size**: 13.52 KB
-- **Lines**: 613
+- **Size**: 14.76 KB
+- **Lines**: 648
 File: `modules/api/parameters/architecture-core.md`

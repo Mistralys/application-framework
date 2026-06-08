@@ -272,6 +272,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── StubArea.php
             │   │   ├── StubMode.php
             │   │   ├── StubSubmode.php
+            │   ├── README.md
             │   ├── RequestTypes/
             │   │   ├── BaseRequestType.php
             │   │   ├── RequestTypeInterface.php
@@ -308,7 +309,16 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── BaseWizardMode.php
             │   │   ├── InvalidationHandler.php
             │   │   ├── Step.php
+            │   │   ├── WizardConfigurator.php
+            │   │   ├── WizardPreselection.php
             │   ├── WizardException.php
+            │   ├── docs/
+            │   │   ├── events.md
+            │   │   ├── public-api.md
+            │   │   ├── rights-and-locking.md
+            │   │   ├── screen-hierarchy.md
+            │   │   ├── wizard.md
+            │   ├── module-context.yaml
             ├── Ajax/
             │   ├── AjaxException.php
             │   ├── AjaxHandler.php
@@ -2094,6 +2104,6 @@ _SOURCE: Tree of PHP Class Files_
 ```
 ---
 **File Statistics**
-- **Size**: 103.16 KB
-- **Lines**: 2098
+- **Size**: 103.29 KB
+- **Lines**: 2100
 File: `framework-file-structure.md`
