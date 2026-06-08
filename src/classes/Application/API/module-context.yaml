@@ -21,6 +21,7 @@ moduleMetaData:
     - "api-clients"
     - "connectors"
     - "event-handler"
+    - "countries-api"
 
 documents:
   -

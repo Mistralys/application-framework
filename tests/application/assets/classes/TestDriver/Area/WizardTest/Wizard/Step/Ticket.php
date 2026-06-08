@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class TestDriver_Area_WizardTest_Wizard_Step_Ticket extends TestDriver_Area_WizardTest_Wizard_Step
 {
+    public const string STEP_NAME = 'Ticket';
+
 
     public function render() : string
     {

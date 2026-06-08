@@ -71,6 +71,26 @@ class ComposerScripts
         echo '  DONE.'.PHP_EOL;
     }
 
+    /**
+     * Standalone entry point for `composer build-docs`.
+     *
+     * Regenerates the Modules Overview and Keyword Glossary Markdown files,
+     * then prints any {@see BuildMessages} diagnostics collected during the
+     * run (warnings about asymmetric `relatedModules` entries, parse errors,
+     * etc.) so they are not silently swallowed. After this method returns,
+     * the Composer script chain runs `ctx generate` to rebuild all CTX files.
+     *
+     * @return void
+     */
+    public static function buildDocs() : void
+    {
+        self::init();
+
+        self::doUpdateModuleDocumentation();
+
+        BuildMessages::printSummary();
+    }
+
     private static function updateContextGenerateDate() : void
     {
         echo '- Updating context generate date...'.PHP_EOL;

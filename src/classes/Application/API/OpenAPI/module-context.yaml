@@ -27,7 +27,11 @@ moduleMetaData:
     - APIInfo (OpenAPI schema for the api metadata sub-object in every JSON response)
     - GetOpenAPISpec (framework built-in API method; serves the pre-generated openapi.json as raw JSON over HTTP at /api/GetOpenAPISpec; bypasses the standard JSON envelope; returns 500 when the spec file is missing)
     - getSpecURL (GetOpenAPISpec static helper; returns the absolute URL to the spec endpoint using APP_URL; used by APIMethodsOverviewTmpl to render the OpenAPI button on the API docs overview page)
-  relatedModules: []
+  relatedModules:
+    - api
+    - api-cache
+    - api-clients
+    - api-parameters
 
 documents:
   -

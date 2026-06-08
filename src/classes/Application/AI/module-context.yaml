@@ -13,6 +13,7 @@ moduleMetaData:
     - Cache strategy (pluggable caching policy per tool — fixed-duration or uncached)
   relatedModules:
     - event-handler
+    - countries
 
 documents:
   -

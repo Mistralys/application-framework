@@ -145,6 +145,10 @@
       "Application\\Composer\\ComposerScripts::build",
       "ctx generate"
     ],
+    "build-docs": [
+      "Application\\Composer\\ComposerScripts::buildDocs",
+      "ctx generate"
+    ],
     "analyze": "php vendor/bin/phpstan analyse --configuration phpstan.neon --memory-limit=900M",
     "analyze-save": "php vendor/bin/phpstan analyse --configuration phpstan.neon --memory-limit=900M > phpstan-result.txt || true",
     "analyze-clear": "php vendor/bin/phpstan clear-result-cache",

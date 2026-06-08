@@ -32,6 +32,8 @@ moduleMetaData:
     - getUserScopedCacheKeyParameters (UserScopedCacheInterface method; returns method-specific cache key parameters excluding user identification; _userScope is a reserved key and the trait-injected value always takes precedence)
   relatedModules:
     - "api-openapi"
+    - "api"
+    - "api-parameters"
 
 documents:
   -

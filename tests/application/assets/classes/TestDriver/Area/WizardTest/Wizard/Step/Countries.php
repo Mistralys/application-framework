@@ -7,6 +7,15 @@ declare(strict_types=1);
  */
 class TestDriver_Area_WizardTest_Wizard_Step_Countries extends TestDriver_Area_WizardTest_Wizard_Step
 {
+    public const string STEP_NAME = 'Countries';
+
+    /**
+     * The step data key used to store and retrieve the preselected country ID.
+     * Referenced by {@see TestDriver_Area_WizardTest_Preselection} when building
+     * a {@see \Application\Admin\Wizard\WizardConfigurator} preselection session.
+     */
+    public const string VALUE_COUNTRY_ID = 'country_id';
+
     protected Application_Countries $countries;
 
     public function render() : string
@@ -40,7 +49,7 @@ class TestDriver_Area_WizardTest_Wizard_Step_Countries extends TestDriver_Area_W
     protected function getDefaultData() : array
     {
         return array(
-            'country_id' => null
+            self::VALUE_COUNTRY_ID => null
         );
     }
 
@@ -50,7 +59,7 @@ class TestDriver_Area_WizardTest_Wizard_Step_Countries extends TestDriver_Area_W
 
         if($preselected !== null)
         {
-            $this->setData('country_id', $preselected->getID());
+            $this->setData(self::VALUE_COUNTRY_ID, $preselected->getID());
             $this->setComplete();
             return true;
         }

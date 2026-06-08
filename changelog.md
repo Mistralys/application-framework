@@ -1,5 +1,11 @@
 # Application Framework Changelog
 
+## v7.3.2 - Wizard Preselection API
+- Wizard: Added `WizardPreselection` value-object for pre-populating wizard steps before redirect.
+- Wizard: Added `WizardConfigurator` to orchestrate a pre-populated wizard session and return the redirect URL.
+- Wizard: Added type-safe step value preselection by step class name.
+- Wizard: Fixed step defaults not being applied on first visit when preselection values are present.
+
 ## v7.3.1 - String Parameter Max Length Validation
 - API Parameters: Added `StringParameter::setMaxLength()` for fluent max-length configuration.
 - API Parameters: Added a `ClearableStringParameter` to handle setting empty values.

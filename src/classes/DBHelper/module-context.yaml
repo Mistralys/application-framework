@@ -18,6 +18,8 @@ moduleMetaData:
     - ui
     - ui-datagrid
     - application-sets
+    - api-clients
+    - countries
 
 documents:
 -
