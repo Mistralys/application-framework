@@ -74,6 +74,20 @@ abstract class BaseLookupItem
     }
 
     /**
+     * Resets the instance state, clearing accumulated results and
+     * custom WHERE constraints. Call this to safely reuse the same
+     * instance for multiple independent queries.
+     *
+     * @return $this
+     */
+    public function reset() : self
+    {
+        $this->results = array();
+        $this->where = array();
+        return $this;
+    }
+
+    /**
      * Retrieves a javascript statement to open the lookup
      * dialog for this item, with optional preset search
      * terms.
@@ -109,7 +123,22 @@ abstract class BaseLookupItem
     abstract protected function getQuerySQL() : string;
     abstract protected function getPrimaryName() : string;
 
-    public function findMatches($terms): void
+    /**
+     * Finds IDs of matching records without rendering UI labels or URLs.
+     * Intended for use by API method classes that need the lookup system's
+     * fast single-table queries as a performance alternative to filter criteria.
+     *
+     * If {@see self::setLimit()} has been called, the result is capped accordingly:
+     * the SQL LIMIT is applied per-query (performance optimization), and the global
+     * cap is enforced via array_slice() after deduplication.
+     *
+     * If {@see self::addWhere()} has been called, the constraint is applied to
+     * every SQL query.
+     *
+     * @param array<int,string|int> $terms
+     * @return int[]
+     */
+    public function findMatchingIDs(array $terms) : array
     {
         $ids = array();
 
@@ -117,7 +146,7 @@ abstract class BaseLookupItem
         {
             if(is_numeric($name) && $this->idExists((int)$name))
             {
-                $ids = array($name);
+                $ids[] = (int)$name;
             }
             else
             {
@@ -127,13 +156,21 @@ abstract class BaseLookupItem
 
         $ids = array_unique($ids);
 
-        if(empty($ids)) {
-            return;
+        if($this->limit > 0)
+        {
+            $ids = array_slice($ids, 0, $this->limit);
         }
+
+        return array_values($ids);
+    }
+
+    public function findMatches($terms): void
+    {
+        $ids = $this->findMatchingIDs($terms);
 
         foreach($ids as $id)
         {
-            $record = $this->getByID((int)$id);
+            $record = $this->getByID($id);
 
             $this->addResult(
                 $this->renderLabel($record),
@@ -147,6 +184,25 @@ abstract class BaseLookupItem
      */
     private array $where = array();
 
+    private int $limit = 0;
+
+    /**
+     * Caps the number of IDs returned by {@see self::findMatchingIDs()}.
+     * When greater than zero, the SQL query per search term is also
+     * limited (per-query performance optimization), and the global
+     * result count is capped after deduplication.
+     *
+     * A value of 0 means no limit (default).
+     *
+     * @param int $limit
+     * @return $this
+     */
+    public function setLimit(int $limit) : self
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
     /**
      * Adds a custom WHERE statement to the query.
      * If multiple statements are added, they are joined
@@ -155,28 +211,32 @@ abstract class BaseLookupItem
      * @param string $statement
      * @return $this
      */
-    protected function addWhere(string $statement) : self
+    public function addWhere(string $statement) : self
     {
         $this->where[] = $statement;
         return $this;
-    }
-
-    private function renderWhere() : string
-    {
-        return implode(' AND ', $this->where);
     }
 
     private function findMatchesBySearch(string $name) : array
     {
         $split = self::splitSearchTerm($name, $this->getSearchColumns());
 
-        $this->addWhere($split['where']);
+        // Build the WHERE clause locally: combine persistent constraints with the
+        // per-term clause without mutating $this->where. This ensures that a second
+        // call for a different term does not inherit the previous term's WHERE clause.
+        $whereParts = $this->where;
+        $whereParts[] = $split['where'];
 
         $query = str_replace(
             '{WHERE}',
-            $this->renderWhere(),
+            implode(' AND ', $whereParts),
             $this->getQuerySQL()
         );
+
+        if($this->limit > 0)
+        {
+            $query .= ' LIMIT '.$this->limit;
+        }
 
         return DBHelper::fetchAllKeyInt(
             $this->getPrimaryName(),
