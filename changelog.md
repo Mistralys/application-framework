@@ -1,5 +1,11 @@
 # Application Framework Changelog
 
+## v7.3.3 - LookupItem Search API
+- LookupItems: Made `addWhere()` public for external constraint injection.
+- LookupItems: Added `setLimit()`, `findMatchingIDs()`, and `reset()` fluent methods to `BaseLookupItem`.
+- LookupItems: Fixed WHERE clause accumulation bug in `findMatchesBySearch()`.
+- Tests: Added `BaseLookupItemTest` covering the new search API (14 tests).
+
 ## v7.3.2 - Wizard Preselection API
 - Wizard: Added `WizardPreselection` value-object for pre-populating wizard steps before redirect.
 - Wizard: Added `WizardConfigurator` to orchestrate a pre-populated wizard session and return the redirect URL.
