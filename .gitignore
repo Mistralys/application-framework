@@ -1,14 +1,14 @@
 composer.phar
 /vendor/
 node_modules/
+.idea/
 
 # Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
 .csscrush
 .phpunit.result.cache
-.idea/dataSources.xml
-.idea/dataSources/
+
 /docs/phpstan/cache
 /tests/application/version
 /tests/application/config
@@ -42,11 +42,7 @@ tests/application/config/test-ui-config.php
 VERSION
 /tests/application/storage/class-cache/
 /tests/application/storage/cache/
-.idea/php-test-framework.xml
-.idea/copilot.data.migration.ask.xml
-.idea/copilot.data.migration.ask2agent.xml
-.idea/copilot.data.migration.edit.xml
-.idea/copilot.data.migration.agent.xml
+
 phpstan.result.txt
 phpstan-result.txt
 .phpunit.cache/test-results
