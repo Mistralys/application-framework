@@ -74,20 +74,6 @@ abstract class BaseLookupItem
     }
 
     /**
-     * Resets the instance state, clearing accumulated results and
-     * custom WHERE constraints. Call this to safely reuse the same
-     * instance for multiple independent queries.
-     *
-     * @return $this
-     */
-    public function reset() : self
-    {
-        $this->results = array();
-        $this->where = array();
-        return $this;
-    }
-
-    /**
      * Retrieves a javascript statement to open the lookup
      * dialog for this item, with optional preset search
      * terms.
@@ -217,19 +203,20 @@ abstract class BaseLookupItem
         return $this;
     }
 
+    private function renderWhere() : string
+    {
+        return implode(' AND ', $this->where);
+    }
+
     private function findMatchesBySearch(string $name) : array
     {
         $split = self::splitSearchTerm($name, $this->getSearchColumns());
 
-        // Build the WHERE clause locally: combine persistent constraints with the
-        // per-term clause without mutating $this->where. This ensures that a second
-        // call for a different term does not inherit the previous term's WHERE clause.
-        $whereParts = $this->where;
-        $whereParts[] = $split['where'];
+        $this->addWhere($split['where']);
 
         $query = str_replace(
             '{WHERE}',
-            implode(' AND ', $whereParts),
+            $this->renderWhere(),
             $this->getQuerySQL()
         );
 
