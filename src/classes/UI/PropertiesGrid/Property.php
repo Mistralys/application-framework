@@ -126,7 +126,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
      * @return $this
      * @throws UI_Exception
      */
-    public function ifEmpty($text)
+    public function ifEmpty($text) : self
     {
         $this->emptyText = toString($text);
         return $this;
@@ -137,7 +137,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
      * @return $this
      * @throws Application_Exception
      */
-    public function addButton(UI_Button $button)
+    public function addButton(UI_Button $button) : self
     {
         $button->makeMini();
         $this->buttons[] = $button;
