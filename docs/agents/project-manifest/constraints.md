@@ -9,7 +9,7 @@ For detailed examples and patterns, refer to the [agent documentation](/docs/age
 
 - **Minimum PHP version:** 8.4+ (`"php": "^8.4"` in `composer.json`).
 - **Strict typing is the standard.** All new files must use `declare(strict_types=1);`.
-- **No PHP enums.** Enum-like patterns are implemented via class constants and dedicated type classes.
+- **No PHP enums.** Native PHP `enum` declarations are **prohibited**. They have caused hard-to-debug class autoloading failures on the live server. Enum-like patterns must instead be implemented via class constants and dedicated type classes.
 - **No `readonly` properties.** Prefer conventional private/protected properties with getter methods.
 
 ---
