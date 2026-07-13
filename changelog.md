@@ -7,7 +7,8 @@
 - PropertiesGrid: Added return type declarations to `ifEmpty()` and `addButton()`.
 - Docs: Expanded the no-enums constraint with the autoloading failure rationale.
 - Docs: Documented the PHPStan memory-limit configuration.
-- Skills: Added the `changelog` skill.
+- Skills: Added the `framework-changelog` skill.
+- Skills: Added the `framework-release-check` skill.
 
 ## v7.3.3 - LookupItem Search API
 - LookupItems: Made `addWhere()` public for external constraint injection.
