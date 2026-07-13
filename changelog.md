@@ -4,6 +4,7 @@
 - API: Fixed required validation treating empty arrays as absent in JSON and list parameters.
 - Lookup: Fixed WHERE statement pollution in search queries.
 - ModulesOverview: Added `additional-docs` resolution to the JSON export generator.
+- Composer: Added CTX file statistics stripping to the build pipeline.
 - PropertiesGrid: Added return type declarations to `ifEmpty()` and `addButton()`.
 - Docs: Expanded the no-enums constraint with the autoloading failure rationale.
 - Docs: Documented the PHPStan memory-limit configuration.
