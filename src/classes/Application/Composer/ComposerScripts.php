@@ -274,6 +274,72 @@ class ComposerScripts
         echo '  DONE.'.PHP_EOL;
     }
 
+    /**
+     * Post-CTX-generation entry point: strips file statistics sections
+     * from all generated context Markdown files under `.context/`.
+     *
+     * Called as a separate Composer script entry after `ctx generate`.
+     */
+    public static function postCtxGenerate() : void
+    {
+        self::init();
+
+        self::stripContextFileStatistics();
+    }
+
+    /**
+     * Recursively removes the "File Statistics" section from every Markdown
+     * file under `.context/`. The section has the format:
+     *
+     * ```
+     * ---
+     * **File Statistics**
+     * - **Size**: ...
+     * - **Lines**: ...
+     * File: `...`
+     * ```
+     */
+    private static function stripContextFileStatistics() : void
+    {
+        $contextFolder = rtrim(FolderInfo::factory(__DIR__.'/../../../../')->getPath(), '/').'/.context';
+
+        if(!is_dir($contextFolder)) {
+            return;
+        }
+
+        echo '- Stripping file statistics from context files...'.PHP_EOL;
+
+        $count = 0;
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($contextFolder, \RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+
+        foreach($iterator as $file) {
+            if(!($file instanceof \SplFileInfo) || $file->getExtension() !== 'md') {
+                continue;
+            }
+
+            $content = file_get_contents($file->getPathname());
+            if($content === false) {
+                continue;
+            }
+
+            $stripped = preg_replace(
+                '/\n---\n\*\*File Statistics\*\*\n(?:[^\n]*\n)*File: `[^`]+`\n?/',
+                '',
+                $content
+            );
+
+            if($stripped !== null && $stripped !== $content) {
+                file_put_contents($file->getPathname(), $stripped);
+                $count++;
+            }
+        }
+
+        echo sprintf('  Stripped file statistics from %d file(s).'.PHP_EOL, $count);
+        echo '  DONE.'.PHP_EOL;
+    }
+
     private static bool $initialized = false;
 
     /**
