@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v7.3.4 - Required Validation Empty Array Fix
+- API Parameters: Fixed `RequiredValidation` incorrectly firing `VALIDATION_EMPTY_REQUIRED_PARAM` for an empty PHP array on a required `JSONParameter`. An array — even an empty one — is an explicitly provided value; only `null` (parameter not sent) should trigger the required check.
+- API Parameters: The same fix applies to `IDListParameter` and `StringListParameter`, which also resolve to `array|null`. An empty array from these types now correctly passes the required check.
+- Tests: Added required-mode tests to `JSONParamTest` (empty array, null, populated array) and `IDListParameterTest` (valid list, absent value, empty-array resolution).
+
 ## v7.3.3 - LookupItem Search API
 - LookupItems: Made `addWhere()` public for external constraint injection.
 - LookupItems: Added `setLimit()`, `findMatchingIDs()`, and `reset()` fluent methods to `BaseLookupItem`.
