@@ -1,5 +1,5 @@
 ---
-name: changelog
+name: framework-changelog
 description: 'Framework: Update changelog.md from all changes since the last tagged version. Use when: preparing a release, documenting changes since the last tag, writing a new changelog entry, updating the developer changelog.'
 argument-hint: "Version number and short title (e.g. 7.3.4 - My Feature)"
 ---
