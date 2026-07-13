@@ -96,6 +96,7 @@ final class ModuleInfoParser
             $keywords = array_map('strval', $meta['keywords']);
         }
 
+        $exportDocs          = $this->extractExportDocs($meta, $file);
         $sourcePath          = $this->resolveSourcePath($file);
         $composerPackage     = $this->resolveComposerPackageName($file);
         $contextOutputFolder = $this->resolveContextOutputFolder($data);
@@ -108,8 +109,47 @@ final class ModuleInfoParser
             $sourcePath,
             $contextOutputFolder,
             $composerPackage,
-            $keywords
+            $keywords,
+            $exportDocs
         );
+    }
+
+    /**
+     * Extracts the list of valid `exportDocs` paths from the module metadata.
+     *
+     * Iterates each declared entry, keeps only those with a `.md` extension,
+     * and emits a {@see BuildMessages} warning for any non-`.md` entry that is
+     * silently skipped. When the `exportDocs` key is absent or is not an array,
+     * an empty array is returned.
+     *
+     * @param array<string, mixed> $meta The `moduleMetaData` section of the parsed YAML.
+     * @param FileInfo             $file The source `module-context.yaml` file (used in warning messages).
+     * @return list<string>
+     */
+    private function extractExportDocs(array $meta, FileInfo $file) : array
+    {
+        $exportDocs = array();
+
+        if(!isset($meta['exportDocs']) || !is_array($meta['exportDocs'])) {
+            return $exportDocs;
+        }
+
+        foreach(array_map('strval', $meta['exportDocs']) as $docPath) {
+            if(strtolower(pathinfo($docPath, PATHINFO_EXTENSION)) === 'md') {
+                $exportDocs[] = $docPath;
+            } else {
+                BuildMessages::addWarning(
+                    self::SOURCE,
+                    sprintf(
+                        'exportDocs entry "%s" in %s is not a .md file — skipping.',
+                        $docPath,
+                        $file->getPath()
+                    )
+                );
+            }
+        }
+
+        return $exportDocs;
     }
 
     /**

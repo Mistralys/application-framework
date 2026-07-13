@@ -27,6 +27,11 @@ final class ModuleInfo
      */
     private array $keywords;
 
+    /**
+     * @var string[]
+     */
+    private array $exportDocs;
+
     private string $id;
     private string $label;
     private string $description;
@@ -43,6 +48,7 @@ final class ModuleInfo
      * @param string   $contextOutputFolder  Relative path to the CTX output folder under `.context/modules/`.
      * @param string   $composerPackage      Composer package name (e.g. `com.ionos.communication/maileditor`).
      * @param string[] $keywords             Domain-specific keywords declared in the module's `module-context.yaml`.
+     * @param string[] $exportDocs           Relative paths to markdown files declared under `moduleMetaData.exportDocs`.
      */
     public function __construct(
         string $id,
@@ -52,7 +58,8 @@ final class ModuleInfo
         string $sourcePath,
         string $contextOutputFolder,
         string $composerPackage,
-        array  $keywords = array()
+        array  $keywords = array(),
+        array  $exportDocs = array()
     )
     {
         $this->id                  = $id;
@@ -63,6 +70,7 @@ final class ModuleInfo
         $this->contextOutputFolder = $contextOutputFolder;
         $this->composerPackage     = $composerPackage;
         $this->keywords            = $keywords;
+        $this->exportDocs          = $exportDocs;
     }
 
     public function getId() : string
@@ -112,5 +120,17 @@ final class ModuleInfo
     public function getKeywords() : array
     {
         return $this->keywords;
+    }
+
+    /**
+     * Returns the list of relative paths to markdown files declared under
+     * `moduleMetaData.exportDocs` in the module's `module-context.yaml`.
+     * Paths are relative to the module's source directory.
+     *
+     * @return string[]
+     */
+    public function getExportDocs() : array
+    {
+        return $this->exportDocs;
     }
 }
