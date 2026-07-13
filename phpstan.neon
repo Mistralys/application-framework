@@ -1,3 +1,17 @@
+#
+# ┌─────────────────────────────────────────────────────────────────┐
+# │  DO NOT invoke vendor/bin/phpstan directly.                     │
+# │  Use the Composer scripts instead:                              │
+# │                                                                 │
+# │    composer analyze        — run analysis                       │
+# │    composer analyze-save   — run and save to phpstan-result.txt │
+# │    composer analyze-clear  — clear the result cache             │
+# │                                                                 │
+# │  The Composer scripts set the required --memory-limit=900M      │
+# │  flag. Direct invocation will OOM on large modules.             │
+# │  (PHPStan 2.x removed the memoryLimit neon config key.)         │
+# └─────────────────────────────────────────────────────────────────┘
+#
 parameters:
     level: 5
     bootstrapFiles:

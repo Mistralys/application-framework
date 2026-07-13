@@ -80,4 +80,42 @@ final class JSONParamTest extends APITestCase
         $param = new JSONParameter('foo', 'Param Label');
         $param->setDefaultValue(false);
     }
+
+    // region: Required mode
+
+    public function test_requiredWithEmptyArrayPasses() : void
+    {
+        $_REQUEST['foo'] = '[]';
+
+        $param = new JSONParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertSame(array(), $param->getValue());
+        $this->assertResultValid($param->getValidationResults());
+        $this->assertFalse($param->getValidationResults()->containsCode(ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM));
+    }
+
+    public function test_requiredWithNullFails() : void
+    {
+        unset($_REQUEST['foo']);
+
+        $param = new JSONParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertResultInvalid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM);
+    }
+
+    public function test_requiredWithPopulatedArrayPasses() : void
+    {
+        $_REQUEST['foo'] = '{"key":"value"}';
+
+        $param = new JSONParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertSame(array('key' => 'value'), $param->getValue());
+        $this->assertResultValid($param->getValidationResults());
+    }
+
+    // endregion
 }
