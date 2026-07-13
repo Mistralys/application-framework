@@ -190,4 +190,48 @@ final class StringListParameterTest extends APITestCase
     }
 
     // endregion
+
+    // region: Required mode
+
+    public function test_requiredWithValidStringListPasses(): void
+    {
+        $_REQUEST['foo'] = 'alpha,beta,gamma';
+
+        $param = new StringListParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertSame(array('alpha', 'beta', 'gamma'), $param->getValue());
+        $this->assertResultValid($param->getValidationResults());
+        $this->assertFalse($param->getValidationResults()->containsCode(ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM));
+    }
+
+    public function test_requiredWithAbsentValueFails(): void
+    {
+        unset($_REQUEST['foo']);
+
+        $param = new StringListParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertResultInvalid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM);
+    }
+
+    /**
+     * When all items in the provided string are empty after trimming, resolveValue()
+     * returns null — the parameter is not meaningfully present. The required check
+     * must fire in this case, and the is_array() guard in RequiredValidation is NOT
+     * triggered (StringListParameter never returns an empty array from resolveValue()).
+     */
+    public function test_requiredWithAllEmptyItemsFails(): void
+    {
+        $_REQUEST['foo'] = ',,,';
+
+        $param = new StringListParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertResultInvalid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM);
+    }
+
+    // endregion
 }

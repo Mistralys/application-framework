@@ -162,4 +162,49 @@ final class IDListParameterTest extends APITestCase
     }
 
     // endregion
+
+    // region: Required mode
+
+    public function test_requiredWithValidIdListPasses() : void
+    {
+        $_REQUEST['foo'] = '42,55,14789';
+
+        $param = new IDListParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertSame(array(42, 55, 14789), $param->getValue());
+        $this->assertResultValid($param->getValidationResults());
+        $this->assertFalse($param->getValidationResults()->containsCode(ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM));
+    }
+
+    public function test_requiredWithAbsentValueFails() : void
+    {
+        unset($_REQUEST['foo']);
+
+        $param = new IDListParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertResultInvalid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM);
+    }
+
+    /**
+     * Verifies the intentional behaviour change introduced alongside the JSONParameter fix:
+     * an empty array resulting from resolution (e.g. all non-numeric tokens) is a provided
+     * value and must pass the required check. Only null (parameter not sent) should fire
+     * VALIDATION_EMPTY_REQUIRED_PARAM.
+     */
+    public function test_requiredWithEmptyArrayPassesAfterFix() : void
+    {
+        // A string containing only non-numeric tokens resolves to an empty array.
+        $_REQUEST['foo'] = 'non-numeric';
+
+        $param = new IDListParameter('foo', 'Param Label');
+        $param->makeRequired();
+
+        $this->assertSame(array(), $param->getValue());
+        $this->assertFalse($param->getValidationResults()->containsCode(ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM));
+    }
+
+    // endregion
 }
