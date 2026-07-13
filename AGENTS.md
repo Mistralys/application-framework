@@ -104,6 +104,7 @@ This codebase has **1,545+ class files**. Wasteful scanning is expensive. Follow
 | Manifest/code conflict | Trust the manifest, flag code for fix | MUST |
 | Missing CTX documentation for a module | Read the module's README and source directly, flag the gap | MUST |
 | `.context/` docs seem inconsistent with codebase | Run `composer build` to refresh all generated docs | SHOULD |
+| Asked to commit `.context/` files on a feature branch | Refuse — `.context/` files must only be committed on `main` (as part of the pre-release flow) | MUST |
 | Untested code path | Proceed with caution, add test recommendation | SHOULD |
 | Legacy (non-namespaced) class encountered | Do not refactor unless explicitly asked; follow existing style in that file | MUST |
 | Unsure if `array()` or `[]` syntax | Always use `array()` — this is a hard project rule | MUST |
@@ -238,7 +239,8 @@ php tools/setup-local.php
 
 | Skill | File | Use When |
 |-------|------|----------|
-| `changelog` | [`.github/skills/changelog/SKILL.md`](.github/skills/changelog/SKILL.md) | Updating `changelog.md` with all changes since the last tagged version, using the Changelog Curator agent. |
+| `framework-changelog` | [`.github/skills/framework-changelog/SKILL.md`](.github/skills/changelog/SKILL.md) | Updating `changelog.md` with all changes since the last tagged version, using the Changelog Curator agent. |
+| `framework-release-check` | [`.github/skills/framework-release-check/SKILL.md`](.github/skills/release-check/SKILL.md) | Verifying the project is ready for a release tag (`git tag X.Y.Z && git push --tags`). Run all checks before tagging. |
 
 ---
 
