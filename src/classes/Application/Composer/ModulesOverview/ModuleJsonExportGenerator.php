@@ -60,10 +60,15 @@ class ModuleJsonExportGenerator
     /**
      * Emits a progress message via the `$onProgress` callback when one is set.
      *
+     * Declared `protected` so that subclasses overriding hook methods such as
+     * {@see resolveAdditionalDocs()}, {@see resolveModuleBrief()}, or
+     * {@see resolveModuleSource()} can emit progress messages without
+     * re-implementing the callback invocation pattern.
+     *
      * @param string $message
      * @return void
      */
-    private function progress(string $message) : void
+    protected function progress(string $message) : void
     {
         if($this->onProgress !== null)
         {
@@ -109,7 +114,9 @@ class ModuleJsonExportGenerator
 
         $this->progress(sprintf('ModuleJsonExportGenerator: Parsed %d module(s).', count($modules)));
 
-        $moduleData = array();
+        $moduleData  = array();
+        $totalDocs   = 0;
+        $totalSkipped = 0;
 
         foreach($modules as $module)
         {
@@ -121,9 +128,16 @@ class ModuleJsonExportGenerator
                 continue;
             }
 
-            $readmePath  = rtrim($sourcePath, '/') . '/README.md';
-            $description = ReadmeOverviewParser::extractOverview($readmePath);
-            $source      = $this->resolveModuleSource($module);
+            $readmePath     = rtrim($sourcePath, '/') . '/README.md';
+            $description    = ReadmeOverviewParser::extractOverview($readmePath);
+            $source         = $this->resolveModuleSource($module);
+            $additionalDocs = $this->resolveAdditionalDocs($module, $sourcePath);
+
+            $totalDocs    += count($additionalDocs);
+            // $totalSkipped counts only resolveAdditionalDocs() skips (missing/unreadable/out-of-
+            // bounds files). Parser-level skips (non-.md entries) are dropped before a module is
+            // added to $modules, so they are not reflected here.
+            $totalSkipped += count($module->getExportDocs()) - count($additionalDocs);
 
             $moduleData[] = array(
                 'id'             => $module->getId(),
@@ -133,7 +147,17 @@ class ModuleJsonExportGenerator
                 'description'    => $description,
                 'relatedModules' => $module->getRelatedModules(),
                 'brief'          => $brief,
+                'additionalDocs' => $additionalDocs,
             );
+        }
+
+        if($totalDocs > 0 || $totalSkipped > 0)
+        {
+            $this->progress(sprintf(
+                'ModuleJsonExportGenerator: Additional docs: %d loaded, %d skipped.',
+                $totalDocs,
+                $totalSkipped
+            ));
         }
 
         $glossary         = $this->buildGlossary($modules);
@@ -204,6 +228,84 @@ class ModuleJsonExportGenerator
         }
 
         return $content;
+    }
+
+    /**
+     * Resolves the additional documentation files declared in the module's
+     * `moduleMetaData.exportDocs` list.
+     *
+     * Iterates each relative path, resolves it against `$sourcePath`, applies a
+     * containment guard to prevent path traversal outside the module's source
+     * directory, reads the file content, and returns an array of `{fileName, content}`
+     * objects. Missing, unreadable, or out-of-bounds files are skipped with a
+     * progress warning.
+     *
+     * **Containment guard — trailing-slash semantics:** `$sourceBase` is always
+     * terminated with a `/` before the `str_starts_with()` comparison. This is
+     * required to prevent sibling-directory prefix collisions: without the
+     * trailing slash, a module at `/modules/foo` would incorrectly pass paths
+     * under `/modules/foobar`, because `"foobar/..."` starts with `"foo"`.
+     *
+     * **Fallback path:** when `realpath($sourcePath)` returns `false` (e.g. the
+     * source directory is a dangling symlink), the raw `$sourcePath` is used as
+     * `$sourceBase` instead. Any file inside such a directory will also fail
+     * `realpath()`, so the `$resolvedPath === false` clause in the guard catches
+     * all entries before the prefix comparison runs.
+     *
+     * @see ModuleJsonExportGeneratorTest::test_generate_exportDocs_siblingDirectoryBoundaryCollision_isBlocked()
+     *
+     * Subclasses may override this method to customise resolution logic.
+     *
+     * @param ModuleInfo $module     The parsed module info.
+     * @param string     $sourcePath Absolute path to the module's source directory.
+     * @return array<int, array{fileName: string, content: string}>
+     */
+    protected function resolveAdditionalDocs(ModuleInfo $module, string $sourcePath) : array
+    {
+        $result          = array();
+        $resolvedSource  = realpath(rtrim($sourcePath, '/'));
+        // Fallback to the raw path if realpath() fails (e.g., the source dir is a dangling symlink).
+        // In that case every file inside it will also fail realpath(), so the containment guard's
+        // $resolvedPath === false clause will catch them all before the str_starts_with() comparison.
+        $sourceBase      = rtrim($resolvedSource !== false ? $resolvedSource : rtrim($sourcePath, '/'), '/') . '/';
+
+        foreach($module->getExportDocs() as $relPath)
+        {
+            $absolutePath = rtrim($sourcePath, '/') . '/' . $relPath;
+            $resolvedPath = realpath($absolutePath);
+
+            // Containment guard: path must resolve inside the module's source directory.
+            // realpath() returns false for paths that do not exist or cannot be resolved,
+            // so a false return already covers the "file not found" case.
+            if($resolvedPath === false || !str_starts_with($resolvedPath, $sourceBase))
+            {
+                $this->progress(sprintf(
+                    'ModuleJsonExportGenerator: exportDocs entry "%s" for module "%s" resolves outside the module directory or does not exist — skipping.',
+                    $relPath,
+                    $module->getId()
+                ));
+                continue;
+            }
+
+            $content = file_get_contents($resolvedPath);
+
+            if($content === false)
+            {
+                $this->progress(sprintf(
+                    'ModuleJsonExportGenerator: exportDocs file "%s" for module "%s" could not be read — skipping.',
+                    $relPath,
+                    $module->getId()
+                ));
+                continue;
+            }
+
+            $result[] = array(
+                'fileName' => basename($resolvedPath),
+                'content'  => $content,
+            );
+        }
+
+        return $result;
     }
 
     /**

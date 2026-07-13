@@ -234,7 +234,15 @@ php tools/setup-local.php
 
 ---
 
-## 10. Project Structure
+## 10. Skills
+
+| Skill | File | Use When |
+|-------|------|----------|
+| `changelog` | [`.github/skills/changelog/SKILL.md`](.github/skills/changelog/SKILL.md) | Updating `changelog.md` with all changes since the last tagged version, using the Changelog Curator agent. |
+
+---
+
+## 11. Project Structure
 
 | Location | Contents |
 |---|---|

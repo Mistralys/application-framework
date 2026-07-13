@@ -93,7 +93,8 @@ final class ModuleJsonExportGeneratorTest extends ApplicationTestCase
         string $moduleId,
         string $label,
         string $description,
-        array  $keywords = array()
+        array  $keywords = array(),
+        array  $exportDocs = array()
     ) : void
     {
         if(!is_dir($dirPath))
@@ -107,6 +108,12 @@ final class ModuleJsonExportGeneratorTest extends ApplicationTestCase
             $keywordLines .= '    - ' . $kw . "\n";
         }
 
+        $exportDocLines = '';
+        foreach($exportDocs as $doc)
+        {
+            $exportDocLines .= '    - ' . $doc . "\n";
+        }
+
         $yaml = "moduleMetaData:\n" .
                 '  id: "' . $moduleId . '"' . "\n" .
                 '  label: "' . $label . '"' . "\n" .
@@ -115,6 +122,11 @@ final class ModuleJsonExportGeneratorTest extends ApplicationTestCase
         if($keywordLines !== '')
         {
             $yaml .= "  keywords:\n" . $keywordLines;
+        }
+
+        if($exportDocLines !== '')
+        {
+            $yaml .= "  exportDocs:\n" . $exportDocLines;
         }
 
         file_put_contents($dirPath . '/module-context.yaml', $yaml);
@@ -264,5 +276,164 @@ final class ModuleJsonExportGeneratorTest extends ApplicationTestCase
 
         $this->assertCount(0, $data['modules'],  'modules must be empty for a root with no modules.');
         $this->assertCount(0, $data['glossary'], 'glossary must be empty for a root with no modules.');
+    }
+
+    /**
+     * When a module declares an exportDocs entry pointing to a valid .md file,
+     * additionalDocs in the JSON output must contain one entry with the
+     * correct fileName and content.
+     */
+    public function test_generate_exportDocs_includesAdditionalDocsInOutput() : void
+    {
+        $moduleDir  = $this->tempRoot . '/fixture-module-exportdocs';
+        $docContent = '# Service Reference' . "\n\nThis is the service reference document.\n";
+
+        $this->writeRootContextYaml($this->tempRoot);
+        $this->writeModuleContextYaml(
+            $moduleDir,
+            'fixture-exportdocs',
+            'Fixture ExportDocs Module',
+            'Module for exportDocs test.',
+            array(),
+            array('Docs/service-reference.md')
+        );
+
+        mkdir($moduleDir . '/Docs', 0777, true);
+        file_put_contents($moduleDir . '/Docs/service-reference.md', $docContent);
+        file_put_contents($moduleDir . '/README-Brief.md', 'Brief for fixture-exportdocs.');
+
+        $data = $this->runGenerator(true);
+
+        $this->assertCount(1, $data['modules']);
+        $module = $data['modules'][0];
+
+        $this->assertArrayHasKey('additionalDocs', $module);
+        $this->assertIsArray($module['additionalDocs']);
+        $this->assertCount(1, $module['additionalDocs']);
+
+        $doc = $module['additionalDocs'][0];
+        $this->assertSame('service-reference.md', $doc['fileName']);
+        $this->assertSame($docContent, $doc['content']);
+    }
+
+    /**
+     * When a module declares an exportDocs entry pointing to a non-existent file,
+     * additionalDocs must be an empty array (the missing file is skipped gracefully).
+     */
+    public function test_generate_exportDocs_missingFile_producesEmptyArray() : void
+    {
+        $moduleDir = $this->tempRoot . '/fixture-module-missingdoc';
+
+        $this->writeRootContextYaml($this->tempRoot);
+        $this->writeModuleContextYaml(
+            $moduleDir,
+            'fixture-missingdoc',
+            'Fixture Missing Doc Module',
+            'Module for missing exportDocs test.',
+            array(),
+            array('Docs/does-not-exist.md')
+        );
+        file_put_contents($moduleDir . '/README-Brief.md', 'Brief for fixture-missingdoc.');
+
+        $data = $this->runGenerator(true);
+
+        $this->assertCount(1, $data['modules']);
+        $module = $data['modules'][0];
+
+        $this->assertArrayHasKey('additionalDocs', $module);
+        $this->assertIsArray($module['additionalDocs']);
+        $this->assertCount(0, $module['additionalDocs'], 'Missing exportDocs file must be skipped gracefully.');
+    }
+
+    /**
+     * When a module declares an exportDocs entry with a non-.md extension,
+     * ModuleInfoParser must filter it out so that getExportDocs() returns
+     * an empty array and additionalDocs is empty.
+     */
+    public function test_generate_exportDocs_nonMarkdownExtension_skippedByParser() : void
+    {
+        $moduleDir = $this->tempRoot . '/fixture-module-nonmd';
+
+        $this->writeRootContextYaml($this->tempRoot);
+        $this->writeModuleContextYaml(
+            $moduleDir,
+            'fixture-nonmd',
+            'Fixture Non-MD Module',
+            'Module for non-markdown exportDocs test.',
+            array(),
+            array('Docs/guide.txt')
+        );
+        file_put_contents($moduleDir . '/README-Brief.md', 'Brief for fixture-nonmd.');
+        mkdir($moduleDir . '/Docs', 0777, true);
+        file_put_contents($moduleDir . '/Docs/guide.txt', 'This is a text file.');
+
+        $data = $this->runGenerator(true);
+
+        $this->assertCount(1, $data['modules']);
+        $module = $data['modules'][0];
+
+        $this->assertArrayHasKey('additionalDocs', $module);
+        $this->assertIsArray($module['additionalDocs']);
+        $this->assertCount(0, $module['additionalDocs'], 'Non-.md exportDocs entries must be filtered by the parser.');
+    }
+
+    /**
+     * When a module declares no exportDocs key, additionalDocs must be an empty array.
+     */
+    public function test_generate_noExportDocs_producesEmptyArray() : void
+    {
+        $this->buildFixtureRoot(true); // uses writeModuleContextYaml with no exportDocs
+
+        $data = $this->runGenerator();
+
+        $this->assertCount(1, $data['modules']);
+        $module = $data['modules'][0];
+
+        $this->assertArrayHasKey('additionalDocs', $module);
+        $this->assertIsArray($module['additionalDocs']);
+        $this->assertCount(0, $module['additionalDocs'], 'Module with no exportDocs must have an empty additionalDocs array.');
+    }
+
+    /**
+     * Security: the containment guard must block a path that resolves into a
+     * sibling directory whose name is prefixed by the module directory name.
+     *
+     * Without a trailing '/' on $sourceBase, str_starts_with() would incorrectly
+     * allow paths like /modules/fixture-module-foobar/secret.md through the guard
+     * for a module whose directory is /modules/fixture-module-foo, because
+     * "fixture-module-foobar" starts with "fixture-module-foo".
+     */
+    public function test_generate_exportDocs_siblingDirectoryBoundaryCollision_isBlocked() : void
+    {
+        $moduleFooDir    = $this->tempRoot . '/fixture-module-foo';
+        $moduleFoobarDir = $this->tempRoot . '/fixture-module-foobar';
+
+        $this->writeRootContextYaml($this->tempRoot);
+        $this->writeModuleContextYaml(
+            $moduleFooDir,
+            'fixture-foo',
+            'Fixture Foo Module',
+            'Module for sibling boundary collision test.',
+            array(),
+            array('../fixture-module-foobar/secret.md')
+        );
+        file_put_contents($moduleFooDir . '/README-Brief.md', 'Brief for fixture-foo.');
+
+        // Sibling directory with a secret file but no module-context.yaml.
+        mkdir($moduleFoobarDir, 0777, true);
+        file_put_contents($moduleFoobarDir . '/secret.md', 'SECRET CONTENT');
+
+        $data = $this->runGenerator(true);
+
+        $this->assertCount(1, $data['modules'], 'Only the foo module should appear in output.');
+        $module = $data['modules'][0];
+
+        $this->assertArrayHasKey('additionalDocs', $module);
+        $this->assertIsArray($module['additionalDocs']);
+        $this->assertCount(
+            0,
+            $module['additionalDocs'],
+            'Containment guard must block traversal into a sibling directory whose name is prefixed by the module directory name.'
+        );
     }
 }

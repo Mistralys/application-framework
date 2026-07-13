@@ -318,3 +318,52 @@ To diagnose a missing module after `composer build`, inspect the build output fo
 
 `keywords` and `relatedModules` are optional and default to an empty array when omitted.
 
+---
+
+## Security Patterns
+
+### Path-Containment Guards
+
+Any `str_starts_with($resolvedPath, $baseDir)` guard used to verify that a resolved file path
+stays within a base directory **must append `'/'` to `$baseDir` before the comparison**.
+
+**Why:** Without the trailing slash, a module whose directory is `/modules/foo` would
+incorrectly pass paths under `/modules/foobar`, because `"foobar/..."` starts with `"foo"`.
+The trailing slash eliminates this sibling-directory prefix collision.
+
+**Correct pattern:**
+
+```php
+$resolvedSource = realpath(rtrim($sourcePath, '/'));
+// Fallback to raw path when realpath() fails (e.g., dangling symlink).
+$sourceBase = rtrim($resolvedSource !== false ? $resolvedSource : rtrim($sourcePath, '/'), '/') . '/';
+
+if ($resolvedPath === false || !str_starts_with($resolvedPath, $sourceBase)) {
+    // path is outside the allowed directory — skip or reject
+}
+```
+
+**Rule:** Always construct `$sourceBase` as `rtrim($dir, '/') . '/'` before any
+`str_starts_with()`-based containment check on directory paths.
+
+See the implementation in `ModuleJsonExportGenerator::resolveAdditionalDocs()` for a
+production example of this pattern.
+
+---
+
+## Agent Workflow Notes
+
+### `read_file` truncation on long PHP lines
+
+When `read_file` output for a long single-line PHP statement appears truncated or
+inconsistent (e.g. the line appears cut off mid-expression), verify the actual content
+via the terminal:
+
+```bash
+sed -n '63,131p' path/to/File.php
+```
+
+This is a known tool limitation, not a codebase issue. The file on disk is correct; the
+display layer may truncate very long lines. Always confirm via `sed -n` before concluding
+that code is missing or malformed.
+
