@@ -67,8 +67,3 @@ echo $grid->render();
 > Related: [UI module overview](../README.md)
 
 ```
----
-**File Statistics**
-- **Size**: 2.59 KB
-- **Lines**: 75
-File: `modules/ui/datagrid/overview.md`

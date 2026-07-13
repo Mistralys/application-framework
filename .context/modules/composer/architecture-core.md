@@ -385,6 +385,18 @@ class ComposerScripts
 
 
 	/**
+	 * Post-CTX-generation entry point: strips file statistics sections
+	 * from all generated context Markdown files under `.context/`.
+	 *
+	 * Called as a separate Composer script entry after `ctx generate`.
+	 */
+	public static function postCtxGenerate(): void
+	{
+		/* ... */
+	}
+
+
+	/**
 	 * Loads the bootstrap file for the application.
 	 *
 	 * When running within the framework GIT package,
@@ -1228,6 +1240,19 @@ final class ModuleInfo
 	{
 		/* ... */
 	}
+
+
+	/**
+	 * Returns the list of relative paths to markdown files declared under
+	 * `moduleMetaData.exportDocs` in the module's `module-context.yaml`.
+	 * Paths are relative to the module's source directory.
+	 *
+	 * @return string[]
+	 */
+	public function getExportDocs(): array
+	{
+		/* ... */
+	}
 }
 
 
@@ -1427,8 +1452,3 @@ final class ReadmeOverviewParser
 
 
 ```
----
-**File Statistics**
-- **Size**: 33.44 KB
-- **Lines**: 1418
-File: `modules/composer/architecture-core.md`

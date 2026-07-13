@@ -266,8 +266,3 @@ No manual registration is required — the listener is discovered automatically 
 event handler registry.
 
 ```
----
-**File Statistics**
-- **Size**: 11.61 KB
-- **Lines**: 274
-File: `modules/api-cache/overview.md`

@@ -204,8 +204,3 @@ trait HTMLProcessingEventTrait
 
 
 ```
----
-**File Statistics**
-- **Size**: 4.82 KB
-- **Lines**: 212
-File: `modules/event-handler/event-manager-architecture.md`

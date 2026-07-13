@@ -400,8 +400,3 @@ class MarkdownRenderer implements OptionableInterface
 
 
 ```
----
-**File Statistics**
-- **Size**: 8.27 KB
-- **Lines**: 408
-File: `modules/markdown-renderer/architecture-core.md`

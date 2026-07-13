@@ -162,8 +162,3 @@ $proxy = new \Connectors\ProxyConfiguration(
 
 
 ```
----
-**File Statistics**
-- **Size**: 4.1 KB
-- **Lines**: 170
-File: `modules/connectors/overview.md`

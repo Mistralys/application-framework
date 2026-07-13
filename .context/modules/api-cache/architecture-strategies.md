@@ -96,8 +96,3 @@ class ManualOnlyStrategy implements APICacheStrategyInterface
 
 
 ```
----
-**File Statistics**
-- **Size**: 2.54 KB
-- **Lines**: 104
-File: `modules/api-cache/architecture-strategies.md`

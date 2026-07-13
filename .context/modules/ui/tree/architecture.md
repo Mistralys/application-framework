@@ -439,8 +439,3 @@ class TreeRenderer extends UI_Renderable implements OptionableInterface
 
 
 ```
----
-**File Statistics**
-- **Size**: 6.91 KB
-- **Lines**: 447
-File: `modules/ui/tree/architecture.md`

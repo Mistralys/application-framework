@@ -3591,8 +3591,3 @@ class UI_DataGrid_Row_Sums_ColumnDef_Callback extends UI_DataGrid_Row_Sums_Colum
 
 
 ```
----
-**File Statistics**
-- **Size**: 66.61 KB
-- **Lines**: 3599
-File: `modules/ui/datagrid/architecture.md`

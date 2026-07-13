@@ -56,8 +56,3 @@ $element->getEditor()->setButtons([
 > Related: [UI module overview](../README.md) · [Themes and Templates](../Docs/themes-and-templates.md)
 
 ```
----
-**File Statistics**
-- **Size**: 1.99 KB
-- **Lines**: 64
-File: `modules/ui/markup-editor/overview.md`

@@ -593,8 +593,3 @@ trait UserScopedCacheTrait
 
 
 ```
----
-**File Statistics**
-- **Size**: 15.62 KB
-- **Lines**: 601
-File: `modules/api-cache/architecture-core.md`

@@ -46,8 +46,3 @@ echo $url; // renders as query string / href
 > Related: [UI module overview](../README.md)
 
 ```
----
-**File Statistics**
-- **Size**: 1.54 KB
-- **Lines**: 54
-File: `modules/ui/admin-urls/overview.md`

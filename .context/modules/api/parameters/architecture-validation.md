@@ -262,8 +262,3 @@ class ValueExistsCallbackValidation extends BaseParamValidation
 
 
 ```
----
-**File Statistics**
-- **Size**: 8.02 KB
-- **Lines**: 270
-File: `modules/api/parameters/architecture-validation.md`

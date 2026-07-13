@@ -284,8 +284,3 @@ that illustrates a typical collection use and internal setup.
 
 
 ```
----
-**File Statistics**
-- **Size**: 10.87 KB
-- **Lines**: 292
-File: `modules/db-helper/overview.md`

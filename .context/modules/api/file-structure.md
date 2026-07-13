@@ -213,8 +213,3 @@ _SOURCE: API Module File Structure_
                     └── VersionedAPITrait.php
 
 ```
----
-**File Statistics**
-- **Size**: 10.93 KB
-- **Lines**: 221
-File: `modules/api/file-structure.md`

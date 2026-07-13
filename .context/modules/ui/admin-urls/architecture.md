@@ -203,8 +203,3 @@ interface AdminURLsInterface
 
 
 ```
----
-**File Statistics**
-- **Size**: 4.2 KB
-- **Lines**: 211
-File: `modules/ui/admin-urls/architecture.md`

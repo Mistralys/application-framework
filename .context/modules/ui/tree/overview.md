@@ -61,8 +61,3 @@ echo (new TreeRenderer($root))->render();
 > Related: [UI module overview](../README.md) · [AdminURLs](../AdminURLs/README.md)
 
 ```
----
-**File Statistics**
-- **Size**: 2.11 KB
-- **Lines**: 69
-File: `modules/ui/tree/overview.md`

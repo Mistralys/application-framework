@@ -227,8 +227,3 @@ by listeners.
 - [HTMLProcessingEventTrait](Traits/HTMLProcessingEventTrait.php): Trait implementing the interface. Requires implementing `getHTMLArgumentIndex()` to specify which argument contains the HTML.
 
 ```
----
-**File Statistics**
-- **Size**: 9.71 KB
-- **Lines**: 235
-File: `modules/event-handler/overview.md`

@@ -227,8 +227,3 @@ declared `never`. This is the correct pattern for this codebase.
 - **`AppFactory::createCountries()`** provides the `Countries` collection used for ID/ISO existence validation.
 
 ```
----
-**File Statistics**
-- **Size**: 11.12 KB
-- **Lines**: 235
-File: `modules/countries/api/overview.md`

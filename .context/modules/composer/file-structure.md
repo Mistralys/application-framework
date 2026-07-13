@@ -40,8 +40,3 @@ _SOURCE: Tree of PHP Class Files_
                 └── module-context.yaml
 
 ```
----
-**File Statistics**
-- **Size**: 1.84 KB
-- **Lines**: 48
-File: `modules/composer/file-structure.md`

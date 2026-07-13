@@ -583,8 +583,3 @@ class OfflineEventsManager
 
 
 ```
----
-**File Statistics**
-- **Size**: 12.22 KB
-- **Lines**: 591
-File: `modules/event-handler/offline-events-architecture.md`

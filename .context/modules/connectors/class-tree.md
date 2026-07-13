@@ -42,8 +42,3 @@ _SOURCE: Tree of PHP Class Files_
             └── module-context.yaml
 
 ```
----
-**File Statistics**
-- **Size**: 1.63 KB
-- **Lines**: 50
-File: `modules/connectors/class-tree.md`

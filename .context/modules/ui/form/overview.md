@@ -60,8 +60,3 @@ echo $form->render();
 > Related: [UI module overview](../README.md)
 
 ```
----
-**File Statistics**
-- **Size**: 2.19 KB
-- **Lines**: 68
-File: `modules/ui/form/overview.md`

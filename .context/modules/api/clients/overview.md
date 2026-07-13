@@ -98,8 +98,3 @@ viewing clients, plus sub-modes for key management.
 - **`ui` module** provides the admin screen and URL framework.
 
 ```
----
-**File Statistics**
-- **Size**: 4.2 KB
-- **Lines**: 106
-File: `modules/api/clients/overview.md`

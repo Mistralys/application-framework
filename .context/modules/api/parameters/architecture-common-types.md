@@ -206,8 +206,3 @@ class NameOrTitleParameter extends StringParameter
 
 
 ```
----
-**File Statistics**
-- **Size**: 4.94 KB
-- **Lines**: 214
-File: `modules/api/parameters/architecture-common-types.md`

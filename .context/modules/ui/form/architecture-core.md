@@ -8217,8 +8217,3 @@ class UI_Form_Validator_Percent extends UI_Form_Validator_Float
 
 
 ```
----
-**File Statistics**
-- **Size**: 146.43 KB
-- **Lines**: 8225
-File: `modules/ui/form/architecture-core.md`

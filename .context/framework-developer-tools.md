@@ -49,8 +49,3 @@ namespace ;
 
 
 ```
----
-**File Statistics**
-- **Size**: 915 B
-- **Lines**: 57
-File: `framework-developer-tools.md`

@@ -347,8 +347,3 @@ final class StandardEvent extends BaseEvent
 
 
 ```
----
-**File Statistics**
-- **Size**: 6.59 KB
-- **Lines**: 355
-File: `modules/event-handler/event-architecture.md`

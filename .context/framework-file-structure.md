@@ -2102,8 +2102,3 @@ _SOURCE: Tree of PHP Class Files_
             └── UnexpectedInstanceType.php
 
 ```
----
-**File Statistics**
-- **Size**: 103.29 KB
-- **Lines**: 2100
-File: `framework-file-structure.md`

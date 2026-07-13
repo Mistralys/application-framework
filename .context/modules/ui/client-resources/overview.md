@@ -46,8 +46,3 @@ $ui->addStylesheet('themes/default/css/extras.css');
 > Related: [UI module overview](../README.md)
 
 ```
----
-**File Statistics**
-- **Size**: 1.78 KB
-- **Lines**: 54
-File: `modules/ui/client-resources/overview.md`

@@ -102,8 +102,3 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
 
 
 ```
----
-**File Statistics**
-- **Size**: 2.28 KB
-- **Lines**: 110
-File: `modules/db-helper/architecture-api-methods.md`

@@ -714,8 +714,3 @@ class APIKeysCollection extends BaseChildCollection
 
 
 ```
----
-**File Statistics**
-- **Size**: 15.12 KB
-- **Lines**: 722
-File: `modules/api/clients/architecture-keys.md`

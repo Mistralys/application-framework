@@ -365,8 +365,3 @@ _SOURCE: UI Module File Structure_
             └── module-context.yaml
 
 ```
----
-**File Statistics**
-- **Size**: 15.49 KB
-- **Lines**: 373
-File: `modules/ui/file-structure.md`

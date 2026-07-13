@@ -375,8 +375,3 @@ final class StandardEventableEvent extends BaseEventableEvent
 
 
 ```
----
-**File Statistics**
-- **Size**: 7.81 KB
-- **Lines**: 383
-File: `modules/event-handler/eventables-architecture.md`

@@ -511,8 +511,3 @@ class UI_ResourceManager
 
 
 ```
----
-**File Statistics**
-- **Size**: 8.74 KB
-- **Lines**: 519
-File: `modules/ui/client-resources/architecture.md`

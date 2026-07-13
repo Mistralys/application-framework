@@ -19,8 +19,3 @@ _SOURCE: Tree of Module Files_
                 └── module-context.yaml
 
 ```
----
-**File Statistics**
-- **Size**: 750 B
-- **Lines**: 27
-File: `modules/markdown-renderer/file-structure.md`

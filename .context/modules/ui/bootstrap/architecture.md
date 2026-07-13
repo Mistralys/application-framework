@@ -2712,8 +2712,3 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
 
 
 ```
----
-**File Statistics**
-- **Size**: 51.41 KB
-- **Lines**: 2720
-File: `modules/ui/bootstrap/architecture.md`

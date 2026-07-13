@@ -27,8 +27,3 @@ _SOURCE: AI Module File Structure_
                     └── BaseAITool.php
 
 ```
----
-**File Statistics**
-- **Size**: 1.14 KB
-- **Lines**: 35
-File: `modules/ai/file-structure.md`

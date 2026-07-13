@@ -278,8 +278,3 @@ class UncachedStrategy extends BaseAICacheStrategy
 
 
 ```
----
-**File Statistics**
-- **Size**: 6.41 KB
-- **Lines**: 286
-File: `modules/ai/architecture-cache.md`

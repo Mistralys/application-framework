@@ -415,8 +415,3 @@ final class KeywordParser
 
 
 ```
----
-**File Statistics**
-- **Size**: 9.84 KB
-- **Lines**: 423
-File: `modules/composer/architecture-keyword-glossary.md`

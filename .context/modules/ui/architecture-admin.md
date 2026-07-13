@@ -149,8 +149,3 @@ class CSSGenDevelMode extends BaseMode implements DevelModeInterface
 
 
 ```
----
-**File Statistics**
-- **Size**: 3.7 KB
-- **Lines**: 157
-File: `modules/ui/architecture-admin.md`

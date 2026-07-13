@@ -622,8 +622,3 @@ final class DefaultAppSet extends AppSet
 
 
 ```
----
-**File Statistics**
-- **Size**: 12.34 KB
-- **Lines**: 630
-File: `modules/application-sets/architecture.md`

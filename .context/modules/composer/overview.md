@@ -376,8 +376,3 @@ composer test-filter -- Composer
 - Build dependency: `symfony/yaml` (`require-dev`)
 
 ```
----
-**File Statistics**
-- **Size**: 14.7 KB
-- **Lines**: 384
-File: `modules/composer/overview.md`

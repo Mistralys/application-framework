@@ -53,8 +53,3 @@ echo $grid->render();
 > Related: [UI module overview](../README.md)
 
 ```
----
-**File Statistics**
-- **Size**: 1.88 KB
-- **Lines**: 61
-File: `modules/ui/properties-grid/overview.md`

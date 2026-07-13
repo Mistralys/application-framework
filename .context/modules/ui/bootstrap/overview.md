@@ -56,8 +56,3 @@ $tabs->addTab('History')->setContent($historyHTML);
 > Related: [UI module overview](../README.md)
 
 ```
----
-**File Statistics**
-- **Size**: 2.16 KB
-- **Lines**: 64
-File: `modules/ui/bootstrap/overview.md`

@@ -2034,8 +2034,3 @@ class Connectors_ResponseCode extends BasicEnum
 
 
 ```
----
-**File Statistics**
-- **Size**: 41.21 KB
-- **Lines**: 2042
-File: `modules/connectors/architecture-core.md`

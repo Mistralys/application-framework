@@ -692,8 +692,3 @@ trait ViewActionTrait
 
 
 ```
----
-**File Statistics**
-- **Size**: 15.31 KB
-- **Lines**: 700
-File: `modules/application-sets/admin-interface.md`

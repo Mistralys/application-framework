@@ -94,8 +94,3 @@ application sets from the database, as well as managing existing ones.
 [DBHelper collection]: /src/classes/DBHelper/README.md
 
 ```
----
-**File Statistics**
-- **Size**: 3.2 KB
-- **Lines**: 102
-File: `modules/application-sets/overview.md`

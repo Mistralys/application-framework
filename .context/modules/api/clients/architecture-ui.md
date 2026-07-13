@@ -1195,8 +1195,3 @@ trait ClientSubmodeTrait
 
 
 ```
----
-**File Statistics**
-- **Size**: 28.71 KB
-- **Lines**: 1203
-File: `modules/api/clients/architecture-ui.md`

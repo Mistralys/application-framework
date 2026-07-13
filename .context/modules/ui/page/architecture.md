@@ -9184,8 +9184,3 @@ class UI_Page_Title extends UI_Renderable implements Application_Interfaces_Icon
 
 
 ```
----
-**File Statistics**
-- **Size**: 164.08 KB
-- **Lines**: 9192
-File: `modules/ui/page/architecture.md`

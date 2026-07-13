@@ -309,8 +309,3 @@ class UI_MarkupEditorInfo
 
 
 ```
----
-**File Statistics**
-- **Size**: 6.65 KB
-- **Lines**: 317
-File: `modules/ui/markup-editor/architecture.md`

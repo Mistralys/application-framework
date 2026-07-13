@@ -90,8 +90,3 @@ application.
 
 ## Properties Grid
 ```
----
-**File Statistics**
-- **Size**: 2.97 KB
-- **Lines**: 98
-File: `modules/ui/overview.md`

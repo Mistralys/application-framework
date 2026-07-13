@@ -958,8 +958,3 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
 
 
 ```
----
-**File Statistics**
-- **Size**: 16.23 KB
-- **Lines**: 966
-File: `modules/ui/themes/architecture.md`

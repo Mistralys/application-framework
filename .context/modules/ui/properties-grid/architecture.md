@@ -333,7 +333,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
 	 * @return $this
 	 * @throws UI_Exception
 	 */
-	public function ifEmpty($text)
+	public function ifEmpty($text): self
 	{
 		/* ... */
 	}
@@ -344,7 +344,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
 	 * @return $this
 	 * @throws Application_Exception
 	 */
-	public function addButton(UI_Button $button)
+	public function addButton(UI_Button $button): self
 	{
 		/* ... */
 	}
@@ -817,8 +817,3 @@ class TagsGridProperty extends UI_PropertiesGrid_Property
 
 
 ```
----
-**File Statistics**
-- **Size**: 16.73 KB
-- **Lines**: 825
-File: `modules/ui/properties-grid/architecture.md`

@@ -98,8 +98,3 @@ _SOURCE: Countries Module File Tree_
                 └── Selector.php
 
 ```
----
-**File Statistics**
-- **Size**: 4.97 KB
-- **Lines**: 106
-File: `modules/countries/file-structure.md`

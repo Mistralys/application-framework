@@ -61,8 +61,3 @@ Orchestrates **full-page composition**. A `UI_Page` aggregates all structural re
 > Related: [UI module overview](../README.md) · [Themes and Templates](../Docs/themes-and-templates.md)
 
 ```
----
-**File Statistics**
-- **Size**: 2.36 KB
-- **Lines**: 69
-File: `modules/ui/page/overview.md`

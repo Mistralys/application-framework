@@ -126,8 +126,3 @@ _SOURCE: PHP class file tree_
             └── module-context.yaml
 
 ```
----
-**File Statistics**
-- **Size**: 5.91 KB
-- **Lines**: 134
-File: `modules/db-helper/file-structure.md`

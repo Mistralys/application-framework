@@ -617,8 +617,3 @@ trait RequestRequestTrait
 
 
 ```
----
-**File Statistics**
-- **Size**: 13.46 KB
-- **Lines**: 625
-File: `modules/api/architecture-base-method.md`

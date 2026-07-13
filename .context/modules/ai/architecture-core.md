@@ -373,8 +373,3 @@ abstract class BaseAITool implements AIToolInterface
 
 
 ```
----
-**File Statistics**
-- **Size**: 8.07 KB
-- **Lines**: 381
-File: `modules/ai/architecture-core.md`

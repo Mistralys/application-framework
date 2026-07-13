@@ -57,8 +57,3 @@ Country management for the Application Framework. Provides the `Application_Coun
 - **UI** — Navigator (button bar country switcher), Selector (form element), ButtonBar (persistent country selection widget), and Icon (flag rendering) integrate with the framework's UI layer.
 
 ```
----
-**File Statistics**
-- **Size**: 3.9 KB
-- **Lines**: 65
-File: `modules/countries/overview.md`

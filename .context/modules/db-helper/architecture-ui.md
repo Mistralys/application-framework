@@ -1133,8 +1133,3 @@ trait RecordStatusScreenTrait
 
 
 ```
----
-**File Statistics**
-- **Size**: 28.22 KB
-- **Lines**: 1141
-File: `modules/db-helper/architecture-ui.md`

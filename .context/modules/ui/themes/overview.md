@@ -81,8 +81,3 @@ by design, so the system just facilitates using it this way.
 Templates defined in the Framework can be overridden in the
 application.
 ```
----
-**File Statistics**
-- **Size**: 2.76 KB
-- **Lines**: 89
-File: `modules/ui/themes/overview.md`

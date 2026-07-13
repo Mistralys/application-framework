@@ -17404,8 +17404,3 @@ class UI
 
 
 ```
----
-**File Statistics**
-- **Size**: 300.71 KB
-- **Lines**: 17412
-File: `modules/ui/architecture-core.md`

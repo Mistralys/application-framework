@@ -123,6 +123,19 @@ final class ModuleInfo
 	{
 		/* ... */
 	}
+
+
+	/**
+	 * Returns the list of relative paths to markdown files declared under
+	 * `moduleMetaData.exportDocs` in the module's `module-context.yaml`.
+	 * Paths are relative to the module's source directory.
+	 *
+	 * @return string[]
+	 */
+	public function getExportDocs(): array
+	{
+		/* ... */
+	}
 }
 
 
@@ -322,8 +335,3 @@ final class ReadmeOverviewParser
 
 
 ```
----
-**File Statistics**
-- **Size**: 8.64 KB
-- **Lines**: 330
-File: `modules/composer/architecture-modules-overview.md`
