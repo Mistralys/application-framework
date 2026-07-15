@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v7.3.5 - Global Docs Export
+- ModulesOverview: The main `context.yaml` now supports defining global docs to export.
+- ModulesOverview: Added support for `projectMetaData.exportDocs`.
+
 ## v7.3.4 - Module Export & API Fixes
 - API: Fixed required validation treating empty arrays as absent in JSON and list parameters.
 - Lookup: Fixed WHERE statement pollution in search queries.
