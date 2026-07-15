@@ -196,15 +196,37 @@ $generator->generate('/path/to/output/modules.json', includeAll: true);
       "source": "vendor/my-package",
       "description": "Overview section from README.md (or null)",
       "relatedModules": ["other-module"],
-      "brief": "Full content of README-Brief.md (or null)"
+      "brief": "Full content of README-Brief.md (or null)",
+      "additionalDocs": [
+        { "fileName": "service-reference.md", "content": "..." }
+      ]
     }
   ],
   "glossary": [
     { "term": "Widget", "context": "the core UI component", "relatedModules": ["my-module"] }
   ],
-  "glossarySections": []
+  "glossarySections": [],
+  "projectDocs": [
+    { "fileName": "module-map.md", "content": "..." }
+  ]
 }
 ```
+
+The `projectDocs` key is always present (empty array when no project docs are declared).
+
+**Project-level docs (`projectDocs`):**
+
+Cross-cutting platform documentation with no natural module owner can be declared in the root `context.yaml` under a `projectMetaData.exportDocs` section:
+
+```yaml
+projectMetaData:
+  exportDocs:
+    - docs/platform/module-map.md
+    - docs/platform/system-map.md
+    - docs/platform/hcp-history.md
+```
+
+The generator reads these paths at build time, applies the same containment guard used for module-level `additionalDocs` (preventing path traversal outside the project root), and emits a `projectDocs` top-level key. Only `.md` files are accepted; non-`.md` entries are skipped with a progress warning.
 
 **Subclassing contract — extension points:**
 
@@ -239,10 +261,6 @@ class AppModuleJsonExportGenerator extends ModuleJsonExportGenerator
     }
 }
 ```
-
-> **Note:** No unit test exists for `ModuleJsonExportGenerator` yet. A follow-up
-> `ModuleJsonExportGeneratorTest` is recommended to cover the `generate()` workflow
-> end-to-end, the `$includeAll` flag behaviour, and hook method override scenarios.
 
 ## KeywordGlossary subpackage
 

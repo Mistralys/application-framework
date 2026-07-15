@@ -13,6 +13,7 @@ use Application\Composer\KeywordGlossary\KeywordGlossaryBuilder;
 use Application\EventHandler\OfflineEvents\OfflineEventsManager;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Generic, subclassable generator that encapsulates the
@@ -24,7 +25,24 @@ use AppUtils\FileHelper\FolderInfo;
  * {@see resolveModuleBrief()}, builds the keyword glossary via
  * {@see KeywordGlossaryBuilder}, fires {@see DecorateGlossaryEvent} to
  * collect custom glossary sections, and writes a JSON document with
- * `generatedAt`, `modules`, `glossary`, and `glossarySections` keys.
+ * `generatedAt`, `modules`, `glossary`, `glossarySections`, and
+ * `projectDocs` keys.
+ *
+ * **Project-level docs (`projectDocs`):** Cross-cutting platform documentation
+ * with no natural module owner can be declared in the root `context.yaml`
+ * under a `projectMetaData.exportDocs` section:
+ *
+ * ```yaml
+ * projectMetaData:
+ *   exportDocs:
+ *     - docs/platform/module-map.md
+ *     - docs/platform/system-map.md
+ * ```
+ *
+ * The generator reads these paths at build time, applies the same containment
+ * guard used for module-level `additionalDocs`, and emits a `projectDocs`
+ * top-level key in the JSON output (always present; empty array when no
+ * project docs are declared).
  *
  * Applications can subclass this generator and override the hook methods
  * {@see resolveModuleSource()} and {@see resolveModuleBrief()} to customise
@@ -78,11 +96,17 @@ class ModuleJsonExportGenerator
 
     /**
      * Orchestrates the full workflow: discovers modules, resolves descriptions
-     * and briefs, builds the glossary, collects glossary sections, and writes
-     * the JSON output file.
+     * and briefs, builds the glossary, collects glossary sections, resolves
+     * project-level docs, and writes the JSON output file.
      *
      * By default only modules that have a brief are included in the output.
      * Pass `true` for `$includeAll` to include modules without a brief.
+     *
+     * The JSON output always contains a `projectDocs` top-level key (an array
+     * of `{fileName, content}` objects). It is populated from the
+     * `projectMetaData.exportDocs` section in the root `context.yaml`. When
+     * that section is absent or declares no entries, `projectDocs` is an
+     * empty array.
      *
      * @param string $outputPath Absolute path to the JSON output file.
      * @param bool   $includeAll When true, modules without a brief are also included.
@@ -162,12 +186,14 @@ class ModuleJsonExportGenerator
 
         $glossary         = $this->buildGlossary($modules);
         $glossarySections = $this->collectGlossarySections();
+        $projectDocs      = $this->resolveProjectDocs();
 
         $output = array(
             'generatedAt'      => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
             'modules'          => $moduleData,
             'glossary'         => $glossary,
             'glossarySections' => $glossarySections,
+            'projectDocs'      => $projectDocs,
         );
 
         $json = json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -231,26 +257,83 @@ class ModuleJsonExportGenerator
     }
 
     /**
-     * Resolves the additional documentation files declared in the module's
-     * `moduleMetaData.exportDocs` list.
+     * Resolves a single documentation file path against a base directory.
      *
-     * Iterates each relative path, resolves it against `$sourcePath`, applies a
-     * containment guard to prevent path traversal outside the module's source
-     * directory, reads the file content, and returns an array of `{fileName, content}`
-     * objects. Missing, unreadable, or out-of-bounds files are skipped with a
-     * progress warning.
+     * Applies the containment guard, reads the file content, and returns
+     * a `{fileName, content}` array on success, or `null` on failure (with a
+     * progress warning).
      *
      * **Containment guard — trailing-slash semantics:** `$sourceBase` is always
      * terminated with a `/` before the `str_starts_with()` comparison. This is
      * required to prevent sibling-directory prefix collisions: without the
-     * trailing slash, a module at `/modules/foo` would incorrectly pass paths
+     * trailing slash, a base at `/modules/foo` would incorrectly pass paths
      * under `/modules/foobar`, because `"foobar/..."` starts with `"foo"`.
      *
-     * **Fallback path:** when `realpath($sourcePath)` returns `false` (e.g. the
-     * source directory is a dangling symlink), the raw `$sourcePath` is used as
+     * **Fallback path:** when `realpath($basePath)` returns `false` (e.g. the
+     * directory is a dangling symlink), the raw `$basePath` is used as
      * `$sourceBase` instead. Any file inside such a directory will also fail
      * `realpath()`, so the `$resolvedPath === false` clause in the guard catches
      * all entries before the prefix comparison runs.
+     *
+     * Declared `protected` so that subclasses overriding
+     * {@see resolveAdditionalDocs()} can call this shared helper and
+     * benefit from the containment guard without re-implementing it.
+     *
+     * @param string $relPath     Relative path to the doc file.
+     * @param string $basePath    Absolute path to the containing directory.
+     * @param string $sourceLabel Label for progress messages (e.g., module ID or "project").
+     * @return array{fileName: string, content: string}|null
+     */
+    protected function resolveDocFile(string $relPath, string $basePath, string $sourceLabel) : ?array
+    {
+        $resolvedBase = realpath(rtrim($basePath, '/'));
+        // Fallback to the raw path if realpath() fails (e.g., the base dir is a dangling symlink).
+        // In that case every file inside it will also fail realpath(), so the containment guard's
+        // $resolvedPath === false clause will catch them all before the str_starts_with() comparison.
+        $sourceBase   = rtrim($resolvedBase !== false ? $resolvedBase : rtrim($basePath, '/'), '/') . '/';
+
+        $absolutePath = rtrim($basePath, '/') . '/' . $relPath;
+        $resolvedPath = realpath($absolutePath);
+
+        // Containment guard: path must resolve inside the base directory.
+        // realpath() returns false for paths that do not exist or cannot be resolved,
+        // so a false return already covers the "file not found" case.
+        if($resolvedPath === false || !str_starts_with($resolvedPath, $sourceBase))
+        {
+            $this->progress(sprintf(
+                'ModuleJsonExportGenerator: exportDocs entry "%s" for "%s" resolves outside the base directory or does not exist — skipping.',
+                $relPath,
+                $sourceLabel
+            ));
+            return null;
+        }
+
+        $content = file_get_contents($resolvedPath);
+
+        if($content === false)
+        {
+            $this->progress(sprintf(
+                'ModuleJsonExportGenerator: exportDocs file "%s" for "%s" could not be read — skipping.',
+                $relPath,
+                $sourceLabel
+            ));
+            return null;
+        }
+
+        return array(
+            'fileName' => basename($resolvedPath),
+            'content'  => $content,
+        );
+    }
+
+    /**
+     * Resolves the additional documentation files declared in the module's
+     * `moduleMetaData.exportDocs` list.
+     *
+     * Iterates each relative path and delegates per-file resolution (path
+     * joining, containment guard, file reading) to {@see resolveDocFile()}.
+     * Missing, unreadable, or out-of-bounds files are skipped with a
+     * progress warning.
      *
      * @see ModuleJsonExportGeneratorTest::test_generate_exportDocs_siblingDirectoryBoundaryCollision_isBlocked()
      *
@@ -262,47 +345,103 @@ class ModuleJsonExportGenerator
      */
     protected function resolveAdditionalDocs(ModuleInfo $module, string $sourcePath) : array
     {
-        $result          = array();
-        $resolvedSource  = realpath(rtrim($sourcePath, '/'));
-        // Fallback to the raw path if realpath() fails (e.g., the source dir is a dangling symlink).
-        // In that case every file inside it will also fail realpath(), so the containment guard's
-        // $resolvedPath === false clause will catch them all before the str_starts_with() comparison.
-        $sourceBase      = rtrim($resolvedSource !== false ? $resolvedSource : rtrim($sourcePath, '/'), '/') . '/';
+        $result = array();
 
         foreach($module->getExportDocs() as $relPath)
         {
-            $absolutePath = rtrim($sourcePath, '/') . '/' . $relPath;
-            $resolvedPath = realpath($absolutePath);
+            $doc = $this->resolveDocFile($relPath, $sourcePath, $module->getId());
 
-            // Containment guard: path must resolve inside the module's source directory.
-            // realpath() returns false for paths that do not exist or cannot be resolved,
-            // so a false return already covers the "file not found" case.
-            if($resolvedPath === false || !str_starts_with($resolvedPath, $sourceBase))
+            if($doc !== null)
+            {
+                $result[] = $doc;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Parses the root `context.yaml` for a `projectMetaData.exportDocs`
+     * section and returns the list of valid `.md` file paths.
+     *
+     * Returns an empty array when `context.yaml` does not exist, has no
+     * `projectMetaData` section, or declares no `exportDocs`. Non-`.md`
+     * entries are filtered with a progress warning, matching the behavior
+     * of {@see ModuleInfoParser::extractExportDocs()}.
+     *
+     * @return list<string>
+     */
+    private function parseProjectExportDocs() : array
+    {
+        $contextYamlPath = rtrim($this->rootFolder->getPath(), '/') . '/context.yaml';
+
+        if(!file_exists($contextYamlPath))
+        {
+            return array();
+        }
+
+        $data = Yaml::parseFile($contextYamlPath);
+
+        if(
+            !is_array($data) ||
+            !isset($data['projectMetaData']['exportDocs']) ||
+            !is_array($data['projectMetaData']['exportDocs'])
+        )
+        {
+            return array();
+        }
+
+        $result = array();
+
+        foreach($data['projectMetaData']['exportDocs'] as $entry)
+        {
+            if(!is_string($entry) || strtolower(pathinfo($entry, PATHINFO_EXTENSION)) !== 'md')
             {
                 $this->progress(sprintf(
-                    'ModuleJsonExportGenerator: exportDocs entry "%s" for module "%s" resolves outside the module directory or does not exist — skipping.',
-                    $relPath,
-                    $module->getId()
+                    'ModuleJsonExportGenerator: projectMetaData.exportDocs entry "%s" is not a .md file — skipping.',
+                    (string)$entry
                 ));
                 continue;
             }
 
-            $content = file_get_contents($resolvedPath);
+            $result[] = $entry;
+        }
 
-            if($content === false)
+        return $result;
+    }
+
+    /**
+     * Resolves the project-level documentation files declared in
+     * `projectMetaData.exportDocs` in the root `context.yaml`.
+     *
+     * Uses the project root as the containment boundary. Each file is
+     * resolved via {@see resolveDocFile()}.
+     *
+     * @return array<int, array{fileName: string, content: string}>
+     */
+    private function resolveProjectDocs() : array
+    {
+        $paths   = $this->parseProjectExportDocs();
+        $rootPath = $this->rootFolder->getPath();
+        $result  = array();
+
+        foreach($paths as $relPath)
+        {
+            $doc = $this->resolveDocFile($relPath, $rootPath, 'project');
+
+            if($doc !== null)
             {
-                $this->progress(sprintf(
-                    'ModuleJsonExportGenerator: exportDocs file "%s" for module "%s" could not be read — skipping.',
-                    $relPath,
-                    $module->getId()
-                ));
-                continue;
+                $result[] = $doc;
             }
+        }
 
-            $result[] = array(
-                'fileName' => basename($resolvedPath),
-                'content'  => $content,
-            );
+        if(!empty($result) || !empty($paths))
+        {
+            $this->progress(sprintf(
+                'ModuleJsonExportGenerator: Project docs: %d loaded, %d skipped.',
+                count($result),
+                count($paths) - count($result)
+            ));
         }
 
         return $result;

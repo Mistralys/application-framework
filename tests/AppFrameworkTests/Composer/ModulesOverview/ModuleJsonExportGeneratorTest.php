@@ -77,7 +77,7 @@ final class ModuleJsonExportGeneratorTest extends ApplicationTestCase
         }
     }
 
-    private function writeRootContextYaml(string $rootDir) : void
+    private function writeRootContextYaml(string $rootDir, array $projectExportDocs = array()) : void
     {
         if(!is_dir($rootDir))
         {
@@ -85,6 +85,16 @@ final class ModuleJsonExportGeneratorTest extends ApplicationTestCase
         }
 
         $yaml = "import:\n  - path: \"**/module-context.yaml\"\n";
+
+        if(!empty($projectExportDocs))
+        {
+            $yaml .= "projectMetaData:\n  exportDocs:\n";
+            foreach($projectExportDocs as $docPath)
+            {
+                $yaml .= '    - ' . $docPath . "\n";
+            }
+        }
+
         file_put_contents($rootDir . '/context.yaml', $yaml);
     }
 
@@ -435,5 +445,151 @@ final class ModuleJsonExportGeneratorTest extends ApplicationTestCase
             $module['additionalDocs'],
             'Containment guard must block traversal into a sibling directory whose name is prefixed by the module directory name.'
         );
+    }
+
+    // -------------------------------------------------------------------------
+    // projectDocs tests
+    // -------------------------------------------------------------------------
+
+    /**
+     * When no `projectMetaData` section is present in `context.yaml`,
+     * the JSON output must contain a `projectDocs` key with an empty array.
+     *
+     * @covers AC-03
+     */
+    public function test_generate_projectDocs_keyAlwaysPresent() : void
+    {
+        $this->buildFixtureRoot(true); // uses writeRootContextYaml with no projectExportDocs
+
+        $data = $this->runGenerator();
+
+        $this->assertArrayHasKey('projectDocs', $data, 'projectDocs key must always be present in JSON output.');
+        $this->assertIsArray($data['projectDocs']);
+        $this->assertCount(0, $data['projectDocs'], 'projectDocs must be an empty array when no projectMetaData is declared.');
+    }
+
+    /**
+     * When `context.yaml` declares a valid project doc and the file exists,
+     * `projectDocs` must contain one entry with the correct fileName and content.
+     *
+     * @covers AC-01, AC-04
+     */
+    public function test_generate_projectDocs_includesConfiguredDocs() : void
+    {
+        $docContent = "# Platform Module Map\n\nThis document describes the module map.\n";
+
+        mkdir($this->tempRoot . '/docs/platform', 0777, true);
+        file_put_contents($this->tempRoot . '/docs/platform/test-doc.md', $docContent);
+
+        $this->writeRootContextYaml($this->tempRoot, array('docs/platform/test-doc.md'));
+
+        $this->writeModuleContextYaml(
+            $this->tempRoot . '/fixture-module-alpha',
+            'fixture-alpha',
+            'Fixture Module Alpha',
+            'Alpha fixture module for testing.',
+            array('AlphaKeyword')
+        );
+        file_put_contents($this->tempRoot . '/fixture-module-alpha/README-Brief.md', 'Brief for fixture-alpha.');
+
+        $data = $this->runGenerator();
+
+        $this->assertArrayHasKey('projectDocs', $data);
+        $this->assertIsArray($data['projectDocs']);
+        $this->assertCount(1, $data['projectDocs'], 'projectDocs must contain one entry for the declared doc.');
+
+        $doc = $data['projectDocs'][0];
+        $this->assertSame('test-doc.md', $doc['fileName']);
+        $this->assertSame($docContent, $doc['content']);
+    }
+
+    /**
+     * When a declared project doc path points to a non-existent file,
+     * `projectDocs` must be an empty array (the missing file is skipped gracefully).
+     *
+     * @covers AC-06
+     */
+    public function test_generate_projectDocs_missingFile_skippedGracefully() : void
+    {
+        $this->writeRootContextYaml($this->tempRoot, array('docs/platform/does-not-exist.md'));
+
+        $this->writeModuleContextYaml(
+            $this->tempRoot . '/fixture-module-alpha',
+            'fixture-alpha',
+            'Fixture Module Alpha',
+            'Alpha fixture module for testing.',
+            array('AlphaKeyword')
+        );
+        file_put_contents($this->tempRoot . '/fixture-module-alpha/README-Brief.md', 'Brief for fixture-alpha.');
+
+        $data = $this->runGenerator();
+
+        $this->assertArrayHasKey('projectDocs', $data);
+        $this->assertIsArray($data['projectDocs']);
+        $this->assertCount(0, $data['projectDocs'], 'Missing project doc file must be skipped gracefully.');
+    }
+
+    /**
+     * Security: the containment guard must block a project doc path that
+     * resolves to a file outside the project root directory.
+     *
+     * @covers AC-05
+     */
+    public function test_generate_projectDocs_pathTraversal_blocked() : void
+    {
+        // Create a file outside the temp root.
+        $outsideDir  = sys_get_temp_dir() . '/mje-fw-outside-' . getmypid() . '-' . mt_rand(0, 9999);
+        mkdir($outsideDir, 0777, true);
+        file_put_contents($outsideDir . '/outside.md', 'OUTSIDE CONTENT');
+
+        $this->writeRootContextYaml($this->tempRoot, array('../../' . basename($outsideDir) . '/outside.md'));
+
+        $this->writeModuleContextYaml(
+            $this->tempRoot . '/fixture-module-alpha',
+            'fixture-alpha',
+            'Fixture Module Alpha',
+            'Alpha fixture module for testing.',
+            array('AlphaKeyword')
+        );
+        file_put_contents($this->tempRoot . '/fixture-module-alpha/README-Brief.md', 'Brief for fixture-alpha.');
+
+        $data = $this->runGenerator();
+
+        // Clean up the outside dir.
+        unlink($outsideDir . '/outside.md');
+        rmdir($outsideDir);
+
+        $this->assertArrayHasKey('projectDocs', $data);
+        $this->assertIsArray($data['projectDocs']);
+        $this->assertCount(0, $data['projectDocs'], 'Containment guard must block project doc paths that resolve outside the project root.');
+    }
+
+    /**
+     * When a declared project doc path has a non-.md extension, it must be
+     * filtered during YAML parsing and `projectDocs` must be an empty array.
+     *
+     * @covers AC-02
+     */
+    public function test_generate_projectDocs_nonMarkdown_filtered() : void
+    {
+        mkdir($this->tempRoot . '/docs', 0777, true);
+        file_put_contents($this->tempRoot . '/docs/guide.txt', 'This is a text file.');
+
+        $this->writeRootContextYaml($this->tempRoot, array('docs/guide.txt'));
+
+        $this->writeModuleContextYaml(
+            $this->tempRoot . '/fixture-module-alpha',
+            'fixture-alpha',
+            'Fixture Module Alpha',
+            'Alpha fixture module for testing.',
+            array('AlphaKeyword')
+        );
+        file_put_contents($this->tempRoot . '/fixture-module-alpha/README-Brief.md', 'Brief for fixture-alpha.');
+
+        $data = $this->runGenerator();
+
+        $this->assertArrayHasKey('projectDocs', $data);
+        $this->assertIsArray($data['projectDocs']);
+        $this->assertCount(0, $data['projectDocs'], 'Non-.md project doc entries must be filtered during YAML parsing.');
     }
 }
