@@ -193,6 +193,7 @@ use AppUtils\FileHelper\FolderInfo as FolderInfo;
 use Application\Composer\KeywordGlossary\Events\DecorateGlossaryEvent as DecorateGlossaryEvent;
 use Application\Composer\KeywordGlossary\KeywordGlossaryBuilder as KeywordGlossaryBuilder;
 use Application\EventHandler\OfflineEvents\OfflineEventsManager as OfflineEventsManager;
+use Symfony\Component\Yaml\Yaml as Yaml;
 
 /**
  * Generic, subclassable generator that encapsulates the
@@ -204,7 +205,24 @@ use Application\EventHandler\OfflineEvents\OfflineEventsManager as OfflineEvents
  * {@see resolveModuleBrief()}, builds the keyword glossary via
  * {@see KeywordGlossaryBuilder}, fires {@see DecorateGlossaryEvent} to
  * collect custom glossary sections, and writes a JSON document with
- * `generatedAt`, `modules`, `glossary`, and `glossarySections` keys.
+ * `generatedAt`, `modules`, `glossary`, `glossarySections`, and
+ * `projectDocs` keys.
+ *
+ * **Project-level docs (`projectDocs`):** Cross-cutting platform documentation
+ * with no natural module owner can be declared in the root `context.yaml`
+ * under a `projectMetaData.exportDocs` section:
+ *
+ * ```yaml
+ * projectMetaData:
+ *   exportDocs:
+ *     - docs/platform/module-map.md
+ *     - docs/platform/system-map.md
+ * ```
+ *
+ * The generator reads these paths at build time, applies the same containment
+ * guard used for module-level `additionalDocs`, and emits a `projectDocs`
+ * top-level key in the JSON output (always present; empty array when no
+ * project docs are declared).
  *
  * Applications can subclass this generator and override the hook methods
  * {@see resolveModuleSource()} and {@see resolveModuleBrief()} to customise
@@ -222,11 +240,17 @@ class ModuleJsonExportGenerator
 {
 	/**
 	 * Orchestrates the full workflow: discovers modules, resolves descriptions
-	 * and briefs, builds the glossary, collects glossary sections, and writes
-	 * the JSON output file.
+	 * and briefs, builds the glossary, collects glossary sections, resolves
+	 * project-level docs, and writes the JSON output file.
 	 *
 	 * By default only modules that have a brief are included in the output.
 	 * Pass `true` for `$includeAll` to include modules without a brief.
+	 *
+	 * The JSON output always contains a `projectDocs` top-level key (an array
+	 * of `{fileName, content}` objects). It is populated from the
+	 * `projectMetaData.exportDocs` section in the root `context.yaml`. When
+	 * that section is absent or declares no entries, `projectDocs` is an
+	 * empty array.
 	 *
 	 * @param string $outputPath Absolute path to the JSON output file.
 	 * @param bool   $includeAll When true, modules without a brief are also included.
