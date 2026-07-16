@@ -6,6 +6,7 @@ namespace AppFrameworkTests\API\Parameters;
 
 use Application\API\Parameters\Type\ClearableStringParameter;
 use Application\API\Parameters\Validation\ParamValidationInterface;
+use AppUtils\RegexHelper;
 use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
 
 /**
@@ -226,6 +227,91 @@ final class ClearableStringParameterTest extends APITestCase
         $result = $param->setMaxLength(10);
 
         $this->assertSame($param, $result);
+    }
+
+    // endregion
+
+    // region: Validation bypass on clear signal
+
+    public function test_validateByRegex_emptyStringClearSignal_skipsValidation() : void
+    {
+        $_REQUEST['foo'] = '';
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->validateByRegex(RegexHelper::REGEX_URL);
+
+        $this->assertSame('', $param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_validateByRegex_validValue_passesValidation() : void
+    {
+        $_REQUEST['foo'] = 'https://example.com';
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->validateByRegex(RegexHelper::REGEX_URL);
+
+        $this->assertSame('https://example.com', $param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_validateByRegex_invalidValue_failsValidation() : void
+    {
+        $_REQUEST['foo'] = 'not a valid url';
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->validateByRegex(RegexHelper::REGEX_URL);
+
+        $this->assertNull($param->getValue());
+        $this->assertResultInvalid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_INVALID_FORMAT_BY_REGEX);
+    }
+
+    public function test_validateByRegex_absentKey_skipsValidation() : void
+    {
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->validateByRegex(RegexHelper::REGEX_URL);
+
+        $this->assertNull($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_validateAs_url_emptyStringClearSignal_skipsValidation() : void
+    {
+        $_REQUEST['foo'] = '';
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->validateAs()->url();
+
+        $this->assertSame('', $param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_validateByCallback_emptyStringClearSignal_skipsCallback() : void
+    {
+        $_REQUEST['foo'] = '';
+
+        $callbackInvoked = false;
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->validateByCallback(function() use (&$callbackInvoked) : void {
+            $callbackInvoked = true;
+        });
+
+        $this->assertSame('', $param->getValue());
+        $this->assertFalse($callbackInvoked, 'The callback must not be invoked for the clear signal.');
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_validateByEnum_emptyStringClearSignal_skipsValidation() : void
+    {
+        $_REQUEST['foo'] = '';
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->validateByEnum(array('allowed', 'values'));
+
+        $this->assertSame('', $param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     // endregion

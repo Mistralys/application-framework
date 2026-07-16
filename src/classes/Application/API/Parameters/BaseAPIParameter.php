@@ -259,6 +259,22 @@ abstract class BaseAPIParameter implements APIParameterInterface
     }
 
     /**
+     * Determines whether the resolved value should be passed through the
+     * validation pipeline. Subclasses may override this to skip format
+     * validators for specific sentinel values.
+     *
+     * The base implementation returns `true` for all values, preserving
+     * existing behavior.
+     *
+     * @param int|float|bool|string|array<int|string,mixed>|null $value The resolved value from {@see resolveValue()}.
+     * @return bool `true` to run validators, `false` to skip them.
+     */
+    protected function isValueValidatable(int|float|bool|string|array|null $value) : bool
+    {
+        return true;
+    }
+
+    /**
      * @param int|float|bool|string|array<int|string,mixed>|null $value
      * @return bool
      */
@@ -267,6 +283,11 @@ abstract class BaseAPIParameter implements APIParameterInterface
         // The result may already contain errors from value resolution.
         if(!$this->result->isValid()) {
             return false;
+        }
+
+        // Allow subclasses to skip validation for specific sentinel values.
+        if(!$this->isValueValidatable($value)) {
+            return true;
         }
 
         // If the parameter is required, prepend the required validation.

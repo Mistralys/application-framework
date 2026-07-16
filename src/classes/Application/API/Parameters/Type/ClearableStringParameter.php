@@ -37,6 +37,23 @@ class ClearableStringParameter extends StringParameter
     }
 
     /**
+     * Skips format validation when the resolved value is the empty-string
+     * clear signal. A `null` value (absent parameter) already skips
+     * individual validators via their own null guards.
+     *
+     * @param int|float|bool|string|array<int|string,mixed>|null $value
+     * @return bool
+     */
+    protected function isValueValidatable(int|float|bool|string|array|null $value) : bool
+    {
+        if($value === '') {
+            return false;
+        }
+
+        return parent::isValueValidatable($value);
+    }
+
+    /**
      * Resolves the parameter value from `$_REQUEST` with three-state semantics.
      *
      * - Key absent → `null`

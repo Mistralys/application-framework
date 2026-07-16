@@ -35,6 +35,7 @@ class RegexValidation extends BaseParamValidation
                 ),
                 ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
             );
+            return;
         }
 
         if(!preg_match($this->regex, $value)) {
