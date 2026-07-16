@@ -74,6 +74,14 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         // is NOT reset by transaction rollback.
         DBHelper::update("SET FOREIGN_KEY_CHECKS=1", array());
 
+        // Flush in-memory collection caches after rolling back the transaction.
+        // Transaction rollback restores the DB state but not the singleton caches,
+        // which can leak stale IDs or disposed records into subsequent tests.
+        // Countries must be cleared first; Locales depends on it.
+        // @see DT-001 in docs/agents/deferred-topics.md for the long-term plan.
+        AppFactory::createCountries()->clearRecordCache();
+        AppFactory::createLocales()->clearLocaleCache();
+
         if($this instanceof ImageMediaTestInterface) {
             $this->tearDownImageTestCase();
         }

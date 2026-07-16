@@ -8,7 +8,7 @@ use Application\Admin\Wizard\WizardPreselection;
 use Application_Exception;
 use PHPUnit\Framework\TestCase;
 use TestDriver_Area_WizardTest_Wizard_Step_Countries;
-use TestDriver_Area_WizardTest_Wizard_Step_Summary;
+use TestDriver_Area_WizardTest_Wizard_Step_NoStepName;
 
 final class WizardPreselectionTest extends TestCase
 {
@@ -110,7 +110,7 @@ final class WizardPreselectionTest extends TestCase
         $this->expectExceptionCode(WizardPreselection::ERROR_STEP_CLASS_MISSING_STEP_NAME);
 
         $preselection->setStepValueByClass(
-            TestDriver_Area_WizardTest_Wizard_Step_Summary::class,
+            TestDriver_Area_WizardTest_Wizard_Step_NoStepName::class,
             'key',
             'value'
         );

@@ -61,12 +61,43 @@ knowledge.
 - Verify the full test suite passes (countries filter, mail suite, notifications suite)
   after the migration.
 
+### Generalized Test Isolation: Central Collection Cache Reset
+
+A broader improvement to consider: a generalized `tearDown()` mechanism that resets
+**all** loaded collection caches, not just Countries and Locales. The structural
+challenges that make this non-trivial:
+
+1. **Two unrelated collection hierarchies:** `DBHelper_BaseCollection` (has
+   `clearRecordCache()`) and `BaseStringPrimaryCollection` from
+   `application-utils-collections` (has `reset()` only). A single loop cannot call
+   the same method on both.
+
+2. **Three separate singleton registries:** `DBHelper::$collections` (collections
+   created via `DBHelper::createCollection()`), `AppFactory::$instances` (collections
+   created via `createClassInstance()`), and individual `getInstance()` statics
+   (`Application_Countries`, `Locales`, `Languages`). No single registry covers all
+   loaded collections.
+
+**Possible solution path:**
+
+- Introduce a `CacheResettable` interface with a single `clearCache(): void` method,
+  implemented by both `DBHelper_BaseCollection` and `BaseStringPrimaryCollection`.
+- Add a central `CollectionRegistry` where all singletons register on construction.
+- Expose a `CollectionRegistry::clearAllCaches()` method callable from
+  `ApplicationTestCase::tearDown()`.
+
+This would replace the current manual co-reset calls (Countries + Locales) and
+automatically cover any future collections without requiring test-infrastructure changes.
+
 ### Current State
 
 - `clearRecordCache()` is documented with its limitation in its docblock in
   `src/classes/DBHelper/BaseCollection.php`.
 - `Locales::clearLocaleCache()` is the only registered co-reset; it is called explicitly
   in `MailTestCase::setUp()` immediately after `clearRecordCache()`.
+- The framework's `ApplicationTestCase::tearDown()` now clears Countries and Locales
+  caches after every transaction rollback, preventing stale singleton state from leaking
+  across tests at the framework level.
 - The research paper that concluded `Locales` was the only affected singleton was
   incorrect. `TenantCountriesCollection` and `NotificationLocalesManager` also hold
   country references, which is why `resetCollection()` cannot safely replace
@@ -76,6 +107,7 @@ knowledge.
 
 - `src/classes/DBHelper/BaseCollection.php` — `clearRecordCache()` and `resetCollection()` docblocks
 - `src/classes/Application/Locales/Locales.php` — `clearLocaleCache()`
-- `hcp-editor/tests/MailEditorTestClasses/MailTestCase.php` — current co-reset calls in `setUp()`
+- `tests/AppFrameworkTestClasses/ApplicationTestCase.php` — framework-level co-reset in `tearDown()`
+- `hcp-editor/tests/MailEditorTestClasses/MailTestCase.php` — HCP Editor co-reset calls in `setUp()`
 - `hcp-editor/docs/agents/projects/test-fixes.md` — full rationale for the current approach
 - `hcp-editor/docs/agents/plans/2026-07-16-countries-reset-collection/synthesis.md` — implementation notes
