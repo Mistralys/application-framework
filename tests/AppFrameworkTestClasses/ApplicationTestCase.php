@@ -69,6 +69,11 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         $this->clearTransaction();
         $this->disableLogging();
 
+        // Safety net: unconditionally restore FK checks to prevent session-state
+        // leaks across tests. FOREIGN_KEY_CHECKS is a MySQL session variable and
+        // is NOT reset by transaction rollback.
+        DBHelper::update("SET FOREIGN_KEY_CHECKS=1", array());
+
         if($this instanceof ImageMediaTestInterface) {
             $this->tearDownImageTestCase();
         }
