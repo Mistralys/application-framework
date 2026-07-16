@@ -104,6 +104,7 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
     private function renderSettingsList() : string
     {
         $this->addEnvironment();
+        $this->addWebserver();
         $this->addDatabase();
         $this->addCAS();
         $this->addLDAP();
@@ -159,6 +160,15 @@ class AppConfigMode extends BaseMode implements DevelModeInterface
         $this->addConstant(t('Framework folder'), BaseConfigRegistry::INSTALL_FOLDER);
         $this->addConstant(t('Vendor folder'), BaseConfigRegistry::VENDOR_PATH);
         $this->addConstant(t('Vendor URL'), BaseConfigRegistry::VENDOR_URL);
+    }
+
+    private function addWebserver() : void
+    {
+        $this->addHeader(t('Webserver'));
+
+        $this->addValue(t('PHP version'), PHP_VERSION);
+        $this->addValue(t('PHP SAPI'), PHP_SAPI);
+        $this->addValue(t('Server software'), $_SERVER['SERVER_SOFTWARE'] ?? t('n/a'));
     }
 
     private function addDatabase() : void
