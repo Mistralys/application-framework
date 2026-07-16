@@ -1,5 +1,15 @@
 # Application Framework Changelog
 
+## v7.3.6 - ClearableString Validation Bypass
+
+**Clearing a field via the API no longer gets blocked by its own format validators.** 
+The AppConfigMode settings screen now includes a webserver info section. 
+A test infrastructure fix prevents MySQL foreign-key check state from leaking across test cases.
+
+- API: Added a validation bypass for the empty-string clear signal in `ClearableStringParameter`.
+- AppConfigMode: Added the webserver info section to the settings screen.
+- Tests: Fixed foreign-key check state leaking across test cases after transaction rollback.
+
 ## v7.3.5 - Global Docs Export
 - ModulesOverview: The main `context.yaml` now supports defining global docs to export.
 - ModulesOverview: Added support for `projectMetaData.exportDocs`.
