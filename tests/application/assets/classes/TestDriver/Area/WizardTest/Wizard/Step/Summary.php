@@ -7,7 +7,7 @@ class TestDriver_Area_WizardTest_Wizard_Step_Summary extends TestDriver_Area_Wiz
     public const string STEP_NAME = 'Summary';
 
 
-    function render() : string
+    public function render() : string
     {
         return $this->renderFormable();
     }

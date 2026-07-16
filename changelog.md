@@ -1,5 +1,12 @@
 # Application Framework Changelog
 
+## v7.3.7 - Countries & Locales Cache API
+
+**Patch for test suite failures caused by cross-test stale collection records.**
+
+- DBHelper: Added `clearRecordCache()` in collections as a soft reset without disposing objects.
+- Locales: Added `clearLocaleCache()` to allow resetting the locale cache after a countries collection cache clear.
+
 ## v7.3.6 - ClearableString Validation Bypass
 
 **Clearing a field via the API no longer gets blocked by its own format validators.** 

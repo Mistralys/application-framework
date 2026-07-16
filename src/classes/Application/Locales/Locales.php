@@ -48,6 +48,18 @@ class Locales extends BaseStringPrimaryCollection
         $countries->onAfterDeleteRecord($this->reset(...));
     }
 
+    /**
+     * Clears the locale cache, forcing all locale objects to be
+     * recreated on the next access. Use this after resetting the
+     * countries collection to prevent stale country references.
+     *
+     * @return void
+     */
+    public function clearLocaleCache() : void
+    {
+        $this->reset();
+    }
+
     public static function getAPIMethodsFolder() : FolderInfo
     {
         return FolderInfo::factory(__DIR__.'/API/Methods');

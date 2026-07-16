@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\DBHelper;
 
-use Application\AppFactory;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 use TestDriver\TestDBRecords\TestDBCollection;
 
@@ -12,10 +11,10 @@ final class DisposingTest extends DBHelperTestCase
 {
     public function test_resetCollection(): void
     {
-        $collection = AppFactory::createCountries();
+        $collection = TestDBCollection::getInstance();
 
-        $this->createTestCountry('uk', 'United Kingdom');
-        $this->createTestCountry('de', 'Germany');
+        $this->createTestDBRecord();
+        $this->createTestDBRecord();
 
         $records = $collection->getAll();
 
