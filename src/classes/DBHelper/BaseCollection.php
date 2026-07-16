@@ -275,6 +275,24 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         }
     }
 
+    /**
+     * Fully resets the collection by disposing every cached record object and
+     * clearing all in-memory caches. Use this when you need a completely clean
+     * slate — i.e., when no external code holds references to the records and
+     * you want to guarantee that all subsequent accesses re-fetch from the DB.
+     *
+     * **Caution — do not use in test setUp routines** when the collection is a
+     * singleton whose records are legitimately held by other singletons (e.g.
+     * tenant country collections, notification locale managers). Disposing the
+     * records in that case will cause `DisposableDisposedException` errors in
+     * any code that still holds a reference to the old objects.
+     *
+     * Use {@see self::clearRecordCache()} instead when you only need to prevent
+     * stale IDs from appearing in `getAll()` results (the typical test-isolation
+     * use case) without breaking existing object references.
+     *
+     * @return $this
+     */
     public function resetCollection() : self
     {
         $this->log(sprintf('Resetting the collection. [%s] records were loaded.', count($this->records)));
@@ -297,6 +315,42 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
         $this->allRecords = null;
         $this->idLookup = array();
+    }
+
+    /**
+     * Clears only the in-memory `getAll()` result cache and the ISO-to-ID
+     * lookup, without touching the per-ID record cache (`$records`) and
+     * without disposing any record objects. Existing references held by
+     * callers remain fully valid after this call.
+     *
+     * **When to use this instead of {@see self::resetCollection()}:**
+     *
+     * Prefer `clearRecordCache()` in test `setUp()` routines where the
+     * collection is a long-lived singleton whose records are legitimately
+     * held by other singletons (e.g. a countries collection whose records are
+     * cached inside tenant country collections, notification locale managers,
+     * or API method instances). `resetCollection()` would dispose those records
+     * and trigger `DisposableDisposedException` in any code that still holds a
+     * reference, while `clearRecordCache()` only flushes the `getAll()` result
+     * cache — which is sufficient to prevent stale IDs from rolled-back test
+     * transactions from leaking into subsequent tests.
+     *
+     * **Limitation:** The per-ID record cache (`$records`) is NOT cleared.
+     * If a test creates a record inside a transaction, that record is loaded
+     * into `$records` during the test, and the transaction is later rolled
+     * back, the stale object will remain reachable via `getByID()`. In
+     * practice this is not a problem because no subsequent test knows the
+     * stale ID — but it is a theoretical correctness gap. See the deferred
+     * item in `docs/agents/deferred-topics.md` for the long-term plan.
+     *
+     * **Must be paired with co-resets** for any singletons whose objects
+     * lazily cache records from this collection. For the countries collection,
+     * call `Locales::getInstance()->clearLocaleCache()` immediately after to
+     * prevent stale country references from surviving in `Locale` objects.
+     */
+    public function clearRecordCache() : void
+    {
+        $this->invalidateMemoryCache();
     }
 
     public function getByRequest() : ?DBHelperRecordInterface
