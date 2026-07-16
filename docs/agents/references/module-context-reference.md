@@ -84,6 +84,8 @@ Custom metadata block. The CTX generator ignores unknown top-level keys, so this
 | `label` | Yes | string | Human-readable module name for display purposes. |
 | `description` | Yes | string | One-sentence summary of the module's purpose and responsibility. Should answer "what does this module do?" |
 | `relatedModules` | No | string[] | List of other module `id` values that this module has a significant relationship with. Captures cross-module dependencies that cannot be inferred from the directory tree. |
+| `keywords` | No | string[] | Keyword entries for the module glossary generator. Each entry is a string in the form `Term (context description)`. Values containing `: ` must be quoted. See **Keyword Value Syntax Constraints** below. |
+| `exportDocs` | No | string[] | Relative paths (from the `module-context.yaml` location) to `.md` files to include in the JSON export's `additionalDocs` array. Non-`.md` entries and paths resolving outside the project root are silently skipped with a progress warning. See **`exportDocs` Field** below. |
 
 ### Conventions
 
@@ -134,6 +136,28 @@ keywords:
 ```
 
 **Rule:** If a keyword value must contain `: `, wrap the entire value in double quotes.
+
+### `exportDocs` Field
+
+The `exportDocs` list declares additional Markdown files that the JSON export generator should include alongside the module's metadata. These become the `additionalDocs` array entries for the module in `modules.json`.
+
+```yaml
+moduleMetaData:
+  id: "short-messages"
+  label: "Short Messages"
+  description: "Sends and tracks outbound SMS messages via the Twilio connector."
+  exportDocs:
+    - Docs/twilio-connector.md
+    - Docs/rate-limits.md
+```
+
+**Rules:**
+- Paths are relative to the `module-context.yaml` file's directory.
+- Only `.md` files are accepted; other file types are skipped with a warning.
+- Paths that resolve outside the project root are rejected (containment guard).
+- The `additionalDocs` key is always present in the JSON output (empty array when `exportDocs` is absent).
+
+**Project-level docs:** Cross-cutting documentation that has no natural module owner can be declared in the root `context.yaml` under `projectMetaData.exportDocs` instead. These appear in the top-level `projectDocs` key of the JSON output. See `src/classes/Application/Composer/README.md` for the full configuration reference.
 
 ---
 
