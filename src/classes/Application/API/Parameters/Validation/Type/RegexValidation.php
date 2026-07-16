@@ -25,6 +25,12 @@ class RegexValidation extends BaseParamValidation
             return;
         }
 
+        if($value === '') {
+            // Empty string is a valid "clear field" signal (used by ClearableStringParameter).
+            // Skip regex validation so empty strings pass through unmodified.
+            return;
+        }
+
         if(!is_string($value)) {
             $result->makeError(
                 sprintf(
