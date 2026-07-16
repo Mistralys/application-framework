@@ -6,6 +6,9 @@
 
 - DBHelper: Added `clearRecordCache()` in collections as a soft reset without disposing objects.
 - Locales: Added `clearLocaleCache()` to allow resetting the locale cache after a countries collection cache clear.
+- API: Added empty-string bypass in regex validation to pass clear-field signals through unmodified.
+- Tests: Fixed cross-test isolation failures in the wizard and DBHelper disposer test cases.
+- Docs: Added the module context reference guide.
 
 ## v7.3.6 - ClearableString Validation Bypass
 
