@@ -4,6 +4,9 @@
     <testsuite name="Framework Tests">
       <directory suffix=".php">./tests/AppFrameworkTests</directory>
     </testsuite>
+    <testsuite name="big-selection">
+      <directory suffix=".php">./tests/AppFrameworkTests/UI/BigSelection</directory>
+    </testsuite>
   </testsuites>
   <groups>
     <exclude>
