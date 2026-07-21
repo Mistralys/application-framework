@@ -220,6 +220,17 @@ $age = $data->getInt('integer');
 
 ---
 
+## UI Icon Rendering
+
+- All icons are rendered **server-side in PHP** via `UI::icon()` — never constructed in JavaScript or injected via CSS `::before` pseudo-element content.
+- The `UI::icon()` factory returns a `UI_Icon` instance that renders as an `<i>` tag with FontAwesome CSS classes.
+- For **toggle/state-driven icons** (e.g. active/inactive indicators, checkbox states), render **all state variants** server-side and use CSS `display` rules to show/hide the appropriate icon based on a state class (e.g. `.active`).
+- JavaScript may toggle CSS classes to switch visual state, but must **not** create, replace, or modify icon DOM elements.
+- Use `UI_Icon::addClass()` to apply state CSS classes directly to rendered `<i>` tags — no extra wrapper elements needed.
+- **Canonical example:** `BigSelectionWidget` checkable items render both `UI::icon()->itemInactive()` (outline circle, unchecked) and `UI::icon()->itemActive()` (solid circle, checked) in `CheckableItem::_render()`. CSS rules toggle `display` between the two icons based on the `active` class on the parent `<li>`. The `checkable.js` handler only toggles the `active` class; it has no knowledge of icon elements or FontAwesome class names.
+
+---
+
 ## Event System
 
 Modules register behavior through **event listeners** extending framework base listener classes. The framework supports:
