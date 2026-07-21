@@ -83,6 +83,13 @@ class template_default_ui_bootstrap_big_selection extends UI_Page_Template_Custo
             	</div>
             <?php 
         }
+
+        if($this->selection->hasCheckableItems())
+        {
+            $this->ui->addJavascript(BigSelectionCSS::RESOURCES_JS_CHECKABLE);
+
+            $this->ui->addJavascriptOnload(sprintf("(new UI_BigSelection_Checkable('%s')).Start()", $jsID));
+        }
     ?>
     <ul<?php echo $this->selection->renderAttributes() ?>>
     	<?php

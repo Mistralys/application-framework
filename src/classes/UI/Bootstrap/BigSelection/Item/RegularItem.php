@@ -158,13 +158,7 @@ class RegularItem extends BaseItem
 
     protected function renderLabel(): string
     {
-        $label = $this->label;
-
-        if (isset($this->icon)) {
-            $label = $this->icon . ' ' . $label;
-        }
-
-        return $label;
+        return $this->renderIconLabel($this->label);
     }
 
     /**

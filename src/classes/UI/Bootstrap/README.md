@@ -12,7 +12,7 @@ PHP abstractions for **Bootstrap v2 UI components**. Each class wraps a specific
 
 | Folder / File | Contents |
 |---|---|
-| `BigSelection/` | Large card-style selection widget |
+| `BigSelection/` | Large card-style selection widget; supports regular, header, separator, and checkable (multi-select) item types |
 | `ButtonGroup/` | Bootstrap button group with individual button types |
 | `Dropdown/` | Dropdown building blocks (items, dividers, headers, subMenus) |
 | `Tab/` | Individual tab and its content panel |
