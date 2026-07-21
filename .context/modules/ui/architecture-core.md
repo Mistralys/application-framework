@@ -17051,9 +17051,11 @@ class UI
 	 * is used to let the user select from a prominent list
 	 * of items.
 	 *
+	 * @param string $formName Optional form name for checkable items. When provided,
+	 *                         it is passed directly to {@see BigSelectionWidget::setFormName()}.
 	 * @return BigSelectionWidget
 	 */
-	public function createBigSelection(): BigSelectionWidget
+	public function createBigSelection(string $formName = ''): BigSelectionWidget
 	{
 		/* ... */
 	}

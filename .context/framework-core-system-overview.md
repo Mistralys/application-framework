@@ -433,6 +433,7 @@ _SOURCE: Framework Documentation_
         └── array-handling.md
         └── coding-guidelines.md
         └── coding-patterns.md
+        └── deferred-topics.md
         └── exception-usage.md
         └── file-handling.md
         └── folder-structure.md
@@ -584,6 +585,124 @@ protected function tearDown() : void
 
 See `IconCollection::resetInstance()` and `IconCollectionTest::tearDown()` for
 the reference implementation.
+
+```
+###  Path: `/docs/agents/deferred-topics.md`
+
+```md
+# Deferred Topics
+
+Topics where the current implementation is a known compromise and a cleaner solution
+should be pursued when the right approach has been identified. Each entry describes
+the limitation, the current workaround, and the conditions under which the deferred
+work should be revisited.
+
+---
+
+## DT-001 — Replace `clearRecordCache()` with a proper test-isolation event
+
+**Filed:** 2026-07-16  
+**Status:** Deferred — awaiting clean solution  
+**Area:** `DBHelper_BaseCollection`, `Application_Countries`, test infrastructure
+
+### Background
+
+`DBHelper_BaseCollection::clearRecordCache()` was introduced as a test-isolation helper
+for the countries singleton. The intended approach (using `resetCollection()`) disposes
+all cached record objects, which breaks any external code that legitimately holds
+references to those objects across `setUp()` boundaries — for example, tenant country
+collections (`TenantCountriesCollection`), notification locale managers
+(`NotificationLocalesManager`), and API method instances.
+
+`clearRecordCache()` works around this by only flushing the `getAll()` result cache
+(`$allRecords`) and the ISO-to-ID lookup (`$idLookup`) without disposing records. This
+is sufficient to prevent stale IDs from rolled-back test transactions from leaking into
+subsequent tests. However, it has two known gaps:
+
+1. **The per-ID record cache (`$records`) is not cleared.** A record created inside a
+   rolled-back transaction remains reachable via `getByID()` for the remainder of the
+   process lifetime. In practice this does not cause failures (no subsequent test has
+   the stale ID), but it is a correctness gap.
+
+2. **Co-resets must be managed manually.** Each singleton that lazily caches records
+   from the countries collection (currently `Locales` via `clearLocaleCache()`) must be
+   individually identified and co-reset in `setUp()`. This is fragile: adding a new
+   singleton that caches country records elsewhere in the codebase will silently
+   re-introduce the stale-reference problem unless the developer also adds a co-reset.
+
+### Desired Long-Term Solution
+
+The clean solution is an `onAfterClearCache` (or `onAfterResetCollection`) event on
+`BaseCollection` that interested parties can subscribe to. The countries collection would
+fire this event in both `clearRecordCache()` and `resetCollection()`. `Locales` and any
+other singleton that caches country records would subscribe and self-reset automatically.
+
+This would eliminate the manual co-reset calls in `MailTestCase::setUp()` and make the
+cache-invalidation contract part of the collection's API rather than test infrastructure
+knowledge.
+
+### What Must Happen Before This Can Be Resolved
+
+- Audit all singletons that hold references to `Application_Countries_Country` records.
+  The countries collection is not the only one affected; other collections may have the
+  same pattern.
+- Design the event API so that `resetCollection()` and `clearRecordCache()` can fire
+  distinct events (full dispose vs. cache-only flush), allowing subscribers to react
+  differently if needed.
+- Migrate all existing co-resets in `MailTestCase::setUp()` to event subscriptions.
+- Verify the full test suite passes (countries filter, mail suite, notifications suite)
+  after the migration.
+
+### Generalized Test Isolation: Central Collection Cache Reset
+
+A broader improvement to consider: a generalized `tearDown()` mechanism that resets
+**all** loaded collection caches, not just Countries and Locales. The structural
+challenges that make this non-trivial:
+
+1. **Two unrelated collection hierarchies:** `DBHelper_BaseCollection` (has
+   `clearRecordCache()`) and `BaseStringPrimaryCollection` from
+   `application-utils-collections` (has `reset()` only). A single loop cannot call
+   the same method on both.
+
+2. **Three separate singleton registries:** `DBHelper::$collections` (collections
+   created via `DBHelper::createCollection()`), `AppFactory::$instances` (collections
+   created via `createClassInstance()`), and individual `getInstance()` statics
+   (`Application_Countries`, `Locales`, `Languages`). No single registry covers all
+   loaded collections.
+
+**Possible solution path:**
+
+- Introduce a `CacheResettable` interface with a single `clearCache(): void` method,
+  implemented by both `DBHelper_BaseCollection` and `BaseStringPrimaryCollection`.
+- Add a central `CollectionRegistry` where all singletons register on construction.
+- Expose a `CollectionRegistry::clearAllCaches()` method callable from
+  `ApplicationTestCase::tearDown()`.
+
+This would replace the current manual co-reset calls (Countries + Locales) and
+automatically cover any future collections without requiring test-infrastructure changes.
+
+### Current State
+
+- `clearRecordCache()` is documented with its limitation in its docblock in
+  `src/classes/DBHelper/BaseCollection.php`.
+- `Locales::clearLocaleCache()` is the only registered co-reset; it is called explicitly
+  in `MailTestCase::setUp()` immediately after `clearRecordCache()`.
+- The framework's `ApplicationTestCase::tearDown()` now clears Countries and Locales
+  caches after every transaction rollback, preventing stale singleton state from leaking
+  across tests at the framework level.
+- The research paper that concluded `Locales` was the only affected singleton was
+  incorrect. `TenantCountriesCollection` and `NotificationLocalesManager` also hold
+  country references, which is why `resetCollection()` cannot safely replace
+  `clearRecordCache()` today.
+
+### References
+
+- `src/classes/DBHelper/BaseCollection.php` — `clearRecordCache()` and `resetCollection()` docblocks
+- `src/classes/Application/Locales/Locales.php` — `clearLocaleCache()`
+- `tests/AppFrameworkTestClasses/ApplicationTestCase.php` — framework-level co-reset in `tearDown()`
+- `hcp-editor/tests/MailEditorTestClasses/MailTestCase.php` — HCP Editor co-reset calls in `setUp()`
+- `hcp-editor/docs/agents/projects/test-fixes.md` — full rationale for the current approach
+- `hcp-editor/docs/agents/plans/2026-07-16-countries-reset-collection/synthesis.md` — implementation notes
 
 ```
 ###  Path: `/docs/agents/exception-usage.md`
@@ -1180,6 +1299,17 @@ $age = $data->getInt('integer');
 
 ---
 
+## UI Icon Rendering
+
+- All icons are rendered **server-side in PHP** via `UI::icon()` — never constructed in JavaScript or injected via CSS `::before` pseudo-element content.
+- The `UI::icon()` factory returns a `UI_Icon` instance that renders as an `<i>` tag with FontAwesome CSS classes.
+- For **toggle/state-driven icons** (e.g. active/inactive indicators, checkbox states), render **all state variants** server-side and use CSS `display` rules to show/hide the appropriate icon based on a state class (e.g. `.active`).
+- JavaScript may toggle CSS classes to switch visual state, but must **not** create, replace, or modify icon DOM elements.
+- Use `UI_Icon::addClass()` to apply state CSS classes directly to rendered `<i>` tags — no extra wrapper elements needed.
+- **Canonical example:** `BigSelectionWidget` checkable items render both `UI::icon()->itemInactive()` (outline circle, unchecked) and `UI::icon()->itemActive()` (solid circle, checked) in `CheckableItem::_render()`. CSS rules toggle `display` between the two icons based on the `active` class on the parent `<li>`. The `checkable.js` handler only toggles the `active` class; it has no knowledge of icon elements or FontAwesome class names.
+
+---
+
 ## Event System
 
 Modules register behavior through **event listeners** extending framework base listener classes. The framework supports:
@@ -1426,7 +1556,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 
 ```md
 > **Auto-generated** — do not edit. Regenerated by `composer build-dev`.
-> Generated: 2026-07-13T10:31:42Z
+> Generated: 2026-07-21T14:15:41Z
 
 # Keyword Glossary
 
@@ -1566,7 +1696,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 ```md
 # Modules Overview
 
-> Auto-generated on 2026-07-13 12:31:42. Do not edit manually.
+> Auto-generated on 2026-07-21 16:15:41. Do not edit manually.
 
 Total: 26 modules across 1 package.
 
@@ -1649,7 +1779,7 @@ Comprehensive guide to the Application Framework's test infrastructure, conventi
 | **Config file** | `phpunit.xml` (project root) |
 | **Bootstrap** | `tests/bootstrap.php` |
 | **Test count** | ~155 unit test files + 2 integration test files |
-| **Test suite** | Single suite: `Framework Tests` (all tests under `tests/AppFrameworkTests/`) |
+| **Test suite** | Two named suites: `Framework Tests` (all tests under `tests/AppFrameworkTests/`) and `big-selection` (BigSelection tests under `tests/AppFrameworkTests/UI/BigSelection/`) |
 
 ---
 
@@ -2215,6 +2345,8 @@ Custom metadata block. The CTX generator ignores unknown top-level keys, so this
 | `label` | Yes | string | Human-readable module name for display purposes. |
 | `description` | Yes | string | One-sentence summary of the module's purpose and responsibility. Should answer "what does this module do?" |
 | `relatedModules` | No | string[] | List of other module `id` values that this module has a significant relationship with. Captures cross-module dependencies that cannot be inferred from the directory tree. |
+| `keywords` | No | string[] | Keyword entries for the module glossary generator. Each entry is a string in the form `Term (context description)`. Values containing `: ` must be quoted. See **Keyword Value Syntax Constraints** below. |
+| `exportDocs` | No | string[] | Relative paths (from the `module-context.yaml` location) to `.md` files to include in the JSON export's `additionalDocs` array. Non-`.md` entries and paths resolving outside the project root are silently skipped with a progress warning. See **`exportDocs` Field** below. |
 
 ### Conventions
 
@@ -2265,6 +2397,28 @@ keywords:
 ```
 
 **Rule:** If a keyword value must contain `: `, wrap the entire value in double quotes.
+
+### `exportDocs` Field
+
+The `exportDocs` list declares additional Markdown files that the JSON export generator should include alongside the module's metadata. These become the `additionalDocs` array entries for the module in `modules.json`.
+
+```yaml
+moduleMetaData:
+  id: "short-messages"
+  label: "Short Messages"
+  description: "Sends and tracks outbound SMS messages via the Twilio connector."
+  exportDocs:
+    - Docs/twilio-connector.md
+    - Docs/rate-limits.md
+```
+
+**Rules:**
+- Paths are relative to the `module-context.yaml` file's directory.
+- Only `.md` files are accepted; other file types are skipped with a warning.
+- Paths that resolve outside the project root are rejected (containment guard).
+- The `additionalDocs` key is always present in the JSON output (empty array when `exportDocs` is absent).
+
+**Project-level docs:** Cross-cutting documentation that has no natural module owner can be declared in the root `context.yaml` under `projectMetaData.exportDocs` instead. These appear in the top-level `projectDocs` key of the JSON output. See `src/classes/Application/Composer/README.md` for the full configuration reference.
 
 ---
 

@@ -1719,6 +1719,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── BigSelectionCSS.php
             │   │   ├── BigSelectionWidget.php
             │   │   ├── Item/
+            │   │   │   └── CheckableItem.php
             │   │   │   └── HeaderItem.php
             │   │   │   └── RegularItem.php
             │   │   │   └── SeparatorItem.php
