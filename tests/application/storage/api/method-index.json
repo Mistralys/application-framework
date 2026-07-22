@@ -6,6 +6,7 @@
     "GetAppLocales": "Application\\Locales\\API\\Methods\\GetAppLocalesAPI",
     "GetOpenAPISpec": "Application\\API\\OpenAPI\\GetOpenAPISpec",
     "TestAPIKey": "TestDriver\\API\\TestAPIKeyMethod",
+    "TestAPIKeyWithRight": "TestDriver\\API\\TestAPIKeyMethodWithRight",
     "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
     "TestCacheable": "TestDriver\\API\\TestCacheableMethod",
     "TestDryRun": "TestDriver\\API\\TestDryRunMethod",

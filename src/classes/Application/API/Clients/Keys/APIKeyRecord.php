@@ -40,9 +40,15 @@ class APIKeyRecord extends DBHelper_BaseRecord
         return $this->getRecordIntKey(APIKeysCollection::COL_PSEUDO_USER_ID);
     }
 
+    private ?Application_User $pseudoUser = null;
+
     public function getPseudoUser() : Application_User
     {
-        return Application::createUser($this->getPseudoUserID());
+        if (!isset($this->pseudoUser)) {
+            $this->pseudoUser = Application::createUser($this->getPseudoUserID());
+        }
+
+        return $this->pseudoUser;
     }
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)

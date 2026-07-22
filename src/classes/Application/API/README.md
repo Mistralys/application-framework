@@ -42,6 +42,23 @@ discovers, indexes, and exposes through a single dispatcher entry point.
   interactive API documentation UI. Examples are supported via `JSONMethodExample`.
 - **User Rights:** `APIRightsInterface` / `APIRightsTrait` define the right to access
   the API admin area.
+- **Authorization:** API key methods can declare a required application right via
+  `getRequiredRight()`. The pipeline enforces this after authentication and before
+  execution. Two dedicated error codes signal denial: `ERROR_METHOD_NOT_GRANTED`
+  (183005) when the key has no method grant, and `ERROR_INSUFFICIENT_RIGHTS` (183006)
+  when the key has method access but the user lacks the required right. Both produce
+  HTTP 403 via `ErrorResponse::makeForbidden()`. `updateLastUsed()` is called after
+  successful authorization. Both denial paths emit a log message that includes the
+  API key ID and method name; the insufficient-rights path also includes the pseudo-user
+  ID and the required right name.
+  > **Design invariant:** `authorize()` is `private` — it is called unconditionally
+  > by `_process()` and cannot be bypassed or overridden by subclasses. This makes
+  > authorization mandatory for every request through the pipeline.
+  >
+  > **Tier 2 rights:** API methods may add further fine-grained right checks inside
+  > `handleXxx()` handler methods using `$user->hasRight()`. On denial, send
+  > `errorResponse(MailAPIInterface::ERROR_INSUFFICIENT_RIGHTS)->makeForbidden()->send()`.
+  > See `SetMailingStateAPI::handleFinalize()` in the HCP Editor for a concrete example.
 - **Events:** `RegisterAPIIndexCacheListener` and `RegisterAPIResponseCacheListener`
   integrate the method index and response caches with the framework's CacheControl system.
 

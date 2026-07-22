@@ -14,7 +14,7 @@ final class APIKeyParameterTest extends APITestCase
     {
         $method = new TestAPIKeyMethod(APIManager::getInstance());
 
-        $key = $this->createTestAPIKey();
+        $key = $this->createTestAPIKeyForMethod(TestAPIKeyMethod::METHOD_NAME);
 
         $method->manageParamAPIKey()->selectKey($key);
 

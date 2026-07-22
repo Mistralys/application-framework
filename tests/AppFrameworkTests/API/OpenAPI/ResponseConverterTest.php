@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AppFrameworkTests\API\OpenAPI;
 
 use Application\API\APIMethodInterface;
+use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\OpenAPI\OpenAPISchema;
 use Application\API\OpenAPI\ResponseConverter;
 use Application\API\Traits\JSONResponseInterface;
@@ -64,6 +65,19 @@ final class ResponseConverterTest extends TestCase
         return $mock;
     }
 
+    /**
+     * Creates a mock implementing both APIMethodInterface and APIKeyMethodInterface.
+     *
+     * @param string $responseMime
+     * @return APIKeyMethodInterface&\PHPUnit\Framework\MockObject\Stub
+     */
+    private function createKeyMethodMock(string $responseMime = 'application/json') : APIKeyMethodInterface
+    {
+        $mock = $this->createStub(APIKeyMethodInterface::class);
+        $mock->method('getResponseMime')->willReturn($responseMime);
+        return $mock;
+    }
+
     // -------------------------------------------------------------------------
     // Top-level structure
     // -------------------------------------------------------------------------
@@ -81,6 +95,7 @@ final class ResponseConverterTest extends TestCase
     {
         $this->assertSame('200', ResponseConverter::HTTP_200);
         $this->assertSame('400', ResponseConverter::HTTP_400);
+        $this->assertSame('403', ResponseConverter::HTTP_403);
         $this->assertSame('500', ResponseConverter::HTTP_500);
     }
 
@@ -292,6 +307,26 @@ final class ResponseConverterTest extends TestCase
         $this->assertStringNotContainsString(OpenAPISchema::SCHEMA_API_ENVELOPE.'_', $schema400['$ref']);
         $this->assertStringContainsString(OpenAPISchema::SCHEMA_API_ERROR_ENVELOPE, $schema400['$ref']);
         $this->assertStringContainsString(OpenAPISchema::SCHEMA_API_ERROR_ENVELOPE, $schema500['$ref']);
+    }
+
+    // -------------------------------------------------------------------------
+    // Authorization response (403)
+    // -------------------------------------------------------------------------
+
+    public function test_key_method_includes_403_response() : void
+    {
+        $method = $this->createKeyMethodMock();
+        $result = $this->converter->convertResponses($method);
+
+        $this->assertArrayHasKey(ResponseConverter::HTTP_403, $result);
+    }
+
+    public function test_non_key_method_excludes_403_response() : void
+    {
+        $method = $this->createBasicMethodMock();
+        $result = $this->converter->convertResponses($method);
+
+        $this->assertArrayNotHasKey(ResponseConverter::HTTP_403, $result);
     }
 
     // -------------------------------------------------------------------------

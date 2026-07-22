@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API\OpenAPI;
 
 use Application\API\APIMethodInterface;
+use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\Traits\JSONResponseInterface;
 
 /**
@@ -33,21 +34,34 @@ class ResponseConverter
 {
     public const string HTTP_200 = '200';
     public const string HTTP_400 = '400';
+    public const string HTTP_403 = '403';
     public const string HTTP_500 = '500';
 
     /**
      * Converts a method's response metadata into a map of HTTP status codes → OpenAPI response objects.
      *
      * @param APIMethodInterface $method
-     * @return array{'200': array<string,mixed>, '400': array<string,mixed>, '500': array<string,mixed>}
+     * @return array{'200': array<string,mixed>, '400': array<string,mixed>, '403'?: array<string,mixed>, '500': array<string,mixed>}
      */
     public function convertResponses(APIMethodInterface $method) : array
     {
-        return array(
+        $responses = array(
             self::HTTP_200 => $this->buildSuccessResponse($method),
             self::HTTP_400 => $this->buildErrorResponse('Validation error or invalid parameters.'),
             self::HTTP_500 => $this->buildErrorResponse('Internal server error.'),
         );
+
+        if($method instanceof APIKeyMethodInterface)
+        {
+            $responses[self::HTTP_403] = $this->buildErrorResponse(
+                'Forbidden. The API key is not granted access to this method '.
+                '(error '.APIMethodInterface::ERROR_METHOD_NOT_GRANTED.') '.
+                'or the key\'s user lacks the required right '.
+                '(error '.APIMethodInterface::ERROR_INSUFFICIENT_RIGHTS.').',
+            );
+        }
+
+        return $responses;
     }
 
     /**

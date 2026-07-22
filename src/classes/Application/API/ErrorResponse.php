@@ -144,6 +144,17 @@ class ErrorResponse
         return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Sets the HTTP status code to 403 Forbidden.
+     * Use for authorization failures: method not granted to the API key
+     * ({@see APIMethodInterface::ERROR_METHOD_NOT_GRANTED}) or insufficient user
+     * rights ({@see APIMethodInterface::ERROR_INSUFFICIENT_RIGHTS}).
+     */
+    public function makeForbidden() : self
+    {
+        return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_FORBIDDEN);
+    }
+
     public function send() : never
     {
         $this->addData(array(

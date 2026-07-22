@@ -10,6 +10,7 @@ namespace Application\Themes\DefaultTemplate\API;
 
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
+use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\Connector\AppAPIConnector;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
@@ -318,6 +319,10 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             Connectors_ResponseCode::HTTP_BAD_REQUEST => 'Bad request (missing or invalid parameters)',
             Connectors_ResponseCode::HTTP_INTERNAL_SERVER_ERROR => 'Internal server error',
         );
+
+        if ($this->method instanceof APIKeyMethodInterface) {
+            $codes[Connectors_ResponseCode::HTTP_FORBIDDEN] = 'Forbidden (insufficient rights to call this method)';
+        }
 
         $result = array();
         foreach($codes as $code => $desc) {

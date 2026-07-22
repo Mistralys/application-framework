@@ -430,6 +430,39 @@ protected function tearDown() : void
 
 ---
 
+## API Key Method Tests
+
+Any test that exercises an API method implementing `APIKeyMethodInterface` through
+`processReturn()` must explicitly grant the method to the test API key before calling
+`processReturn()`. The authorization gate introduced in `BaseAPIMethod::authorize()`
+enforces a method-access whitelist — keys without an explicit grant receive HTTP 403
+(`ERROR_METHOD_NOT_GRANTED = 183005`).
+
+### Required setup pattern
+
+Use `createTestAPIKeyForMethod()` as the recommended single-call factory:
+
+```php
+$key = $this->createTestAPIKeyForMethod(TestAPIKeyMethod::METHOD_NAME);
+
+$result = $this->processReturn(TestAPIKeyMethod::class, array(...));
+```
+
+Alternatively, the explicit two-step pattern is still valid when you need to
+configure the key further before granting the method:
+
+```php
+$key = $this->createTestAPIKey();
+$key->getMethods()->addMethod(TestAPIKeyMethod::METHOD_NAME); // required — grant method access
+
+$result = $this->processReturn(TestAPIKeyMethod::class, array(...));
+```
+
+Omitting the method grant causes a silent 403 that is easy to misread as a test
+logic error.
+
+---
+
 ## PHPUnit Mock Conventions
 
 PHPUnit 13 emits a **Notice** — "No expectations were configured for the mock object for X"
