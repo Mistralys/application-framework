@@ -362,6 +362,21 @@ production example of this pattern.
 
 ---
 
+## Known Gotchas
+
+### `Application::createUser()` — cache
+
+`Application::createUser()` maintains a `$knownUsers` static cache that is now populated
+on every user creation. Subsequent calls with the same ID return the cached instance.
+
+`APIKeyRecord::getPseudoUser()` maintains an additional per-record instance cache.
+
+In tests that mutate user rights in-memory (e.g. `setRights()`), call
+`Application::clearUserCache()` in `setUp()` and `tearDown()` to prevent stale cached
+instances from leaking between test cases.
+
+---
+
 ## Agent Workflow Notes
 
 ### `read_file` truncation on long PHP lines

@@ -137,6 +137,58 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     }
 
     /**
+     * Performs authorization checks for API-key-authenticated methods.
+     *
+     * This is a pure decision gate — it either permits the request to proceed
+     * or terminates it with an HTTP 403 response. No side effects are performed here;
+     * `updateLastUsed()` is called by the caller after this method returns.
+     *
+     * For methods that do not implement {@see APIKeyMethodInterface}, this method
+     * returns immediately with no effect.
+     *
+     * @return void
+     */
+    private function authorize(): void
+    {
+        if (!($this instanceof APIKeyMethodInterface)) {
+            return;
+        }
+
+        $key = $this->manageParamAPIKey()->getKey();
+        if ($key === null) {
+            return;
+        }
+
+        if (!$key->getMethods()->hasMethod($this->getMethodName())) {
+            $this->log(
+                'API authorization denied: key [%s] is not granted access to method [%s].',
+                $key->getID(),
+                $this->getMethodName()
+            );
+            $this->errorResponse(APIMethodInterface::ERROR_METHOD_NOT_GRANTED)
+                ->makeForbidden()
+                ->setErrorMessage('API key is not authorized to access this method.')
+                ->send();
+        }
+
+        $requiredRight = $this->getRequiredRight();
+
+        if ($requiredRight !== null && !$key->getPseudoUser()->hasRight($requiredRight)) {
+            $this->log(
+                'API authorization denied: key [%s] pseudo-user [%s] lacks required right [%s] for method [%s].',
+                $key->getID(),
+                $key->getPseudoUser()->getID(),
+                $requiredRight,
+                $this->getMethodName()
+            );
+            $this->errorResponse(APIMethodInterface::ERROR_INSUFFICIENT_RIGHTS)
+                ->makeForbidden()
+                ->setErrorMessage('Insufficient privileges to access this method.')
+                ->send();
+        }
+    }
+
+    /**
      * @return void
      * @throws APIResponseDataException When in return mode - see class description
      */
@@ -145,6 +197,12 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $this->time = Microtime::createNow();
 
         $this->validate();
+
+        $this->authorize();
+
+        if ($this instanceof APIKeyMethodInterface) {
+            $this->manageParamAPIKey()->getKey()?->updateLastUsed();
+        }
 
         $version = $this->getActiveVersion();
 
@@ -191,9 +249,15 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     }
 
     /**
-     * Used to give a method the opportunity to configure request
-     * parameters before it is processed. Note: use the
-     * {@see self::addParam()} method to add parameters.
+     * Override this method to register method-specific parameters and
+     * perform any other one-time setup required by the method.
+     *
+     * Use {@see self::addParam()} to add parameters.
+     *
+     * NOTE: Reserved parameters (API method name, version, and — when
+     * {@see APIKeyMethodInterface} is implemented — the API key parameter)
+     * are already registered by {@see self::initReservedParams()} before
+     * this method is called. Do NOT re-register them here.
      */
     abstract protected function init() : void;
 

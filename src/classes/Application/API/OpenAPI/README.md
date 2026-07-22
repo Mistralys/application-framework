@@ -20,7 +20,7 @@ pre-generated spec (`GetOpenAPISpec`), and convenient application-level entry po
 | `OpenAPISchema` | Provides reusable `components/schemas` definitions for the standard API response envelopes. |
 | `HtaccessGenerator` | Generates an Apache `.htaccess` that rewrites clean RESTful paths to the existing `?method=` dispatcher. |
 | `ParameterConverter` | Converts framework `APIParameterInterface` instances into OpenAPI 3.1 parameter objects or request body schema properties. |
-| `ResponseConverter` | Converts an API method's response metadata into OpenAPI 3.1 response objects (200, 400, 500). |
+| `ResponseConverter` | Converts an API method's response metadata into OpenAPI 3.1 response objects (200, 400, 403, 500). |
 | `MethodConverter` | Converts a single `APIMethodInterface` into a complete OpenAPI 3.1 path item entry (`/api/{MethodName}` + `post` operation). |
 | `SchemaInferrer` | Infers a JSON Schema from a PHP example response array, with optional merging of `KeyDescription` annotations. |
 | `GetOpenAPISpec` | Framework built-in API method that serves the pre-generated `openapi.json` as raw JSON over HTTP (`/api/GetOpenAPISpec`). |
@@ -320,7 +320,7 @@ $result = $converter->convertParameters($apiMethod->getParamManager());
 `Application\API\OpenAPI\ResponseConverter`
 
 Converts an API method's response metadata into OpenAPI 3.1 response objects for all standard
-HTTP status codes (200, 400, 500). The class is stateless — construct it once and reuse it
+HTTP status codes (200, 400, 403, 500). The class is stateless — construct it once and reuse it
 across multiple methods.
 
 ### Response structure
@@ -331,6 +331,7 @@ across multiple methods.
 | `200` + example | `$ref: APIEnvelope` + `example` | Method implements `JSONResponseInterface` and `getExampleJSONResponse()` returns non-empty data |
 | `200` + key descriptions | `allOf[$ref: APIEnvelope]` + `properties.data` | Method implements `JSONResponseInterface` and provides `getResponseKeyDescriptions()` |
 | `400` | `$ref: APIErrorEnvelope` | Always present |
+| `403` | `$ref: APIErrorEnvelope` | Method implements `APIKeyMethodInterface` |
 | `500` | `$ref: APIErrorEnvelope` | Always present |
 
 ### Example and key descriptions
@@ -349,7 +350,7 @@ For methods implementing `JSONResponseInterface`:
 ### Response MIME type
 
 The 200 response content key uses the method's `getResponseMime()` value, matching whatever the
-method actually returns. Error responses (400, 500) always use `application/json` — error
+method actually returns. Error responses (400, 403, 500) always use `application/json` — error
 envelopes are always JSON regardless of the method MIME type.
 
 ### Public API
@@ -364,6 +365,8 @@ envelopes are always JSON regardless of the method MIME type.
 [
     '200' => ['description' => 'Successful response.', 'content' => [...]],
     '400' => ['description' => 'Validation error or invalid parameters.', 'content' => [...]],
+    // '403' key is only present for APIKeyMethodInterface methods:
+    '403' => ['description' => 'Forbidden. ...', 'content' => [...]],
     '500' => ['description' => 'Internal server error.', 'content' => [...]],
 ]
 ```
@@ -374,6 +377,7 @@ envelopes are always JSON regardless of the method MIME type.
 |---|---|---|
 | `HTTP_200` | `'200'` | Key for the success response. |
 | `HTTP_400` | `'400'` | Key for the validation error response. |
+| `HTTP_403` | `'403'` | Key for the authorization error response. Present only for `APIKeyMethodInterface` methods. |
 | `HTTP_500` | `'500'` | Key for the internal server error response. |
 
 ### Usage
@@ -386,12 +390,13 @@ $converter = new ResponseConverter();
 $responses = $converter->convertResponses($apiMethod);
 // $responses['200'] — success response (with optional example and key descriptions)
 // $responses['400'] — validation error response
+// $responses['403'] — authorization error response (present only for APIKeyMethodInterface methods)
 // $responses['500'] — internal server error response
 ```
 
 ### Known limitations (future work)
 
-- Error responses (400, 500) hardcode `application/json` as the content MIME type. This is
+- Error responses (400, 403, 500) hardcode `application/json` as the content MIME type. This is
   correct per OpenAPI conventions (error envelopes are always JSON), but worth revisiting if
   custom MIME support is added in future.
 - `SchemaInferrer` is instantiated inline inside `buildSuccessResponse()`. Constructor
@@ -445,7 +450,7 @@ because `ParameterConverter` intentionally excludes reserved parameters (`method
 | `description` | `getDescription()` | Full markdown description |
 | `tags` | `[getGroup()->getLabel()]` | One tag per method |
 | `parameters` | `apiVersion` + `ParameterConverter::convertParameters()` | `apiVersion` prepended manually |
-| `responses` | `ResponseConverter::convertResponses()` | 200, 400, 500 |
+| `responses` | `ResponseConverter::convertResponses()` | 200, 400, 500 (+ 403 for `APIKeyMethodInterface` methods) |
 | `requestBody` | `ParameterConverter` result | Present only for `JSONRequestInterface` methods with body params |
 | `security` | `[{apiKey: []}]` | Present only for `APIKeyMethodInterface` methods |
 | `x-validation-rules` | `manageParams()->getRules()` | Present only when the method has parameter validation rules |

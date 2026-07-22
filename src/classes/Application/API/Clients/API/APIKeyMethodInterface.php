@@ -29,4 +29,16 @@ interface APIKeyMethodInterface extends APIMethodInterface
     public const string API_KEY_PARAM_NAME = 'apiKey';
 
     public function manageParamAPIKey() : APIKeyHandler;
+
+    /**
+     * Returns the name of the user right required to call this API method.
+     *
+     * When a non-null value is returned, the framework checks whether the
+     * API key's pseudo-user has this right before executing the method.
+     * Return `null` if this method does not require a specific user right
+     * (the method-access whitelist check still applies).
+     *
+     * @return string|null The right name, or `null` if no right is required.
+     */
+    public function getRequiredRight() : ?string;
 }

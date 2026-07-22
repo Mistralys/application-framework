@@ -25,7 +25,11 @@ viewing clients, plus sub-modes for key management.
 - **API Key Authentication:** `APIKeyMethodInterface` / `APIKeyMethodTrait`
   allow API methods to require bearer token authentication. The key is read
   from the `Authorization` header via the `APIKeyParam` / `APIKeyHandler`
-  pipeline.
+  pipeline. Implement `getRequiredRight()` in a method class to additionally
+  require that the API key's user holds a specific right before the method
+  executes (returns `null` by default, meaning no user-right check).
+  Overrides must only strengthen the right declaration — never weaken it
+  back to `null`.
 - **Method Permissions:** `APIKeyMethods` manages the whitelist of API methods
   a specific key is authorized to call.
 - **Admin UI:** `APIClientsArea` provides the full screen hierarchy:

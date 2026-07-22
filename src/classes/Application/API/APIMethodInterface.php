@@ -30,6 +30,23 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public const int ERROR_INVALID_REQUEST_PARAMS = 183003;
     public const int ERROR_NO_VALUE_AVAILABLE = 183004;
 
+    /**
+     * The API key has not been granted access to this specific method.
+     * Use this when the method-level grant check fails (authentication passed,
+     * but the key's method whitelist does not include this endpoint).
+     * Returns HTTP 403 via {@see ErrorResponse::makeForbidden()}.
+     */
+    public const int ERROR_METHOD_NOT_GRANTED = 183005;
+
+    /**
+     * The API key has method access, but the authenticated user's application-level
+     * rights are insufficient to execute the operation (e.g., missing a required
+     * right constant on the user record). Use this when {@see getRequiredRight()}
+     * returns a non-null right that the user does not hold.
+     * Returns HTTP 403 via {@see ErrorResponse::makeForbidden()}.
+     */
+    public const int ERROR_INSUFFICIENT_RIGHTS = 183006;
+
     public const string REQUEST_PARAM_API_VERSION = 'apiVersion';
     public const string REQUEST_PARAM_METHOD = 'method';
 

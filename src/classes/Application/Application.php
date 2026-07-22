@@ -1194,6 +1194,7 @@ class Application
         $user = new $userClass($userID, self::getUserData($userID));
 
         if ($user instanceof Application_User) {
+            self::$knownUsers[$userID] = $user;
             return $user;
         }
 
@@ -1206,6 +1207,17 @@ class Application
             ),
             self::ERROR_INVALID_USER_CLASS
         );
+    }
+
+    /**
+     * Clears the internal user instance cache.
+     *
+     * Call this in test teardown when tests mutate user rights in-memory
+     * to prevent stale cached instances from leaking between test cases.
+     */
+    public static function clearUserCache(): void
+    {
+        self::$knownUsers = array();
     }
 
     /**
