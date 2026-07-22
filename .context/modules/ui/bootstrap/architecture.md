@@ -15,6 +15,7 @@ _SOURCE: Public class signatures for all Bootstrap components_
                     ├── BigSelectionCSS.php
                     ├── BigSelectionWidget.php
                     ├── Item/
+                    │   └── CheckableItem.php
                     │   └── HeaderItem.php
                     │   └── RegularItem.php
                     │   └── SeparatorItem.php
@@ -558,6 +559,10 @@ class BigSelectionCSS
 	public const ITEM_ENTRY = 'bigselection-entry';
 	public const ITEM_HEADER = 'bigselection-header';
 	public const ITEM_SEPARATOR = 'bigselection-separator';
+	public const ITEM_CHECKABLE = 'bigselection-checkable';
+	public const CHECKBOX_ICON = 'bigselection-checkbox';
+	public const CHECKBOX_ICON_UNCHECKED = 'bigselection-checkbox-unchecked';
+	public const CHECKBOX_ICON_CHECKED = 'bigselection-checkbox-checked';
 	public const ANCHOR = 'bigselection-anchor';
 	public const LABEL = 'bigselection-label';
 	public const DESCRIPTION = 'bigselection-description';
@@ -571,6 +576,17 @@ class BigSelectionCSS
 
 	/** @see src/themes/default/js/ui/bigselection/static.js */
 	public const RESOURCES_JS_HANDLER = 'ui/bigselection/static.js';
+
+	/**
+	 * JS handler for the checkable BigSelection mode.
+	 *
+	 * Uses vanilla JS (querySelectorAll, addEventListener, classList) — intentionally
+	 * distinct from {@see self::RESOURCES_JS_HANDLER}, which uses jQuery. Both patterns
+	 * coexist and work correctly; do not unify them.
+	 *
+	 * @see src/themes/default/js/ui/bigselection/checkable.js
+	 */
+	public const RESOURCES_JS_CHECKABLE = 'ui/bigselection/checkable.js';
 
 	/** @see src/themes/default/css/ui-bigselection.css */
 	public const RESOURCES_STYLE_SHEET = 'ui-bigselection.css';
@@ -599,6 +615,10 @@ class BigSelectionCSS
 	public const ITEM_ENTRY = 'bigselection-entry';
 	public const ITEM_HEADER = 'bigselection-header';
 	public const ITEM_SEPARATOR = 'bigselection-separator';
+	public const ITEM_CHECKABLE = 'bigselection-checkable';
+	public const CHECKBOX_ICON = 'bigselection-checkbox';
+	public const CHECKBOX_ICON_UNCHECKED = 'bigselection-checkbox-unchecked';
+	public const CHECKBOX_ICON_CHECKED = 'bigselection-checkbox-checked';
 	public const ANCHOR = 'bigselection-anchor';
 	public const LABEL = 'bigselection-label';
 	public const DESCRIPTION = 'bigselection-description';
@@ -612,6 +632,17 @@ class BigSelectionCSS
 
 	/** @see src/themes/default/js/ui/bigselection/static.js */
 	public const RESOURCES_JS_HANDLER = 'ui/bigselection/static.js';
+
+	/**
+	 * JS handler for the checkable BigSelection mode.
+	 *
+	 * Uses vanilla JS (querySelectorAll, addEventListener, classList) — intentionally
+	 * distinct from {@see self::RESOURCES_JS_HANDLER}, which uses jQuery. Both patterns
+	 * coexist and work correctly; do not unify them.
+	 *
+	 * @see src/themes/default/js/ui/bigselection/checkable.js
+	 */
+	public const RESOURCES_JS_CHECKABLE = 'ui/bigselection/checkable.js';
 
 	/** @see src/themes/default/css/ui-bigselection.css */
 	public const RESOURCES_STYLE_SHEET = 'ui-bigselection.css';
@@ -628,8 +659,10 @@ use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
 use AppUtils\Interfaces\StringableInterface as StringableInterface;
 use AppUtils\NumberInfo as NumberInfo;
 use AppUtils\Traits\OptionableTrait as OptionableTrait;
+use Application\AppFactory as AppFactory;
 use Application_Exception as Application_Exception;
 use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Bootstrap\BigSelection\Item\CheckableItem as CheckableItem;
 use UI\Bootstrap\BigSelection\Item\HeaderItem as HeaderItem;
 use UI\Bootstrap\BigSelection\Item\RegularItem as RegularItem;
 use UI\Bootstrap\BigSelection\Item\SeparatorItem as SeparatorItem;
@@ -655,6 +688,14 @@ class BigSelectionWidget extends UI_Bootstrap implements OptionableInterface
 	public const OPTION_FILTERING_ENABLED = 'filteringEnabled';
 	public const OPTION_EMPTY_MESSAGE = 'emptyMessage';
 	public const OPTION_HEIGHT_LIMITED = 'heightLimited';
+	public const OPTION_FORM_NAME = 'formName';
+
+	/**
+	 * Thrown at render time when checkable items are present but no form name has been set.
+	 *
+	 * @see BigSelectionWidget::setFormName()
+	 */
+	public const ERROR_FORM_NAME_REQUIRED = 192001;
 
 	public function getDefaultOptions(): array
 	{
@@ -785,6 +826,135 @@ class BigSelectionWidget extends UI_Bootstrap implements OptionableInterface
 	 * @return BigSelectionWidget
 	 */
 	public function makeSmall(): BigSelectionWidget
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the HTML form variable name used for checkable items' hidden inputs.
+	 *
+	 * Must be set before rendering when the widget contains checkable items.
+	 * The name uses array syntax (`name[]`) so multiple checked values can
+	 * be submitted as an indexed array.
+	 *
+	 * @param string $name
+	 * @return $this
+	 * @see BigSelectionWidget::hasFormName()
+	 * @see BigSelectionWidget::getFormName()
+	 * @see BigSelectionWidget::getSubmittedValues()
+	 */
+	public function setFormName(string $name): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the configured form name, or an empty string if none has been set.
+	 *
+	 * Never throws — returns an empty string instead.
+	 *
+	 * @return string
+	 * @see BigSelectionWidget::setFormName()
+	 * @see BigSelectionWidget::hasFormName()
+	 */
+	public function getFormName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether a form name has been configured.
+	 *
+	 * @return bool
+	 * @see BigSelectionWidget::setFormName()
+	 */
+	public function hasFormName(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a checkable item to the end of the list.
+	 *
+	 * Returns the new item for fluent configuration (e.g. `makeSelected()`,
+	 * `setDescription()`). The widget must have a form name set before rendering
+	 * if any checkable items have been added.
+	 *
+	 * @param string|int|float|UI_Renderable_Interface $label
+	 * @param string $value The form value submitted when this item is checked.
+	 * @return CheckableItem
+	 * @throws UI_Exception
+	 */
+	public function addCheckable($label, string $value): CheckableItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Prepends a checkable item to the beginning of the list.
+	 *
+	 * @param string|int|float|UI_Renderable_Interface $label
+	 * @param string $value The form value submitted when this item is checked.
+	 * @return CheckableItem
+	 * @throws UI_Exception
+	 */
+	public function prependCheckable($label, string $value): CheckableItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns all checkable items currently in the widget.
+	 *
+	 * @return CheckableItem[]
+	 */
+	public function getCheckableItems(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the widget contains at least one checkable item.
+	 *
+	 * @return bool
+	 */
+	public function hasCheckableItems(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the submitted form values that match registered checkable item values.
+	 *
+	 * Reads the form variable named by {@see self::getFormName()} from the current
+	 * HTTP request (via `AppFactory::createRequest()->getParam()`) and filters the
+	 * result against the set of registered checkable item values — only values that
+	 * belong to a registered item are returned.
+	 *
+	 * **Call during request-handling only.** This method accesses the live HTTP
+	 * request. It must be called during the server-side request-handling phase
+	 * (e.g. in an action handler or screen `process()` method), not from within a
+	 * render pipeline. Calling it at render time will still work in practice, but
+	 * it is misleading and couples rendering to request state.
+	 *
+	 * **Call after all items are registered.** Submitted values are validated
+	 * against the checkable items currently registered at the time of the call.
+	 * Calling this method before all items have been added may cause valid
+	 * submitted values to be silently discarded.
+	 *
+	 * @return string[] Indexed array of matched, submitted values. Empty if no form
+	 *                  name is set, no data was submitted, or no submitted values
+	 *                  match registered item values.
+	 */
+	public function getSubmittedValues(): array
 	{
 		/* ... */
 	}
@@ -912,8 +1082,10 @@ use AppUtils\Interfaces\OptionableInterface as OptionableInterface;
 use AppUtils\Interfaces\StringableInterface as StringableInterface;
 use AppUtils\NumberInfo as NumberInfo;
 use AppUtils\Traits\OptionableTrait as OptionableTrait;
+use Application\AppFactory as AppFactory;
 use Application_Exception as Application_Exception;
 use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Bootstrap\BigSelection\Item\CheckableItem as CheckableItem;
 use UI\Bootstrap\BigSelection\Item\HeaderItem as HeaderItem;
 use UI\Bootstrap\BigSelection\Item\RegularItem as RegularItem;
 use UI\Bootstrap\BigSelection\Item\SeparatorItem as SeparatorItem;
@@ -939,6 +1111,14 @@ class BigSelectionWidget extends UI_Bootstrap implements OptionableInterface
 	public const OPTION_FILTERING_ENABLED = 'filteringEnabled';
 	public const OPTION_EMPTY_MESSAGE = 'emptyMessage';
 	public const OPTION_HEIGHT_LIMITED = 'heightLimited';
+	public const OPTION_FORM_NAME = 'formName';
+
+	/**
+	 * Thrown at render time when checkable items are present but no form name has been set.
+	 *
+	 * @see BigSelectionWidget::setFormName()
+	 */
+	public const ERROR_FORM_NAME_REQUIRED = 192001;
 
 	public function getDefaultOptions(): array
 	{
@@ -1075,6 +1255,135 @@ class BigSelectionWidget extends UI_Bootstrap implements OptionableInterface
 
 
 	/**
+	 * Sets the HTML form variable name used for checkable items' hidden inputs.
+	 *
+	 * Must be set before rendering when the widget contains checkable items.
+	 * The name uses array syntax (`name[]`) so multiple checked values can
+	 * be submitted as an indexed array.
+	 *
+	 * @param string $name
+	 * @return $this
+	 * @see BigSelectionWidget::hasFormName()
+	 * @see BigSelectionWidget::getFormName()
+	 * @see BigSelectionWidget::getSubmittedValues()
+	 */
+	public function setFormName(string $name): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the configured form name, or an empty string if none has been set.
+	 *
+	 * Never throws — returns an empty string instead.
+	 *
+	 * @return string
+	 * @see BigSelectionWidget::setFormName()
+	 * @see BigSelectionWidget::hasFormName()
+	 */
+	public function getFormName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether a form name has been configured.
+	 *
+	 * @return bool
+	 * @see BigSelectionWidget::setFormName()
+	 */
+	public function hasFormName(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a checkable item to the end of the list.
+	 *
+	 * Returns the new item for fluent configuration (e.g. `makeSelected()`,
+	 * `setDescription()`). The widget must have a form name set before rendering
+	 * if any checkable items have been added.
+	 *
+	 * @param string|int|float|UI_Renderable_Interface $label
+	 * @param string $value The form value submitted when this item is checked.
+	 * @return CheckableItem
+	 * @throws UI_Exception
+	 */
+	public function addCheckable($label, string $value): CheckableItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Prepends a checkable item to the beginning of the list.
+	 *
+	 * @param string|int|float|UI_Renderable_Interface $label
+	 * @param string $value The form value submitted when this item is checked.
+	 * @return CheckableItem
+	 * @throws UI_Exception
+	 */
+	public function prependCheckable($label, string $value): CheckableItem
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns all checkable items currently in the widget.
+	 *
+	 * @return CheckableItem[]
+	 */
+	public function getCheckableItems(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether the widget contains at least one checkable item.
+	 *
+	 * @return bool
+	 */
+	public function hasCheckableItems(): bool
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the submitted form values that match registered checkable item values.
+	 *
+	 * Reads the form variable named by {@see self::getFormName()} from the current
+	 * HTTP request (via `AppFactory::createRequest()->getParam()`) and filters the
+	 * result against the set of registered checkable item values — only values that
+	 * belong to a registered item are returned.
+	 *
+	 * **Call during request-handling only.** This method accesses the live HTTP
+	 * request. It must be called during the server-side request-handling phase
+	 * (e.g. in an action handler or screen `process()` method), not from within a
+	 * render pipeline. Calling it at render time will still work in practice, but
+	 * it is misleading and couples rendering to request state.
+	 *
+	 * **Call after all items are registered.** Submitted values are validated
+	 * against the checkable items currently registered at the time of the call.
+	 * Calling this method before all items have been added may cause valid
+	 * submitted values to be silently discarded.
+	 *
+	 * @return string[] Indexed array of matched, submitted values. Empty if no form
+	 *                  name is set, no data was submitted, or no submitted values
+	 *                  match registered item values.
+	 */
+	public function getSubmittedValues(): array
+	{
+		/* ... */
+	}
+
+
+	/**
 	 * @param string|number|UI_Renderable_Interface $label
 	 * @return RegularItem
 	 * @throws Application_Exception
@@ -1187,6 +1496,463 @@ class BigSelectionWidget extends UI_Bootstrap implements OptionableInterface
 
 
 ```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/CheckableItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI as UI;
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+use UI\Bootstrap\BigSelection\BigSelectionWidget as BigSelectionWidget;
+
+/**
+ * A checkable item for the BigSelection widget.
+ *
+ * Renders as a list entry with a hidden input that participates in
+ * form submission when selected. The visual checkbox indicator consists
+ * of two server-side-rendered FontAwesome icons ({@see BigSelectionCSS::CHECKBOX_ICON_UNCHECKED}
+ * and {@see BigSelectionCSS::CHECKBOX_ICON_CHECKED}) inside the checkbox span.
+ * CSS toggles which icon is visible based on the `active` class on the parent
+ * `<li>`. JavaScript only toggles that `active` class and the hidden input's
+ * `disabled` attribute on user click — it has no knowledge of icon elements.
+ *
+ * **Constraint:** `$this->parent` is only valid after the item has been
+ * appended to a {@see BigSelectionWidget} via {@see BigSelectionWidget::addCheckable()}
+ * or {@see BigSelectionWidget::prependCheckable()}. Do not call `_render()`
+ * or access `$this->parent` before the item has been attached to a widget.
+ *
+ * @package Application
+ * @subpackage User Interface
+ *
+ * @property BigSelectionWidget $parent
+ *
+ * @see BigSelectionWidget::addCheckable()
+ * @see BigSelectionCSS::ITEM_CHECKABLE
+ */
+class CheckableItem extends BaseItem
+{
+	/**
+	 * Sets the form value submitted when this item is checked.
+	 *
+	 * @param string $value
+	 * @return $this
+	 */
+	public function setValue(string $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the form value for this item.
+	 *
+	 * @return string
+	 */
+	public function getValue(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the display label of the item.
+	 *
+	 * **The label is output as raw HTML markup** — it is not HTML-escaped before
+	 * rendering. This allows formatted labels (e.g. `<strong>`, `<em>`) but means
+	 * callers must never pass unescaped user-supplied content directly. Use
+	 * `htmlspecialchars()` or a suitable escaping helper if the label text
+	 * originates from user input.
+	 *
+	 * Note: this differs from {@see self::setDescription()}, whose value is
+	 * HTML-escaped with `htmlspecialchars()` before output.
+	 *
+	 * @param string|number|\UI_Renderable_Interface $label
+	 * @return $this
+	 */
+	public function setLabel($label): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the display label.
+	 *
+	 * @return string
+	 */
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets an optional description shown below the label.
+	 *
+	 * @param string|number|\UI_Renderable_Interface $text
+	 * @return $this
+	 */
+	public function setDescription($text): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the description text, or an empty string if none was set.
+	 *
+	 * @return string
+	 */
+	public function getDescription(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Marks the item as pre-selected (checked on initial render).
+	 *
+	 * Pre-selected items receive the `active` CSS class on the <li>
+	 * and their hidden input is rendered without the `disabled` attribute,
+	 * so the value is included in the form submission without any user
+	 * interaction.
+	 *
+	 * @return $this
+	 */
+	public function makeSelected(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns whether the item is currently selected.
+	 *
+	 * @return bool
+	 */
+	public function isSelected(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/CheckableItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI as UI;
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+use UI\Bootstrap\BigSelection\BigSelectionWidget as BigSelectionWidget;
+
+/**
+ * A checkable item for the BigSelection widget.
+ *
+ * Renders as a list entry with a hidden input that participates in
+ * form submission when selected. The visual checkbox indicator consists
+ * of two server-side-rendered FontAwesome icons ({@see BigSelectionCSS::CHECKBOX_ICON_UNCHECKED}
+ * and {@see BigSelectionCSS::CHECKBOX_ICON_CHECKED}) inside the checkbox span.
+ * CSS toggles which icon is visible based on the `active` class on the parent
+ * `<li>`. JavaScript only toggles that `active` class and the hidden input's
+ * `disabled` attribute on user click — it has no knowledge of icon elements.
+ *
+ * **Constraint:** `$this->parent` is only valid after the item has been
+ * appended to a {@see BigSelectionWidget} via {@see BigSelectionWidget::addCheckable()}
+ * or {@see BigSelectionWidget::prependCheckable()}. Do not call `_render()`
+ * or access `$this->parent` before the item has been attached to a widget.
+ *
+ * @package Application
+ * @subpackage User Interface
+ *
+ * @property BigSelectionWidget $parent
+ *
+ * @see BigSelectionWidget::addCheckable()
+ * @see BigSelectionCSS::ITEM_CHECKABLE
+ */
+class CheckableItem extends BaseItem
+{
+	/**
+	 * Sets the form value submitted when this item is checked.
+	 *
+	 * @param string $value
+	 * @return $this
+	 */
+	public function setValue(string $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the form value for this item.
+	 *
+	 * @return string
+	 */
+	public function getValue(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the display label of the item.
+	 *
+	 * **The label is output as raw HTML markup** — it is not HTML-escaped before
+	 * rendering. This allows formatted labels (e.g. `<strong>`, `<em>`) but means
+	 * callers must never pass unescaped user-supplied content directly. Use
+	 * `htmlspecialchars()` or a suitable escaping helper if the label text
+	 * originates from user input.
+	 *
+	 * Note: this differs from {@see self::setDescription()}, whose value is
+	 * HTML-escaped with `htmlspecialchars()` before output.
+	 *
+	 * @param string|number|\UI_Renderable_Interface $label
+	 * @return $this
+	 */
+	public function setLabel($label): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the display label.
+	 *
+	 * @return string
+	 */
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets an optional description shown below the label.
+	 *
+	 * @param string|number|\UI_Renderable_Interface $text
+	 * @return $this
+	 */
+	public function setDescription($text): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the description text, or an empty string if none was set.
+	 *
+	 * @return string
+	 */
+	public function getDescription(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Marks the item as pre-selected (checked on initial render).
+	 *
+	 * Pre-selected items receive the `active` CSS class on the <li>
+	 * and their hidden input is rendered without the `disabled` attribute,
+	 * so the value is included in the form submission without any user
+	 * interaction.
+	 *
+	 * @return $this
+	 */
+	public function makeSelected(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns whether the item is currently selected.
+	 *
+	 * @return bool
+	 */
+	public function isSelected(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/CheckableItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI as UI;
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+use UI\Bootstrap\BigSelection\BigSelectionWidget as BigSelectionWidget;
+
+/**
+ * A checkable item for the BigSelection widget.
+ *
+ * Renders as a list entry with a hidden input that participates in
+ * form submission when selected. The visual checkbox indicator consists
+ * of two server-side-rendered FontAwesome icons ({@see BigSelectionCSS::CHECKBOX_ICON_UNCHECKED}
+ * and {@see BigSelectionCSS::CHECKBOX_ICON_CHECKED}) inside the checkbox span.
+ * CSS toggles which icon is visible based on the `active` class on the parent
+ * `<li>`. JavaScript only toggles that `active` class and the hidden input's
+ * `disabled` attribute on user click — it has no knowledge of icon elements.
+ *
+ * **Constraint:** `$this->parent` is only valid after the item has been
+ * appended to a {@see BigSelectionWidget} via {@see BigSelectionWidget::addCheckable()}
+ * or {@see BigSelectionWidget::prependCheckable()}. Do not call `_render()`
+ * or access `$this->parent` before the item has been attached to a widget.
+ *
+ * @package Application
+ * @subpackage User Interface
+ *
+ * @property BigSelectionWidget $parent
+ *
+ * @see BigSelectionWidget::addCheckable()
+ * @see BigSelectionCSS::ITEM_CHECKABLE
+ */
+class CheckableItem extends BaseItem
+{
+	/**
+	 * Sets the form value submitted when this item is checked.
+	 *
+	 * @param string $value
+	 * @return $this
+	 */
+	public function setValue(string $value): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the form value for this item.
+	 *
+	 * @return string
+	 */
+	public function getValue(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the display label of the item.
+	 *
+	 * **The label is output as raw HTML markup** — it is not HTML-escaped before
+	 * rendering. This allows formatted labels (e.g. `<strong>`, `<em>`) but means
+	 * callers must never pass unescaped user-supplied content directly. Use
+	 * `htmlspecialchars()` or a suitable escaping helper if the label text
+	 * originates from user input.
+	 *
+	 * Note: this differs from {@see self::setDescription()}, whose value is
+	 * HTML-escaped with `htmlspecialchars()` before output.
+	 *
+	 * @param string|number|\UI_Renderable_Interface $label
+	 * @return $this
+	 */
+	public function setLabel($label): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the display label.
+	 *
+	 * @return string
+	 */
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets an optional description shown below the label.
+	 *
+	 * @param string|number|\UI_Renderable_Interface $text
+	 * @return $this
+	 */
+	public function setDescription($text): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the description text, or an empty string if none was set.
+	 *
+	 * @return string
+	 */
+	public function getDescription(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Marks the item as pre-selected (checked on initial render).
+	 *
+	 * Pre-selected items receive the `active` CSS class on the <li>
+	 * and their hidden input is rendered without the `disabled` attribute,
+	 * so the value is included in the form submission without any user
+	 * interaction.
+	 *
+	 * @return $this
+	 */
+	public function makeSelected(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns whether the item is currently selected.
+	 *
+	 * @return bool
+	 */
+	public function isSelected(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/HeaderItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+use UI_Exception as UI_Exception;
+
+class HeaderItem extends BaseItem
+{
+	/**
+	 * @param string|int|float|StringableInterface $title
+	 * @throws UI_Exception
+	 */
+	public function setTitle(string|int|float|StringableInterface $title): self
+	{
+		/* ... */
+	}
+}
+
+
+```
 ###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/HeaderItem.php`
 
 ```php
@@ -1429,6 +2195,118 @@ class RegularItem extends BaseItem
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/RegularItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use AppUtils\AttributeCollection as AttributeCollection;
+use AppUtils\Interfaces\StringableInterface as StringableInterface;
+use AppUtils\OutputBuffering as OutputBuffering;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+use UI_Exception as UI_Exception;
+use UI_Renderable_Interface as UI_Renderable_Interface;
+
+class RegularItem extends BaseItem
+{
+	public const ATTRIBUTE_DESCRIPTION = 'description';
+	public const ATTRIBUTE_HREF = 'href';
+	public const ATTRIBUTE_ONCLICK = 'onclick';
+
+	/**
+	 * Changes the label after instantiating the item.
+	 *
+	 * @param string|number|UI_Renderable_Interface $label
+	 * @return RegularItem
+	 * @throws UI_Exception
+	 */
+	public function setLabel($label): RegularItem
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets a description that will be shown along with the label.
+	 *
+	 * @param string|number|UI_Renderable_Interface $text
+	 * @return RegularItem
+	 * @throws UI_Exception
+	 */
+	public function setDescription($text): RegularItem
+	{
+		/* ... */
+	}
+
+
+	public function getDescription(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds a control to the meta area of the item (typically floating on the right side).
+	 *
+	 * @param string|StringableInterface $control
+	 * @param AttributeCollection|null $attributes Optional attributes for the meta-control element.
+	 * @return $this
+	 */
+	public function addMetaControl($control, ?AttributeCollection $attributes = null): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param string|AdminURLInterface $url
+	 * @return $this
+	 */
+	public function makeLinked($url): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return $this
+	 */
+	public function makeActive(): self
+	{
+		/* ... */
+	}
+
+
+	public function makeClickable($statement): RegularItem
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/UI/Bootstrap/BigSelection/Item/SeparatorItem.php`
+
+```php
+namespace UI\Bootstrap\BigSelection\Item;
+
+use UI\Bootstrap\BigSelection\BaseItem as BaseItem;
+use UI\Bootstrap\BigSelection\BigSelectionCSS as BigSelectionCSS;
+
+class SeparatorItem extends BaseItem
+{
 }
 
 

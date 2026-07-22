@@ -118,3 +118,31 @@
     font-size: var(--font-size-normal);
     display:inline-block;
 }
+
+/* =========================================================
+   Checkable BigSelection Items
+   ========================================================= */
+
+.bigselection .bigselection-checkable .bigselection-checkbox {
+    margin-right: 8px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Unchecked state: show inactive icon, hide active icon */
+.bigselection .bigselection-checkable .bigselection-checkbox-unchecked {
+    display: inline;
+}
+
+.bigselection .bigselection-checkable .bigselection-checkbox-checked {
+    display: none;
+}
+
+/* Checked state (active class on parent <li>): show active icon, hide inactive icon */
+.bigselection .bigselection-checkable.active .bigselection-checkbox-unchecked {
+    display: none;
+}
+
+.bigselection .bigselection-checkable.active .bigselection-checkbox-checked {
+    display: inline;
+}

@@ -30,6 +30,7 @@ _SOURCE: UI Module File Structure_
                 │   ├── BigSelectionCSS.php
                 │   ├── BigSelectionWidget.php
                 │   ├── Item/
+                │   │   └── CheckableItem.php
                 │   │   └── HeaderItem.php
                 │   │   └── RegularItem.php
                 │   │   └── SeparatorItem.php

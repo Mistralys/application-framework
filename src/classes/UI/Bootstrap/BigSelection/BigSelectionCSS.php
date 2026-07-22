@@ -23,6 +23,10 @@ class BigSelectionCSS
     public const string ITEM_ENTRY = 'bigselection-entry';
     public const string ITEM_HEADER = 'bigselection-header';
     public const string ITEM_SEPARATOR = 'bigselection-separator';
+    public const string ITEM_CHECKABLE = 'bigselection-checkable';
+    public const string CHECKBOX_ICON = 'bigselection-checkbox';
+    public const string CHECKBOX_ICON_UNCHECKED = 'bigselection-checkbox-unchecked';
+    public const string CHECKBOX_ICON_CHECKED = 'bigselection-checkbox-checked';
 
     // Regular item specific classes
     public const string ANCHOR = 'bigselection-anchor';
@@ -48,6 +52,17 @@ class BigSelectionCSS
      * @see src/themes/default/js/ui/bigselection/static.js
      */
     public const string RESOURCES_JS_HANDLER = 'ui/bigselection/static.js';
+
+    /**
+     * JS handler for the checkable BigSelection mode.
+     *
+     * Uses vanilla JS (querySelectorAll, addEventListener, classList) — intentionally
+     * distinct from {@see self::RESOURCES_JS_HANDLER}, which uses jQuery. Both patterns
+     * coexist and work correctly; do not unify them.
+     *
+     * @see src/themes/default/js/ui/bigselection/checkable.js
+     */
+    public const string RESOURCES_JS_CHECKABLE = 'ui/bigselection/checkable.js';
 
     /**
      * @see src/themes/default/css/ui-bigselection.css

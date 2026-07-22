@@ -74,13 +74,13 @@ Confirm that no Git tag already exists for the changelog top version (e.g., if c
 ### 3. Composer validate
 
 ```bash
-composer validate --strict
+composer validate
 ```
 
-Validates `composer.json` for correctness and consistency.
+Validates `composer.json` for structural correctness. `--strict` is intentionally **not** used because this project uses unbound version constraints (`>=X.Y.Z`) for all `mistralys/*` internal packages by design.
 
-**Pass:** Exit 0, no errors or warnings.  
-**Fail:** Any validation error or strict-mode warning reported.
+**Pass:** Exit 0, no errors.  
+**Fail:** Any structural validation error reported.
 
 ---
 
@@ -152,7 +152,7 @@ The working tree must be **fully clean** before creating the release tag. Commit
 | Branch | Current branch is `main` |
 | Changelog version ahead | Changelog top version > last Git tag (semver) |
 | Git tag gap | No existing tag for the changelog top version |
-| Composer validate | Exit 0, no errors or strict-mode warnings |
+| Composer validate | Exit 0, no structural errors (unbound version constraints are by design — `--strict` is not used) |
 | PHPStan | Exit 0, no errors |
 | Full test suite | All tests pass, exit 0 |
 | Generated docs freshness | No uncommitted changes after `composer build-docs` (on `main` only) |

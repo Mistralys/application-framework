@@ -1014,12 +1014,20 @@ class UI
     * Creates and returns a big selection instance, which
     * is used to let the user select from a prominent list
     * of items.
-    * 
+    *
+    * @param string $formName Optional form name for checkable items. When provided,
+    *                         it is passed directly to {@see BigSelectionWidget::setFormName()}.
     * @return BigSelectionWidget
-    */    
-    public function createBigSelection() : BigSelectionWidget
+    */
+    public function createBigSelection(string $formName = '') : BigSelectionWidget
     {
-        return new BigSelectionWidget($this);
+        $widget = new BigSelectionWidget($this);
+
+        if (!empty($formName)) {
+            $widget->setFormName($formName);
+        }
+
+        return $widget;
     }
 
     public function createTreeRenderer(TreeNode $rootNode) : TreeRenderer

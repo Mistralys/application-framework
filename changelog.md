@@ -1,5 +1,12 @@
 # Application Framework Changelog
 
+## v7.4.0 - BigSelection Multi-Select
+
+**The BigSelection widget now supports multi-select mode with checkable items.**
+
+- BigSelection: Added multi-selection capability with checkable items.
+- Docs: Added three appinterface examples for checkable, mixed, and preselected states.
+
 ## v7.3.7 - Countries & Locales Cache API
 
 **Patch for test suite failures caused by cross-test stale collection records.**

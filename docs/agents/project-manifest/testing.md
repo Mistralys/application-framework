@@ -13,7 +13,7 @@ Comprehensive guide to the Application Framework's test infrastructure, conventi
 | **Config file** | `phpunit.xml` (project root) |
 | **Bootstrap** | `tests/bootstrap.php` |
 | **Test count** | ~155 unit test files + 2 integration test files |
-| **Test suite** | Single suite: `Framework Tests` (all tests under `tests/AppFrameworkTests/`) |
+| **Test suite** | Two named suites: `Framework Tests` (all tests under `tests/AppFrameworkTests/`) and `big-selection` (BigSelection tests under `tests/AppFrameworkTests/UI/BigSelection/`) |
 
 ---
 
