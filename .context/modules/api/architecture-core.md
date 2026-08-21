@@ -283,6 +283,23 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
 	public const ERROR_RESPONSE_DATA_EXCEPTION = 183002;
 	public const ERROR_INVALID_REQUEST_PARAMS = 183003;
 	public const ERROR_NO_VALUE_AVAILABLE = 183004;
+
+	/**
+	 * The API key has not been granted access to this specific method.
+	 * Use this when the method-level grant check fails (authentication passed,
+	 * but the key's method whitelist does not include this endpoint).
+	 * Returns HTTP 403 via {@see ErrorResponse::makeForbidden()}.
+	 */
+	public const ERROR_METHOD_NOT_GRANTED = 183005;
+
+	/**
+	 * The API key has method access, but the authenticated user's application-level
+	 * rights are insufficient to execute the operation (e.g., missing a required
+	 * right constant on the user record). Use this when {@see getRequiredRight()}
+	 * returns a non-null right that the user does not hold.
+	 * Returns HTTP 403 via {@see ErrorResponse::makeForbidden()}.
+	 */
+	public const ERROR_INSUFFICIENT_RIGHTS = 183006;
 	public const REQUEST_PARAM_API_VERSION = 'apiVersion';
 	public const REQUEST_PARAM_METHOD = 'method';
 	public const RESPONSE_KEY_ERROR_REQUEST_DATA = 'requestData';
@@ -1107,6 +1124,18 @@ class ErrorResponse
 
 
 	public function makeInternalServerError(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Sets the HTTP status code to 403 Forbidden.
+	 * Use for authorization failures: method not granted to the API key
+	 * ({@see APIMethodInterface::ERROR_METHOD_NOT_GRANTED}) or insufficient user
+	 * rights ({@see APIMethodInterface::ERROR_INSUFFICIENT_RIGHTS}).
+	 */
+	public function makeForbidden(): self
 	{
 		/* ... */
 	}

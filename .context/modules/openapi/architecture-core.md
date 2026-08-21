@@ -601,6 +601,7 @@ class ParameterConverter
 namespace Application\API\OpenAPI;
 
 use Application\API\APIMethodInterface as APIMethodInterface;
+use Application\API\Clients\API\APIKeyMethodInterface as APIKeyMethodInterface;
 use Application\API\Traits\JSONResponseInterface as JSONResponseInterface;
 
 /**
@@ -625,13 +626,14 @@ class ResponseConverter
 {
 	public const HTTP_200 = '200';
 	public const HTTP_400 = '400';
+	public const HTTP_403 = '403';
 	public const HTTP_500 = '500';
 
 	/**
 	 * Converts a method's response metadata into a map of HTTP status codes → OpenAPI response objects.
 	 *
 	 * @param APIMethodInterface $method
-	 * @return array{'200': array<string,mixed>, '400': array<string,mixed>, '500': array<string,mixed>}
+	 * @return array{'200': array<string,mixed>, '400': array<string,mixed>, '403'?: array<string,mixed>, '500': array<string,mixed>}
 	 */
 	public function convertResponses(APIMethodInterface $method): array
 	{

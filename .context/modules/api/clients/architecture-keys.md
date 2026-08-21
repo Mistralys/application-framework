@@ -50,6 +50,19 @@ interface APIKeyMethodInterface extends APIMethodInterface
 	public const API_KEY_PARAM_NAME = 'apiKey';
 
 	public function manageParamAPIKey(): APIKeyHandler;
+
+
+	/**
+	 * Returns the name of the user right required to call this API method.
+	 *
+	 * When a non-null value is returned, the framework checks whether the
+	 * API key's pseudo-user has this right before executing the method.
+	 * Return `null` if this method does not require a specific user right
+	 * (the method-access whitelist check still applies).
+	 *
+	 * @return string|null The right name, or `null` if no right is required.
+	 */
+	public function getRequiredRight(): ?string;
 }
 
 
@@ -67,6 +80,27 @@ use Application\API\Clients\API\Params\APIKeyHandler as APIKeyHandler;
 trait APIKeyMethodTrait
 {
 	final public function manageParamAPIKey(): APIKeyHandler
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Returns the user right required to call this API method, or `null` if
+	 * no specific right is required (default).
+	 *
+	 * Override this method in a concrete API method class to declare the right
+	 * the API key's user must hold before the method is executed.
+	 *
+	 * **Override contract:** Overrides must only **strengthen** the right
+	 * declaration — returning `null` when a parent returns a non-null right
+	 * bypasses the user-rights check and must be avoided.
+	 *
+	 * @return string|null The right name, or `null` if no right is required.
+	 *
+	 * @see APIKeyMethodInterface::getRequiredRight()
+	 */
+	public function getRequiredRight(): ?string
 	{
 		/* ... */
 	}

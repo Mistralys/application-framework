@@ -107,9 +107,15 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
 
 	/**
-	 * Used to give a method the opportunity to configure request
-	 * parameters before it is processed. Note: use the
-	 * {@see self::addParam()} method to add parameters.
+	 * Override this method to register method-specific parameters and
+	 * perform any other one-time setup required by the method.
+	 *
+	 * Use {@see self::addParam()} to add parameters.
+	 *
+	 * NOTE: Reserved parameters (API method name, version, and — when
+	 * {@see APIKeyMethodInterface} is implemented — the API key parameter)
+	 * are already registered by {@see self::initReservedParams()} before
+	 * this method is called. Do NOT re-register them here.
 	 */
 	abstract protected function init(): void;
 
