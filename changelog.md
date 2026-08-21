@@ -1,5 +1,21 @@
 # Application Framework Changelog
 
+## v7.5.0 - API Method Authorization Enforcement (Breaking-XS)
+
+**API keys are now authorized per-method and per-right, returning HTTP 403 when denied.**
+Methods can require a specific right via `getRequiredRight()`, documented in the API README.
+
+- API: Enforced method-level grant checks for API keys, returning 403 when unauthorized.
+- API: Added optional per-method required-right check before execution.
+- API: Documented the new `ERROR_METHOD_NOT_GRANTED` and `ERROR_INSUFFICIENT_RIGHTS` error codes.
+- Docs: Documented the HTTP 403 authorization responses in the API READMEs.
+
+### Breaking Changes
+
+`APIKeyMethodInterface` gained a new `getRequiredRight()` method. Classes using the
+`APIKeyMethodTrait` are unaffected, since it provides a default `null` implementation.
+Direct interface implementers must add this method.
+
 ## v7.4.0 - BigSelection Multi-Select
 
 **The BigSelection widget now supports multi-select mode with checkable items.**
