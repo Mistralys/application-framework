@@ -713,10 +713,104 @@
                                 }
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden. The API key is not granted access to this method (error 183005) or the key's user lacks the required right (error 183006).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
                     }
                 },
                 "externalDocs": {
                     "url": "documentation.php?method=TestAPIKey"
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
+            }
+        },
+        "/api/TestAPIKeyWithRight": {
+            "post": {
+                "operationId": "TestAPIKeyWithRight",
+                "summary": "A test API method for verifying user-right enforcement in the authorization gate.",
+                "description": "A test API method for verifying user-right enforcement in the authorization gate.",
+                "tags": [
+                    "Test Driver APIs"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0.0"
+                            ],
+                            "default": "1.0.0"
+                        }
+                    },
+                    {
+                        "name": "apiKey",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The API Key used to authenticate the request."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The API key is not granted access to this method (error 183005) or the key's user lacks the required right (error 183006).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestAPIKeyWithRight"
                 },
                 "security": [
                     {
