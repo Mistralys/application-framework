@@ -57,3 +57,4 @@ phpstan-result.txt
 /docs/agents/**/pipeline-configuration.md
 /docs/agents/**/dependency-analysis.md
 
+.phpunit.cache/test-run-history
