@@ -84,6 +84,13 @@ trait APIMethodTestTrait
      * @param class-string<APIMethodInterface> $methodClass
      * @param array<string,string|int|bool|float|array|NULL>|ArrayDataCollection|NULL $requestParams Any request parameters that the method may require
      * @return void
+     *
+     * @see \AppFrameworkTestClasses\API\APIClientTestTrait::createTestAPIKeyWithRights()
+     *
+     * NOTE: This method creates a bare API key without rights.
+     * It is NOT compatible with methods that declare {@see APIKeyMethodInterface::getRequiredRight()}.
+     * For rights-gated methods, use the manual createMethod() + processReturn()
+     * pattern with {@see \AppFrameworkTestClasses\API\APIClientTestTrait::createTestAPIKeyWithRights()} instead.
      */
     public function assertMethodCallIsSuccessful(string $methodClass, array|ArrayDataCollection|NULL $requestParams=null) : void
     {
