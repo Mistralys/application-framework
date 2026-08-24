@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v7.5.1 - **WIP UNRELEASED**
+- Tests: Documented that `assertMethodCallIsSuccessful()` does not support rights-gated API methods.
+
 ## v7.5.0 - API Method Authorization Enforcement (Breaking-XS)
 
 **API keys are now authorized per-method and per-right, returning HTTP 403 when denied.**
