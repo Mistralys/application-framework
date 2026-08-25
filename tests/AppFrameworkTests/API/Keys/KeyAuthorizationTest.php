@@ -14,18 +14,20 @@ use TestDriver\API\TestAPIKeyMethodWithRight;
 use TestDriver\API\TestVersionedMethod;
 
 /**
- * Verifies the two-check authorization gate introduced in BaseAPIMethod::authorize():
- * (1) method-access whitelist and (2) pseudo-user right enforcement.
+ * Verifies the authorization gate implemented in BaseAPIMethod::authorize():
+ * (1) API key resolution, (2) method-access whitelist, and (3) pseudo-user
+ * right enforcement.
  *
  * Test cases:
- *  1. method-access denied          → HTTP 403 / error 183005
- *  2. method-access granted (individual grant) → success
- *  3. method-access granted (grantAll)         → success
- *  4. user-rights denied            → HTTP 403 / error 183006
- *  5. user-rights granted           → success
- *  6. null-right skip               → user-right check skipped, success
- *  7. non-key method skip           → authorize() is a no-op, success
- *  8. updateLastUsed after success  → usage count increments by 1
+ *  1. unknown/invalid API key value → HTTP 401 / error 183007
+ *  2. method-access denied          → HTTP 403 / error 183005
+ *  3. method-access granted (individual grant) → success
+ *  4. method-access granted (grantAll)         → success
+ *  5. user-rights denied            → HTTP 403 / error 183006
+ *  6. user-rights granted           → success
+ *  7. null-right skip               → user-right check skipped, success
+ *  8. non-key method skip           → authorize() is a no-op, success
+ *  9. updateLastUsed after success  → usage count increments by 1
  */
 final class KeyAuthorizationTest extends APIClientTestCase
 {
@@ -57,6 +59,25 @@ final class KeyAuthorizationTest extends APIClientTestCase
     // endregion
 
     // region: _Tests
+
+    /**
+     * A value submitted for the API key parameter that does not match any
+     * known key receives HTTP 401 / 183007. This is distinct from a wholly
+     * missing key, which never reaches authorize() at all — it is rejected
+     * earlier by the generic required-parameter validation (183003).
+     */
+    public function test_unknownAPIKeyReturnsInvalidKeyError(): void
+    {
+        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestAPIKeyMethodWithRight::METHOD_NAME;
+
+        $method = new TestAPIKeyMethodWithRight(APIManager::getInstance());
+        $method->manageParamAPIKey()->getParam()?->selectValue('does-not-match-any-known-key');
+
+        $this->assertErrorResponseCode(
+            $method->processReturn(),
+            APIMethodInterface::ERROR_API_KEY_INVALID
+        );
+    }
 
     /**
      * A key that has NOT been granted the method receives HTTP 403 / 183005.

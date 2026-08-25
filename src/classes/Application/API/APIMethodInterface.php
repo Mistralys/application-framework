@@ -47,6 +47,17 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      */
     public const int ERROR_INSUFFICIENT_RIGHTS = 183006;
 
+    /**
+     * The request submitted a value for the API key parameter, but it does
+     * not match any known API key (unlike a wholly missing key, which is
+     * rejected earlier by the generic required-parameter validation with
+     * {@see self::ERROR_INVALID_REQUEST_PARAMS}). Use this to give API
+     * consumers a specific, actionable message pointing at their API key
+     * rather than a generic "invalid parameters" response.
+     * Returns HTTP 401 via {@see ErrorResponse::makeUnauthorized()}.
+     */
+    public const int ERROR_API_KEY_INVALID = 183007;
+
     public const string REQUEST_PARAM_API_VERSION = 'apiVersion';
     public const string REQUEST_PARAM_METHOD = 'method';
 

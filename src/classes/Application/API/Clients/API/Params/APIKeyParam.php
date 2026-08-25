@@ -50,20 +50,21 @@ class APIKeyParam extends StringParameter
         return 'Authorization: Bearer '.sb()->tooltip(sb()->bold(sb()->warning('API_KEY')), 'The API Key assigned to your account.');
     }
 
+    /**
+     * Returns the raw bearer token submitted in the request, regardless of
+     * whether it resolves to a known API key.
+     *
+     * NOTE: This method intentionally does **not** validate the token against
+     * known API keys. Doing so here would make an invalid token
+     * indistinguishable from a missing one once required-parameter validation
+     * runs, collapsing both into the generic {@see \Application\API\APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS}
+     * error. Key resolution is handled by {@see self::getKey()}; the distinction
+     * between "no key submitted" and "unknown key submitted" is made in
+     * {@see \Application\API\BaseMethods\BaseAPIMethod::authorize()}.
+     */
     public function getHeaderValue(): ?string
     {
-        $token = RequestHelper::getBearerToken();
-
-        if($token === null) {
-            return null;
-        }
-
-        $key = AppFactory::createAPIClients()->findAPIKey($token);
-        if($key !== null) {
-            return $token;
-        }
-
-        return null;
+        return RequestHelper::getBearerToken();
     }
 
     public function getKey() : ?APIKeyRecord

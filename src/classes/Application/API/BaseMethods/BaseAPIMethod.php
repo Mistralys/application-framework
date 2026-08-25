@@ -140,11 +140,18 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      * Performs authorization checks for API-key-authenticated methods.
      *
      * This is a pure decision gate — it either permits the request to proceed
-     * or terminates it with an HTTP 403 response. No side effects are performed here;
-     * `updateLastUsed()` is called by the caller after this method returns.
+     * or terminates it with an HTTP 401/403 response. No side effects are performed
+     * here; `updateLastUsed()` is called by the caller after this method returns.
      *
      * For methods that do not implement {@see APIKeyMethodInterface}, this method
      * returns immediately with no effect.
+     *
+     * NOTE: By the time this method runs, {@see self::validate()} has already
+     * confirmed that a non-empty API key value was submitted (the parameter is
+     * required). If {@see \Application\API\Clients\API\Params\APIKeyHandler::getKey()}
+     * is still `null` here, the submitted value does not match any known API key —
+     * this is reported distinctly from a wholly missing key via
+     * {@see APIMethodInterface::ERROR_API_KEY_INVALID}.
      *
      * @return void
      */
@@ -156,7 +163,11 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
         $key = $this->manageParamAPIKey()->getKey();
         if ($key === null) {
-            return;
+            $this->log('API authorization denied: the submitted API key does not match any known key.');
+            $this->errorResponse(APIMethodInterface::ERROR_API_KEY_INVALID)
+                ->makeUnauthorized()
+                ->setErrorMessage('The provided API key is invalid or unknown. Please verify your API key and try again.')
+                ->send();
         }
 
         if (!$key->getMethods()->hasMethod($this->getMethodName())) {

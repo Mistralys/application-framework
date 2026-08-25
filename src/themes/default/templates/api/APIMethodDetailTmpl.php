@@ -321,6 +321,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         );
 
         if ($this->method instanceof APIKeyMethodInterface) {
+            $codes[Connectors_ResponseCode::HTTP_UNAUTHORIZED] = 'Unauthorized (invalid or unknown API key)';
             $codes[Connectors_ResponseCode::HTTP_FORBIDDEN] = 'Forbidden (insufficient rights to call this method)';
         }
 
