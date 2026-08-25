@@ -8,8 +8,10 @@ declare(strict_types=1);
 
 namespace Application\API;
 
+use Application\API\Parameters\APIParameterInterface;
 use Application\Application;
 use AppUtils\ArrayDataCollection;
+use AppUtils\OperationResult;
 use Connectors_ResponseCode;
 
 /**
@@ -98,12 +100,37 @@ class ErrorResponse
     public function getErrorData(): array
     {
         $this->errorData['validationMessages'] = array();
+        $this->errorData['validationErrors'] = array();
 
         foreach($this->method->getValidationResults()->getResults() as $result) {
             $this->errorData['validationMessages'][] = (string)$result;
+
+            if($result->isError()) {
+                $this->errorData['validationErrors'][] = $this->serializeValidationError($result);
+            }
         }
 
         return $this->errorData;
+    }
+
+    /**
+     * @param OperationResult $result
+     * @return array{param: string|null, code: int, message: string}
+     */
+    private function serializeValidationError(OperationResult $result) : array
+    {
+        $subject = $result->getSubject();
+        $param = null;
+
+        if($subject instanceof APIParameterInterface) {
+            $param = $subject->getName();
+        }
+
+        return array(
+            'param' => $param,
+            'code' => $result->getCode(),
+            'message' => $result->getErrorMessage()
+        );
     }
 
     public function getHttpStatusCode(): int
@@ -142,6 +169,16 @@ class ErrorResponse
     public function makeInternalServerError() : self
     {
         return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Sets the HTTP status code to 401 Unauthorized.
+     * Use for authentication failures: the submitted API key does not match
+     * any known key ({@see APIMethodInterface::ERROR_API_KEY_INVALID}).
+     */
+    public function makeUnauthorized() : self
+    {
+        return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_UNAUTHORIZED);
     }
 
     /**

@@ -1,6 +1,10 @@
 # Application Framework Changelog
 
 ## v7.5.1 - **WIP UNRELEASED**
+- API: Added `ERROR_API_KEY_INVALID` (183007) and `ErrorResponse::makeUnauthorized()` (HTTP 401), returned when a request submits a value for the API key parameter that does not match any known key. Previously this was indistinguishable from a wholly missing key, both surfacing as the generic `ERROR_INVALID_REQUEST_PARAMS` (183003).
+- API: `ErrorResponse::getErrorData()` now includes a structured `validationErrors` array alongside the existing `validationMessages` array. Each entry is `{param, code, message}`, where `param` is the API-native parameter name (or `null` for rule-level errors) as a discrete field, giving consumers programmatic access without parsing free-text messages.
+- Docs: Documented the new HTTP 401 authorization response in the API README and the API method documentation UI.
+- Docs: Documented the new `data.validationErrors` field in the API README.
 - Tests: Documented that `assertMethodCallIsSuccessful()` does not support rights-gated API methods.
 
 ## v7.5.0 - API Method Authorization Enforcement (Breaking-XS)

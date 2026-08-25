@@ -36,6 +36,13 @@ discovers, indexes, and exposes through a single dispatcher entry point.
   - `RequestRequestInterface` / `RequestRequestTrait` — traditional `$_REQUEST` handling.
 - **Response Payload:** `ResponsePayload` and `ErrorResponsePayload` encapsulate
   successful and error responses. `ErrorResponse` is the builder for error payloads.
+  Its `getErrorData()` method includes a `validationErrors` array (in addition to
+  the legacy `validationMessages` string array) with one `{param, code, message}`
+  entry per validation error: `param` is the API-native parameter name (or `null`
+  for rule-level, non-parameter errors), `code` is the numeric error code, and
+  `message` is the human-readable text without the type/code prefix. This gives
+  API consumers (such as the MCP server's `callApi()`) programmatic access to the
+  failing parameter name without parsing free-text messages.
 - **Connector:** `AppAPIConnector` and `AppAPIMethod` provide an HTTP client for
   consuming another framework application's API remotely.
 - **Documentation:** `APIDocumentation` and `MethodDocumentation` generate the
@@ -44,13 +51,19 @@ discovers, indexes, and exposes through a single dispatcher entry point.
   the API admin area.
 - **Authorization:** API key methods can declare a required application right via
   `getRequiredRight()`. The pipeline enforces this after authentication and before
-  execution. Two dedicated error codes signal denial: `ERROR_METHOD_NOT_GRANTED`
-  (183005) when the key has no method grant, and `ERROR_INSUFFICIENT_RIGHTS` (183006)
-  when the key has method access but the user lacks the required right. Both produce
-  HTTP 403 via `ErrorResponse::makeForbidden()`. `updateLastUsed()` is called after
-  successful authorization. Both denial paths emit a log message that includes the
-  API key ID and method name; the insufficient-rights path also includes the pseudo-user
-  ID and the required right name.
+  execution. Three dedicated error codes signal denial: `ERROR_API_KEY_INVALID`
+  (183007) when a value was submitted for the API key parameter but it does not
+  match any known key, `ERROR_METHOD_NOT_GRANTED` (183005) when the key has no
+  method grant, and `ERROR_INSUFFICIENT_RIGHTS` (183006) when the key has method
+  access but the user lacks the required right. The invalid-key case produces
+  HTTP 401 via `ErrorResponse::makeUnauthorized()`; the other two produce HTTP 403
+  via `ErrorResponse::makeForbidden()`. A wholly missing API key value is instead
+  rejected earlier by the generic required-parameter validation
+  (`ERROR_INVALID_REQUEST_PARAMS`, 183003), since `authorize()` never runs in that
+  case. `updateLastUsed()` is called after successful authorization. All denial
+  paths emit a log message; the method-grant and insufficient-rights paths include
+  the API key ID and method name, and the insufficient-rights path also includes
+  the pseudo-user ID and the required right name.
   > **Design invariant:** `authorize()` is `private` — it is called unconditionally
   > by `_process()` and cannot be bypassed or overridden by subclasses. This makes
   > authorization mandatory for every request through the pipeline.
