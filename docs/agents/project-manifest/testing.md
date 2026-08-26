@@ -434,9 +434,9 @@ protected function tearDown() : void
 
 Any test that exercises an API method implementing `APIKeyMethodInterface` through
 `processReturn()` must explicitly grant the method to the test API key before calling
-`processReturn()`. The authorization gate introduced in `BaseAPIMethod::authorize()`
-enforces a method-access whitelist — keys without an explicit grant receive HTTP 403
-(`ERROR_METHOD_NOT_GRANTED = 183005`).
+`processReturn()`. The authorization gate in `BaseAPIMethod::authorize()` enforces
+a method-access whitelist and derives right authority from the key's method grants
+via `APIKeyRights::satisfies()` — not from pseudo-user rights.
 
 ### Required setup pattern
 
@@ -460,6 +460,10 @@ $result = $this->processReturn(TestAPIKeyMethod::class, array(...));
 
 Omitting the method grant causes a silent 403 that is easy to misread as a test
 logic error.
+
+> **Deprecated:** `createTestAPIKeyWithRights()` still exists for backward
+> compatibility but no longer calls `setRights()` on the pseudo user. Prefer
+> `createTestAPIKeyForMethod()` in all new tests.
 
 ---
 

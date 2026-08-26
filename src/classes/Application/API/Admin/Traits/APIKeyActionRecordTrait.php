@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\API\Admin\Traits;
 
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyMethodsAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyRightsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeySettingsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyStatusAction;
 use Application\API\Clients\Keys\APIKeyRecord;
@@ -65,6 +67,14 @@ trait APIKeyActionRecordTrait
         $this->tabs->appendTab(t('Key Settings'), APIKeySettingsAction::URL_NAME)
             ->setIcon(UI::icon()->settings())
             ->makeLinked($apiKey->adminURL()->settings());
+
+        $this->tabs->appendTab(t('Methods'), APIKeyMethodsAction::URL_NAME)
+            ->setIcon(UI::icon()->code())
+            ->makeLinked($apiKey->adminURL()->methods());
+
+        $this->tabs->appendTab(t('Rights'), APIKeyRightsAction::URL_NAME)
+            ->setIcon(UI::icon()->locked())
+            ->makeLinked($apiKey->adminURL()->rights());
 
         $this->tabs->selectByAction();
     }

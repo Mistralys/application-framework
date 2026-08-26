@@ -51,25 +51,27 @@ discovers, indexes, and exposes through a single dispatcher entry point.
   the API admin area.
 - **Authorization:** API key methods can declare a required application right via
   `getRequiredRight()`. The pipeline enforces this after authentication and before
-  execution. Three dedicated error codes signal denial: `ERROR_API_KEY_INVALID`
-  (183007) when a value was submitted for the API key parameter but it does not
-  match any known key, `ERROR_METHOD_NOT_GRANTED` (183005) when the key has no
-  method grant, and `ERROR_INSUFFICIENT_RIGHTS` (183006) when the key has method
-  access but the user lacks the required right. The invalid-key case produces
-  HTTP 401 via `ErrorResponse::makeUnauthorized()`; the other two produce HTTP 403
-  via `ErrorResponse::makeForbidden()`. A wholly missing API key value is instead
-  rejected earlier by the generic required-parameter validation
-  (`ERROR_INVALID_REQUEST_PARAMS`, 183003), since `authorize()` never runs in that
-  case. `updateLastUsed()` is called after successful authorization. All denial
-  paths emit a log message; the method-grant and insufficient-rights paths include
-  the API key ID and method name, and the insufficient-rights path also includes
-  the pseudo-user ID and the required right name.
+  execution. The third check uses `APIKeyRights::satisfies()` to derive authority
+  from the key's method grants — not from pseudo-user rights. Three dedicated
+  error codes signal denial: `ERROR_API_KEY_INVALID` (183007) when a value was
+  submitted for the API key parameter but it does not match any known key,
+  `ERROR_METHOD_NOT_GRANTED` (183005) when the key has no method grant, and
+  `ERROR_INSUFFICIENT_RIGHTS` (183006) when the key has method access but
+  `satisfies()` returns false (e.g. the declared right is unresolvable). The
+  invalid-key case produces HTTP 401 via `ErrorResponse::makeUnauthorized()`;
+  the other two produce HTTP 403 via `ErrorResponse::makeForbidden()`. A wholly
+  missing API key value is instead rejected earlier by the generic
+  required-parameter validation (`ERROR_INVALID_REQUEST_PARAMS`, 183003), since
+  `authorize()` never runs in that case. `updateLastUsed()` is called after
+  successful authorization. All denial paths emit a log message; the method-grant
+  and insufficient-rights paths include the API key ID and method name.
   > **Design invariant:** `authorize()` is `private` — it is called unconditionally
   > by `_process()` and cannot be bypassed or overridden by subclasses. This makes
   > authorization mandatory for every request through the pipeline.
   >
   > **Tier 2 rights:** API methods may add further fine-grained right checks inside
-  > `handleXxx()` handler methods using `$user->hasRight()`. On denial, send
+  > `handleXxx()` handler methods. For method-scoped checks, use
+  > `$key->getRights()->satisfies()`. On denial, send
   > `errorResponse(MailAPIInterface::ERROR_INSUFFICIENT_RIGHTS)->makeForbidden()->send()`.
   > See `SetMailingStateAPI::handleFinalize()` in the HCP Editor for a concrete example.
 - **Events:** `RegisterAPIIndexCacheListener` and `RegisterAPIResponseCacheListener`
@@ -82,7 +84,7 @@ discovers, indexes, and exposes through a single dispatcher entry point.
 | Directory | Contents |
 |---|---|
 | `BaseMethods/` | `BaseAPIMethod` — abstract base class implementing the full method lifecycle. |
-| `Collection/` | `APIMethodCollection`, `APIMethodIndex`, `APICacheLocation` — method discovery, indexing, and cache control integration. |
+| `Collection/` | `APIMethodCollection`, `APIMethodIndex`, `APIMethodIndexEntry`, `APICacheLocation` — method discovery, typed index entries, and cache control integration. |
 | `Connector/` | `AppAPIConnector`, `AppAPIMethod` — HTTP client for remote API consumption. |
 | `Documentation/` | `APIDocumentation`, `MethodDocumentation`, `JSONMethodExample` — documentation rendering. |
 | `Events/` | Cache control event listeners for method index and response caches. |

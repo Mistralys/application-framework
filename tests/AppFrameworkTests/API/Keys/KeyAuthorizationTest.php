@@ -7,6 +7,8 @@ namespace AppFrameworkTests\API\Keys;
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use Application\API\Clients\Keys\APIKeyRecord;
+use Application\API\Collection\APIMethodIndex;
+use Application\API\Collection\APIMethodIndexEntry;
 use AppFrameworkTestClasses\API\APIMethodTestTrait;
 use Mistralys\AppFrameworkTests\TestClasses\APIClientTestCase;
 use TestDriver\API\TestAPIKeyMethod;
@@ -15,19 +17,22 @@ use TestDriver\API\TestVersionedMethod;
 
 /**
  * Verifies the authorization gate implemented in BaseAPIMethod::authorize():
- * (1) API key resolution, (2) method-access whitelist, and (3) pseudo-user
- * right enforcement.
+ * (1) API key resolution, (2) method-access whitelist, and (3) APIKeyRights
+ * satisfaction. Authority derives from the key's method grants via
+ * {@see \Application\API\Clients\Keys\APIKeyRights::satisfies()} — not
+ * from pseudo-user rights.
  *
  * Test cases:
  *  1. unknown/invalid API key value → HTTP 401 / error 183007
  *  2. method-access denied          → HTTP 403 / error 183005
  *  3. method-access granted (individual grant) → success
  *  4. method-access granted (grantAll)         → success
- *  5. user-rights denied            → HTTP 403 / error 183006
- *  6. user-rights granted           → success
+ *  5. insufficient-rights denied (unresolvable right) → HTTP 403 / error 183006
+ *  6. method-grant derived rights   → success (no pseudo-user rights needed)
  *  7. null-right skip               → user-right check skipped, success
  *  8. non-key method skip           → authorize() is a no-op, success
  *  9. updateLastUsed after success  → usage count increments by 1
+ * 10. pseudo-user rights alone      → do NOT authorize a method
  */
 final class KeyAuthorizationTest extends APIClientTestCase
 {
@@ -97,13 +102,11 @@ final class KeyAuthorizationTest extends APIClientTestCase
 
     /**
      * A key with an individual method grant passes the access check.
+     * Authority derives from the method grant — no pseudo-user rights needed.
      */
     public function test_methodAccessGrantedIndividual(): void
     {
-        $key = $this->createTestAPIKeyWithRights(
-            TestAPIKeyMethodWithRight::METHOD_NAME,
-            array(TestAPIKeyMethodWithRight::TEST_RIGHT)
-        );
+        $key = $this->createTestAPIKeyForMethod(TestAPIKeyMethodWithRight::METHOD_NAME);
 
         $method = $this->createMethodWithRight($key);
 
@@ -112,12 +115,12 @@ final class KeyAuthorizationTest extends APIClientTestCase
 
     /**
      * A key with grantAll() passes the access check for any method.
+     * Authority derives from the grant-all flag — no pseudo-user rights needed.
      */
     public function test_methodAccessGrantedAll(): void
     {
         $key = $this->createTestAPIKey();
         $key->getMethods()->grantAll();
-        $key->getPseudoUser()->setRights(array(TestAPIKeyMethodWithRight::TEST_RIGHT));
 
         $method = $this->createMethodWithRight($key);
 
@@ -125,32 +128,51 @@ final class KeyAuthorizationTest extends APIClientTestCase
     }
 
     /**
-     * A key with method access but a pseudo-user that lacks the required right
-     * receives HTTP 403 / 183006.
+     * A granted method whose index entry declares an unregistered right
+     * yields HTTP 403 / 183006 because satisfies() cannot resolve the
+     * declared right and fails closed.
      */
-    public function test_userRightsDenied(): void
+    public function test_unresolvableDeclaredRightDenied(): void
     {
-        $key = $this->createTestAPIKeyForMethod(TestAPIKeyMethodWithRight::METHOD_NAME);
-        // Pseudo-user has NO rights (default for a fresh test user).
+        $index = APIManager::getInstance()->getMethodIndex();
+        $index->build();
 
-        $method = $this->createMethodWithRight($key);
+        $data = $index->getDataFile()->getData();
+        $originalEntry = $data[APIMethodIndex::KEY_METHODS][TestAPIKeyMethodWithRight::METHOD_NAME];
 
-        $this->assertErrorResponseCode(
-            $method->processReturn(),
-            APIMethodInterface::ERROR_INSUFFICIENT_RIGHTS
-        );
+        // Craft an entry with an unregistered right that no rights group knows about.
+        $data[APIMethodIndex::KEY_METHODS][TestAPIKeyMethodWithRight::METHOD_NAME] = (new APIMethodIndexEntry(
+            TestAPIKeyMethodWithRight::METHOD_NAME,
+            TestAPIKeyMethodWithRight::class,
+            'NonExistentRight_Unresolvable',
+            'TestGroup'
+        ))->toArray();
+        $index->getDataFile()->putData($data);
+        $index->clearIndexCache();
+
+        try {
+            $key = $this->createTestAPIKeyForMethod(TestAPIKeyMethodWithRight::METHOD_NAME);
+
+            $method = $this->createMethodWithRight($key);
+
+            $this->assertErrorResponseCode(
+                $method->processReturn(),
+                APIMethodInterface::ERROR_INSUFFICIENT_RIGHTS
+            );
+        } finally {
+            $data[APIMethodIndex::KEY_METHODS][TestAPIKeyMethodWithRight::METHOD_NAME] = $originalEntry;
+            $index->getDataFile()->putData($data);
+            $index->clearIndexCache();
+        }
     }
 
     /**
-     * A key with method access and a pseudo-user that holds the required right
-     * passes authorization.
+     * A key with method access authorizes successfully — authority derives
+     * from the method grant via APIKeyRights::satisfies(), not pseudo-user rights.
      */
-    public function test_userRightsGranted(): void
+    public function test_methodGrantDerivedRights(): void
     {
-        $key = $this->createTestAPIKeyWithRights(
-            TestAPIKeyMethodWithRight::METHOD_NAME,
-            array(TestAPIKeyMethodWithRight::TEST_RIGHT)
-        );
+        $key = $this->createTestAPIKeyForMethod(TestAPIKeyMethodWithRight::METHOD_NAME);
 
         $method = $this->createMethodWithRight($key);
 
@@ -189,12 +211,12 @@ final class KeyAuthorizationTest extends APIClientTestCase
 
     /**
      * After a successful authorization, updateLastUsed() must have been called,
-     * incrementing the API key's usage count by exactly 1.
+     * incrementing the API key's usage count by exactly 1. Authority derives
+     * from method grants alone — no pseudo-user rights needed.
      */
     public function test_updateLastUsedAfterAuthorization(): void
     {
         $key = $this->createTestAPIKeyForMethod(TestAPIKeyMethodWithRight::METHOD_NAME);
-        $key->getPseudoUser()->setRights(array(TestAPIKeyMethodWithRight::TEST_RIGHT));
 
         $usageCountBefore = $key->getUsageCount();
 
@@ -205,6 +227,25 @@ final class KeyAuthorizationTest extends APIClientTestCase
             $usageCountBefore + 1,
             $key->getUsageCount(),
             'updateLastUsed() must increment the usage count by 1 after successful authorization.'
+        );
+    }
+
+    /**
+     * Setting rights on the pseudo user does NOT authorize a method
+     * the key was not granted. Authority derives from method grants,
+     * not pseudo-user rights.
+     */
+    public function test_pseudoUserRightsAloneDoNotAuthorize(): void
+    {
+        $key = $this->createTestAPIKey();
+        // Grant the right on the pseudo user but do NOT grant the method.
+        $key->getPseudoUser()->setRights(array(TestAPIKeyMethodWithRight::TEST_RIGHT));
+
+        $method = $this->createMethodWithRight($key);
+
+        $this->assertErrorResponseCode(
+            $method->processReturn(),
+            APIMethodInterface::ERROR_METHOD_NOT_GRANTED
         );
     }
 

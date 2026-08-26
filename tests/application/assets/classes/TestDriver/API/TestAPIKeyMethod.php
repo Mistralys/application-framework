@@ -27,6 +27,11 @@ class TestAPIKeyMethod
 
     public const string METHOD_NAME = 'TestAPIKey';
 
+    public function getRequiredRight() : ?string
+    {
+        return null;
+    }
+
     public function getMethodName(): string
     {
         return self::METHOD_NAME;

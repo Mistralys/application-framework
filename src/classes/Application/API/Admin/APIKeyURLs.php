@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\API\Admin;
 
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyMethodsAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyRightsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeySettingsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyStatusAction;
 use Application\API\Clients\Keys\APIKeyRecord;
@@ -37,5 +39,17 @@ class APIKeyURLs
     {
         return $this->base()
             ->action(APIKeySettingsAction::URL_NAME);
+    }
+
+    public function methods() : AdminURLInterface
+    {
+        return $this->base()
+            ->action(APIKeyMethodsAction::URL_NAME);
+    }
+
+    public function rights() : AdminURLInterface
+    {
+        return $this->base()
+            ->action(APIKeyRightsAction::URL_NAME);
     }
 }
