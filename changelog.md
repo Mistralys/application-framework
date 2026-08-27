@@ -9,6 +9,7 @@
 - API: Added Methods Selection admin screen for managing API key method grants with diff-based save.
 - API: Added Rights Overview admin screen showing the reverse mapping from rights to granted methods with one-level grant expansion.
 - API: Added a server-side edit-right guard to the Methods Selection screen's save action (`APIKeyMethodsAction`) — the confirm action is no longer registered, and the handler now rejects the request, for users without `SCREEN_API_KEYS_METHODS_EDIT`.
+- API: Extracted `canEditMethods()` helper in `APIKeyMethodsAction` to centralize the edit-right permission check across sidebar, datagrid, and save handler.
 - Docs: Documented the new HTTP 401 authorization response in the API README and the API method documentation UI.
 - Docs: Documented the new `data.validationErrors` field in the API README.
 - Tests: Documented that `assertMethodCallIsSuccessful()` does not support rights-gated API methods.

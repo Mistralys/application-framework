@@ -98,13 +98,18 @@ class APIKeyMethodsAction extends BaseRecordAction implements APIKeyActionRecord
             ->makeLinked($this->getCurrentScreenURL());
     }
 
+    private function canEditMethods(): bool
+    {
+        return $this->user->can(APIScreenRights::SCREEN_API_KEYS_METHODS_EDIT);
+    }
+
     protected function _handleSidebar(): void
     {
         if($this->apiKey->areAllMethodsGranted()) {
             return;
         }
 
-        if(!$this->user->can(APIScreenRights::SCREEN_API_KEYS_METHODS_EDIT)) {
+        if(!$this->canEditMethods()) {
             return;
         }
 
@@ -159,7 +164,7 @@ class APIKeyMethodsAction extends BaseRecordAction implements APIKeyActionRecord
             $grid->enableMultiSelect(self::COL_METHOD_KEY);
             $grid->enableLimitOptionsDefault();
 
-            if($this->user->can(APIScreenRights::SCREEN_API_KEYS_METHODS_EDIT)) {
+            if($this->canEditMethods()) {
                 $grid->addConfirmAction(
                     self::ACTION_SAVE,
                     t('Save method selection'),
@@ -221,7 +226,7 @@ class APIKeyMethodsAction extends BaseRecordAction implements APIKeyActionRecord
 
     private function handle_saveMethodSelection(UI_DataGrid_Action $action): void
     {
-        if(!$this->user->can(APIScreenRights::SCREEN_API_KEYS_METHODS_EDIT)) {
+        if(!$this->canEditMethods()) {
             $this->redirectWithErrorMessage(
                 t('You do not have the required rights to save method grants.'),
                 $this->getCurrentScreenURL()
