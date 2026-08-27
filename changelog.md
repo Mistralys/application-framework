@@ -1,27 +1,26 @@
 # Application Framework Changelog
 
-## v7.5.1 - **WIP UNRELEASED**
-- API: Added `ERROR_API_KEY_INVALID` (183007) and `ErrorResponse::makeUnauthorized()` (HTTP 401), returned when a request submits a value for the API key parameter that does not match any known key. Previously this was indistinguishable from a wholly missing key, both surfacing as the generic `ERROR_INVALID_REQUEST_PARAMS` (183003).
-- API: `ErrorResponse::getErrorData()` now includes a structured `validationErrors` array alongside the existing `validationMessages` array. Each entry is `{param, code, message}`, where `param` is the API-native parameter name (or `null` for rule-level errors) as a discrete field, giving consumers programmatic access without parsing free-text messages.
-- API: Added `APIKeyRights` authority object on `APIKeyRecord` — rights are now satisfied from method grants via `satisfies()` instead of from the pseudo user.
-- API: Added typed `APIMethodIndexEntry` data class with versioned method index schema (`SCHEMA_VERSION = 2`), build-time declared-right validation, and `clearIndexCache()` reset accessor.
-- API: Added two new exception codes: `ERROR_UNKNOWN_DECLARED_RIGHT` (59213009) and `ERROR_INDEX_SCHEMA_VERSION_MISMATCH` (59213010).
-- API: Added Methods Selection admin screen for managing API key method grants with diff-based save.
-- API: Added Rights Overview admin screen showing the reverse mapping from rights to granted methods with one-level grant expansion.
-- API: Added a server-side edit-right guard to the Methods Selection screen's save action (`APIKeyMethodsAction`) — the confirm action is no longer registered, and the handler now rejects the request, for users without `SCREEN_API_KEYS_METHODS_EDIT`.
-- API: Extracted `canEditMethods()` helper in `APIKeyMethodsAction` to centralize the edit-right permission check across sidebar, datagrid, and save handler.
-- Docs: Documented the new HTTP 401 authorization response in the API README and the API method documentation UI.
-- Docs: Documented the new `data.validationErrors` field in the API README.
-- Tests: Documented that `assertMethodCallIsSuccessful()` does not support rights-gated API methods.
+## v7.5.1 - API Key Method Grant Management (Breaking-S)
+
+**Invalid API keys now return a distinct unauthorized error instead of a generic bad-request error.**
+Validation errors are now structured for easier programmatic handling. Administrators can
+manage per-method API key grants and review right-to-method mappings from two new screens.
+
+- API: Invalid API keys now return HTTP 401 instead of a generic error.
+- API: Added a structured `validationErrors` array to error responses for programmatic access.
+- API: Added a Methods Selection screen for managing API key method grants.
+- API: Added a Rights Overview screen showing which methods each right grants access to.
+- API: Added a permission guard preventing unauthorized users from saving method grants.
+- API: Method index cache is now versioned and validates declared rights at build time.
+- Docs: Documented the new HTTP 401 response and validation error format in the API docs.
+- Tests: Documented that rights-gated API methods aren't supported by the success-assertion helper.
 
 ### Breaking Changes
 
-`APIKeyMethodTrait` no longer provides a default `getRequiredRight()` implementation.
-Every class implementing `APIKeyMethodInterface` must now declare `getRequiredRight()`
-explicitly — return a right name string to require authorization, or `null` to opt out.
-Applications using the trait without an explicit override must add the method.
-The method index JSON schema has changed to version 2 (typed entries with declared
-right and group ID); stale index files are rebuilt automatically on first access.
+Classes implementing `APIKeyMethodInterface` via `APIKeyMethodTrait` must now explicitly
+implement `getRequiredRight()` — the trait no longer provides a default `null` implementation.
+Return a right name to require authorization, or `null` to opt out. The method index JSON
+schema is now versioned (v2); stale index files are rebuilt automatically on first access.
 
 ## v7.5.0 - API Method Authorization Enforcement (Breaking-XS)
 
