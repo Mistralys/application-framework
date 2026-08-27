@@ -24,6 +24,8 @@ _SOURCE: APIClientsArea, ClientsListMode, CreateClientMode, ViewClientMode, Clie
                         │   └── CreateClientMode.php
                         │   └── View/
                         │       ├── APIKeys/
+                        │       │   ├── APIKeyMethodsAction.php
+                        │       │   ├── APIKeyRightsAction.php
                         │       │   ├── APIKeySettingsAction.php
                         │       │   ├── APIKeyStatusAction.php
                         │       │   ├── APIKeysListAction.php
@@ -156,6 +158,8 @@ class APIKeyCollectionURLs
 ```php
 namespace Application\API\Admin;
 
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyMethodsAction as APIKeyMethodsAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyRightsAction as APIKeyRightsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeySettingsAction as APIKeySettingsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyStatusAction as APIKeyStatusAction;
 use Application\API\Clients\Keys\APIKeyRecord as APIKeyRecord;
@@ -176,6 +180,18 @@ class APIKeyURLs
 
 
 	public function settings(): AdminURLInterface
+	{
+		/* ... */
+	}
+
+
+	public function methods(): AdminURLInterface
+	{
+		/* ... */
+	}
+
+
+	public function rights(): AdminURLInterface
 	{
 		/* ... */
 	}
@@ -206,6 +222,9 @@ class APIScreenRights
 	public const SCREEN_API_KEYS_SETTINGS = APIRightsInterface::RIGHT_VIEW_API_CLIENTS;
 	public const SCREEN_API_KEYS_SETTINGS_EDIT = APIRightsInterface::RIGHT_EDIT_API_CLIENTS;
 	public const SCREEN_API_KEYS_LIST = APIRightsInterface::RIGHT_VIEW_API_CLIENTS;
+	public const SCREEN_API_KEYS_METHODS = APIRightsInterface::RIGHT_VIEW_API_CLIENTS;
+	public const SCREEN_API_KEYS_METHODS_EDIT = APIRightsInterface::RIGHT_EDIT_API_CLIENTS;
+	public const SCREEN_API_KEYS_RIGHTS = APIRightsInterface::RIGHT_VIEW_API_CLIENTS;
 }
 
 
@@ -513,6 +532,139 @@ class CreateClientMode extends BaseRecordCreateMode implements ClientModeInterfa
 
 
 	public function getAbstract(): string
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Admin/Screens/Mode/View/APIKeys/APIKeyMethodsAction.php`
+
+```php
+namespace Application\API\Admin\Screens\Mode\View\APIKeys;
+
+use AppUtils\ClassHelper as ClassHelper;
+use Application\API\APIManager as APIManager;
+use Application\API\Admin\APIScreenRights as APIScreenRights;
+use Application\API\Admin\RequestTypes\APIClientRequestTrait as APIClientRequestTrait;
+use Application\API\Admin\Traits\APIKeyActionRecordInterface as APIKeyActionRecordInterface;
+use Application\API\Admin\Traits\APIKeyActionRecordTrait as APIKeyActionRecordTrait;
+use Application\API\Admin\Traits\APIKeyActionTrait as APIKeyActionTrait;
+use Application\API\Clients\Keys\APIKeyRecord as APIKeyRecord;
+use DBHelper\Admin\Screens\Action\BaseRecordAction as BaseRecordAction;
+use UI as UI;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI_DataGrid as UI_DataGrid;
+use UI_DataGrid_Action as UI_DataGrid_Action;
+use UI_Themes_Theme_ContentRenderer as UI_Themes_Theme_ContentRenderer;
+
+/**
+ * Methods Selection screen for an API key: lists every available
+ * API method with its declared right, group, and granted state.
+ * Diff-based save: only newly selected and deselected methods
+ * within the submitted (shown) view are mutated.
+ *
+ * @package API
+ * @subpackage Admin Screens
+ */
+class APIKeyMethodsAction extends BaseRecordAction implements APIKeyActionRecordInterface
+{
+	use APIClientRequestTrait;
+	use APIKeyActionTrait;
+	use APIKeyActionRecordTrait;
+
+	public const URL_NAME = 'methods';
+
+	public function getURLName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getNavigationTitle(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTitle(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRequiredRight(): string
+	{
+		/* ... */
+	}
+
+
+	public function getFeatureRights(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Admin/Screens/Mode/View/APIKeys/APIKeyRightsAction.php`
+
+```php
+namespace Application\API\Admin\Screens\Mode\View\APIKeys;
+
+use AppUtils\ClassHelper as ClassHelper;
+use Application\API\APIManager as APIManager;
+use Application\API\Admin\APIScreenRights as APIScreenRights;
+use Application\API\Admin\RequestTypes\APIClientRequestTrait as APIClientRequestTrait;
+use Application\API\Admin\Traits\APIKeyActionRecordInterface as APIKeyActionRecordInterface;
+use Application\API\Admin\Traits\APIKeyActionRecordTrait as APIKeyActionRecordTrait;
+use Application\API\Admin\Traits\APIKeyActionTrait as APIKeyActionTrait;
+use Application\API\Clients\Keys\APIKeyRecord as APIKeyRecord;
+use Application\Application as Application;
+use Application_User_Rights_Right as Application_User_Rights_Right;
+use DBHelper\Admin\Screens\Action\BaseRecordAction as BaseRecordAction;
+use UI as UI;
+use UI\AdminURLs\AdminURLInterface as AdminURLInterface;
+use UI_DataGrid as UI_DataGrid;
+use UI_Themes_Theme_ContentRenderer as UI_Themes_Theme_ContentRenderer;
+
+/**
+ * Rights Overview screen for an API key: reverse mapping from
+ * rights to granted methods. Read-only — nothing is persisted.
+ * Reports only declared rights (Tier 2 rights exercised inside
+ * handlers are not represented).
+ *
+ * @package API
+ * @subpackage Admin Screens
+ */
+class APIKeyRightsAction extends BaseRecordAction implements APIKeyActionRecordInterface
+{
+	use APIClientRequestTrait;
+	use APIKeyActionTrait;
+	use APIKeyActionRecordTrait;
+
+	public const URL_NAME = 'rights';
+
+	public function getURLName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getNavigationTitle(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTitle(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRequiredRight(): string
 	{
 		/* ... */
 	}
@@ -1042,6 +1194,8 @@ interface APIKeyActionRecordInterface extends APIKeyActionInterface
 namespace Application\API\Admin\Traits;
 
 use AppUtils\ClassHelper as ClassHelper;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyMethodsAction as APIKeyMethodsAction;
+use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyRightsAction as APIKeyRightsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeySettingsAction as APIKeySettingsAction;
 use Application\API\Admin\Screens\Mode\View\APIKeys\APIKeyStatusAction as APIKeyStatusAction;
 use Application\API\Clients\Keys\APIKeyRecord as APIKeyRecord;

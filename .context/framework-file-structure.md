@@ -100,6 +100,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── APIKeyMethods.php
             │   │   │   ├── APIKeyRecord.php
             │   │   │   ├── APIKeyRecordSettings.php
+            │   │   │   ├── APIKeyRights.php
             │   │   │   ├── APIKeysCollection.php
             │   │   ├── README.md
             │   │   ├── module-context.yaml
@@ -107,6 +108,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── APICacheLocation.php
             │   │   ├── APIMethodCollection.php
             │   │   ├── APIMethodIndex.php
+            │   │   ├── APIMethodIndexEntry.php
             │   ├── Connector/
             │   │   ├── AppAPIConnector.php
             │   │   ├── AppAPIMethod.php

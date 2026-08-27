@@ -24,6 +24,8 @@ _SOURCE: API Clients and Admin File Structure_
                     │   │   └── CreateClientMode.php
                     │   │   └── View/
                     │   │       ├── APIKeys/
+                    │   │       │   ├── APIKeyMethodsAction.php
+                    │   │       │   ├── APIKeyRightsAction.php
                     │   │       │   ├── APIKeySettingsAction.php
                     │   │       │   ├── APIKeyStatusAction.php
                     │   │       │   ├── APIKeysListAction.php
@@ -61,6 +63,7 @@ _SOURCE: API Clients and Admin File Structure_
                         └── APIKeyMethods.php
                         └── APIKeyRecord.php
                         └── APIKeyRecordSettings.php
+                        └── APIKeyRights.php
                         └── APIKeysCollection.php
 
 ```

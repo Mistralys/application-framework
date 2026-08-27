@@ -2,7 +2,7 @@
  * Clientside reference for CSS class name constants.
  * Auto-generated from {@see \UI\CSSClasses} - do not edit manually.
  *
- * @generated 2026-07-21 15:31:05
+ * @generated 2026-08-27 10:12:47
  * @see src/classes/UI/CSSClasses.php
  */
 class CSSClasses {

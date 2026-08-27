@@ -11,6 +11,7 @@ _SOURCE: APIGroupInterface, FrameworkAPIGroup, GenericAPIGroup, APIDocumentation
                     ├── APICacheLocation.php
                     ├── APIMethodCollection.php
                     ├── APIMethodIndex.php
+                    ├── APIMethodIndexEntry.php
                 └── Connector/
                     ├── AppAPIConnector.php
                     ├── AppAPIMethod.php
@@ -147,23 +148,24 @@ use AppUtils\FileHelper\JSONFile as JSONFile;
 use Application\API\APIException as APIException;
 use Application\API\APIManager as APIManager;
 use Application\API\APIMethodInterface as APIMethodInterface;
+use Application\API\Clients\API\APIKeyMethodInterface as APIKeyMethodInterface;
 use Application\AppFactory\APICacheLocation as APICacheLocation;
 use Application\Application as Application;
 use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
 use Application_Traits_Loggable as Application_Traits_Loggable;
 
 /**
- * API method indexing module: Creates a cache file on disk
- * that is used at runtime to look up whether a method exists,
- * and to fetch its class name without having to use the
- * {@see APIMethodCollection} to find it.
+ * API method indexing module: Creates a versioned cache file on
+ * disk that is used at runtime to look up whether a method exists,
+ * fetch its class name, and read its declared right and group ID
+ * without having to use the {@see APIMethodCollection}.
  *
  * ## Usage
  *
  * Use {@see APIManager::getMethodIndex} to get an instance
  * of this class, and then call {@see methodExists()} to check
- * if a method exists, or {@see getMethodClass()} to get the
- * class name of a method.
+ * if a method exists, {@see getMethodClass()} to get the
+ * class name, or {@see getEntry()} for the full typed entry.
  *
  * @package API
  * @subpackage Method Collection
@@ -171,6 +173,10 @@ use Application_Traits_Loggable as Application_Traits_Loggable;
 class APIMethodIndex implements Application_Interfaces_Loggable
 {
 	use Application_Traits_Loggable;
+
+	public const SCHEMA_VERSION = 2;
+	public const KEY_SCHEMA_VERSION = 'schema_version';
+	public const KEY_METHODS = 'methods';
 
 	public function getLogIdentifier(): string
 	{
@@ -194,8 +200,8 @@ class APIMethodIndex implements Application_Interfaces_Loggable
 
 
 	/**
-	 * @param class-string<APIMethodInterface> $methodName
-	 * @return string
+	 * @param string $methodName
+	 * @return class-string<APIMethodInterface>
 	 * @throws APIException
 	 */
 	public function getMethodClass(string $methodName): string
@@ -204,6 +210,28 @@ class APIMethodIndex implements Application_Interfaces_Loggable
 	}
 
 
+	/**
+	 * @throws APIException {@see APIException::ERROR_METHOD_NOT_IN_INDEX}
+	 */
+	public function getEntry(string $methodName): APIMethodIndexEntry
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Nulls the in-memory index so the next {@see getIndex()} call
+	 * re-reads the data file from disk.
+	 */
+	public function clearIndexCache(): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @throws APIException {@see APIException::ERROR_UNKNOWN_DECLARED_RIGHT}
+	 */
 	public function build(): self
 	{
 		/* ... */
@@ -217,6 +245,78 @@ class APIMethodIndex implements Application_Interfaces_Loggable
 
 
 	public function getCacheLocation(): APICacheLocation
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Collection/APIMethodIndexEntry.php`
+
+```php
+namespace Application\API\Collection;
+
+use Application\API\APIMethodInterface as APIMethodInterface;
+
+/**
+ * Typed entry for the API method index, carrying the method's
+ * name, class, declared right and group ID.
+ *
+ * Used by {@see APIMethodIndex} for JSON round-tripping via
+ * {@see toArray()} and {@see fromArray()}.
+ *
+ * @package API
+ * @subpackage Method Collection
+ */
+final class APIMethodIndexEntry
+{
+	public const KEY_METHOD_NAME = 'methodName';
+	public const KEY_CLASS_NAME = 'className';
+	public const KEY_REQUIRED_RIGHT = 'requiredRight';
+	public const KEY_GROUP_ID = 'groupID';
+
+	public function getMethodName(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return class-string<APIMethodInterface>
+	 */
+	public function getClassName(): string
+	{
+		/* ... */
+	}
+
+
+	public function getRequiredRight(): ?string
+	{
+		/* ... */
+	}
+
+
+	public function getGroupID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return array<string,string|null>
+	 */
+	public function toArray(): array
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @param array<string,string|null> $data
+	 * @return self
+	 */
+	public static function fromArray(array $data): self
 	{
 		/* ... */
 	}

@@ -76,11 +76,13 @@ _SOURCE: API Module File Structure_
                     │   └── APIKeyMethods.php
                     │   └── APIKeyRecord.php
                     │   └── APIKeyRecordSettings.php
+                    │   └── APIKeyRights.php
                     │   └── APIKeysCollection.php
                 └── Collection/
                     ├── APICacheLocation.php
                     ├── APIMethodCollection.php
                     ├── APIMethodIndex.php
+                    ├── APIMethodIndexEntry.php
                 └── Connector/
                     ├── AppAPIConnector.php
                     ├── AppAPIMethod.php

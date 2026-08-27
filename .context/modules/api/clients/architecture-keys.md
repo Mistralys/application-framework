@@ -21,6 +21,7 @@ _SOURCE: APIKeysCollection, APIKeyRecord, APIKeyFilterCriteria, APIKeyFilterSett
                         └── APIKeyMethods.php
                         └── APIKeyRecord.php
                         └── APIKeyRecordSettings.php
+                        └── APIKeyRights.php
                         └── APIKeysCollection.php
 
 ```
@@ -53,12 +54,21 @@ interface APIKeyMethodInterface extends APIMethodInterface
 
 
 	/**
-	 * Returns the name of the user right required to call this API method.
+	 * Returns the user right required to call this API method,
+	 * or `null` if no specific right is required.
 	 *
-	 * When a non-null value is returned, the framework checks whether the
-	 * API key's pseudo-user has this right before executing the method.
-	 * Return `null` if this method does not require a specific user right
-	 * (the method-access whitelist check still applies).
+	 * This declaration is **mandatory** — every implementing class
+	 * must provide an explicit return value. The `APIKeyMethodTrait`
+	 * does not supply a default. Return `null` explicitly when no
+	 * right is required; this is a visible, reviewable decision.
+	 *
+	 * When a non-null value is returned, the framework satisfies
+	 * the right from the API key's method grants via
+	 * `APIKeyRights::satisfies()` (not from the pseudo user).
+	 *
+	 * **Override contract:** Overrides must only **strengthen** the
+	 * right declaration. Returning `null` where a parent returns a
+	 * non-null right bypasses the authorization check.
 	 *
 	 * @return string|null The right name, or `null` if no right is required.
 	 */
@@ -75,32 +85,14 @@ namespace Application\API\Clients\API;
 use Application\API\Clients\API\Params\APIKeyHandler as APIKeyHandler;
 
 /**
- * @see APIKeyMethodInterface
+ * Provides the API key parameter handling for methods implementing
+ * {@see APIKeyMethodInterface}. The right declaration contract is
+ * defined on the interface — each method class must implement
+ * {@see APIKeyMethodInterface::getRequiredRight()} directly.
  */
 trait APIKeyMethodTrait
 {
 	final public function manageParamAPIKey(): APIKeyHandler
-	{
-		/* ... */
-	}
-
-
-	/**
-	 * Returns the user right required to call this API method, or `null` if
-	 * no specific right is required (default).
-	 *
-	 * Override this method in a concrete API method class to declare the right
-	 * the API key's user must hold before the method is executed.
-	 *
-	 * **Override contract:** Overrides must only **strengthen** the right
-	 * declaration — returning `null` when a parent returns a non-null right
-	 * bypasses the user-rights check and must be avoided.
-	 *
-	 * @return string|null The right name, or `null` if no right is required.
-	 *
-	 * @see APIKeyMethodInterface::getRequiredRight()
-	 */
-	public function getRequiredRight(): ?string
 	{
 		/* ... */
 	}
@@ -184,6 +176,18 @@ class APIKeyParam extends StringParameter implements APIHeaderParameterInterface
 	}
 
 
+	/**
+	 * Returns the raw bearer token submitted in the request, regardless of
+	 * whether it resolves to a known API key.
+	 *
+	 * NOTE: This method intentionally does **not** validate the token against
+	 * known API keys. Doing so here would make an invalid token
+	 * indistinguishable from a missing one once required-parameter validation
+	 * runs, collapsing both into the generic {@see \Application\API\APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS}
+	 * error. Key resolution is handled by {@see self::getKey()}; the distinction
+	 * between "no key submitted" and "unknown key submitted" is made in
+	 * {@see \Application\API\BaseMethods\BaseAPIMethod::authorize()}.
+	 */
 	public function getHeaderValue(): ?string
 	{
 		/* ... */
@@ -420,6 +424,10 @@ class APIKeyRecord extends DBHelper_BaseRecord
 	}
 
 
+	/**
+	 * Identity accessor only — never a source of authorization.
+	 * Rights questions go through {@see getRights()}.
+	 */
 	public function getPseudoUser(): Application_User
 	{
 		/* ... */
@@ -475,6 +483,12 @@ class APIKeyRecord extends DBHelper_BaseRecord
 
 
 	public function setGrantAll(bool $grant): self
+	{
+		/* ... */
+	}
+
+
+	public function getRights(): APIKeyRights
 	{
 		/* ... */
 	}
@@ -603,6 +617,57 @@ class APIKeyRecordSettings extends Application_Formable_RecordSettings_Extended
 
 
 	public function isUserAllowedEditing(): bool
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Clients/Keys/APIKeyRights.php`
+
+```php
+namespace Application\API\Clients\Keys;
+
+use Application\API\APIManager as APIManager;
+use Application\Application as Application;
+use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
+use Application_Traits_Loggable as Application_Traits_Loggable;
+
+/**
+ * Answers method-scoped rights questions for an API key
+ * from the key's method grants with one-level grant expansion.
+ *
+ * The key — not the pseudo user — is the authority. Each method
+ * declares its right; the key can answer directly without any
+ * rights-bearing user object.
+ *
+ * @package API Clients
+ * @subpackage API Keys
+ */
+final class APIKeyRights implements Application_Interfaces_Loggable
+{
+	use Application_Traits_Loggable;
+
+	public function getLogIdentifier(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Whether this key satisfies the given right for the given method.
+	 *
+	 * Algorithm:
+	 * 1. Method not granted → false.
+	 * 2. Read declared right from the method index entry.
+	 * 3. Declared right null → false (no authority to confer).
+	 * 4. Declared right === requested right → true.
+	 * 5. One-level grant expansion via Right::hasGrant().
+	 *
+	 * An unregistered declared right is logged and treated as a denial.
+	 */
+	public function satisfies(string $methodName, string $rightID): bool
 	{
 		/* ... */
 	}
