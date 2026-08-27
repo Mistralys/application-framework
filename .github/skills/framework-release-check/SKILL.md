@@ -126,8 +126,10 @@ git diff --name-only
 
 Generated documentation under `.context/` and `docs/agents/project-manifest/` must be up to date. If `build-docs` modifies files, commit them to `main` before the release tag is created.
 
-**Pass:** No uncommitted changes after `build-docs`.  
-**Fail:** Modified or untracked files remain — commit them on `main` and re-run checks from step 5.
+> **Note:** These generators embed a `Generated:` / `Auto-generated on` timestamp that changes on every run, so `git status --short` will almost always show the affected files as modified even when no real content changed. Before treating this as a failure, diff the flagged files (`git diff <file>`) and confirm the only delta is the timestamp line.
+
+**Pass:** No uncommitted changes after `build-docs`, or the only diff in each flagged file is the timestamp line.  
+**Fail:** Modified or untracked files remain with real content changes — commit them on `main` and re-run checks from step 5.
 
 ---
 
@@ -155,7 +157,7 @@ The working tree must be **fully clean** before creating the release tag. Commit
 | Composer validate | Exit 0, no structural errors (unbound version constraints are by design — `--strict` is not used) |
 | PHPStan | Exit 0, no errors |
 | Full test suite | All tests pass, exit 0 |
-| Generated docs freshness | No uncommitted changes after `composer build-docs` (on `main` only) |
+| Generated docs freshness | No uncommitted *content* changes after `composer build-docs` (on `main` only; ignore timestamp-only diffs) |
 | Git working tree | No uncommitted changes (`git status --short` empty) |
 
 All 8 checks must pass before creating the release tag.
