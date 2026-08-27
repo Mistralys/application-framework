@@ -1,22 +1,125 @@
 {
-    "DescribeAdminAreas": "Application\\Admin\\Index\\API\\Methods\\DescribeAdminAreasAPI",
-    "DescribeCollections": "DBHelper\\API\\Methods\\DescribeCollectionsAPI",
-    "ExternalLoadedAPI": "TestDriver\\ExternalSources\\API\\ExternalAPIMethod",
-    "GetAppCountries": "Application\\Countries\\API\\Methods\\GetAppCountriesAPI",
-    "GetAppLocales": "Application\\Locales\\API\\Methods\\GetAppLocalesAPI",
-    "GetOpenAPISpec": "Application\\API\\OpenAPI\\GetOpenAPISpec",
-    "TestAPIKey": "TestDriver\\API\\TestAPIKeyMethod",
-    "TestAPIKeyWithRight": "TestDriver\\API\\TestAPIKeyMethodWithRight",
-    "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
-    "TestCacheable": "TestDriver\\API\\TestCacheableMethod",
-    "TestDryRun": "TestDriver\\API\\TestDryRunMethod",
-    "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
-    "TestGetCountries": "TestDriver\\API\\TestGetCountriesAPI",
-    "TestGetCountriesBySet": "TestDriver\\API\\TestGetCountriesBySetAPI",
-    "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
-    "TestGetCountryBySet": "TestDriver\\API\\TestGetCountryBySetAPI",
-    "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod",
-    "TestStringValidations": "TestDriver\\API\\TestStringValidationsMethod",
-    "TestUserScoped": "TestDriver\\API\\TestUserScopedMethod",
-    "TestVersioned": "TestDriver\\API\\TestVersionedMethod"
+    "schema_version": 2,
+    "methods": {
+        "DescribeAdminAreas": {
+            "methodName": "DescribeAdminAreas",
+            "className": "Application\\Admin\\Index\\API\\Methods\\DescribeAdminAreasAPI",
+            "requiredRight": null,
+            "groupID": "framework-system-methods"
+        },
+        "DescribeCollections": {
+            "methodName": "DescribeCollections",
+            "className": "DBHelper\\API\\Methods\\DescribeCollectionsAPI",
+            "requiredRight": null,
+            "groupID": "framework-system-methods"
+        },
+        "ExternalLoadedAPI": {
+            "methodName": "ExternalLoadedAPI",
+            "className": "TestDriver\\ExternalSources\\API\\ExternalAPIMethod",
+            "requiredRight": null,
+            "groupID": "TestGroup"
+        },
+        "GetAppCountries": {
+            "methodName": "GetAppCountries",
+            "className": "Application\\Countries\\API\\Methods\\GetAppCountriesAPI",
+            "requiredRight": null,
+            "groupID": "app-countries"
+        },
+        "GetAppLocales": {
+            "methodName": "GetAppLocales",
+            "className": "Application\\Locales\\API\\Methods\\GetAppLocalesAPI",
+            "requiredRight": null,
+            "groupID": "LocalesAPI"
+        },
+        "GetOpenAPISpec": {
+            "methodName": "GetOpenAPISpec",
+            "className": "Application\\API\\OpenAPI\\GetOpenAPISpec",
+            "requiredRight": null,
+            "groupID": "framework-system-methods"
+        },
+        "TestAPIKey": {
+            "methodName": "TestAPIKey",
+            "className": "TestDriver\\API\\TestAPIKeyMethod",
+            "requiredRight": null,
+            "groupID": "TestGroup"
+        },
+        "TestAPIKeyWithRight": {
+            "methodName": "TestAPIKeyWithRight",
+            "className": "TestDriver\\API\\TestAPIKeyMethodWithRight",
+            "requiredRight": "TestAPIMethodRight",
+            "groupID": "TestGroup"
+        },
+        "TestAppLocale": {
+            "methodName": "TestAppLocale",
+            "className": "TestDriver\\API\\TestAppLocaleMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestCacheable": {
+            "methodName": "TestCacheable",
+            "className": "TestDriver\\API\\TestCacheableMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestDryRun": {
+            "methodName": "TestDryRun",
+            "className": "TestDriver\\API\\TestDryRunMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestErrorResponse": {
+            "methodName": "TestErrorResponse",
+            "className": "TestDriver\\API\\TestErrorResponseMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestGetCountries": {
+            "methodName": "TestGetCountries",
+            "className": "TestDriver\\API\\TestGetCountriesAPI",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestGetCountriesBySet": {
+            "methodName": "TestGetCountriesBySet",
+            "className": "TestDriver\\API\\TestGetCountriesBySetAPI",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestGetCountry": {
+            "methodName": "TestGetCountry",
+            "className": "TestDriver\\API\\TestGetCountryAPI",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestGetCountryBySet": {
+            "methodName": "TestGetCountryBySet",
+            "className": "TestDriver\\API\\TestGetCountryBySetAPI",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestJSON2JSONMethod": {
+            "methodName": "TestJSON2JSONMethod",
+            "className": "TestDriver\\API\\TestJSON2JSONMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestStringValidations": {
+            "methodName": "TestStringValidations",
+            "className": "TestDriver\\API\\TestStringValidationsMethod",
+            "requiredRight": null,
+            "groupID": "TestGroup"
+        },
+        "TestUserScoped": {
+            "methodName": "TestUserScoped",
+            "className": "TestDriver\\API\\TestUserScopedMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestVersioned": {
+            "methodName": "TestVersioned",
+            "className": "TestDriver\\API\\TestVersionedMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        }
+    }
 }

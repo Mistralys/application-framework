@@ -43,22 +43,20 @@ trait APIClientTestTrait
     }
 
     /**
-     * Creates a test API key, grants it access to the specified method, and
-     * assigns the given rights to its pseudo-user.
+     * Creates a test API key and grants it access to the specified method.
      *
-     * Convenience wrapper that eliminates the three-step
-     * {@see createTestAPIKey()} + {@see APIKeyMethods::addMethod()} +
-     * {@see APIKeyPseudoUser::setRights()} boilerplate for tests that need
-     * both method access and user-right authorization.
+     * The `$rights` parameter is accepted for backward compatibility but
+     * has no effect: authorization now derives from method grants via
+     * {@see \Application\API\Clients\Keys\APIKeyRights::satisfies()}, not
+     * from pseudo-user rights. Prefer {@see createTestAPIKeyForMethod()}.
      *
-     * @param string $methodName The API method name to grant (e.g. TestAPIKeyMethodWithRight::METHOD_NAME).
-     * @param string[] $rights Right names to assign to the pseudo-user (e.g. array(TestAPIKeyMethodWithRight::TEST_RIGHT)).
+     * @param string $methodName The API method name to grant.
+     * @param string[] $rights Ignored — kept for signature compatibility with downstream call sites.
      * @return APIKeyRecord
+     * @deprecated Use {@see createTestAPIKeyForMethod()} instead.
      */
     public function createTestAPIKeyWithRights(string $methodName, array $rights) : APIKeyRecord
     {
-        $key = $this->createTestAPIKeyForMethod($methodName);
-        $key->getPseudoUser()->setRights($rights);
-        return $key;
+        return $this->createTestAPIKeyForMethod($methodName);
     }
 }

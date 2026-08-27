@@ -143,6 +143,9 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      * or terminates it with an HTTP 401/403 response. No side effects are performed
      * here; `updateLastUsed()` is called by the caller after this method returns.
      *
+     * The rights check uses {@see \Application\API\Clients\Keys\APIKeyRights::satisfies()},
+     * which derives authority from the key's method grants — not the pseudo user.
+     *
      * For methods that do not implement {@see APIKeyMethodInterface}, this method
      * returns immediately with no effect.
      *
@@ -184,11 +187,10 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
         $requiredRight = $this->getRequiredRight();
 
-        if ($requiredRight !== null && !$key->getPseudoUser()->hasRight($requiredRight)) {
+        if ($requiredRight !== null && !$key->getRights()->satisfies($this->getMethodName(), $requiredRight)) {
             $this->log(
-                'API authorization denied: key [%s] pseudo-user [%s] lacks required right [%s] for method [%s].',
+                'API authorization denied: key [%s] does not satisfy required right [%s] for method [%s].',
                 $key->getID(),
-                $key->getPseudoUser()->getID(),
                 $requiredRight,
                 $this->getMethodName()
             );

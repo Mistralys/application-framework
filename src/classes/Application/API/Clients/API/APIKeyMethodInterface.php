@@ -31,12 +31,21 @@ interface APIKeyMethodInterface extends APIMethodInterface
     public function manageParamAPIKey() : APIKeyHandler;
 
     /**
-     * Returns the name of the user right required to call this API method.
+     * Returns the user right required to call this API method,
+     * or `null` if no specific right is required.
      *
-     * When a non-null value is returned, the framework checks whether the
-     * API key's pseudo-user has this right before executing the method.
-     * Return `null` if this method does not require a specific user right
-     * (the method-access whitelist check still applies).
+     * This declaration is **mandatory** — every implementing class
+     * must provide an explicit return value. The `APIKeyMethodTrait`
+     * does not supply a default. Return `null` explicitly when no
+     * right is required; this is a visible, reviewable decision.
+     *
+     * When a non-null value is returned, the framework satisfies
+     * the right from the API key's method grants via
+     * `APIKeyRights::satisfies()` (not from the pseudo user).
+     *
+     * **Override contract:** Overrides must only **strengthen** the
+     * right declaration. Returning `null` where a parent returns a
+     * non-null right bypasses the authorization check.
      *
      * @return string|null The right name, or `null` if no right is required.
      */

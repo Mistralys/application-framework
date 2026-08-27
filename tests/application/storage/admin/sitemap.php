@@ -12,6 +12,8 @@ return array (
     'api-clients.view.api_keys' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeysSubmode',
     'api-clients.view.api_keys.create' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
     'api-clients.view.api_keys.list' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+    'api-clients.view.api_keys.methods' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyMethodsAction',
+    'api-clients.view.api_keys.rights' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyRightsAction',
     'api-clients.view.api_keys.settings' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
     'api-clients.view.api_keys.status' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
     'api-clients.view.settings' => 'Application\\API\\Admin\\Screens\\Mode\\View\\ClientSettingsSubmode',
@@ -223,10 +225,47 @@ return array (
       'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
       'subscreenClasses' => 
       array (
-        0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
-        1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
-        2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
-        3 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
+        0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyMethodsAction',
+        1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyRightsAction',
+        2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
+        3 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
+        4 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+        5 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyMethodsAction' => 
+    array (
+      'id' => 'APIKeyMethodsAction',
+      'urlName' => 'methods',
+      'urlPath' => 'api-clients.view.api_keys.methods',
+      'title' => 'API Key Methods',
+      'navigationTitle' => 'Methods',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+        'Edit API Key Methods' => 'EditAPIClients',
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyMethodsAction',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
+    'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyRightsAction' => 
+    array (
+      'id' => 'APIKeyRightsAction',
+      'urlName' => 'rights',
+      'urlPath' => 'api-clients.view.api_keys.rights',
+      'title' => 'API Key Rights',
+      'navigationTitle' => 'Rights',
+      'requiredRight' => 'ViewAPIClients',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyRightsAction',
+      'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+      'subscreenClasses' => 
+      array (
       ),
     ),
     'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction' => 
@@ -2408,13 +2447,36 @@ return array (
               'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View',
               'subscreenClasses' => 
               array (
-                0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
-                1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
-                2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
-                3 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
+                0 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyMethodsAction',
+                1 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyRightsAction',
+                2 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeySettingsAction',
+                3 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyStatusAction',
+                4 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+                5 => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\CreateAPIKeyAction',
               ),
               'subscreens' => 
               array (
+                'methods' => 
+                array (
+                  'id' => 'APIKeyMethodsAction',
+                  'urlName' => 'methods',
+                  'urlPath' => 'api-clients.view.api_keys.methods',
+                  'title' => 'API Key Methods',
+                  'navigationTitle' => 'Methods',
+                  'requiredRight' => 'ViewAPIClients',
+                  'featureRights' => 
+                  array (
+                    'Edit API Key Methods' => 'EditAPIClients',
+                  ),
+                  'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyMethodsAction',
+                  'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+                  'subscreenClasses' => 
+                  array (
+                  ),
+                  'subscreens' => 
+                  array (
+                  ),
+                ),
                 'create' => 
                 array (
                   'id' => 'CreateAPIKeyAction',
@@ -2445,6 +2507,26 @@ return array (
                   array (
                   ),
                   'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeysListAction',
+                  'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
+                  'subscreenClasses' => 
+                  array (
+                  ),
+                  'subscreens' => 
+                  array (
+                  ),
+                ),
+                'rights' => 
+                array (
+                  'id' => 'APIKeyRightsAction',
+                  'urlName' => 'rights',
+                  'urlPath' => 'api-clients.view.api_keys.rights',
+                  'title' => 'API Key Rights',
+                  'navigationTitle' => 'Rights',
+                  'requiredRight' => 'ViewAPIClients',
+                  'featureRights' => 
+                  array (
+                  ),
+                  'class' => 'Application\\API\\Admin\\Screens\\Mode\\View\\APIKeys\\APIKeyRightsAction',
                   'path' => 'framework-classes:Application/API/Admin/Screens/Mode/View/APIKeys',
                   'subscreenClasses' => 
                   array (

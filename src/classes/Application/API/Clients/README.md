@@ -25,11 +25,12 @@ viewing clients, plus sub-modes for key management.
 - **API Key Authentication:** `APIKeyMethodInterface` / `APIKeyMethodTrait`
   allow API methods to require bearer token authentication. The key is read
   from the `Authorization` header via the `APIKeyParam` / `APIKeyHandler`
-  pipeline. Implement `getRequiredRight()` in a method class to additionally
-  require that the API key's user holds a specific right before the method
-  executes (returns `null` by default, meaning no user-right check).
-  Overrides must only strengthen the right declaration — never weaken it
-  back to `null`.
+  pipeline. Every implementing class must declare `getRequiredRight()`
+  explicitly — the trait does not supply a default. Return a right name to
+  require that the API key satisfies that right (resolved from the key's
+  method grants via `APIKeyRights::satisfies()`), or return `null` explicitly
+  when no right is required. Overrides must only strengthen the right
+  declaration — never weaken it back to `null`.
 - **Method Permissions:** `APIKeyMethods` manages the whitelist of API methods
   a specific key is authorized to call.
 - **Admin UI:** `APIClientsArea` provides the full screen hierarchy:
@@ -39,7 +40,8 @@ viewing clients, plus sub-modes for key management.
     - `ClientStatusSubmode` — activation status.
     - `ClientSettingsSubmode` — label and foreign ID editing.
     - `APIKeysSubmode` — key list and management with actions for
-      creating, viewing status, and editing settings of individual keys.
+      creating, viewing status, editing settings, managing method
+      grants, and viewing a rights overview of individual keys.
 - **URL Classes:** `APICollectionURLs`, `APIClientRecordURLs`,
   `APIKeyCollectionURLs`, `APIKeyURLs` provide type-safe URL building for
   all admin screens.

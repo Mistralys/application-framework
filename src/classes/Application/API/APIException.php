@@ -22,4 +22,6 @@ class APIException extends Application_Exception
     public const int ERROR_INTERNAL = 59213006;
     public const int ERROR_CANNOT_MODIFY_AFTER_VALIDATION = 59213007;
     public const int ERROR_INVALID_API_VERSION = 59213008;
+    public const int ERROR_UNKNOWN_DECLARED_RIGHT = 59213009;
+    public const int ERROR_INDEX_SCHEMA_VERSION_MISMATCH = 59213010;
 }

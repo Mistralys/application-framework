@@ -42,6 +42,10 @@ class APIKeyRecord extends DBHelper_BaseRecord
 
     private ?Application_User $pseudoUser = null;
 
+    /**
+     * Identity accessor only — never a source of authorization.
+     * Rights questions go through {@see getRights()}.
+     */
     public function getPseudoUser() : Application_User
     {
         if (!isset($this->pseudoUser)) {
@@ -104,6 +108,17 @@ class APIKeyRecord extends DBHelper_BaseRecord
     {
         $this->setRecordBooleanKey(APIKeysCollection::COL_GRANT_ALL_METHODS, $grant);
         return $this;
+    }
+
+    private ?APIKeyRights $rights = null;
+
+    public function getRights() : APIKeyRights
+    {
+        if(!isset($this->rights)) {
+            $this->rights = new APIKeyRights($this);
+        }
+
+        return $this->rights;
     }
 
     private ?APIKeyMethods $methods = null;

@@ -367,6 +367,10 @@ class Application_User_Rights_Right
     /**
      * Retrieves a list of the rights that this right grants directly (non-recursive).
      *
+     * This one-level depth is the authorization path used by both
+     * {@see \Application_User::hasRightGrant()} and
+     * {@see \Application\API\Clients\Keys\APIKeyRights::satisfies()}.
+     *
      * @return Application_User_Rights_Container
      * @throws Application_Exception
      */
@@ -388,6 +392,10 @@ class Application_User_Rights_Right
     /**
      * Retrieves a list of all rights that this right grants, recursively checking
      * any rights that the granted rights may grant.
+     *
+     * Note: the authorization path ({@see \Application_User::hasRightGrant()},
+     * {@see \Application\API\Clients\Keys\APIKeyRights::satisfies()}) uses
+     * the one-level {@see getGrants()} depth, not this recursive variant.
      *
      * @return Application_User_Rights_Container
      */
