@@ -23,6 +23,7 @@ use Application\API\Traits\JSONRequestInterface;
 use Application\Application;
 use Application_CORS;
 use Application_Driver;
+use Application_ErrorLog_Log_Entry_Exception;
 use Application_Interfaces_Loggable;
 use Application_Request;
 use Application_Traits_Loggable;
@@ -79,7 +80,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     {
         $this->return = false; // In case processReturn() was called before.
 
-        $this->_process();
+        $this->executeWithThrowableReporting();
 
         Application::exit(sprintf('API Method [%s] has finished.', $this->getID()));
     }
@@ -91,7 +92,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = $this->getMethodName();
 
         try {
-            $this->_process();
+            $this->executeWithThrowableReporting();
         } catch (APIResponseDataException $e) {
             return $this->prepareResponse($e->getResponseData());
         }
@@ -103,6 +104,56 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
                 $this->getID()
             )
         );
+    }
+
+    /**
+     * Shared execution boundary used by both {@see self::process()} and
+     * {@see self::processReturn()}: runs {@see self::_process()} and routes
+     * every unexpected {@see Throwable} through {@see self::reportUnexpectedThrowable()},
+     * including a failure raised **before** either data collector method
+     * runs (e.g. from {@see self::validate()}, {@see self::authorize()},
+     * the `updateLastUsed()` call, or {@see self::getActiveVersion()} —
+     * none of these are covered by the `183001`/`183002` collector-scoped
+     * catches inside `_process()`).
+     *
+     * {@see APIResponseDataException} is this class's own return-mode
+     * success/error transport (thrown by {@see self::sendSuccessResponse()}
+     * and {@see self::sendErrorResponse()}) and must always propagate
+     * unchanged — it is never itself an "unexpected" throwable.
+     *
+     * @throws APIResponseDataException When in return mode — see class description.
+     */
+    private function executeWithThrowableReporting(): void
+    {
+        try {
+            $this->_process();
+        } catch (APIResponseDataException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            $this->reportUnexpectedThrowable($e);
+        }
+    }
+
+    /**
+     * Reports a throwable that none of the method's own error handling
+     * accounts for: logs it (see {@see Application_ErrorLog_Log_Entry_Exception::logThrowable()})
+     * and sends the standard {@see APIMethodInterface::ERROR_UNEXPECTED_THROWABLE}
+     * JSON error response carrying only the opaque log reference — never
+     * the throwable's message, trace, or an HTML error page.
+     *
+     * @throws APIResponseDataException When in return mode — see class description.
+     */
+    private function reportUnexpectedThrowable(Throwable $e): never
+    {
+        $logReference = Application_ErrorLog_Log_Entry_Exception::logThrowable($e);
+
+        $this->errorResponse(APIMethodInterface::ERROR_UNEXPECTED_THROWABLE)
+            ->makeInternalServerError()
+            ->setErrorMessage('An unexpected error occurred while processing the request.')
+            ->addData(array(
+                APIMethodInterface::RESPONSE_KEY_ERROR_LOG_REFERENCE => $logReference,
+            ))
+            ->send();
     }
 
     /**
@@ -436,6 +487,30 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return $version;
     }
 
+    private ?string $safeActiveVersion = null;
+
+    /**
+     * @inheritDoc
+     */
+    final public function getSafeActiveVersion() : string
+    {
+        if($this->safeActiveVersion !== null) {
+            return $this->safeActiveVersion;
+        }
+
+        try {
+            $this->safeActiveVersion = $this->getActiveVersion();
+        } catch (Throwable) {
+            try {
+                $this->safeActiveVersion = $this->getCurrentVersion();
+            } catch (Throwable) {
+                $this->safeActiveVersion = 'unknown';
+            }
+        }
+
+        return $this->safeActiveVersion;
+    }
+
     /**
      * Fetch all required data from the request before
      * building the response, to ensure everything is
@@ -497,7 +572,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     public function errorResponse(int $errorCode) : ErrorResponse
     {
         return new ErrorResponse($this, $errorCode, $this->sendErrorResponse(...))
-            ->addData($this->collectRequestErrorData());
+            ->addRequestData($this->collectRequestErrorData());
     }
 
     protected function errorResponseBadRequest() : ErrorResponse
@@ -505,13 +580,23 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return new ErrorResponse($this, APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS, $this->sendErrorResponse(...))
             ->makeBadRequest()
             ->setErrorMessage('Missing or invalid parameters in request.')
-            ->addData($this->collectRequestErrorData());
+            ->addRequestData($this->collectRequestErrorData());
     }
 
     /**
-     * Can be used to collect additional data to be added
-     * to the error response. By default, returns an empty
-     * array.
+     * Can be used to collect additional request-derived data to be added
+     * to the error response, e.g. the parsed request body. By default,
+     * returns an empty array.
+     *
+     * SECURITY: Routed through {@see ErrorResponse::addRequestData()} — the
+     * dedicated, redaction-subject channel — not {@see ErrorResponse::addData()}.
+     * An override returning request-derived content (see {@see \Application\API\Traits\JSONRequestTrait}
+     * for the framework's own example) is therefore automatically dropped
+     * from a production response by {@see ErrorResponse::getErrorData()},
+     * regardless of what this method returns. An API key itself can never
+     * appear here: it is a header-only parameter (see the contract comment
+     * on {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()})
+     * and is never part of the request body or `$_REQUEST`.
      *
      * @return array<int|string,mixed>
      */

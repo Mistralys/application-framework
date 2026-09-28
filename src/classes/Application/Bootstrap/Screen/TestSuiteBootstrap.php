@@ -114,6 +114,20 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
         );
 
         DBHelper::selectDB('tests');
+
+        // Bring the PHPUnit `tests` connection's SQL mode into parity with
+        // the devel environment (see Screen::initDatabase() for the
+        // equivalent statement there), so a GROUP BY / ONLY_FULL_GROUP_BY
+        // defect fails every consumer of this test harness — not only the
+        // one application that happens to add the same statement itself.
+        // There is no per-test reconnect (see DBHelper::selectDB()), so
+        // this one SET SESSION persists for the whole PHPUnit process.
+        if(Application::isDevelEnvironment()) {
+            DBHelper::execute(
+                DBHelper_OperationTypes::TYPE_SET,
+                "SET SESSION sql_mode = '".APP_DEVEL_SQL_MODE."'"
+            );
+        }
     }
 
     private function configureUsers(): void

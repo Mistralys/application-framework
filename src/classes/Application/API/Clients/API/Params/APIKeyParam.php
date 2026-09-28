@@ -61,6 +61,15 @@ class APIKeyParam extends StringParameter
      * error. Key resolution is handled by {@see self::getKey()}; the distinction
      * between "no key submitted" and "unknown key submitted" is made in
      * {@see \Application\API\BaseMethods\BaseAPIMethod::authorize()}.
+     *
+     * SECURITY: Can an API key appear in an error payload? No — this
+     * parameter's value is resolved exclusively via {@see APIHeaderParameterTrait::resolveValue()}
+     * (see the `APIHeaderParameterInterface` implementation on this class),
+     * which reads {@see RequestHelper::getBearerToken()} from the
+     * `Authorization` HTTP header only, with no `$_REQUEST` fallback. It can
+     * therefore never be present in `$_REQUEST` or a parsed JSON request
+     * body — the two channels {@see \Application\API\ErrorResponse::addRequestData()}
+     * exists to redact — regardless of environment.
      */
     public function getHeaderValue(): ?string
     {

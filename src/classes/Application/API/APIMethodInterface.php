@@ -58,10 +58,36 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      */
     public const int ERROR_API_KEY_INVALID = 183007;
 
+    /**
+     * A throwable was raised that the method's normal error handling does
+     * not account for — either before either data collector ran (e.g. from
+     * {@see \Application\API\BaseMethods\BaseAPIMethod::validate()},
+     * {@see \Application\API\BaseMethods\BaseAPIMethod::authorize()}, the
+     * `updateLastUsed()` call, or `getActiveVersion()`), or an unexpected
+     * failure inside the shared execution boundary itself. Distinct from
+     * {@see self::ERROR_REQUEST_DATA_EXCEPTION} and
+     * {@see self::ERROR_RESPONSE_DATA_EXCEPTION}, which are scoped to the
+     * two named collector methods specifically.
+     *
+     * The response never includes the throwable's message or trace —
+     * only the stable {@see self::RESPONSE_KEY_ERROR_LOG_REFERENCE} value,
+     * which points at the full detail in the server-side error log.
+     * Returns HTTP 500 via {@see ErrorResponse::makeInternalServerError()}.
+     */
+    public const int ERROR_UNEXPECTED_THROWABLE = 183008;
+
     public const string REQUEST_PARAM_API_VERSION = 'apiVersion';
     public const string REQUEST_PARAM_METHOD = 'method';
 
     public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'requestData';
+
+    /**
+     * Response key holding the opaque, non-sensitive error-log reference
+     * generated for an {@see self::ERROR_UNEXPECTED_THROWABLE} response.
+     * Use this reference when looking up the full failure detail in the
+     * server-side error log — the response itself never carries that detail.
+     */
+    public const string RESPONSE_KEY_ERROR_LOG_REFERENCE = 'errorLogReference';
 
 
 
@@ -133,6 +159,21 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @return string
      */
     public function getActiveVersion() : string;
+
+    /**
+     * Resolves the active API version the same way as {@see self::getActiveVersion()},
+     * but guarantees it never throws — even when a {@see self::getActiveVersion()}
+     * override throws unconditionally. Use this instead of
+     * {@see self::getActiveVersion()} wherever the version may be resolved
+     * again after an unexpected throwable has already been reported (e.g.
+     * while building the JSON error response envelope itself), so a second
+     * failure there cannot escape
+     * {@see \Application\API\BaseMethods\BaseAPIMethod}'s shared execution
+     * boundary and leak an unstructured error page.
+     *
+     * @return string
+     */
+    public function getSafeActiveVersion() : string;
 
     /**
      * Adds a domain name to the list of allowed cross-origin

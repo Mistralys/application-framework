@@ -40,6 +40,12 @@ abstract class BaseErrorRenderer implements RenderableInterface
             $this->line('PDO message: '.$this->exception->getMessage());
         }
 
+        $errorCode = DBHelper::getErrorCode();
+
+        if(!empty($errorCode)) {
+            $this->line('MySQL error code: '.$errorCode);
+        }
+
         $query = DBHelper::getActiveQuery();
 
         if($query !== null)

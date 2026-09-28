@@ -1,5 +1,18 @@
 # Application Framework Changelog
 
+## v7.5.2 - API Error Handling & Key Usage Fix
+
+**Fixed a bug causing every key-authenticated API call to fail when usage tracking ran outside a transaction.**
+Unexpected failures inside API methods now return a stable JSON error instead of leaking the
+framework's HTML error page, and error responses no longer expose raw request data outside
+development environments. Exception details also now include the underlying MySQL error code.
+
+- API: Fixed key-authenticated API calls failing when usage tracking ran outside a transaction.
+- API: Unexpected method failures now return a stable JSON error instead of an HTML page.
+- API: Error responses no longer expose raw request data outside development environments.
+- DBHelper: Exception details now include the MySQL error code alongside the SQL error message.
+- Docs: Documented the new API error-handling and error-response redaction behavior.
+
 ## v7.5.1 - API Key Method Grant Management (Breaking-S)
 
 **Invalid API keys now return a distinct unauthorized error instead of a generic bad-request error.**

@@ -19,8 +19,10 @@ use AppUtils\ClassHelper;
 use AppUtils\DateTimeHelper\DateIntervalExtended;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use DBHelper;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
+use Throwable;
 
 /**
  * @package API
@@ -139,16 +141,60 @@ class APIKeyRecord extends DBHelper_BaseRecord
         return $this->methods;
     }
 
+    /**
+     * Updates the "last used" timestamp and increments the usage
+     * counter for this API key, then persists the change.
+     *
+     * Safe to call standalone (with no transaction open) as well as
+     * from within an already-open transaction:
+     *
+     * - If no transaction is open, this method starts, owns, and
+     *   commits its own transaction around the write. If the write
+     *   fails, it rolls back only the transaction it opened and
+     *   rethrows the original exception, leaving no transaction open.
+     * - If a transaction is already open, this method writes through
+     *   it without committing or rolling back — the caller's
+     *   transaction remains entirely authoritative.
+     *
+     * The usage counter is an audit fact about the request, not part
+     * of the calling method's business operation: it must be recorded
+     * even if the caller later rolls back its own transaction (e.g. a
+     * `dryRun=true` API method call).
+     *
+     * @return $this
+     * @throws Throwable Rethrows any exception raised while saving,
+     *         after rolling back a transaction owned by this call.
+     */
     public function updateLastUsed() : self
     {
-        $this->setRecordDateKey(APIKeysCollection::COL_LAST_USED, Microtime::createNow());
+        $ownsTransaction = !DBHelper::isTransactionStarted();
 
-        $this->setRecordKey(
-            APIKeysCollection::COL_USAGE_COUNT,
-            $this->getUsageCount() + 1
-        );
+        if($ownsTransaction) {
+            DBHelper::startTransaction();
+        }
 
-        return $this->saveChained();
+        try {
+            $this->setRecordDateKey(APIKeysCollection::COL_LAST_USED, Microtime::createNow());
+
+            $this->setRecordKey(
+                APIKeysCollection::COL_USAGE_COUNT,
+                $this->getUsageCount() + 1
+            );
+
+            $this->saveChained();
+        } catch(Throwable $e) {
+            if($ownsTransaction) {
+                DBHelper::rollbackTransaction();
+            }
+
+            throw $e;
+        }
+
+        if($ownsTransaction) {
+            DBHelper::commitTransaction();
+        }
+
+        return $this;
     }
 
     public function getLastUsed() : ?Microtime

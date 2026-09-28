@@ -256,6 +256,12 @@ API method classes are stored in `API/Methods/` subdirectories within their modu
 - **Rights questions for API keys go through `APIKeyRights::satisfies()` and are always method-scoped** — never derived from a user object or its rights set. The key is the authority.
 - **The API key pseudo user is identity-only** (`APIKeyRecord::getPseudoUser()`). It must never be granted rights or used as a source of authorization. Rights must never be set on the pseudo user via `setRights()` or similar — doing so mutates a process-global memoized instance.
 
+### Unexpected Throwables and Error Response Redaction
+
+- **Never add a second `try`/`catch` around `_process()` or its callers.** `BaseAPIMethod::process()` and `processReturn()` already share one private execution boundary (`executeWithThrowableReporting()`) that routes every `Throwable` neither collector method's own `183001`/`183002` handling nor an `APIResponseDataException` accounts for — including a failure before either collector runs — through `ERROR_UNEXPECTED_THROWABLE` (183008). Adding another catch site around the same call risks either double-reporting or silently swallowing a throwable that this boundary is already responsible for.
+- **Route request-derived content through `ErrorResponse::addRequestData()`, never `addData()`.** `addData()` is for method-owned domain data that must always reach the client (e.g. a validation payload) and is never redacted. `addRequestData()` feeds the channel `getErrorData()` rebuilds into a minimal method/API-version allowlist outside a development environment. Putting `$_REQUEST` content, a parsed request body, or any other request-sourced value through `addData()` bypasses this redaction entirely.
+- **An API key parameter must stay header-only.** Never add an API key parameter that falls back to `$_REQUEST` (via `RequiredOnlyParamTrait`'s default resolution or similar) — it must resolve exclusively through `APIHeaderParameterTrait`/`APIHeaderParameterInterface`, the way `APIKeyParam` does. A `$_REQUEST`-visible API key would defeat the redaction boundary above, since `$_REQUEST` is exactly the channel it redacts.
+
 ### Structural Consistency Across Sibling Methods
 
 When a module implements a family of related write API methods (for example,

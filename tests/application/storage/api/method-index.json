@@ -43,6 +43,12 @@
             "requiredRight": null,
             "groupID": "TestGroup"
         },
+        "TestAPIKeyDryRunTransaction": {
+            "methodName": "TestAPIKeyDryRunTransaction",
+            "className": "TestDriver\\API\\TestAPIKeyDryRunTransactionMethod",
+            "requiredRight": null,
+            "groupID": "TestGroup"
+        },
         "TestAPIKeyWithRight": {
             "methodName": "TestAPIKeyWithRight",
             "className": "TestDriver\\API\\TestAPIKeyMethodWithRight",
@@ -103,11 +109,29 @@
             "requiredRight": null,
             "groupID": "testDriver"
         },
+        "TestJSONRequestRedaction": {
+            "methodName": "TestJSONRequestRedaction",
+            "className": "TestDriver\\API\\TestJSONRequestRedactionMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
         "TestStringValidations": {
             "methodName": "TestStringValidations",
             "className": "TestDriver\\API\\TestStringValidationsMethod",
             "requiredRight": null,
             "groupID": "TestGroup"
+        },
+        "TestUnexpectedThrowable": {
+            "methodName": "TestUnexpectedThrowable",
+            "className": "TestDriver\\API\\TestUnexpectedThrowableMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestUnexpectedThrowableAlways": {
+            "methodName": "TestUnexpectedThrowableAlways",
+            "className": "TestDriver\\API\\TestUnexpectedThrowableAlwaysMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
         },
         "TestUserScoped": {
             "methodName": "TestUserScoped",
