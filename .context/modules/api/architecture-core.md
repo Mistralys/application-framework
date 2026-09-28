@@ -314,9 +314,35 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
 	 * Returns HTTP 401 via {@see ErrorResponse::makeUnauthorized()}.
 	 */
 	public const ERROR_API_KEY_INVALID = 183007;
+
+	/**
+	 * A throwable was raised that the method's normal error handling does
+	 * not account for — either before either data collector ran (e.g. from
+	 * {@see \Application\API\BaseMethods\BaseAPIMethod::validate()},
+	 * {@see \Application\API\BaseMethods\BaseAPIMethod::authorize()}, the
+	 * `updateLastUsed()` call, or `getActiveVersion()`), or an unexpected
+	 * failure inside the shared execution boundary itself. Distinct from
+	 * {@see self::ERROR_REQUEST_DATA_EXCEPTION} and
+	 * {@see self::ERROR_RESPONSE_DATA_EXCEPTION}, which are scoped to the
+	 * two named collector methods specifically.
+	 *
+	 * The response never includes the throwable's message or trace —
+	 * only the stable {@see self::RESPONSE_KEY_ERROR_LOG_REFERENCE} value,
+	 * which points at the full detail in the server-side error log.
+	 * Returns HTTP 500 via {@see ErrorResponse::makeInternalServerError()}.
+	 */
+	public const ERROR_UNEXPECTED_THROWABLE = 183008;
 	public const REQUEST_PARAM_API_VERSION = 'apiVersion';
 	public const REQUEST_PARAM_METHOD = 'method';
 	public const RESPONSE_KEY_ERROR_REQUEST_DATA = 'requestData';
+
+	/**
+	 * Response key holding the opaque, non-sensitive error-log reference
+	 * generated for an {@see self::ERROR_UNEXPECTED_THROWABLE} response.
+	 * Use this reference when looking up the full failure detail in the
+	 * server-side error log — the response itself never carries that detail.
+	 */
+	public const RESPONSE_KEY_ERROR_LOG_REFERENCE = 'errorLogReference';
 
 	public function getInfo(): JSONInfoSerializer;
 
@@ -406,6 +432,22 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
 	 * @return string
 	 */
 	public function getActiveVersion(): string;
+
+
+	/**
+	 * Resolves the active API version the same way as {@see self::getActiveVersion()},
+	 * but guarantees it never throws — even when a {@see self::getActiveVersion()}
+	 * override throws unconditionally. Use this instead of
+	 * {@see self::getActiveVersion()} wherever the version may be resolved
+	 * again after an unexpected throwable has already been reported (e.g.
+	 * while building the JSON error response envelope itself), so a second
+	 * failure there cannot escape
+	 * {@see \Application\API\BaseMethods\BaseAPIMethod}'s shared execution
+	 * boundary and leak an unstructured error page.
+	 *
+	 * @return string
+	 */
+	public function getSafeActiveVersion(): string;
 
 
 	/**
@@ -580,6 +622,7 @@ use Application\API\Traits\JSONRequestInterface as JSONRequestInterface;
 use Application\Application as Application;
 use Application_CORS as Application_CORS;
 use Application_Driver as Application_Driver;
+use Application_ErrorLog_Log_Entry_Exception as Application_ErrorLog_Log_Entry_Exception;
 use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
 use Application_Request as Application_Request;
 use Application_Traits_Loggable as Application_Traits_Loggable;
@@ -669,6 +712,15 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
 
 	public function getActiveVersion(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	final public function getSafeActiveVersion(): string
 	{
 		/* ... */
 	}
@@ -1202,6 +1254,28 @@ class ErrorResponse
 
 
 	/**
+	 * The single chokepoint both response paths ({@see self::send()} via
+	 * {@see \Application\API\ErrorResponsePayload} over live HTTP, and
+	 * {@see \Application\API\BaseMethods\BaseAPIMethod::processReturn()}
+	 * via the same payload) read the error body through.
+	 *
+	 * SECURITY: This is where request-derived content is redacted before
+	 * it can reach a client. {@see self::$errorData} (populated only via
+	 * {@see self::addData()}) is method-owned domain data and is returned
+	 * unfiltered. {@see self::$requestData} (populated only via
+	 * {@see self::addRequestData()} — e.g. the raw `$_REQUEST` under
+	 * {@see APIMethodInterface::RESPONSE_KEY_ERROR_REQUEST_DATA}, or the
+	 * parsed JSON request body under {@see \Application\API\Traits\JSONRequestInterface::RESPONSE_KEY_ERROR_JSON_REQUEST_DATA})
+	 * is request-derived: outside a development environment
+	 * ({@see Application::isDevelEnvironment()}), every key it contributed
+	 * is dropped and replaced with a single minimal, non-sensitive
+	 * `requestData` allowlist (method name + API version only). In a
+	 * development environment, its content passes through unchanged. An
+	 * API key can never appear in either channel: it is a header-only
+	 * parameter (see the contract comment on
+	 * {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()})
+	 * and is never part of `$_REQUEST` or a JSON request body.
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function getErrorData(): array
@@ -1217,10 +1291,43 @@ class ErrorResponse
 
 
 	/**
+	 * Adds method-owned domain data to the error response (e.g.
+	 * `FinalizeMailingAPI`'s validation `isValid` flag) — returned to the
+	 * client via {@see self::getErrorData()} unfiltered and unredacted.
+	 *
+	 * SECURITY: Never route request-derived content (raw `$_REQUEST`, a
+	 * parsed request body, or anything else sourced from the incoming
+	 * request rather than authored by the method itself) through this
+	 * channel — use {@see self::addRequestData()} instead, which is
+	 * subject to redaction in production. An API key can never legitimately
+	 * end up here either way: it is a header-only parameter (see the
+	 * contract comment on {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()}).
+	 *
 	 * @param array<string, mixed>|ArrayDataCollection|null $data
 	 * @return $this
 	 */
 	public function addData(array|ArrayDataCollection|null $data): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Adds request-derived data to the error response (e.g. raw `$_REQUEST`
+	 * contents, or a parsed request body — see {@see \Application\API\Traits\JSONRequestTrait::collectRequestErrorData()}).
+	 *
+	 * SECURITY: Content added here is kept separate from {@see self::$errorData}
+	 * and is rebuilt by {@see self::getErrorData()} into a minimal
+	 * method/API-version allowlist for any client outside a development
+	 * environment — regardless of what is added here. This is the
+	 * channel-scoped redaction boundary: use {@see self::addData()} instead
+	 * for method-owned domain data that must always reach the client
+	 * unfiltered.
+	 *
+	 * @param array<string, mixed>|ArrayDataCollection|null $data
+	 * @return $this
+	 */
+	public function addRequestData(array|ArrayDataCollection|null $data): self
 	{
 		/* ... */
 	}
@@ -1633,6 +1740,7 @@ namespace Application\API\Traits;
 
 use AppUtils\ArrayDataCollection as ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException as JSONConverterException;
+use Application\Application as Application;
 
 /**
  * @package API

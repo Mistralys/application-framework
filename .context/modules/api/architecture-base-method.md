@@ -51,6 +51,7 @@ use Application\API\Traits\JSONRequestInterface as JSONRequestInterface;
 use Application\Application as Application;
 use Application_CORS as Application_CORS;
 use Application_Driver as Application_Driver;
+use Application_ErrorLog_Log_Entry_Exception as Application_ErrorLog_Log_Entry_Exception;
 use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
 use Application_Request as Application_Request;
 use Application_Traits_Loggable as Application_Traits_Loggable;
@@ -221,6 +222,15 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
 
 	/**
+	 * @inheritDoc
+	 */
+	final public function getSafeActiveVersion(): string
+	{
+		/* ... */
+	}
+
+
+	/**
 	 * Fetch all required data from the request before
 	 * building the response, to ensure everything is
 	 * present.
@@ -275,9 +285,19 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
 
 	/**
-	 * Can be used to collect additional data to be added
-	 * to the error response. By default, returns an empty
-	 * array.
+	 * Can be used to collect additional request-derived data to be added
+	 * to the error response, e.g. the parsed request body. By default,
+	 * returns an empty array.
+	 *
+	 * SECURITY: Routed through {@see ErrorResponse::addRequestData()} — the
+	 * dedicated, redaction-subject channel — not {@see ErrorResponse::addData()}.
+	 * An override returning request-derived content (see {@see \Application\API\Traits\JSONRequestTrait}
+	 * for the framework's own example) is therefore automatically dropped
+	 * from a production response by {@see ErrorResponse::getErrorData()},
+	 * regardless of what this method returns. An API key itself can never
+	 * appear here: it is a header-only parameter (see the contract comment
+	 * on {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()})
+	 * and is never part of the request body or `$_REQUEST`.
 	 *
 	 * @return array<int|string,mixed>
 	 */
@@ -437,6 +457,7 @@ namespace Application\API\Traits;
 
 use AppUtils\ArrayDataCollection as ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException as JSONConverterException;
+use Application\Application as Application;
 
 /**
  * @package API
@@ -463,6 +484,23 @@ trait JSONRequestTrait
 	}
 
 
+	/**
+	 * SECURITY: This echoes the parsed request body verbatim, which is
+	 * genuinely useful for local debugging but must never reach a client
+	 * outside a development environment — a request body can legitimately
+	 * contain sensitive domain data. Gated on {@see Application::isDevelEnvironment()}
+	 * here at the trait level (an empty array short-circuits the contribution
+	 * entirely), and independently gated again by {@see \Application\API\ErrorResponse::getErrorData()}
+	 * on the same check, since this method's return value is routed through
+	 * {@see \Application\API\ErrorResponse::addRequestData()} — the
+	 * dedicated, redaction-subject channel — not {@see \Application\API\ErrorResponse::addData()}.
+	 * An API key never appears here regardless: it is a header-only
+	 * parameter (see the contract comment on
+	 * {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()})
+	 * and is never part of the request body this trait parses.
+	 *
+	 * @return array<string,mixed>
+	 */
 	protected function collectRequestErrorData(): array
 	{
 		/* ... */

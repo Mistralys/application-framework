@@ -187,6 +187,15 @@ class APIKeyParam extends StringParameter implements APIHeaderParameterInterface
 	 * error. Key resolution is handled by {@see self::getKey()}; the distinction
 	 * between "no key submitted" and "unknown key submitted" is made in
 	 * {@see \Application\API\BaseMethods\BaseAPIMethod::authorize()}.
+	 *
+	 * SECURITY: Can an API key appear in an error payload? No — this
+	 * parameter's value is resolved exclusively via {@see APIHeaderParameterTrait::resolveValue()}
+	 * (see the `APIHeaderParameterInterface` implementation on this class),
+	 * which reads {@see RequestHelper::getBearerToken()} from the
+	 * `Authorization` HTTP header only, with no `$_REQUEST` fallback. It can
+	 * therefore never be present in `$_REQUEST` or a parsed JSON request
+	 * body — the two channels {@see \Application\API\ErrorResponse::addRequestData()}
+	 * exists to redact — regardless of environment.
 	 */
 	public function getHeaderValue(): ?string
 	{
@@ -401,8 +410,10 @@ use Application\AppFactory as AppFactory;
 use Application\Application as Application;
 use Application_User as Application_User;
 use Application_Users_User as Application_Users_User;
+use DBHelper as DBHelper;
 use DBHelper\Interfaces\DBHelperRecordInterface as DBHelperRecordInterface;
 use DBHelper_BaseRecord as DBHelper_BaseRecord;
+use Throwable as Throwable;
 
 /**
  * @package API
@@ -507,6 +518,30 @@ class APIKeyRecord extends DBHelper_BaseRecord
 	}
 
 
+	/**
+	 * Updates the "last used" timestamp and increments the usage
+	 * counter for this API key, then persists the change.
+	 *
+	 * Safe to call standalone (with no transaction open) as well as
+	 * from within an already-open transaction:
+	 *
+	 * - If no transaction is open, this method starts, owns, and
+	 *   commits its own transaction around the write. If the write
+	 *   fails, it rolls back only the transaction it opened and
+	 *   rethrows the original exception, leaving no transaction open.
+	 * - If a transaction is already open, this method writes through
+	 *   it without committing or rolling back — the caller's
+	 *   transaction remains entirely authoritative.
+	 *
+	 * The usage counter is an audit fact about the request, not part
+	 * of the calling method's business operation: it must be recorded
+	 * even if the caller later rolls back its own transaction (e.g. a
+	 * `dryRun=true` API method call).
+	 *
+	 * @return $this
+	 * @throws Throwable Rethrows any exception raised while saving,
+	 *         after rolling back a transaction owned by this call.
+	 */
 	public function updateLastUsed(): self
 	{
 		/* ... */
