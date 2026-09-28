@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API\Traits;
 
+use Application\Application;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 
@@ -48,10 +49,35 @@ trait JSONRequestTrait
         return 'application/json';
     }
 
+    /**
+     * SECURITY: This echoes the parsed request body verbatim, which is
+     * genuinely useful for local debugging but must never reach a client
+     * outside a development environment — a request body can legitimately
+     * contain sensitive domain data. Gated on {@see Application::isDevelEnvironment()}
+     * here at the trait level (an empty array short-circuits the contribution
+     * entirely), and independently gated again by {@see \Application\API\ErrorResponse::getErrorData()}
+     * on the same check, since this method's return value is routed through
+     * {@see \Application\API\ErrorResponse::addRequestData()} — the
+     * dedicated, redaction-subject channel — not {@see \Application\API\ErrorResponse::addData()}.
+     * An API key never appears here regardless: it is a header-only
+     * parameter (see the contract comment on
+     * {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()})
+     * and is never part of the request body this trait parses.
+     *
+     * @return array<string,mixed>
+     */
     protected function collectRequestErrorData() : array
     {
+        if(!Application::isDevelEnvironment()) {
+            return array();
+        }
+
         return array(
-            JSONRequestInterface::RESPONSE_KEY_ERROR_JSON_REQUEST_DATA => $this->getRequestData()
+            // Serialized explicitly via getData(): ArrayDataCollection is not
+            // JsonSerializable, so passing the object itself would currently
+            // render as an empty '{}' in the JSON response — accidentally
+            // safe, but not something this redaction boundary should rely on.
+            JSONRequestInterface::RESPONSE_KEY_ERROR_JSON_REQUEST_DATA => $this->getRequestData()->getData()
         );
     }
 }

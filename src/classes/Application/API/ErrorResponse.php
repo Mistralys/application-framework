@@ -34,6 +34,13 @@ class ErrorResponse
      * @var array<string, mixed> $errorData Additional data to include in the error response
      */
     private array $errorData = array();
+
+    /**
+     * @var array<string, mixed> $requestData Request-derived data, kept in a
+     *      dedicated channel so {@see self::getErrorData()} can redact it
+     *      independently of {@see self::$errorData} — see {@see self::addRequestData()}.
+     */
+    private array $requestData = array();
     private string $message = '';
     private APIMethodInterface $method;
 
@@ -95,6 +102,28 @@ class ErrorResponse
     }
 
     /**
+     * The single chokepoint both response paths ({@see self::send()} via
+     * {@see \Application\API\ErrorResponsePayload} over live HTTP, and
+     * {@see \Application\API\BaseMethods\BaseAPIMethod::processReturn()}
+     * via the same payload) read the error body through.
+     *
+     * SECURITY: This is where request-derived content is redacted before
+     * it can reach a client. {@see self::$errorData} (populated only via
+     * {@see self::addData()}) is method-owned domain data and is returned
+     * unfiltered. {@see self::$requestData} (populated only via
+     * {@see self::addRequestData()} — e.g. the raw `$_REQUEST` under
+     * {@see APIMethodInterface::RESPONSE_KEY_ERROR_REQUEST_DATA}, or the
+     * parsed JSON request body under {@see \Application\API\Traits\JSONRequestInterface::RESPONSE_KEY_ERROR_JSON_REQUEST_DATA})
+     * is request-derived: outside a development environment
+     * ({@see Application::isDevelEnvironment()}), every key it contributed
+     * is dropped and replaced with a single minimal, non-sensitive
+     * `requestData` allowlist (method name + API version only). In a
+     * development environment, its content passes through unchanged. An
+     * API key can never appear in either channel: it is a header-only
+     * parameter (see the contract comment on
+     * {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()})
+     * and is never part of `$_REQUEST` or a JSON request body.
+     *
      * @return array<string, mixed>
      */
     public function getErrorData(): array
@@ -108,6 +137,24 @@ class ErrorResponse
             if($result->isError()) {
                 $this->errorData['validationErrors'][] = $this->serializeValidationError($result);
             }
+        }
+
+        if(Application::isDevelEnvironment()) {
+            // Devel environment: pass every request-derived key through as
+            // collected — e.g. both 'requestData' ($_REQUEST) and
+            // 'JSONRequest' (the parsed body) when both were contributed.
+            $this->errorData = array_merge($this->errorData, $this->requestData);
+        } else {
+            // Production: replace the request-derived channel's content
+            // wholesale with a minimal, non-sensitive allowlist. Any other
+            // key it contributed (e.g. 'JSONRequest') is dropped entirely
+            // by simply never being merged into $this->errorData.
+            $this->errorData[APIMethodInterface::RESPONSE_KEY_ERROR_REQUEST_DATA] = array(
+                APIMethodInterface::REQUEST_PARAM_METHOD => $this->method->getMethodName(),
+                // Throw-safe accessor: this is the error-response path itself, so a
+                // second failure here must never escape unhandled.
+                APIMethodInterface::REQUEST_PARAM_API_VERSION => $this->method->getSafeActiveVersion(),
+            );
         }
 
         return $this->errorData;
@@ -139,6 +186,18 @@ class ErrorResponse
     }
 
     /**
+     * Adds method-owned domain data to the error response (e.g.
+     * `FinalizeMailingAPI`'s validation `isValid` flag) — returned to the
+     * client via {@see self::getErrorData()} unfiltered and unredacted.
+     *
+     * SECURITY: Never route request-derived content (raw `$_REQUEST`, a
+     * parsed request body, or anything else sourced from the incoming
+     * request rather than authored by the method itself) through this
+     * channel — use {@see self::addRequestData()} instead, which is
+     * subject to redaction in production. An API key can never legitimately
+     * end up here either way: it is a header-only parameter (see the
+     * contract comment on {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()}).
+     *
      * @param array<string, mixed>|ArrayDataCollection|null $data
      * @return $this
      */
@@ -151,6 +210,34 @@ class ErrorResponse
         }
 
         $this->errorData = array_merge($this->errorData, $data);
+
+        return $this;
+    }
+
+    /**
+     * Adds request-derived data to the error response (e.g. raw `$_REQUEST`
+     * contents, or a parsed request body — see {@see \Application\API\Traits\JSONRequestTrait::collectRequestErrorData()}).
+     *
+     * SECURITY: Content added here is kept separate from {@see self::$errorData}
+     * and is rebuilt by {@see self::getErrorData()} into a minimal
+     * method/API-version allowlist for any client outside a development
+     * environment — regardless of what is added here. This is the
+     * channel-scoped redaction boundary: use {@see self::addData()} instead
+     * for method-owned domain data that must always reach the client
+     * unfiltered.
+     *
+     * @param array<string, mixed>|ArrayDataCollection|null $data
+     * @return $this
+     */
+    public function addRequestData(array|ArrayDataCollection|null $data) : self
+    {
+        if($data instanceof ArrayDataCollection) {
+            $data = $data->getData();
+        } elseif($data === null) {
+            $data = array();
+        }
+
+        $this->requestData = array_merge($this->requestData, $data);
 
         return $this;
     }
@@ -194,7 +281,7 @@ class ErrorResponse
 
     public function send() : never
     {
-        $this->addData(array(
+        $this->addRequestData(array(
             APIMethodInterface::RESPONSE_KEY_ERROR_REQUEST_DATA => $_REQUEST,
         ));
 

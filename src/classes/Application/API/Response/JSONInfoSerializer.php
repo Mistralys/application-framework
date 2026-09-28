@@ -41,7 +41,9 @@ class JSONInfoSerializer
     {
         return array(
             self::KEY_METHOD_NAME => $this->method->getMethodName(),
-            self::KEY_SELECTED_VERSION => $this->method->getActiveVersion(),
+            // Uses the throw-safe accessor: this envelope is also built while
+            // reporting an unexpected throwable, so a second call must never throw again.
+            self::KEY_SELECTED_VERSION => $this->method->getSafeActiveVersion(),
             self::KEY_AVAILABLE_VERSIONS => $this->method->getVersions(),
             self::KEY_DESCRIPTION => $this->method->getDescription(),
             self::KEY_REQUEST_MIME => $this->method->getRequestMime(),

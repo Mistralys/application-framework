@@ -9,8 +9,11 @@ use Application\API\APIManager;
 use Application\API\Collection\APIMethodIndex;
 use Application\API\Collection\APIMethodIndexEntry;
 use AppFrameworkTestClasses\ApplicationTestCase;
+use TestDriver\API\TestAPIKeyDryRunTransactionMethod;
 use TestDriver\API\TestAPIKeyMethod;
 use TestDriver\API\TestAPIKeyMethodWithRight;
+use TestDriver\API\TestJSONRequestRedactionMethod;
+use TestDriver\API\TestUnexpectedThrowableMethod;
 
 /**
  * Tests the versioned {@see APIMethodIndex} and its
@@ -111,6 +114,60 @@ final class MethodIndexEntryTest extends ApplicationTestCase
 
         $this->assertSame(TestAPIKeyMethod::METHOD_NAME, $entry->getMethodName());
         $this->assertSame(TestAPIKeyMethod::class, $entry->getClassName());
+        $this->assertNull($entry->getRequiredRight());
+    }
+
+    /**
+     * The {@see TestAPIKeyDryRunTransactionMethod} fixture (API-key auth
+     * combined with a dry-run capable, method-owned transaction) must be
+     * mapped in the index before it can be dispatched by name.
+     */
+    public function test_getEntryForAPIKeyDryRunTransactionMethod(): void
+    {
+        $index = $this->getIndex();
+        $index->build();
+        $index->clearIndexCache();
+
+        $entry = $index->getEntry(TestAPIKeyDryRunTransactionMethod::METHOD_NAME);
+
+        $this->assertSame(TestAPIKeyDryRunTransactionMethod::METHOD_NAME, $entry->getMethodName());
+        $this->assertSame(TestAPIKeyDryRunTransactionMethod::class, $entry->getClassName());
+        $this->assertNull($entry->getRequiredRight());
+    }
+
+    /**
+     * The {@see TestUnexpectedThrowableMethod} fixture (pre-collector
+     * throwable via a `getActiveVersion()` override) must be mapped in the
+     * index before it can be dispatched by name.
+     */
+    public function test_getEntryForUnexpectedThrowableMethod(): void
+    {
+        $index = $this->getIndex();
+        $index->build();
+        $index->clearIndexCache();
+
+        $entry = $index->getEntry(TestUnexpectedThrowableMethod::METHOD_NAME);
+
+        $this->assertSame(TestUnexpectedThrowableMethod::METHOD_NAME, $entry->getMethodName());
+        $this->assertSame(TestUnexpectedThrowableMethod::class, $entry->getClassName());
+        $this->assertNull($entry->getRequiredRight());
+    }
+
+    /**
+     * The {@see TestJSONRequestRedactionMethod} fixture (JSON request body
+     * echoed via `collectRequestErrorData()` on an always-failing method)
+     * must be mapped in the index before it can be dispatched by name.
+     */
+    public function test_getEntryForJSONRequestRedactionMethod(): void
+    {
+        $index = $this->getIndex();
+        $index->build();
+        $index->clearIndexCache();
+
+        $entry = $index->getEntry(TestJSONRequestRedactionMethod::METHOD_NAME);
+
+        $this->assertSame(TestJSONRequestRedactionMethod::METHOD_NAME, $entry->getMethodName());
+        $this->assertSame(TestJSONRequestRedactionMethod::class, $entry->getClassName());
         $this->assertNull($entry->getRequiredRight());
     }
 

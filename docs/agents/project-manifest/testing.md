@@ -211,6 +211,31 @@ During `_boot()`, `TestSuiteBootstrap` calls `registerTransactionCleanupHandler(
 
 `DBHelper::rollbackConditional()` is guarded by `isTransactionStarted()` — it is a no-op when no transaction is active, so there is no risk of interfering with a test run that completed normally.
 
+### SQL-Mode Parity With Dev/Live
+
+`TestSuiteBootstrap::configureDatabase()` applies `APP_DEVEL_SQL_MODE` to the `tests` connection immediately after `DBHelper::selectDB('tests')`, when `Application::isDevelEnvironment()` is true — the same statement `Application\Bootstrap\Screen`'s `initDatabase()` issues for the devel environment. Without this, the PHPUnit `tests` connection ran with a narrower default SQL mode that omitted `ONLY_FULL_GROUP_BY`, silently diverging from every dev/live environment. `TestSuiteSQLModeTest` asserts `@@SESSION.sql_mode` for the `tests` connection contains `ONLY_FULL_GROUP_BY`, guarding against a regression of this gap.
+
+**What a `1055 ... isn't in GROUP BY` test failure means:** a query selects a column MySQL cannot resolve to a single value per group — not wrapped in an aggregate function and not present in the `GROUP BY` clause. Fix it by adding the column to `GROUP BY`, wrapping it in an aggregate, or — for an `Application_FilterCriteria_DatabaseExtended` subclass — registering it via `registerCustomSelect()`, which automatically contributes a `GROUP BY` entry for every enabled custom column.
+
+There is no per-connection reconnect between individual tests (see `DBHelper::selectDB()`), so this one `SET SESSION` statement persists for the whole PHPUnit process once applied during bootstrap.
+
+### `APIClientTestCase`'s Ambient Transaction and Committed Fixtures
+
+`APIClientTestCase::setUp()` calls `DBHelper::startConditional()`, so every test built on it runs inside an already-open transaction by default — `tearDown()`'s `DBHelper::rollbackConditional()` then discards all fixture writes automatically. This is convenient, but it means a test cannot observe "no transaction open" behavior (e.g. a record method that starts and commits its own transaction only when none is already open) without first **explicitly committing** the ambient transaction.
+
+When a test does this deliberately (see `KeyAuthorizationTest::test_updateLastUsedStandaloneCommitsOwnTransaction()` for a worked example):
+
+1. Create fixtures as usual — they land inside the still-open ambient transaction.
+2. Call `DBHelper::commitTransaction()` to close it, persisting the fixtures.
+3. Exercise the "no transaction open" behavior under test.
+4. In a `finally` block: `DBHelper::startTransaction()`, delete the now-committed fixtures via their collection's `deleteRecord()`, then `DBHelper::commitTransaction()` again.
+
+Step 4 is not optional — `tearDown()`'s rollback only reverts an *open* transaction; a fixture committed in step 2 will otherwise leak into every subsequent test run against the same database.
+
+### Verifying the Generated Method Index After Editing It
+
+`tests/application/storage/api/method-index.json` is git-tracked, but `composer dump-autoload`'s `clearCaches` step deletes it outright as a cache artifact — any manual edit to this file (e.g. adding a new test fixture's entry) is silently wiped by a subsequent `dump-autoload`. After editing this file (or after running `composer dump-autoload` for any other reason), run a test that calls `APIMethodIndex::build()` — `MethodIndexEntryTest` is the simplest choice — and re-inspect the file to confirm your fixture's entry survived the regeneration before relying on it.
+
 ---
 
 ## Framework Test Application
@@ -378,6 +403,8 @@ Tests in this group:
 |---|---|
 | `AppFrameworkTests\Ajax\AjaxRequestTest` | All (class-level `#[Group('live-http')]`) |
 | `AppFrameworkTests\Connectors\RequestTest` | `test_adapterSockets`, `test_adapterCURL` |
+| `AppFrameworkTests\API\UnexpectedThrowableLiveHTTPTest` | All — proves a pre-collector throwable dispatched via the real `process()` path (not `processReturn()`) never escapes as an HTML page or HTTP 200. |
+| `AppFrameworkTests\API\ErrorPayloadRedactionLiveHTTPTest` | All — proves the `ErrorResponse` redaction shape over real HTTP dispatch matches the in-process `ErrorResponseTest` coverage. Cannot itself exercise the production ("not devel") redaction branch, since this test suite's own environment is permanently "dev" — see `ErrorResponseTest::withDevelEnvironment()` for that branch. |
 
 Do not remove the `#[Group('live-http')]` attribute or the `phpunit.xml` exclusion — without it,
 the CI pipeline and local runs without a web server will fail with network errors.

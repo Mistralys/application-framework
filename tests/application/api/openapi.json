@@ -735,6 +735,105 @@
                 ]
             }
         },
+        "/api/TestAPIKeyDryRunTransaction": {
+            "post": {
+                "operationId": "TestAPIKeyDryRunTransaction",
+                "summary": "A test API method combining API-key authentication with a dry-run capable, method-owned transaction.",
+                "description": "A test API method combining API-key authentication with a dry-run capable, method-owned transaction.",
+                "tags": [
+                    "Test Driver APIs"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0.0"
+                            ],
+                            "default": "1.0.0"
+                        }
+                    },
+                    {
+                        "name": "apiKey",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The API Key used to authenticate the request."
+                    },
+                    {
+                        "name": "dryRun",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "enum": [
+                                "false",
+                                "no",
+                                "true",
+                                "yes"
+                            ]
+                        },
+                        "description": "If enabled, a dry run of the operation will be performed. The process will run as usual, but no actual changes will be made. Note: Any IDs and other data types returned will not correspond to real entities."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. The API key is not granted access to this method (error 183005) or the key's user lacks the required right (error 183006).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestAPIKeyDryRunTransaction"
+                },
+                "security": [
+                    {
+                        "apiKey": []
+                    }
+                ]
+            }
+        },
         "/api/TestAPIKeyWithRight": {
             "post": {
                 "operationId": "TestAPIKeyWithRight",
@@ -1668,6 +1767,66 @@
                 }
             }
         },
+        "/api/TestJSONRequestRedaction": {
+            "post": {
+                "operationId": "TestJSONRequestRedaction",
+                "summary": "A test API method that always fails, used to verify JSON request body redaction in error responses.",
+                "description": "A test API method that always fails, used to verify JSON request body redaction in error responses.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestJSONRequestRedaction"
+                }
+            }
+        },
         "/api/TestStringValidations": {
             "post": {
                 "operationId": "TestStringValidations",
@@ -1789,6 +1948,126 @@
                 },
                 "externalDocs": {
                     "url": "documentation.php?method=TestStringValidations"
+                }
+            }
+        },
+        "/api/TestUnexpectedThrowable": {
+            "post": {
+                "operationId": "TestUnexpectedThrowable",
+                "summary": "A test API method that raises a deterministic unexpected throwable before either data collector runs.",
+                "description": "A test API method that raises a deterministic unexpected throwable before either data collector runs.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestUnexpectedThrowable"
+                }
+            }
+        },
+        "/api/TestUnexpectedThrowableAlways": {
+            "post": {
+                "operationId": "TestUnexpectedThrowableAlways",
+                "summary": "A test API method that raises a deterministic unexpected throwable on every getActiveVersion() call.",
+                "description": "A test API method that raises a deterministic unexpected throwable on every getActiveVersion() call.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestUnexpectedThrowableAlways"
                 }
             }
         },
