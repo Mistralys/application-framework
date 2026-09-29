@@ -63,6 +63,15 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      */
     private bool $defaultsUseStorage = false;
 
+    /**
+     * Lookup map of settings by storage name, built once on first
+     * access from {@see self::getSettings()} rather than rescanned
+     * on every lookup.
+     *
+     * @var array<string, Application_Formable_RecordSettings_Setting>|null
+     */
+    private ?array $storageNameMap = null;
+
     public function __construct(Application_Interfaces_Formable $formable, DBHelperCollectionInterface $collection, ?DBHelperRecordInterface $record=null)
     {
         parent::__construct($formable);
@@ -391,6 +400,30 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
             ),
             self::ERROR_SETTING_NAME_DOES_NOT_EXIST
         );
+    }
+
+    /**
+     * Retrieves a setting by its storage name, using a lookup map built
+     * once from {@see self::getSettings()} on first access instead of
+     * being rescanned on every call — important since this is looked up
+     * once per submitted value when saving a record.
+     *
+     * @param string $storageName
+     * @return Application_Formable_RecordSettings_Setting|null
+     */
+    final public function getSettingByStorageName(string $storageName) : ?Application_Formable_RecordSettings_Setting
+    {
+        if($this->storageNameMap === null)
+        {
+            $this->storageNameMap = array();
+
+            foreach($this->getSettings() as $setting)
+            {
+                $this->storageNameMap[$setting->getStorageName()] = $setting;
+            }
+        }
+
+        return $this->storageNameMap[$storageName] ?? null;
     }
 
     /**

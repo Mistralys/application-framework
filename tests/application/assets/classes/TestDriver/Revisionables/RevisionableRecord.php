@@ -78,6 +78,24 @@ class RevisionableRecord
         return $this;
     }
 
+    /**
+     * Test-only helper: writes an arbitrary data key, including one that
+     * shares its name with a custom key value or the revision label, to
+     * verify {@see \BaseRevisionable::getFormValues()}'s merge precedence.
+     *
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
+    public function setRawDataKey(string $name, string $value) : self
+    {
+        $this->startCurrentUserTransaction();
+        $this->setDataKey($name, $value, false);
+        $this->endTransaction();
+
+        return $this;
+    }
+
     public function getNonStructuralDataKey() : string
     {
         return (string)$this->getDataKey(self::DATA_KEY_NON_STRUCTURAL);

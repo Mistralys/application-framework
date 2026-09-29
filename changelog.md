@@ -1,5 +1,40 @@
 # Application Framework Changelog
 
+## v7.5.3 - Revisionable Settings Form Defaults & Save Support (Breaking-XS)
+
+**Revisionable settings forms now show the record's actual values when editing, and can be saved.**
+`BaseRevisionable::getFormValues()` previously returned only the current revision's data keys, omitting
+the record's label and any custom key values (like an alias). Every settings form built on
+`Application_Formable_RecordSettings` for a revisionable record — such as Notification and Short
+Message settings — is now correctly pre-filled in edit mode. Saving such a form previously failed
+outright, since `Application_Formable_RecordSettings_Extended::saveRecord()` wrote every submitted
+value through `setRecordKey()`, which is unsupported and throws on revisionables. Settings can now
+declare an apply callback to route their value through the record's own domain setter instead.
+
+- Revisionable: `getFormValues()` now also returns the record's custom key values and its label.
+- Formable: `Application_Formable_RecordSettings_Setting` gained `setApplyCallback()` / `getApplyCallback()`,
+  letting a setting's value be applied via a custom callback instead of `setRecordKey()` when saving.
+- Formable: `Application_Formable_RecordSettings_Extended::saveRecord()` now dispatches each submitted
+  value to its setting's apply callback when registered, resolved via a new cached storage-name lookup
+  (`Application_Formable_RecordSettings::getSettingByStorageName()`), falling back to `setRecordKey()`
+  otherwise. Behaviour is unchanged for settings without a registered callback.
+- Tests: Added a Revisionable form values test suite covering the new merge and its precedence.
+
+### Breaking Changes
+
+`BaseRevisionable::getFormValues()` now returns additional keys beyond the revision's data keys:
+all of `getCustomKeyValues()` plus the label under `RevisionableCollectionInterface::COL_REV_LABEL`
+("label"). On a name collision, the data key loses to the custom key value, which in turn loses to
+the label. Code calling `getFormValues()` and expecting a data-keys-only result should account for
+the additional keys now present in the returned array.
+
+The new apply-callback mechanism on `Application_Formable_RecordSettings_Setting` is purely additive
+and opt-in: existing settings manager subclasses of `Application_Formable_RecordSettings_Extended`
+continue to save via `setRecordKey()` unless they explicitly register a callback with
+`setApplyCallback()`. Any subclass pairing settings with a `BaseRevisionable` record **must** register
+an apply callback for every non-static, non-internal setting, since `setRecordKey()` is unsupported
+on revisionables and will still throw.
+
 ## v7.5.2 - API Error Handling & Key Usage Fix
 
 **Fixed a bug causing every key-authenticated API call to fail when usage tracking ran outside a transaction.**

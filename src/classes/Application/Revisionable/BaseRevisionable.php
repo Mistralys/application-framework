@@ -1293,9 +1293,32 @@ abstract class BaseRevisionable implements RevisionableInterface
         return null;
     }
 
+    /**
+     * Retrieves the values to use as form defaults when editing this
+     * revisionable, typically via a settings form built with
+     * {@see Application_Formable_RecordSettings}.
+     *
+     * Includes, in ascending order of precedence:
+     *
+     * 1. The current revision's data keys ({@see BaseRevisionStorage::getDataKeys()}).
+     * 2. The record's custom key values ({@see self::getCustomKeyValues()}),
+     *    which is the per-record source for non-standard revision fields
+     *    like an alias or a topic ID.
+     * 3. The record's label ({@see self::getLabel()}), under the
+     *    {@see RevisionableCollectionInterface::COL_REV_LABEL} key.
+     *
+     * A data key sharing a name with a custom key value or the label
+     * loses to the higher-precedence value.
+     *
+     * @return array<string, mixed>
+     */
     public function getFormValues(): array
     {
-        return $this->revisions->getDataKeys();
+        return array_merge(
+            $this->revisions->getDataKeys(),
+            $this->getCustomKeyValues(),
+            array(RevisionableCollectionInterface::COL_REV_LABEL => $this->getLabel())
+        );
     }
 
     /**
