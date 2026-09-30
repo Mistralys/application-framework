@@ -68,6 +68,27 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         );
     }
 
+    /**
+     * With `ONLY_FULL_GROUP_BY` enabled, every non-aggregated
+     * column in the select list must be part of the group by.
+     * Custom columns add themselves to the group by, so the
+     * base select columns have to be added alongside them.
+     */
+    public function getGroupBys() : array
+    {
+        $groupBys = parent::getGroupBys();
+
+        if(empty($groupBys))
+        {
+            return $groupBys;
+        }
+
+        return array_values(array_unique(array_merge(
+            array($this->getColEmail(), $this->getColUserID()),
+            $groupBys
+        )));
+    }
+
     public function getIDKeyName(): string
     {
         return Application_Users::PRIMARY_NAME;
