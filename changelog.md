@@ -1,5 +1,22 @@
 # Application Framework Changelog
 
+## v7.5.3 - Revisionable Settings Form Fixes (Breaking-XS)
+
+**Settings forms for revisionable records now show the record's actual values when editing, and can be saved.**
+Fields such as the label and custom values like an alias are now pre-filled. Saving these forms previously 
+failed outright. Settings can now declare how their value is applied on save.
+
+- Revisionable: Edit forms now pre-fill the record's label and custom values.
+- Formable: Fixed saving settings forms for revisionable records failing.
+- Formable: Added apply callbacks, letting a setting control how its value is saved.
+
+### Breaking Changes
+
+Form values for revisionable records now include the label and custom values in addition to the
+revision data. On a name collision the label wins over custom values, which win over revision data.
+If your code expects only revision data, account for the extra entries. Settings managers for
+revisionable records must now register an apply callback for each saved setting, otherwise saving still fails.
+
 ## v7.5.2 - API Error Handling & Key Usage Fix
 
 **Fixed a bug causing every key-authenticated API call to fail when usage tracking ran outside a transaction.**

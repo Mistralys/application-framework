@@ -65,6 +65,11 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
      */
     private $importFilter = null;
 
+    /**
+     * @var callable|NULL
+     */
+    private $applyCallback = null;
+
     public function __construct(Application_Formable_RecordSettings $settings, string $name)
     {
         $this->settings = $settings;
@@ -413,5 +418,44 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
         }
 
         return call_user_func($this->importFilter, $value, $values, $this);
+    }
+
+    /**
+     * Sets a callback to use to apply this setting's submitted value
+     * to the record when saving it, instead of the default generic
+     * {@see DBHelper\Interfaces\DBHelperRecordInterface::setRecordKey()} call
+     * made by {@see Application_Formable_RecordSettings_Extended::saveRecord()}.
+     *
+     * Use this when applying the value requires more than a generic key
+     * write — for example, when it must go through a domain setter that
+     * also supplies a structural flag or changelog ID, as required by
+     * revisionable records (see {@see BaseRevisionable::setCustomKey()},
+     * which is `protected` and cannot be called generically).
+     *
+     * NOTE: This is opt-in. Settings without an apply callback keep using
+     * {@see DBHelper\Interfaces\DBHelperRecordInterface::setRecordKey()}, so
+     * existing behaviour is unaffected unless a callback is registered.
+     *
+     * Callback prototype:
+     *
+     * ```php
+     * function(DBHelper\Interfaces\DBHelperRecordInterface $record, mixed $value) : void
+     * ```
+     *
+     * @param callable|NULL $callback
+     * @return $this
+     */
+    public function setApplyCallback(?callable $callback) : self
+    {
+        $this->applyCallback = $callback;
+        return $this;
+    }
+
+    /**
+     * @return callable|NULL
+     */
+    public function getApplyCallback() : ?callable
+    {
+        return $this->applyCallback;
     }
 }

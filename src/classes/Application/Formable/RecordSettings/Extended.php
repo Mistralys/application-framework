@@ -186,6 +186,15 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
         $values = $storageValues->getValues();
         foreach($values as $name => $value)
         {
+            $setting = $this->getSettingByStorageName($name);
+            $applyCallback = ($setting !== null) ? $setting->getApplyCallback() : null;
+
+            if($applyCallback !== null)
+            {
+                $applyCallback($this->record, $value);
+                continue;
+            }
+
             $this->record->setRecordKey($name, $value);
         }
 
