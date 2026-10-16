@@ -330,7 +330,7 @@ across multiple methods.
 | `200` | `$ref: APIEnvelope` | All methods |
 | `200` + example | `$ref: APIEnvelope` + `example` | Method implements `JSONResponseInterface` and `getExampleJSONResponse()` returns non-empty data |
 | `200` + key descriptions | `allOf[$ref: APIEnvelope]` + `properties.data` | Method implements `JSONResponseInterface` and provides `getResponseKeyDescriptions()` |
-| `400` | `$ref: APIErrorEnvelope` | Always present |
+| `400` | `$ref: APIErrorEnvelope` | Always present. `description` additionally names the removed-parameter error code and names for methods with declared removed parameters (see [MethodConverter — Removed parameters](#removed-parameters-x-removed-parameters)) |
 | `403` | `$ref: APIErrorEnvelope` | Method implements `APIKeyMethodInterface` |
 | `500` | `$ref: APIErrorEnvelope` | Always present |
 
@@ -454,6 +454,7 @@ because `ParameterConverter` intentionally excludes reserved parameters (`method
 | `requestBody` | `ParameterConverter` result | Present only for `JSONRequestInterface` methods with body params |
 | `security` | `[{apiKey: []}]` | Present only for `APIKeyMethodInterface` methods |
 | `x-validation-rules` | `manageParams()->getRules()` | Present only when the method has parameter validation rules |
+| `x-removed-parameters` | `manageParams()->getRemovedParams()` | Present only when the method has declared removed parameters |
 | `x-changelog` | `getChangelog()` | Omitted when empty |
 | `x-related-methods` | `getRelatedMethodNames()` | Omitted when empty |
 | `externalDocs` | `getDocumentationURL()` | Omitted when URL is empty |
@@ -525,6 +526,43 @@ receive an `x-validation-rules` extension field. Each entry in the array describ
 | `OrRule` | `At least one of the following parameters must be provided: {param1}, {param2}, ...` |
 | `RequiredIfOtherIsSetRule` | `If "{otherParam}" is set, "{targetParam}" is required.` |
 | Other rules | `getTypeDescription()` when non-empty, otherwise `getLabel()` |
+
+### Removed parameters (`x-removed-parameters`)
+
+Methods with declared removed parameters (`manageParams()->getRemovedParams()`, see
+`Application\API\BaseMethods\BaseAPIMethod::addRemovedParam()`) receive an
+`x-removed-parameters` extension field, omitted entirely when the method has no
+declarations. Each entry always includes `name` and the stable `errorCode`
+(`Application\API\APIMethodInterface::ERROR_REMOVED_PARAMETER_USED`, `183009`) that a
+request still sending the parameter is rejected with; the optional `replacement`,
+`removedSince`, and `note` keys are present only when declared:
+
+```json
+{
+  "x-removed-parameters": [
+    {
+      "name": "oldName",
+      "replacement": "newName",
+      "removedSince": "2.0",
+      "note": "See the migration guide.",
+      "errorCode": 183009
+    },
+    {
+      "name": "legacyFlag",
+      "errorCode": 183009
+    }
+  ]
+}
+```
+
+A removed name is never added to `parameters` or `requestBody` (it is no longer
+accepted, so a request can no longer send it as a documented input) and is never
+marked `deprecated` — `deprecated` means "still accepted, avoid", which does not
+apply to a parameter the framework now rejects outright. The 400 response's
+`description` (see [ResponseConverter](#responseconverter)) also names the error
+code and the removed names for methods with declarations, while staying
+byte-identical to the plain `"Validation error or invalid parameters."` string for
+methods without any.
 
 ### Public API
 

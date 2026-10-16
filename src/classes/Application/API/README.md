@@ -42,7 +42,24 @@ discovers, indexes, and exposes through a single dispatcher entry point.
   for rule-level, non-parameter errors), `code` is the numeric error code, and
   `message` is the human-readable text without the type/code prefix. This gives
   API consumers (such as the MCP server's `callApi()`) programmatic access to the
-  failing parameter name without parsing free-text messages.
+  failing parameter name without parsing free-text messages. `ErrorResponsePayload::getHttpStatusCode()`
+  exposes the HTTP status code the response was (or would be) sent with — useful
+  for code using `processReturn()`, where the real HTTP header is never sent.
+- **Removed parameters:** A method can declare a request parameter name it no
+  longer accepts via `addRemovedParam()` (mirrors `addParam()`), configuring an
+  optional replacement name, `removedSince` version, and free-form note on the
+  returned `RemovedParameter`. `BaseAPIMethod` rejects any request still sending
+  a declared removed name — including an explicit empty value — with the
+  standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) **before**
+  `validate()` runs, so the stable code is never collapsed into
+  `ERROR_INVALID_REQUEST_PARAMS` (183003) even when the replacement is itself a
+  required parameter that was not submitted. The error message names the
+  removed parameter and, when declared, the replacement, the removed-since
+  version, and the note (used verbatim — never as a `sprintf()` format string).
+  The response data's `removedParameters` key carries one structured entry per
+  offending name (`name`/`replacement`/`removedSince`/`note`), never the
+  submitted value. Declare removed parameters instead of hand-writing a
+  `getParam()` guard in `collectRequestData()`.
 - **Connector:** `AppAPIConnector` and `AppAPIMethod` provide an HTTP client for
   consuming another framework application's API remotely.
 - **Documentation:** `APIDocumentation` and `MethodDocumentation` generate the

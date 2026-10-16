@@ -11,6 +11,7 @@ namespace Application\API\OpenAPI;
 use Application\API\APIMethodInterface;
 use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\Groups\APIGroupInterface;
+use Application\API\Parameters\Removed\RemovedParameter;
 use Application\API\Parameters\Rules\RuleInterface;
 use Application\API\Parameters\Rules\Type\OrRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherIsSetRule;
@@ -141,6 +142,16 @@ class MethodConverter
         if(!empty($rules))
         {
             $operation['x-validation-rules'] = $this->buildValidationRulesData($rules);
+        }
+
+        // Removed parameters: document declarations as x-removed-parameters.
+        // Removed names are never added to `parameters` or `requestBody` — they
+        // are no longer accepted, so listing them there (even as `deprecated`)
+        // would wrongly suggest they are still usable.
+        $removedParams = $method->manageParams()->getRemovedParams();
+        if(!$removedParams->isEmpty())
+        {
+            $operation['x-removed-parameters'] = $this->buildRemovedParamsData($removedParams->getAll());
         }
 
         return $operation;
@@ -319,5 +330,38 @@ class MethodConverter
             'description' => $description,
             'parameters' => $paramNames,
         );
+    }
+
+    /**
+     * Converts a method's declared removed parameters into the
+     * `x-removed-parameters` documentation array.
+     *
+     * Each entry always includes `name` and the stable `errorCode` that a
+     * request using the parameter is rejected with
+     * ({@see APIMethodInterface::ERROR_REMOVED_PARAMETER_USED}); the optional
+     * `replacement`, `removedSince`, and `note` keys are included only when
+     * declared (`null` values are omitted, matching {@see RemovedParameter::toArray()}
+     * minus its `null` entries).
+     *
+     * @param RemovedParameter[] $removedParams
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildRemovedParamsData(array $removedParams) : array
+    {
+        $result = array();
+
+        foreach($removedParams as $param)
+        {
+            $data = array_filter(
+                $param->toArray(),
+                static fn($value) : bool => $value !== null
+            );
+
+            $data['errorCode'] = APIMethodInterface::ERROR_REMOVED_PARAMETER_USED;
+
+            $result[] = $data;
+        }
+
+        return $result;
     }
 }

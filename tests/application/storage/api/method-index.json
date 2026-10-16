@@ -115,6 +115,12 @@
             "requiredRight": null,
             "groupID": "testDriver"
         },
+        "TestRemovedParam": {
+            "methodName": "TestRemovedParam",
+            "className": "TestDriver\\API\\TestRemovedParamMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
         "TestStringValidations": {
             "methodName": "TestStringValidations",
             "className": "TestDriver\\API\\TestStringValidationsMethod",

@@ -8,6 +8,9 @@ use Application\API\APIMethodInterface;
 use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\OpenAPI\OpenAPISchema;
 use Application\API\OpenAPI\ResponseConverter;
+use Application\API\Parameters\APIParamManager;
+use Application\API\Parameters\Removed\RemovedParamCollection;
+use Application\API\Parameters\Removed\RemovedParameter;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Utilities\KeyDescription;
 use PHPUnit\Framework\TestCase;
@@ -33,15 +36,38 @@ final class ResponseConverterTest extends TestCase
     // -------------------------------------------------------------------------
 
     /**
+     * Creates a stub `APIParamManager` whose `getRemovedParams()` returns a
+     * real {@see RemovedParamCollection} — empty by default, or the given
+     * one.
+     *
+     * An unstubbed mock method returning a `RemovedParamCollection` double
+     * would make `isEmpty()` return `false` by default, falsely signalling
+     * declared removed parameters to every test using this helper.
+     *
+     * @param RemovedParamCollection|null $removed
+     * @return APIParamManager&\PHPUnit\Framework\MockObject\Stub
+     */
+    private function createParamManagerStub(?RemovedParamCollection $removed = null) : APIParamManager
+    {
+        $mock = $this->createStub(APIParamManager::class);
+        $mock->method('getRemovedParams')->willReturn($removed ?? new RemovedParamCollection());
+        return $mock;
+    }
+
+    /**
      * Creates a basic APIMethodInterface mock with a configurable response MIME.
      *
      * @param string $responseMime
+     * @param RemovedParamCollection|null $removed
      * @return APIMethodInterface&\PHPUnit\Framework\MockObject\Stub
      */
-    private function createBasicMethodMock(string $responseMime = 'application/json') : APIMethodInterface
-    {
+    private function createBasicMethodMock(
+        string $responseMime = 'application/json',
+        ?RemovedParamCollection $removed = null
+    ) : APIMethodInterface {
         $mock = $this->createStub(APIMethodInterface::class);
         $mock->method('getResponseMime')->willReturn($responseMime);
+        $mock->method('manageParams')->willReturn($this->createParamManagerStub($removed));
         return $mock;
     }
 
@@ -51,17 +77,20 @@ final class ResponseConverterTest extends TestCase
      * @param array<string,mixed> $example
      * @param KeyDescription[] $keyDescriptions
      * @param string $responseMime
+     * @param RemovedParamCollection|null $removed
      * @return JSONResponseInterface&\PHPUnit\Framework\MockObject\Stub
      */
     private function createJsonMethodMock(
         array $example = array(),
         array $keyDescriptions = array(),
-        string $responseMime = 'application/json'
+        string $responseMime = 'application/json',
+        ?RemovedParamCollection $removed = null
     ) : JSONResponseInterface {
         $mock = $this->createStub(JSONResponseInterface::class);
         $mock->method('getResponseMime')->willReturn($responseMime);
         $mock->method('getExampleJSONResponse')->willReturn($example);
         $mock->method('getResponseKeyDescriptions')->willReturn($keyDescriptions);
+        $mock->method('manageParams')->willReturn($this->createParamManagerStub($removed));
         return $mock;
     }
 
@@ -69,12 +98,16 @@ final class ResponseConverterTest extends TestCase
      * Creates a mock implementing both APIMethodInterface and APIKeyMethodInterface.
      *
      * @param string $responseMime
+     * @param RemovedParamCollection|null $removed
      * @return APIKeyMethodInterface&\PHPUnit\Framework\MockObject\Stub
      */
-    private function createKeyMethodMock(string $responseMime = 'application/json') : APIKeyMethodInterface
-    {
+    private function createKeyMethodMock(
+        string $responseMime = 'application/json',
+        ?RemovedParamCollection $removed = null
+    ) : APIKeyMethodInterface {
         $mock = $this->createStub(APIKeyMethodInterface::class);
         $mock->method('getResponseMime')->willReturn($responseMime);
+        $mock->method('manageParams')->willReturn($this->createParamManagerStub($removed));
         return $mock;
     }
 
@@ -174,6 +207,7 @@ final class ResponseConverterTest extends TestCase
         $method->method('getResponseMime')->willReturn('application/json');
         $method->method('getExampleJSONResponse')->willThrowException(new RuntimeException('DB not connected'));
         $method->method('getResponseKeyDescriptions')->willReturn(array());
+        $method->method('manageParams')->willReturn($this->createParamManagerStub());
 
         $result = $this->converter->convertResponses($method);
         $content = $result[ResponseConverter::HTTP_200]['content'];
@@ -295,6 +329,26 @@ final class ResponseConverterTest extends TestCase
 
         $this->assertArrayHasKey('$ref', $schema);
         $this->assertStringContainsString(OpenAPISchema::SCHEMA_API_ERROR_ENVELOPE, $schema['$ref']);
+    }
+
+    public function test_400Description_mentionsRemovedParamsCode() : void
+    {
+        $removed = new RemovedParamCollection();
+        $removed->add(new RemovedParameter('oldName'));
+
+        $result = $this->converter->convertResponses($this->createBasicMethodMock(removed: $removed));
+        $description = $result[ResponseConverter::HTTP_400]['description'];
+
+        $this->assertStringContainsString((string)APIMethodInterface::ERROR_REMOVED_PARAMETER_USED, $description);
+        $this->assertStringContainsString('oldName', $description);
+    }
+
+    public function test_400Description_unchangedWithoutRemovedParams() : void
+    {
+        $result = $this->converter->convertResponses($this->createBasicMethodMock());
+        $description = $result[ResponseConverter::HTTP_400]['description'];
+
+        $this->assertSame('Validation error or invalid parameters.', $description);
     }
 
     public function test_400and500_referenceErrorEnvelope_not_successEnvelope() : void

@@ -55,6 +55,14 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 - **Reserved Parameters:** `APIMethodParameter` and `APIVersionParameter`
   implement `ReservedParamInterface` and are automatically registered by
   `BaseAPIMethod`. Application code cannot register parameters with these names.
+- **Removed Parameters:** `RemovedParameter` and `RemovedParamCollection`
+  let an API method declare a request parameter name it has stopped
+  accepting, via `APIParamManager::addRemovedParam()`. A removed
+  declaration cannot share a name with an active parameter in either
+  registration order, and `RemovedParamCollection::detectUsed()` lets
+  the lifecycle reject requests that still send the old name with a
+  composed error message (`RemovedParameter::getErrorMessage()`),
+  instead of the application hand-writing a guard for it.
 
 ---
 
@@ -66,6 +74,7 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 | `CommonTypes/` | Reusable domain-specific parameter types (alias, date, email, etc.). |
 | `Flavors/` | Cross-cutting parameter behavior interfaces and traits (header params, required-only). |
 | `Handlers/` | Internal pipeline: param handlers, rule handlers, and handler containers. |
+| `Removed/` | Removed-parameter declarations (`RemovedParameter`, `RemovedParamCollection`) and request detection. |
 | `Reserved/` | Framework-reserved parameters (method name, API version). |
 | `Rules/` | Cross-parameter constraint rules and the rule type selector. |
 | `Type/` | Core typed parameter classes (string, clearable string, integer, boolean, JSON, ID list, string list). |

@@ -262,6 +262,10 @@ API method classes are stored in `API/Methods/` subdirectories within their modu
 - **Route request-derived content through `ErrorResponse::addRequestData()`, never `addData()`.** `addData()` is for method-owned domain data that must always reach the client (e.g. a validation payload) and is never redacted. `addRequestData()` feeds the channel `getErrorData()` rebuilds into a minimal method/API-version allowlist outside a development environment. Putting `$_REQUEST` content, a parsed request body, or any other request-sourced value through `addData()` bypasses this redaction entirely.
 - **An API key parameter must stay header-only.** Never add an API key parameter that falls back to `$_REQUEST` (via `RequiredOnlyParamTrait`'s default resolution or similar) — it must resolve exclusively through `APIHeaderParameterTrait`/`APIHeaderParameterInterface`, the way `APIKeyParam` does. A `$_REQUEST`-visible API key would defeat the redaction boundary above, since `$_REQUEST` is exactly the channel it redacts.
 
+### Removed Parameters
+
+- **Declare a removed or renamed request parameter with `addRemovedParam()`, never a hand-written `getParam()` guard in `collectRequestData()`.** `BaseAPIMethod::addRemovedParam()` registers the name on the method's `RemovedParamCollection`; the framework's `rejectRemovedParams()` lifecycle step then rejects any request still sending it — including an explicit empty value — with the standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) before `validate()` runs. A hand-written guard in `collectRequestData()` instead collapses into the generic `183001`/`183003` codes and loses the structured `removedParameters` response data.
+
 ### Structural Consistency Across Sibling Methods
 
 When a module implements a family of related write API methods (for example,

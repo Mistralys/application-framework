@@ -76,6 +76,18 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      */
     public const int ERROR_UNEXPECTED_THROWABLE = 183008;
 
+    /**
+     * The request submitted a value for a request parameter name that the
+     * method has declared removed (see
+     * {@see \Application\API\BaseMethods\BaseAPIMethod::addRemovedParam()}).
+     * Detected and sent before {@see \Application\API\BaseMethods\BaseAPIMethod::validate()}
+     * runs, so it is never collapsed into {@see self::ERROR_INVALID_REQUEST_PARAMS}
+     * even when the parameter's replacement is itself required. The response
+     * data carries structured detail under {@see self::RESPONSE_KEY_REMOVED_PARAMETERS}.
+     * Returns HTTP 400 via {@see ErrorResponse::makeBadRequest()}.
+     */
+    public const int ERROR_REMOVED_PARAMETER_USED = 183009;
+
     public const string REQUEST_PARAM_API_VERSION = 'apiVersion';
     public const string REQUEST_PARAM_METHOD = 'method';
 
@@ -88,6 +100,15 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * server-side error log — the response itself never carries that detail.
      */
     public const string RESPONSE_KEY_ERROR_LOG_REFERENCE = 'errorLogReference';
+
+    /**
+     * Response key holding the structured detail for a
+     * {@see self::ERROR_REMOVED_PARAMETER_USED} response: one entry per
+     * declared removed parameter name present in the request (see
+     * {@see \Application\API\Parameters\Removed\RemovedParameter::toArray()}),
+     * never a submitted value.
+     */
+    public const string RESPONSE_KEY_REMOVED_PARAMETERS = 'removedParameters';
 
 
 

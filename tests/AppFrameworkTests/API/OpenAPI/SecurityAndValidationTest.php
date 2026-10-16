@@ -13,6 +13,7 @@ use Application\API\OpenAPI\OpenAPIGenerator;
 use Application\API\OpenAPI\OpenAPISchema;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\APIParamManager;
+use Application\API\Parameters\Removed\RemovedParamCollection;
 use Application\API\Parameters\Rules\RuleInterface;
 use Application\API\Parameters\Rules\Type\OrRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherIsSetRule;
@@ -40,6 +41,11 @@ final class SecurityAndValidationTest extends TestCase
     /**
      * Builds a mock `APIParamManager` with no parameters and the given rules.
      *
+     * Also stubs `getRemovedParams()` with a real, empty {@see RemovedParamCollection}
+     * instance — an unstubbed mock method returning a `RemovedParamCollection`
+     * double would make `isEmpty()` return `false` by default, falsely
+     * signalling declared removed parameters to every test using this mock.
+     *
      * @param RuleInterface[] $rules
      * @return APIParamManager&MockObject
      */
@@ -48,6 +54,7 @@ final class SecurityAndValidationTest extends TestCase
         $manager = $this->createMock(APIParamManager::class);
         $manager->method('getParams')->willReturn(array());
         $manager->method('getRules')->willReturn($rules);
+        $manager->method('getRemovedParams')->willReturn(new RemovedParamCollection());
         return $manager;
     }
 

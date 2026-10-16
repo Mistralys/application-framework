@@ -11,6 +11,8 @@ namespace Application\API\Parameters;
 use Application\API\APIException;
 use Application\API\APIMethodInterface;
 use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
+use Application\API\Parameters\Removed\RemovedParameter;
+use Application\API\Parameters\Removed\RemovedParamCollection;
 use Application\API\Parameters\Rules\RuleInterface;
 use Application\API\Parameters\Rules\RuleTypeSelector;
 use Application\API\Parameters\Validation\ParamValidationResults;
@@ -78,6 +80,18 @@ class APIParamManager implements ValidationResultInterface
             );
         }
 
+        if(isset($this->removedParams) && $this->removedParams->has($name)) {
+            throw new APIParameterException(
+                'Tried registering a parameter that has been declared removed.',
+                sprintf(
+                    'The parameter [%1$s] has been declared removed in the API method [%2$s], and may not also be registered as an active parameter.',
+                    $name,
+                    $this->method->getMethodName()
+                ),
+                APIParameterException::ERROR_REMOVED_PARAM_IS_REGISTERED
+            );
+        }
+
         if(!isset($this->params[$name])) {
             $this->params[$name] = $param;
             return $this;
@@ -92,6 +106,82 @@ class APIParamManager implements ValidationResultInterface
             ),
             APIParameterException::ERROR_PARAM_ALREADY_REGISTERED
         );
+    }
+
+    /**
+     * @var RemovedParamCollection|NULL
+     */
+    private ?RemovedParamCollection $removedParams = null;
+
+    public function getRemovedParams() : RemovedParamCollection
+    {
+        if(!isset($this->removedParams)) {
+            $this->removedParams = new RemovedParamCollection();
+        }
+
+        return $this->removedParams;
+    }
+
+    /**
+     * Declares a parameter name that used to be accepted by this API
+     * method, but has since been removed: Requests still sending it
+     * can be detected via {@see self::getRemovedParams()} and rejected
+     * with a helpful error message, instead of the method having to
+     * hand-write a guard for it.
+     *
+     * @param string $name
+     * @return RemovedParameter
+     * @throws APIParameterException {@see APIParameterException::ERROR_REMOVED_PARAM_RESERVED_NAME}
+     *     {@see APIParameterException::ERROR_REMOVED_PARAM_IS_REGISTERED}
+     *     {@see APIParameterException::ERROR_REMOVED_PARAM_ALREADY_DECLARED}
+     *     {@see APIParameterException::ERROR_INVALID_REMOVED_PARAM_CONFIG}
+     * @throws APIException {@see APIException::ERROR_CANNOT_MODIFY_AFTER_VALIDATION}
+     */
+    public function addRemovedParam(string $name) : RemovedParameter
+    {
+        $this->requireNotValidated();
+
+        if(in_array($name, APIParameterInterface::RESERVED_PARAM_NAMES, true)) {
+            throw new APIParameterException(
+                'Tried declaring a reserved parameter as removed.',
+                sprintf(
+                    'The parameter [%1$s] is a reserved parameter, the API method [%2$s] may not declare it removed.',
+                    $name,
+                    $this->method->getMethodName()
+                ),
+                APIParameterException::ERROR_REMOVED_PARAM_RESERVED_NAME
+            );
+        }
+
+        if(isset($this->params[$name])) {
+            throw new APIParameterException(
+                'Tried declaring a parameter as removed that is already registered as an active parameter.',
+                sprintf(
+                    'The parameter [%1$s] has already been registered as an active parameter in the API method [%2$s], and may not also be declared removed.',
+                    $name,
+                    $this->method->getMethodName()
+                ),
+                APIParameterException::ERROR_REMOVED_PARAM_IS_REGISTERED
+            );
+        }
+
+        if($this->getRemovedParams()->has($name)) {
+            throw new APIParameterException(
+                'Parameter has already been declared removed.',
+                sprintf(
+                    'The parameter [%1$s] has already been declared removed in the API method [%2$s].',
+                    $name,
+                    $this->method->getMethodName()
+                ),
+                APIParameterException::ERROR_REMOVED_PARAM_ALREADY_DECLARED
+            );
+        }
+
+        $param = new RemovedParameter($name);
+
+        $this->getRemovedParams()->add($param);
+
+        return $param;
     }
 
     private function requireNotValidated() : void

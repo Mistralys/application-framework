@@ -405,6 +405,7 @@ Tests in this group:
 | `AppFrameworkTests\Connectors\RequestTest` | `test_adapterSockets`, `test_adapterCURL` |
 | `AppFrameworkTests\API\UnexpectedThrowableLiveHTTPTest` | All — proves a pre-collector throwable dispatched via the real `process()` path (not `processReturn()`) never escapes as an HTML page or HTTP 200. |
 | `AppFrameworkTests\API\ErrorPayloadRedactionLiveHTTPTest` | All — proves the `ErrorResponse` redaction shape over real HTTP dispatch matches the in-process `ErrorResponseTest` coverage. Cannot itself exercise the production ("not devel") redaction branch, since this test suite's own environment is permanently "dev" — see `ErrorResponseTest::withDevelEnvironment()` for that branch. |
+| `AppFrameworkTests\API\RemovedParamLiveHTTPTest` | All — proves a request still sending a declared removed parameter is rejected with the stable `ERROR_REMOVED_PARAMETER_USED` (183009) error over the real `process()` path, never HTTP 200 or an HTML page. |
 
 Do not remove the `#[Group('live-http')]` attribute or the `phpunit.xml` exclusion — without it,
 the CI pipeline and local runs without a web server will fail with network errors.

@@ -10,6 +10,8 @@ use Application\API\Groups\APIGroupInterface;
 use Application\API\OpenAPI\OpenAPIGenerator;
 use Application\API\OpenAPI\OpenAPISchema;
 use Application\API\Parameters\APIParamManager;
+use Application\API\Parameters\Removed\RemovedParamCollection;
+use Application\API\Parameters\Removed\RemovedParameter;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use UI\AdminURLs\AdminURLInterface;
@@ -72,12 +74,20 @@ final class OpenAPIGeneratorTest extends TestCase
     /**
      * Creates a stub APIParamManager with no parameters.
      *
+     * Stubs `getRemovedParams()` with a real, empty {@see RemovedParamCollection}
+     * instance (`$removed` can override this) — an unstubbed mock method
+     * returning a `RemovedParamCollection` double would make `isEmpty()`
+     * return `false` by default, falsely signalling declared removed
+     * parameters to every test using this helper.
+     *
+     * @param RemovedParamCollection|null $removed
      * @return APIParamManager
      */
-    private function createEmptyParamManager() : APIParamManager
+    private function createEmptyParamManager(?RemovedParamCollection $removed = null) : APIParamManager
     {
         $manager = $this->createStub(APIParamManager::class);
         $manager->method('getParams')->willReturn(array());
+        $manager->method('getRemovedParams')->willReturn($removed ?? new RemovedParamCollection());
         return $manager;
     }
 
@@ -91,13 +101,15 @@ final class OpenAPIGeneratorTest extends TestCase
      * @param APIGroupInterface|null $group
      * @param string $docUrl Documentation URL string cast. Empty string → no externalDocs entry.
      * @param RuntimeException|null $descriptionException When set, getDescription() throws this.
+     * @param RemovedParamCollection|null $removedParams
      * @return APIMethodInterface
      */
     private function buildMethodStub(
         string $methodName = 'TestMethod',
         ?APIGroupInterface $group = null,
         string $docUrl = '',
-        ?RuntimeException $descriptionException = null
+        ?RuntimeException $descriptionException = null,
+        ?RemovedParamCollection $removedParams = null
     ) : APIMethodInterface {
         $adminUrl = $this->createStub(AdminURLInterface::class);
         $adminUrl->method('__toString')->willReturn($docUrl);
@@ -121,7 +133,7 @@ final class OpenAPIGeneratorTest extends TestCase
         $method->method('getChangelog')->willReturn(array());
         $method->method('getRelatedMethodNames')->willReturn(array());
         $method->method('getResponseMime')->willReturn('application/json');
-        $method->method('manageParams')->willReturn($this->createEmptyParamManager());
+        $method->method('manageParams')->willReturn($this->createEmptyParamManager($removedParams));
         return $method;
     }
 
@@ -416,6 +428,35 @@ final class OpenAPIGeneratorTest extends TestCase
         $decoded = json_decode($content, true);
         $this->assertIsArray($decoded);
         $this->assertSame('3.1.0', $decoded['openapi']);
+    }
+
+    public function test_fixtureMethodDocumentsRemovedParameters() : void
+    {
+        $this->tempFile = sys_get_temp_dir().'/openapi_test_'.uniqid().'/openapi.json';
+
+        $removed = new RemovedParamCollection();
+        $removed->add(new RemovedParameter('oldName'));
+        $removed->add(new RemovedParameter('legacyFlag'));
+
+        $method = $this->buildMethodStub(
+            methodName: 'TestRemovedParam',
+            removedParams: $removed
+        );
+
+        $generator = $this->createGenerator(array($method));
+        $generator->setOutputPath($this->tempFile);
+        $generator->generate();
+
+        $content = (string)file_get_contents($this->tempFile);
+        $decoded = json_decode($content, true);
+        $this->assertIsArray($decoded);
+
+        $operation = $decoded['paths']['/api/TestRemovedParam']['post'];
+        $this->assertArrayHasKey('x-removed-parameters', $operation);
+
+        $names = array_column($operation['x-removed-parameters'], 'name');
+        $this->assertContains('oldName', $names);
+        $this->assertContains('legacyFlag', $names);
     }
 
     // -------------------------------------------------------------------------

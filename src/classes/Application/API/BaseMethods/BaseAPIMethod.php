@@ -14,6 +14,7 @@ use Application\API\ErrorResponse;
 use Application\API\ErrorResponsePayload;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\ParamTypeSelector;
+use Application\API\Parameters\Removed\RemovedParameter;
 use Application\API\Parameters\Reserved\APIMethodParameter;
 use Application\API\Parameters\Reserved\APIVersionParameter;
 use Application\API\Parameters\Validation\ParamValidationResults;
@@ -253,12 +254,60 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     }
 
     /**
+     * Rejects the request if it uses one or more request parameter names
+     * that the method has declared removed via {@see self::addRemovedParam()}.
+     *
+     * This runs before {@see self::validate()} so the stable
+     * {@see APIMethodInterface::ERROR_REMOVED_PARAMETER_USED} code is never
+     * collapsed into {@see APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS} —
+     * including when the removed parameter's replacement is itself a
+     * required parameter that was not submitted. Like {@see self::authorize()},
+     * this is a pure decision gate sent directly via {@see self::errorResponse()}:
+     * it either lets the request proceed unmodified or terminates it.
+     *
+     * @return void
+     * @throws APIResponseDataException When in return mode - see class description
+     */
+    private function rejectRemovedParams(): void
+    {
+        $removedParams = $this->manageParams()->getRemovedParams();
+
+        if($removedParams->isEmpty()) {
+            return;
+        }
+
+        $used = $removedParams->detectUsed($this->request->getParams());
+
+        if(empty($used)) {
+            return;
+        }
+
+        $messages = array();
+        $data = array();
+
+        foreach($used as $param) {
+            $messages[] = $param->getErrorMessage();
+            $data[] = $param->toArray();
+        }
+
+        $this->errorResponse(APIMethodInterface::ERROR_REMOVED_PARAMETER_USED)
+            ->makeBadRequest()
+            ->setErrorMessage('%s', implode(' ', $messages))
+            ->addData(array(
+                APIMethodInterface::RESPONSE_KEY_REMOVED_PARAMETERS => $data,
+            ))
+            ->send();
+    }
+
+    /**
      * @return void
      * @throws APIResponseDataException When in return mode - see class description
      */
     private function _process(): void
     {
         $this->time = Microtime::createNow();
+
+        $this->rejectRemovedParams();
 
         $this->validate();
 
@@ -364,6 +413,21 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     final protected function addParam(string $name, string|StringableInterface $label) : ParamTypeSelector
     {
         return $this->manageParams()->addParam($name, $label);
+    }
+
+    /**
+     * Declares a request parameter name that this method used to accept,
+     * but has since removed: a request still sending it is rejected with
+     * {@see APIMethodInterface::ERROR_REMOVED_PARAMETER_USED} by
+     * {@see self::rejectRemovedParams()}, instead of the method having to
+     * hand-write a guard for it in {@see self::collectRequestData()}.
+     *
+     * @param string $name
+     * @return RemovedParameter
+     */
+    final protected function addRemovedParam(string $name) : RemovedParameter
+    {
+        return $this->manageParams()->addRemovedParam($name);
     }
 
     private function initReservedParams() : void

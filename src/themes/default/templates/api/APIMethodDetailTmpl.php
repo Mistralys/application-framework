@@ -15,6 +15,7 @@ use Application\API\Connector\AppAPIConnector;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
 use Application\API\Parameters\Flavors\RequiredOnlyParamInterface;
+use Application\API\Parameters\Removed\RemovedParameter;
 use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Traits\JSONResponseInterface;
@@ -229,6 +230,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $this->generateProperties();
         $this->generateHeaderList();
         $this->generateParamList();
+        $this->generateRemovedParamList();
         $this->generateRulesList();
         $this->generateExample();
         $this->generateKeyDescriptions();
@@ -439,6 +441,66 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
                 ->collapse()
                 ->setContent($grid->render($entries))
                 ->display();
+    }
+
+    /**
+     * Renders the "Removed parameters" section, documenting request
+     * parameter names the method no longer accepts (see
+     * {@see \Application\API\BaseMethods\BaseAPIMethod::addRemovedParam()}).
+     * Skipped entirely when the method has no removed-parameter declarations.
+     */
+    private function generateRemovedParamList() : void
+    {
+        $removedParams = $this->method->manageParams()->getRemovedParams();
+
+        if($removedParams->isEmpty()) {
+            return;
+        }
+
+        $grid = $this->ui->createDataGrid('api-method-removed-params');
+        $grid->enableCompactMode();
+        $grid->disableFooter();
+        $grid->addColumn('name', t('Parameter'))->setNowrap();
+        $grid->addColumn('replacement', t('Replacement'))->setNowrap();
+        $grid->addColumn('removedSince', t('Removed since'))->setNowrap();
+        $grid->addColumn('note', t('Note'));
+
+        $entries = array();
+        foreach($removedParams->getAll() as $param) {
+            $entries[] = array(
+                'name' => sb()->mono($param->getName()),
+                'replacement' => $this->renderRemovedParamReplacement($param),
+                'removedSince' => $param->getRemovedSince() ?? '',
+                'note' => $param->getNote() ?? '',
+            );
+        }
+
+        $this->ui->createSection()
+                ->setTitle(t('Removed parameters'))
+                ->setAbstract(sb()
+                    ->add(t(
+                        'These parameters have been removed and may no longer be used: '.
+                        'a request still sending one is rejected with error %1$s.',
+                        APIMethodInterface::ERROR_REMOVED_PARAMETER_USED
+                    ))
+                )
+                ->setIcon(UI::icon()->setType('ban', 'fas'))
+                ->collapse()
+                ->setContent($grid->render($entries))
+                ->display();
+    }
+
+    /**
+     * @param RemovedParameter $param
+     * @return string|\UI_StringBuilder
+     */
+    private function renderRemovedParamReplacement(RemovedParameter $param) : string|\UI_StringBuilder
+    {
+        if(!$param->hasReplacement()) {
+            return '';
+        }
+
+        return sb()->mono($param->getReplacement());
     }
 
     /**

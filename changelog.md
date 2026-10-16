@@ -1,5 +1,21 @@
 # Application Framework Changelog
 
+## v7.6.0 - API Removed-Parameter Declaration
+
+**API methods can now declare a request parameter name as removed, instead of hand-writing a guard for it.**
+A request still sending a declared removed name is rejected with a new standard error code, a
+message naming the parameter and its replacement (if any), and structured error data — before the
+method's own validation runs.
+
+- API: Added `addRemovedParam()`, letting a method declare a removed/renamed parameter name with
+  an optional replacement, removed-since version, and note.
+- API: Requests sending a declared removed parameter are now rejected with the new
+  `ERROR_REMOVED_PARAMETER_USED` (183009) error, before validation runs.
+- API: Added `ErrorResponsePayload::getHttpStatusCode()`, exposing the HTTP status code an error
+  response was (or would be) sent with.
+- Docs: Documented removed-parameter declaration in the API README and the authoring rule to
+  declare, not hand-write, a removed-parameter guard.
+
 ## v7.5.3 - Revisionable Settings Form Fixes (Breaking-XS)
 
 **Settings forms for revisionable records now show the record's actual values when editing, and can be saved.**

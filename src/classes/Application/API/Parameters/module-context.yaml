@@ -5,13 +5,14 @@
 moduleMetaData:
   id: "api-parameters"
   label: "API Parameters"
-  description: "Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle."
+  description: "Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), removed-parameter declarations (RemovedParameter, RemovedParamCollection) for rejecting requests that still send a parameter name the API method has stopped accepting, and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle."
   keywords:
     - ParamTypeSelector (fluent builder returned by addParam for choosing the parameter type)
     - common type (reusable domain-specific parameter preset like AliasParameter or EmailParameter)
     - flavor (cross-cutting parameter behavior like header-sourced or always-required)
     - rule (cross-parameter constraint evaluated after individual validation; e.g. OrRule, RequiredIfOtherIsSetRule)
     - reserved parameter (framework-owned parameter name that application code cannot register)
+    - removed parameter (declared request parameter name an API method has stopped accepting; detected and rejected via RemovedParamCollection)
     - selectable value (fixed set of allowed values declared by a parameter for validation and documentation)
     - param handler (internal pipeline component that reads parameter values during method processing)
   relatedModules:
@@ -44,6 +45,7 @@ documents:
           - 'CommonTypes/'
           - 'Flavors/'
           - 'Handlers/'
+          - 'Removed/'
           - 'Reserved/'
           - 'Rules/'
           - 'Type/'
@@ -124,6 +126,25 @@ documents:
         description: "ParamValidationInterface, BaseParamValidation, RequiredValidation, EnumValidation, RegexValidation, CallbackValidation, ValueExistsCallbackValidation, MaxLengthValidation, ParamValidationResults"
         sourcePaths:
           - ./Validation
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - Removed Parameters (Public API)'
+    outputPath: 'modules/api/parameters/architecture-removed.md'
+    sources:
+      - type: file
+        description: "RemovedParameter, RemovedParamCollection"
+        sourcePaths:
+          - ./Removed
         filePattern: "*.php"
         modifiers:
           - name: php-content-filter
