@@ -73,7 +73,10 @@
 - The development-mode body echo would return a multi-megabyte base64 string in error responses.
 
 ### Constraints
-- Pending plan `docs/agents/plans/2026-10-16-api-removed-parameter-declaration/` (not yet implemented; untracked) changes `APIParamManager` (`addRemovedParam()`, conflict checks in `registerParam()`) and adds a pre-validation step that calls `detectUsed($this->request->getParams())`. Its Deferred Item 1 is "Detect removed keys inside JSON request bodies".
+- ~~Pending plan `docs/agents/plans/2026-10-16-api-removed-parameter-declaration/` (not yet implemented; untracked)~~ **Re-verified 2026-10-16 (design-review integration):** the removed-parameter feature is **implemented and committed** (commit `0aa5e764`, changelog `v7.6.0`). Its plan folder is no longer present under `docs/agents/plans/`. Verified code:
+  - `src/classes/Application/API/BaseMethods/BaseAPIMethod.php` `private rejectRemovedParams()` (L271–L290) runs before `validate()` and calls `$removedParams->detectUsed($this->request->getParams())` at L279. `addRemovedParam()` is at L428.
+  - `src/classes/Application/API/Parameters/Removed/RemovedParamCollection.php::detectUsed(array $requestParams) : array` (L63) takes an **associative** `array<string,mixed>` and checks `array_key_exists($name, $requestParams)`. A plain list of key names would not match.
+  - The original plan's Deferred Item 1 ("Detect removed keys inside JSON request bodies") is therefore an open gap in shipped code.
 
 ## Area: Base64 file parameter and OpenAPI mapping
 
@@ -113,6 +116,9 @@
   - `setSourceFile()` L543
   - `toBase64()` L471
   - `getRecord()` L595
+  - abstract statics `getLabel()`, `getIcon()`, `getExtensions()` (L326–L337); type classes are discovered only from the framework's own `Document/` folder, so a new abstract static breaks no external subclass
+- `src/classes/Application/Media/MediaException.php`: `MediaException extends Application_Exception` (L9), the module's failure idiom.
+- PHP built-ins for in-memory content checks: `getimagesizefromstring()` (raster type detection from a string) and `XMLReader::XML()` (parse an XML string, with `LIBXML_NONET`).
 - `src/classes/Application/Media/Document/Image.php`:
   - `IMAGE_EXTENSIONS = jpg,jpeg,png,gif,svg` (L20)
   - `getWidth()`/`getHeight()`/`getDimensions()`
@@ -138,6 +144,13 @@
   - Edit mode restricts a file replacement to the same extension (`validateFile()` L201).
   - The name has a max length of 160 (L158), the description 1200 (L133) and the keywords 500 (L147).
 - `src/classes/Application/Media/Collection/MediaFilterCriteria.php`: `selectExtension(s)()`, tag filters. Generic `setSearch()`, `setLimit()` and `setOrderBy()` come from `Application/FilterCriteria/FilterCriteria.php` (L105, L124, L221). `countItems()` is in `FilterCriteria/Database.php` L88.
+- `src/classes/Application/Media/Collection/MediaCollection.php`: `getRecordDefaultSortKey()` returns `COL_DATE_ADDED`. `getRecordSearchableColumns()` returns name, plus keywords and description when `hasSizeColumn()`.
+- `src/classes/Application/FilterCriteria/Database.php`:
+  - `buildSearchTokens()` (L1105) matches each term with `LIKE %term%` against all search fields (OR across fields). It combines terms with AND and supports `AND`/`OR`/`NOT` operators.
+  - `buildOrderby()` (L1210) emits a single `ORDER BY field dir` and is protected, so a subclass can override it.
+  - `buildLimit()` emits `LIMIT %s,%s` from `limit`/`offset`.
+- `src/classes/Application/FilterCriteria/FilterCriteria.php::setLimit(int $limit, int $offset)` (L124) stores the two values swapped. `buildLimit()` swaps them back, so `setLimit($limit, $offset)` produces correct SQL.
+- `docs/sql/pristine.sql`: `media_date_added` is a `datetime` (second resolution) with no index. The only keys are `PRIMARY (media_id)` and `user_id (user_id, media_type)`. Sorting and `LIKE` over about 10,000 rows is cheap, so no index is needed.
 - `src/classes/Application/Media/MediaRightsInterface.php`: `CreateMedia`, `EditMedia`, `DeleteMedia`, `ViewMedia`, `AdminMedia`. They are registered for every app by `MediaRightsTrait::registerMediaRights()`, used in `src/classes/Application/User/User.php` L60 and L1002. Grants: Admin→Delete→Create→Edit→View.
 - `src/classes/Application/Media/Delivery.php`: serves media through `media.php` (`serveMedia()` L68).
 - `src/classes/Application/Uploads/Uploads.php` `validate()` checks content against extension with `getimagesize()` for jpg/gif/png and lets SVG through.
@@ -207,9 +220,9 @@
 ## Area: Documentation and release preparation
 
 ### Verified References
-- `AGENTS.md` §2 Manifest Maintenance Rules (new module → `module-context.yaml` + `composer build` + module table). §5 lists the version as 7.0.8.
-- `VERSION` contains `7.3.1`, read by `src/classes/Application/Framework/AppFramework.php` L128. The latest `changelog.md` entry is `v7.5.3`, so both version statements are stale.
-- The pending removed-parameter plan proposes `v7.6.0`.
+- `AGENTS.md` §2 Manifest Maintenance Rules (new module → `module-context.yaml` + `composer build` + module table). §5 lists the version as 7.0.8 (L131; still stale).
+- **Re-verified 2026-10-16:** `VERSION` now contains `7.6.0`, matching the newest `changelog.md` entry (`v7.6.0 - API Removed-Parameter Declaration`). It is read by `src/classes/Application/Framework/AppFramework.php` L128. Only `AGENTS.md` §5 remains stale.
+- The next minor version is therefore `v7.7.0`.
 - `src/classes/Application/API/README.md`, `Parameters/README.md`, `OpenAPI/README.md` and `docs/agents/project-manifest/constraints.md` / `testing.md` exist.
 
 ## Strategic Context
@@ -220,3 +233,23 @@
   - `af333a25-…`: JSON error boundary.
   - `7d13934f-…`: validate only what is mechanically checkable.
 - None of these is overtaken by this plan.
+
+## Area: Added during audit integration (cycle 1)
+
+### Verified References
+- `src/classes/Application/API/ErrorResponse.php` L251–L277: status helpers `makeBadRequest()`, `makeInternalServerError()`, `makeUnauthorized()`, `makeForbidden()`, all via `setHTTPStatusCode()`. No not-found helper. `getHttpStatusCode()` at L183. `ErrorResponsePayload::getHttpStatusCode()` exposes the status in `processReturn()` mode (`src/classes/Application/API/README.md` L45).
+- `Connectors_ResponseCode::HTTP_NOT_FOUND = 404` exists (L46).
+- `src/classes/Application/API/BaseMethods/BaseAPIMethod.php` L636: `errorResponse(int $errorCode) : ErrorResponse` uses the default status; `errorResponseBadRequest()` L642 chains `makeBadRequest()`.
+- `src/classes/Application/Media/Collection/MediaCollection.php` L59–L68: `private static ?bool $hasSizeColumn` cache behind static `hasSizeColumn()`, with no reset or override seam.
+- Tests instantiate API methods directly: `new TestAPIKeyMethodWithRight(APIManager::getInstance())` (`tests/AppFrameworkTests/API/Keys/KeyAuthorizationTest.php` L70). A test-local method subclass is therefore possible without indexing it.
+- `tests/AppFrameworkTests/API/ErrorResponseTest.php` exists (status and redaction tests).
+- `src/classes/Application/Application.php` L616: `getTempFile(?string $name = null, ?string $extension = …) : string` returns a path string. `FileInfo::factory($path)` and `FileInfo::putContents(string $content)` exist in `mistralys/application-utils-core`.
+- `AGENTS.md` L34 says `.context/` "is committed to VCS"; L107 says `.context/` files must only be committed on `main`. `docs/agents/project-manifest/*` is outside `.context/`.
+
+## Area: Added by Plan Architect Reviewer
+
+### Verified References
+- [added by: Plan Architect Reviewer, unverified] `src/classes/Application/API/Traits/JSONRequestTrait.php`: `collectRequestData()` L24–L35 parses the body via `ArrayDataCollection::createFromJSON()`; `collectRequestErrorData()` (dev only) returns the whole `getRequestData()->getData()` under `JSONRequest`.
+- [added by: Plan Architect Reviewer, unverified] `src/classes/Application/API/APIFoldersManager.php` L33–L41: `register()` chains `addFolder(X::getAPIMethodsFolder())` for five modules.
+- [added by: Plan Architect Reviewer, unverified] `src/classes/Application/Media/Media.php` `loadTypes()` (~L230–L260) scans only `__DIR__.'/Document'` and calls static `getExtensions()` on `Application_Media_Document_{Id}`, so an abstract static added to `Application_Media_Document` only affects framework-owned subclasses.
+- [added by: Plan Architect Reviewer, unverified] `src/classes/Application/Media/Document.php` already declares abstract statics `getLabel()` L326, `getIcon()` L328, `getExtensions()` L337.
