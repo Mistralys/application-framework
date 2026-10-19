@@ -279,6 +279,18 @@ class ErrorResponse
         return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_FORBIDDEN);
     }
 
+    /**
+     * Sets the HTTP status code to 404 Not Found.
+     * Use when a record cannot be resolved from the submitted ID (e.g. an
+     * unknown `mediaID`), so an HTTP client can tell "no such record" apart
+     * from a generic bad request without parsing the error code. Its first
+     * caller is {@see \Application\Media\API\MediaDocumentParamsContainer::requireValue()}.
+     */
+    public function makeNotFound() : self
+    {
+        return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_NOT_FOUND);
+    }
+
     public function send() : never
     {
         $this->addRequestData(array(
