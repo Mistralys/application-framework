@@ -104,18 +104,22 @@ abstract class BaseAPIParameter implements APIParameterInterface
 
     /**
      * Retrieves the parameter's raw, unvalidated value, used by the
-     * concrete type classes in {@see resolveValue()}. Uses the injected
-     * {@see ParamValueSourceInterface} when one has been set (the normal
-     * case for a parameter registered through {@see \Application\API\Parameters\APIParamManager}),
-     * falling back to {@see self::getRequestParam()} otherwise — e.g. when
-     * a parameter is instantiated standalone, as in unit tests.
+     * concrete type classes in {@see resolveValue()}. Delegates to
+     * {@see self::getRawRequestValueUnprocessed()} when a {@see ParamValueSourceInterface}
+     * has been injected (the normal case for a parameter registered through
+     * {@see \Application\API\Parameters\APIParamManager}), so both methods
+     * read from the same source and agree on the result in that case. The
+     * only remaining difference between the two methods is their no-source
+     * fallback: this one falls back to {@see self::getRequestParam()} (which
+     * discards empty strings) when a parameter is instantiated standalone,
+     * as in unit tests.
      *
      * @return mixed
      */
     protected function getRawRequestValue() : mixed
     {
         if(isset($this->valueSource)) {
-            return $this->valueSource->getRawValue($this->getName());
+            return $this->getRawRequestValueUnprocessed();
         }
 
         return $this->getRequestParam()->get();
@@ -154,14 +158,16 @@ abstract class BaseAPIParameter implements APIParameterInterface
      * store, with no intermediate processing. Used exclusively by
      * {@see \Application\API\Parameters\Type\ClearableStringParameter}, which
      * needs the untouched value to preserve its absent/empty/value
-     * distinction — unlike {@see self::getRawRequestValue()}'s no-source
-     * fallback ({@see self::getRequestParam()}), which discards empty
-     * strings before this class ever sees them.
+     * distinction. {@see self::getRawRequestValue()} delegates to this method
+     * when a value source is injected, so the two agree in that case; the
+     * only remaining difference is the no-source fallback — this method
+     * falls back to `$_REQUEST` directly (preserving empty strings), while
+     * {@see self::getRawRequestValue()} falls back to
+     * {@see self::getRequestParam()} (which discards them), for a parameter
+     * instantiated standalone, as in unit tests.
      *
-     * Uses the injected {@see ParamValueSourceInterface} when one has been
-     * set, falling back to `$_REQUEST` directly otherwise (e.g. a parameter
-     * instantiated standalone, as in unit tests). Only meaningful together
-     * with a preceding {@see self::hasRawRequestValue()} check.
+     * Only meaningful together with a preceding {@see self::hasRawRequestValue()}
+     * check.
      *
      * @return mixed
      */
@@ -216,12 +222,12 @@ abstract class BaseAPIParameter implements APIParameterInterface
 
     /**
      * @param (callable(int|float|bool|string|array<int|string,mixed>, OperationResult, APIParameterInterface, mixed...) : void) $callback
-     * @param mixed ...$args
+     * @param mixed ...$args Forwarded to `$callback` after the value, result and param arguments.
      * @return $this
      */
     public function validateByCallback(callable $callback, ...$args) : self
     {
-        return $this->validateBy(new CallbackValidation($callback));
+        return $this->validateBy(new CallbackValidation($callback, ...$args));
     }
 
     /**

@@ -6,8 +6,10 @@ namespace AppFrameworkTests\API\Parameters;
 
 use Application\API\Parameters\Type\ClearableStringParameter;
 use Application\API\Parameters\Validation\ParamValidationInterface;
+use Application\API\Parameters\ValueSource\RequestValueSource;
 use AppUtils\RegexHelper;
 use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
+use ReflectionMethod;
 
 /**
  * Tests for {@see ClearableStringParameter}.
@@ -312,6 +314,52 @@ final class ClearableStringParameterTest extends APITestCase
 
         $this->assertSame('', $param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    // endregion
+
+    // region: Raw accessor consolidation (BaseAPIParameter)
+
+    private function invokeProtected(ClearableStringParameter $param, string $method) : mixed
+    {
+        $reflection = new ReflectionMethod($param, $method);
+
+        return $reflection->invoke($param);
+    }
+
+    /**
+     * With a value source injected, {@see \Application\API\Parameters\BaseAPIParameter::getRawRequestValue()}
+     * delegates to {@see \Application\API\Parameters\BaseAPIParameter::getRawRequestValueUnprocessed()},
+     * so both must agree on the result — including for an empty string,
+     * which the source-backed path no longer discards.
+     */
+    public function test_rawAccessorsAgreeWithInjectedSource() : void
+    {
+        $_REQUEST['foo'] = '';
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+        $param->setValueSource(new RequestValueSource());
+
+        $this->assertSame('', $this->invokeProtected($param, 'getRawRequestValue'));
+        $this->assertSame('', $this->invokeProtected($param, 'getRawRequestValueUnprocessed'));
+    }
+
+    /**
+     * Without an injected value source, the two accessors keep their
+     * distinct no-source fallbacks: {@see \Application\API\Parameters\BaseAPIParameter::getRawRequestValue()}
+     * falls back to {@see \Application\API\Parameters\BaseAPIParameter::getRequestParam()},
+     * which discards an empty string to `null`, while
+     * {@see \Application\API\Parameters\BaseAPIParameter::getRawRequestValueUnprocessed()}
+     * falls back to `$_REQUEST` directly, preserving it.
+     */
+    public function test_noSourceFallbacksDifferOnEmptyString() : void
+    {
+        $_REQUEST['foo'] = '';
+
+        $param = new ClearableStringParameter('foo', 'Param Label');
+
+        $this->assertNull($this->invokeProtected($param, 'getRawRequestValue'));
+        $this->assertSame('', $this->invokeProtected($param, 'getRawRequestValueUnprocessed'));
     }
 
     // endregion
