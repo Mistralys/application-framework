@@ -1,5 +1,37 @@
 # Application Framework Changelog
 
+## v7.7.0 - **WIP; UNRELEASED** - Media Document APIs
+
+**A complete media document API: upload, inspect, list, update and delete media documents without the admin UI.**
+File content travels as base64 inside a JSON request body. Two reusable infrastructure changes to the API
+module make this possible for any future JSON method: registered parameters of JSON-body methods now resolve
+from the parsed body (falling back to the query string), and a new base64 file parameter type validates,
+decodes and size-limits file content in one place.
+
+- API: Registered parameters of `JSONRequestInterface` methods now resolve from the parsed JSON body, falling
+  back to the query string/`$_REQUEST` for a key the body does not carry.
+- API: Removed parameters declared via `addRemovedParam()` are now also detected inside JSON request bodies,
+  not just the query string.
+- API: Development-mode error responses now truncate long string values in the echoed JSON body, so a
+  mistakenly large payload never comes back in full in an error response.
+- API: Added the `base64File()` parameter type (`Base64FileParameter`), validating and decoding base64 file
+  content (plain or a `data:<mime>;base64,` URI) with a configurable size limit
+  (`APP_API_MAX_FILE_CONTENT_SIZE`, default 10 MiB) checked before decoding.
+- API: Added `ErrorResponse::makeNotFound()`, sending HTTP 404 for an unknown record ID.
+- API: Added the `PaginatedAPIInterface`/`PaginatedAPITrait` pagination piece (`limit`, `offset`, `totalCount`),
+  reusable by any list method.
+- Media: Added five API methods — `AddMediaDocument`, `GetMediaDocument`, `GetMediaDocuments`,
+  `UpdateMediaDocument`, `DeleteMediaDocument` — each requiring its own right and built from composable
+  interface+trait pieces (document lookup, metadata, file upload) following the API Lego Rule.
+- Media: `AddMediaDocument` validates the uploaded file's content and extension before creating the
+  record; a dry run never writes to disk or the database and always returns a null ID.
+- Media: `UpdateMediaDocument` requires at least one actual change, applies metadata changes before a
+  file replacement, and rejects a replacement file that changes the document's current extension.
+- Media: `DeleteMediaDocument` returns the document's pre-deletion shape; a dry run never deletes,
+  since the file removal cannot be safely previewed or undone.
+- Media: Added per-document-type, in-memory content validation (`isContentValid()`) and a new namespaced
+  `MediaDocumentWriter` write path that keeps disk and database consistent on failure.
+
 ## v7.6.0 - API Removed-Parameter Declaration
 
 **API methods can now declare a request parameter name as removed, instead of hand-writing a guard for it.**

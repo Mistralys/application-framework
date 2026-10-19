@@ -62,6 +62,7 @@ Not every module has every file — the set depends on the module's complexity.
 | **Connectors** | `.context/modules/connectors/` | — |
 | **DB Helper** | `.context/modules/db-helper/` | — |
 | **Event Handler** | `.context/modules/event-handler/` | — |
+| **Media** | `.context/modules/media/` | — |
 | **UI** | `.context/modules/ui/` | `admin-urls/`, `bootstrap/`, `client-resources/`, `datagrid/`, `form/`, `markup-editor/`, `page/`, `properties-grid/`, `themes/`, `tree/` |
 
 ---
