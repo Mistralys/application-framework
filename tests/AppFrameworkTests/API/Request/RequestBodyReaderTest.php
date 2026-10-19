@@ -148,6 +148,84 @@ final class RequestBodyReaderTest extends ApplicationTestCase
 
     // endregion
 
+    // region: Exact boundaries
+
+    /**
+     * A declared length exactly equal to the ceiling must be accepted —
+     * the boundary check in {@see RequestBodyReader::read()} is strictly
+     * greater-than, not greater-than-or-equal.
+     */
+    public function test_declaredLengthEqualToCeilingIsAccepted() : void
+    {
+        $body = str_repeat('a', 10);
+        file_put_contents($this->tempFile, $body);
+
+        $reader = new RequestBodyReader(10, 10, $this->tempFile);
+
+        $this->assertSame($body, $reader->read());
+    }
+
+    /**
+     * A stream whose actual length is exactly equal to the ceiling must be
+     * accepted, with no declared length to short-circuit the check.
+     */
+    public function test_streamLengthEqualToCeilingIsAccepted() : void
+    {
+        $body = str_repeat('a', 10);
+        file_put_contents($this->tempFile, $body);
+
+        $reader = new RequestBodyReader(10, null, $this->tempFile);
+
+        $this->assertSame($body, $reader->read());
+    }
+
+    /**
+     * A zero-byte ceiling against a genuinely empty stream must be
+     * accepted, returning an empty string rather than throwing.
+     */
+    public function test_zeroCeilingAcceptsEmptyBody() : void
+    {
+        file_put_contents($this->tempFile, '');
+
+        $reader = new RequestBodyReader(0, null, $this->tempFile);
+
+        $this->assertSame('', $reader->read());
+    }
+
+    /**
+     * A zero-byte ceiling against a single-byte stream must throw
+     * ERROR_BODY_TOO_LARGE, confirming the ceiling check also fires at the
+     * smallest possible non-zero overage.
+     */
+    public function test_zeroCeilingRejectsOneByte() : void
+    {
+        file_put_contents($this->tempFile, 'a');
+
+        $reader = new RequestBodyReader(0, null, $this->tempFile);
+
+        $this->expectException(RequestBodyException::class);
+        $this->expectExceptionCode(RequestBodyException::ERROR_BODY_TOO_LARGE);
+
+        $reader->read();
+    }
+
+    /**
+     * An empty body with a declared length of exactly zero must be
+     * accepted as a legitimate empty request, not treated as a
+     * post_max_size discard — the discard check requires the declared
+     * length to be strictly greater than zero.
+     */
+    public function test_zeroDeclaredLengthWithEmptyBodyIsNotDiscarded() : void
+    {
+        file_put_contents($this->tempFile, '');
+
+        $reader = new RequestBodyReader(10, 0, $this->tempFile);
+
+        $this->assertSame('', $reader->read());
+    }
+
+    // endregion
+
     // region: fromGlobals()
 
     /**
@@ -174,6 +252,72 @@ final class RequestBodyReaderTest extends ApplicationTestCase
                 $_SERVER['CONTENT_LENGTH'] = $original;
             }
         }
+    }
+
+    /**
+     * {@see RequestBodyReader::fromGlobals()} must use the ceiling exactly
+     * as given, with no implicit reconciliation against `post_max_size` —
+     * that reconciliation is the caller's responsibility, performed via
+     * {@see RequestBodyReader::resolveEffectiveCeiling()} before the value
+     * ever reaches `fromGlobals()`.
+     */
+    public function test_fromGlobalsUsesCeilingAsGiven() : void
+    {
+        $this->assertSame(12345, RequestBodyReader::fromGlobals(12345)->getMaxBytes());
+    }
+
+    // endregion
+
+    // region: resolveEffectiveCeiling()
+
+    public function test_resolveEffectiveCeilingTakesLowerServerLimit() : void
+    {
+        $configured = 15029589;
+
+        $this->assertSame(8388608, RequestBodyReader::resolveEffectiveCeiling($configured, '8M'));
+        $this->assertSame(524288, RequestBodyReader::resolveEffectiveCeiling($configured, '512K'));
+        $this->assertSame(1048576, RequestBodyReader::resolveEffectiveCeiling($configured, '1048576'));
+    }
+
+    public function test_resolveEffectiveCeilingKeepsConfiguredWhenServerLimitIsHigher() : void
+    {
+        $configured = 15029589;
+
+        $this->assertSame($configured, RequestBodyReader::resolveEffectiveCeiling($configured, '1G'));
+    }
+
+    /**
+     * Every value that cannot be confidently parsed as a positive byte
+     * quantity must leave the configured ceiling unchanged, and must never
+     * surface a PHP warning — the format guard must reject these before
+     * `ini_parse_quantity()` ever sees them.
+     */
+    public function test_resolveEffectiveCeilingIgnoresUnusableValues() : void
+    {
+        $configured = 15029589;
+
+        $error = null;
+        set_error_handler(static function(int $errno, string $errstr) use (&$error) : bool {
+            if((error_reporting() & $errno) === 0) {
+                return true;
+            }
+
+            $error = $errstr;
+            return true;
+        });
+
+        try {
+            $this->assertSame($configured, RequestBodyReader::resolveEffectiveCeiling($configured, false));
+            $this->assertSame($configured, RequestBodyReader::resolveEffectiveCeiling($configured, ''));
+            $this->assertSame($configured, RequestBodyReader::resolveEffectiveCeiling($configured, '0'));
+            $this->assertSame($configured, RequestBodyReader::resolveEffectiveCeiling($configured, 'abc'));
+            $this->assertSame($configured, RequestBodyReader::resolveEffectiveCeiling($configured, '-1'));
+            $this->assertSame($configured, RequestBodyReader::resolveEffectiveCeiling($configured, '8 MB'));
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNull($error, 'No PHP warning must surface from an unusable post_max_size value.');
     }
 
     // endregion

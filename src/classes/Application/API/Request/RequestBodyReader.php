@@ -55,12 +55,56 @@ class RequestBodyReader
      * Builds a reader for the real, current request, deriving the declared
      * length from `$_SERVER['CONTENT_LENGTH']`.
      *
+     * NOTE: `$maxBytes` is used exactly as given — it is not reconciled
+     * against the server's `post_max_size`. Callers that want the
+     * server-aware limit must resolve it first with
+     * {@see self::resolveEffectiveCeiling()} and pass the result here.
+     *
      * @param int $maxBytes The byte ceiling.
      * @return self
      */
     public static function fromGlobals(int $maxBytes) : self
     {
         return new self($maxBytes, self::parseContentLength($_SERVER['CONTENT_LENGTH'] ?? null));
+    }
+
+    /**
+     * Resolves the effective byte ceiling as the lower of the framework's
+     * configured ceiling and the server's `post_max_size`.
+     *
+     * Without this, a client could be told via `maxRequestBodySize` that it
+     * may send up to the configured ceiling, while the server actually
+     * discards anything over a lower `post_max_size` — a client that
+     * shrinks its body to fit the reported limit would still fail.
+     *
+     * `$postMaxSize` is typically `ini_get('post_max_size')`, which returns
+     * `false` when the setting does not exist (practically never, but
+     * `ini_get()`'s signature allows it). A value that cannot be confidently
+     * parsed as a positive byte quantity (empty, non-numeric, zero,
+     * negative, or using a notation `ini_parse_quantity()` does not accept,
+     * e.g. `"8 MB"`) is treated as "no server limit known" and the
+     * configured ceiling is kept unchanged — the deliberate failure
+     * direction is to never report a lower limit than intended, not to
+     * mask a genuinely misconfigured server value.
+     *
+     * @param int $configuredCeiling The framework's own configured ceiling.
+     * @param string|false $postMaxSize The raw `post_max_size` ini value.
+     * @return int The lower of the two limits, or `$configuredCeiling` when
+     *             `$postMaxSize` cannot be parsed as a usable quantity.
+     */
+    public static function resolveEffectiveCeiling(int $configuredCeiling, string|false $postMaxSize) : int
+    {
+        if($postMaxSize === false || !preg_match('/^\s*\d+\s*[kmg]?\s*$/i', $postMaxSize)) {
+            return $configuredCeiling;
+        }
+
+        $serverLimit = ini_parse_quantity($postMaxSize);
+
+        if($serverLimit <= 0) {
+            return $configuredCeiling;
+        }
+
+        return min($configuredCeiling, $serverLimit);
     }
 
     /**

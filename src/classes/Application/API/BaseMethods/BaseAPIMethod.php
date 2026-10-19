@@ -520,11 +520,22 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      * Converts a {@see RequestBodyException} raised while reading the
      * request body into the matching client-facing error response.
      *
-     * - {@see RequestBodyException::ERROR_BODY_TOO_LARGE} and
-     *   {@see RequestBodyException::ERROR_BODY_DISCARDED} both map to
+     * Each of the three rejection types gets its own branch, and each
+     * branch logs a diagnostic entry via {@see self::log()} before sending
+     * the error response, mirroring {@see self::authorize()}'s existing
+     * logging pattern. The log entry is diagnostic only — it carries the
+     * method name but no caller identity, since the body is read during
+     * {@see self::validate()}, before {@see self::authorize()} resolves an
+     * API key — and is only written when {@see self::isLoggingEnabled()}
+     * is true.
+     *
+     * - {@see RequestBodyException::ERROR_BODY_TOO_LARGE} maps to
      *   {@see JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE} (182802)
-     *   and HTTP 413 ({@see ErrorResponse::makePayloadTooLarge()}) — the
-     *   client action is identical either way: send a smaller body.
+     *   and HTTP 413 ({@see ErrorResponse::makePayloadTooLarge()}), keeping
+     *   its existing message.
+     * - {@see RequestBodyException::ERROR_BODY_DISCARDED} maps to the same
+     *   182802/413, but with its own message naming the declared length
+     *   and `post_max_size` — the PHP setting that caused the discard.
      * - {@see RequestBodyException::ERROR_BODY_READ_FAILED} maps to the
      *   existing {@see JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT}
      *   (182801), unchanged from the previous read-failure behaviour.
@@ -535,11 +546,47 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      */
     private function handleRequestBodyException(RequestBodyException $e, RequestBodyReader $reader) : never
     {
+        $declaredLength = $reader->getDeclaredLength() ?? 'unknown';
+
         if($e->getCode() === RequestBodyException::ERROR_BODY_READ_FAILED) {
+            $this->log(
+                'Request body rejected: method [%s] read failed (declared length [%s], limit [%d] bytes).',
+                $this->getMethodName(),
+                $declaredLength,
+                $reader->getMaxBytes()
+            );
+
             $this->errorResponse(JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT)
                 ->setErrorMessage('Failed to read request input data.')
                 ->send();
         }
+
+        if($e->getCode() === RequestBodyException::ERROR_BODY_DISCARDED) {
+            $this->log(
+                'Request body rejected: method [%s] discarded by post_max_size (declared length [%s], limit [%d] bytes).',
+                $this->getMethodName(),
+                $declaredLength,
+                $reader->getMaxBytes()
+            );
+
+            $this->errorResponse(JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE)
+                ->makePayloadTooLarge()
+                ->setErrorMessage(
+                    'The request body ([%s] bytes declared) was discarded by the server because it exceeds the server upload limit (post_max_size).',
+                    $declaredLength
+                )
+                ->addData(array(
+                    JSONRequestInterface::RESPONSE_KEY_ERROR_MAX_REQUEST_BODY_SIZE => $reader->getMaxBytes(),
+                ))
+                ->send();
+        }
+
+        $this->log(
+            'Request body rejected: method [%s] too large (declared length [%s], limit [%d] bytes).',
+            $this->getMethodName(),
+            $declaredLength,
+            $reader->getMaxBytes()
+        );
 
         $this->errorResponse(JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE)
             ->makePayloadTooLarge()
@@ -553,8 +600,12 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     /**
      * Creates the reader {@see self::getRequestBody()} reads the raw request
      * body through. Defaults to a reader over the real request
-     * (`php://input`, `$_SERVER['CONTENT_LENGTH']`) under the configured
-     * ceiling ({@see AppConfig::getAPIMaxRequestBodySize()}).
+     * (`php://input`, `$_SERVER['CONTENT_LENGTH']`) under the effective
+     * ceiling: the lower of the configured ceiling
+     * ({@see AppConfig::getAPIMaxRequestBodySize()}) and the server's
+     * `post_max_size` ({@see RequestBodyReader::resolveEffectiveCeiling()}) —
+     * so the ceiling reported to a client via `maxRequestBodySize` is one it
+     * can actually reach.
      *
      * Overridable so an in-process test can lower the effective ceiling to
      * exercise {@see RequestBodyReader}'s `read()` path at a tiny size —
@@ -566,7 +617,12 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      */
     protected function createRequestBodyReader() : RequestBodyReader
     {
-        return RequestBodyReader::fromGlobals(AppConfig::getAPIMaxRequestBodySize());
+        return RequestBodyReader::fromGlobals(
+            RequestBodyReader::resolveEffectiveCeiling(
+                AppConfig::getAPIMaxRequestBodySize(),
+                ini_get('post_max_size')
+            )
+        );
     }
 
     private ?string $requestBody = null;

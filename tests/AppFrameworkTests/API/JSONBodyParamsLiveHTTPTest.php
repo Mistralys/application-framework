@@ -28,7 +28,14 @@ use TestDriver\API\TestJSONBodyParamsMethod;
  * in-process {@see \AppFrameworkTests\API\RequestBodyCeilingTest} coverage —
  * an unparseable body (the `process()`-path gap this plan closes) and an
  * oversized body are each rejected with the correct HTTP status and error
- * code, never HTTP 200 or an HTML page.
+ * code, never HTTP 200 or an HTML page. `test_oversizedBodyIsRejectedOverHTTP()`
+ * also asserts the effective-ceiling contract reported via the
+ * `maxRequestBodySize` response field, and self-diagnoses an
+ * under-provisioned webserver: if the server's `post_max_size` discards the
+ * body before the application boots (detected via PHP's own
+ * `'POST Content-Length of'` request-startup warning), the test skips with
+ * a diagnostic message instead of failing, since that signature can never
+ * be produced by a real framework regression.
  *
  * Requires a running webserver reachable at `APP_URL` — excluded from the
  * default suite (see the `live-http` group exclusion in `phpunit.xml`).
@@ -129,6 +136,16 @@ final class JSONBodyParamsLiveHTTPTest extends ApplicationTestCase
      * booted default; whether PHP's own `post_max_size` discards it first or
      * the configured ceiling itself rejects it, both causes resolve to the
      * same client-facing code.
+     *
+     * Self-diagnosing: when the webserver's `post_max_size` is below
+     * {@see AppConfig::getAPIMaxRequestBodySize()} and `display_errors` is
+     * on (the local dev default), PHP emits its own request-startup
+     * warning — recognisable by the `'POST Content-Length of'` signature —
+     * before the application boots, which pre-empts the framework's JSON
+     * response. That signature can only be produced by PHP itself ahead of
+     * the application, so its presence never masks a real framework
+     * regression; the test skips with a diagnostic message instead of
+     * failing on an under-provisioned environment.
      */
     public function test_oversizedBodyIsRejectedOverHTTP(): void
     {
@@ -148,6 +165,19 @@ final class JSONBodyParamsLiveHTTPTest extends ApplicationTestCase
         $contentType = (string)curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
 
         $this->assertIsString($response, 'The request must have received a response body.');
+
+        if(str_contains($response, 'POST Content-Length of')) {
+            $this->markTestSkipped(
+                'The webserver discarded the oversized body before the application booted '.
+                '(PHP request-startup warning detected: "POST Content-Length of..."), which means '.
+                'this server\'s `post_max_size` ini setting is below AppConfig::getAPIMaxRequestBodySize() '.
+                'and `display_errors` is enabled, sending PHP\'s own warning ahead of the framework\'s '.
+                'JSON response. Raise `post_max_size` to at least AppConfig::getAPIMaxRequestBodySize() '.
+                'bytes (or disable `display_errors`) to exercise this assertion. '.
+                'See docs/agents/project-manifest/testing.md, section "Live-HTTP Tests".'
+            );
+        }
+
         $this->assertSame(413, $httpCode, 'An oversized body must produce HTTP 413, never HTTP 200.');
         $this->assertStringContainsString(
             'application/json',
@@ -158,5 +188,23 @@ final class JSONBodyParamsLiveHTTPTest extends ApplicationTestCase
         $data = JSONConverter::json2var($response);
         $this->assertIsArray($data);
         $this->assertSame(JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE, $data['code'] ?? null);
+
+        $payload = $data['data'] ?? array();
+        $maxRequestBodySize = $payload[JSONRequestInterface::RESPONSE_KEY_ERROR_MAX_REQUEST_BODY_SIZE] ?? null;
+
+        $this->assertIsInt(
+            $maxRequestBodySize,
+            'The response must report the effective ceiling via `maxRequestBodySize`.'
+        );
+        $this->assertGreaterThan(
+            0,
+            $maxRequestBodySize,
+            'The reported effective ceiling must be a positive number of bytes.'
+        );
+        $this->assertLessThanOrEqual(
+            AppConfig::getAPIMaxRequestBodySize(),
+            $maxRequestBodySize,
+            'The effective ceiling can never exceed the configured maximum.'
+        );
     }
 }
