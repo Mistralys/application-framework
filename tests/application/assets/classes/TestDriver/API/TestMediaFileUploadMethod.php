@@ -28,6 +28,8 @@ use AppUtils\ArrayDataCollection;
  * Exists so PHPStan has a real consumer of the trait (`trait.unused`), and as
  * a DB-free isolation harness for the upload piece.
  *
+ * Covered by {@see \AppFrameworkTests\Media\API\MediaFileUploadPieceTest}.
+ *
  * @package TestDriver
  * @subpackage API
  */
