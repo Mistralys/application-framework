@@ -291,6 +291,15 @@ abstract class BaseConfigRegistry implements SetConfigSettingInterface
     public const AUTH_SALT = 'APP_AUTH_SALT';
 
     /**
+     * The maximum size, in bytes, of the decoded content a
+     * {@see \Application\API\Parameters\Type\Base64FileParameter} will
+     * accept. Default is 10485760 (10 MiB).
+     *
+     * @see APP_API_MAX_FILE_CONTENT_SIZE
+     */
+    public const API_MAX_FILE_CONTENT_SIZE = 'APP_API_MAX_FILE_CONTENT_SIZE';
+
+    /**
      * @see APP_LDAP_HOST
      */
     public const LDAP_HOST = 'APP_LDAP_HOST';

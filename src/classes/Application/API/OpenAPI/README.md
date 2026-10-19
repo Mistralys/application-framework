@@ -43,7 +43,7 @@ will not be matched and will return 404 on the clean-path URL.
 `Application\API\OpenAPI\TypeMapper`
 
 Maps parameter type labels (as returned by parameter classes in `Application\API\Parameters`)
-to their corresponding OpenAPI 3.1 `type`/`format` pair. The mapping covers all 13 framework
+to their corresponding OpenAPI 3.1 `type`/`format` pair. The mapping covers all framework
 parameter types. Unknown labels fall back to `{ "type": "string" }`.
 
 ### Supported type labels
@@ -65,10 +65,15 @@ All labels are exposed as class constants (`TypeMapper::TYPE_LABEL_*`).
 | `TYPE_LABEL_ALPHANUMERIC` | `Alphanumeric` | `string` | — |
 | `TYPE_LABEL_LABEL` | `Label` | `string` | — |
 | `TYPE_LABEL_NAME_OR_TITLE` | `Name or Title` | `string` | — |
+| `TYPE_LABEL_BASE64_FILE` | `Base64 File` | `string` | `contentEncoding: base64`** |
 
 \* `md5` uses the vendor extension key `x-format` (not the standard `format`), since `md5`
    is not a registered JSON Schema 2020-12 format. Strict validators allow `x-` prefixed
    vendor extension keys.
+
+\*\* `Base64 File` uses the standard JSON Schema `contentEncoding` key (not `format`), since
+    OpenAPI 3.1 has no dedicated binary string type. See
+    `Application\API\Parameters\Type\Base64FileParameter`.
 
 ### Usage
 
@@ -239,6 +244,13 @@ body schema properties (for JSON request methods).
 
 The converter is method-aware: the routing of each parameter to the correct OpenAPI location
 (query, header, or request body) depends on the method the converter is initialised with.
+
+> **Resolution note:** Since the `api-parameters` submodule's `JSONBodyValueSource`, a
+> non-header, non-reserved parameter on a `JSONRequestInterface` method actually
+> resolves its value from the parsed JSON request body at runtime (falling back to the
+> request for a key the body does not carry). This converter's request-body routing
+> above has always matched that resolution — it now also matches how the value is
+> read, not just where it is documented.
 
 ### Parameter location rules
 

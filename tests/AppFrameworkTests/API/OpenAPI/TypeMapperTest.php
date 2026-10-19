@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Unit tests for {@see TypeMapper}.
  *
- * Verifies that all 13 framework parameter type labels are mapped to the
+ * Verifies that all framework parameter type labels are mapped to the
  * correct OpenAPI 3.1 type/format pairs, and that unknown labels fall back
  * to the `string` type.
  */
@@ -97,6 +97,15 @@ final class TypeMapperTest extends TestCase
         $this->assertSame('md5', $result['x-format']);
     }
 
+    public function test_base64FileType() : void
+    {
+        $result = TypeMapper::mapType(TypeMapper::TYPE_LABEL_BASE64_FILE);
+
+        $this->assertSame('string', $result['type']);
+        $this->assertArrayNotHasKey('format', $result);
+        $this->assertSame('base64', $result['contentEncoding']);
+    }
+
     // -------------------------------------------------------------------------
     // Numeric / boolean types
     // -------------------------------------------------------------------------
@@ -158,10 +167,10 @@ final class TypeMapperTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Coverage: all 13 types mapped
+    // Coverage: all types mapped
     // -------------------------------------------------------------------------
 
-    public function test_allThirteenTypesReturnArray() : void
+    public function test_allTypesReturnArray() : void
     {
         $labels = array(
             TypeMapper::TYPE_LABEL_STRING,
@@ -177,9 +186,8 @@ final class TypeMapperTest extends TestCase
             TypeMapper::TYPE_LABEL_LABEL,
             TypeMapper::TYPE_LABEL_MD5,
             TypeMapper::TYPE_LABEL_NAME_OR_TITLE,
+            TypeMapper::TYPE_LABEL_BASE64_FILE,
         );
-
-        $this->assertCount(13, $labels, 'Exactly 13 framework type labels must be defined.');
 
         foreach($labels as $label)
         {

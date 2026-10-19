@@ -182,4 +182,16 @@ class AppConfig
     }
 
     // endregion
+
+    /**
+     * The maximum size, in bytes, of the decoded content a
+     * {@see \Application\API\Parameters\Type\Base64FileParameter} accepts
+     * by default, unless overridden with `setMaxSize()`.
+     *
+     * @return int
+     */
+    public static function getAPIMaxFileContentSize() : int
+    {
+        return (int)boot_constant(BaseConfigRegistry::API_MAX_FILE_CONTENT_SIZE);
+    }
 }
