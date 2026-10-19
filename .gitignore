@@ -62,3 +62,6 @@ phpstan-result.txt
 
 
 .phpunit.cache/test-run-history
+
+# CTX Generator run logs
+/ctx-*.log

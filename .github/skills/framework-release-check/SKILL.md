@@ -126,7 +126,7 @@ git diff --name-only
 
 Generated documentation under `.context/` and `docs/agents/project-manifest/` must be up to date. If `build-docs` modifies files, commit them to `main` before the release tag is created.
 
-> **Note:** These generators embed a `Generated:` / `Auto-generated on` timestamp that changes on every run, so `git status --short` will almost always show the affected files as modified even when no real content changed. Before treating this as a failure, diff the flagged files (`git diff <file>`) and confirm the only delta is the timestamp line.
+> **Note:** These generators embed a `Generated:` / `Auto-generated on` timestamp that changes on every run, so `git status --short` will almost always show the affected files as modified even when no real content changed. Before treating this as a failure, diff the flagged files (`git diff <file>`) and confirm the only delta is the timestamp line. The same applies to `.context/generated-at.txt`, which `composer build-docs` rewrites on every run: a diff in that file alone is expected and does not fail this check.
 
 **Pass:** No uncommitted changes after `build-docs`, or the only diff in each flagged file is the timestamp line.  
 **Fail:** Modified or untracked files remain with real content changes — commit them on `main` and re-run checks from step 5.

@@ -47,7 +47,6 @@ class ComposerScripts
         self::generateHtaccess();
         self::generateCSSClassesJS();
         self::rebuildIcons();
-        self::updateContextGenerateDate();
         self::updateModuleDocumentation();
     }
 
@@ -91,11 +90,30 @@ class ComposerScripts
         BuildMessages::printSummary();
     }
 
-    private static function updateContextGenerateDate() : void
+    /**
+     * Writes the current date and time into the `generated-at.txt` file
+     * of the specified context folder, creating the folder if it does
+     * not exist yet. Agents use this file as the freshness signal for
+     * the CTX-generated documentation.
+     *
+     * Called by {@see self::postCtxGenerate()} after `ctx generate`, so
+     * the timestamp reflects the actual CTX generation run in both the
+     * `composer build` and `composer build-docs` script chains.
+     *
+     * @param string $contextFolder Absolute path to the `.context` folder.
+     * @return void
+     */
+    public static function doUpdateContextGenerateDate(string $contextFolder) : void
     {
         echo '- Updating context generate date...'.PHP_EOL;
 
-        FileInfo::factory(__DIR__.'/../../../../.context/generated-at.txt')
+        $folder = FolderInfo::factory($contextFolder);
+
+        if(!$folder->exists()) {
+            $folder->create();
+        }
+
+        FileInfo::factory(rtrim($folder->getPath(), '/').'/generated-at.txt')
             ->putContents(Microtime::createNow()->getISODate(true));
 
         echo '  DONE.'.PHP_EOL;
@@ -276,15 +294,26 @@ class ComposerScripts
 
     /**
      * Post-CTX-generation entry point: strips file statistics sections
-     * from all generated context Markdown files under `.context/`.
+     * from all generated context Markdown files under `.context/`, then
+     * writes the `.context/generated-at.txt` timestamp.
      *
-     * Called as a separate Composer script entry after `ctx generate`.
+     * Called as a separate Composer script entry after `ctx generate`
+     * in both the `build` and `build-docs` script chains.
      */
     public static function postCtxGenerate() : void
     {
         self::init();
 
         self::stripContextFileStatistics();
+        self::doUpdateContextGenerateDate(self::getContextFolderPath());
+    }
+
+    /**
+     * Absolute path to the project's `.context` folder (no trailing slash).
+     */
+    private static function getContextFolderPath() : string
+    {
+        return rtrim(FolderInfo::factory(__DIR__.'/../../../../')->getPath(), '/').'/.context';
     }
 
     /**
@@ -301,7 +330,7 @@ class ComposerScripts
      */
     private static function stripContextFileStatistics() : void
     {
-        $contextFolder = rtrim(FolderInfo::factory(__DIR__.'/../../../../')->getPath(), '/').'/.context';
+        $contextFolder = self::getContextFolderPath();
 
         if(!is_dir($contextFolder)) {
             return;
