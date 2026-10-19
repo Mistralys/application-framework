@@ -104,20 +104,33 @@ discovers, indexes, and exposes through a single dispatcher entry point.
 - **Request body ceiling:** `BaseAPIMethod::getRequestBody()` reads the raw request
   body through a `RequestBodyReader` (see the `Request/` folder below), built by the
   overridable `createRequestBodyReader()` factory, which defaults to
-  `RequestBodyReader::fromGlobals(AppConfig::getAPIMaxRequestBodySize())` — the
-  configured ceiling (`APP_API_MAX_REQUEST_BODY_SIZE`, derived from the file-content
-  size limit when unset). A declared or actual body length over the ceiling, and a
-  body PHP silently discarded because it exceeded `post_max_size`, both convert to
+  `RequestBodyReader::fromGlobals(RequestBodyReader::resolveEffectiveCeiling(AppConfig::getAPIMaxRequestBodySize(), ini_get('post_max_size')))` —
+  the **effective ceiling**: the lower of the configured limit
+  (`APP_API_MAX_REQUEST_BODY_SIZE`, derived from the file-content size limit when
+  unset) and the server's own `post_max_size`, resolved by
+  `RequestBodyReader::resolveEffectiveCeiling()`. `fromGlobals()` itself is
+  unchanged — it still takes the ceiling it is given as-is; resolving the
+  server-aware limit is the factory's job, not the reader's. A declared or actual
+  body length over the effective ceiling yields
   `JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE` (182802) and HTTP 413 via
-  `ErrorResponse::makePayloadTooLarge()` — the client action is identical either
-  way: send a smaller body. The response data's `maxRequestBodySize` key carries
-  the ceiling so a client can tell by how much its request needs to shrink. A read
-  failure still yields the existing `ERROR_FAILED_TO_READ_INPUT` (182801). A
-  `setRequestBody()` preset (used by in-process tests) bypasses the reader
-  entirely, since the body is already in memory and was never subject to the
-  ceiling a real request body is read under. Operators must keep `post_max_size`
-  at or above the effective ceiling, or a legitimate request within the framework's
-  own limit can still be discarded by PHP first.
+  `ErrorResponse::makePayloadTooLarge()`, with the existing "exceeds the maximum
+  allowed size" message. A body PHP silently discarded because it exceeded
+  `post_max_size` converts to the same code and HTTP status, but with its own
+  distinct message naming the declared length and `post_max_size` explicitly —
+  the two cases share a client action (send a smaller body) but are no longer
+  worded identically. The response data's `maxRequestBodySize` key now carries
+  the *effective* ceiling, so a client that shrinks its request to fit can
+  actually succeed. A read failure still yields the existing
+  `ERROR_FAILED_TO_READ_INPUT` (182801). Every rejection (too-large, discarded,
+  or read-failure) is logged via `$this->log()` when logging is enabled — a
+  diagnostic entry naming the method, the rejection reason, the declared length
+  (or `'unknown'`), and the limit, never an audit trail, since no authenticated
+  caller identity exists yet at body-read time. A `setRequestBody()` preset
+  (used by in-process tests) bypasses the reader entirely, since the body is
+  already in memory and was never subject to the ceiling a real request body is
+  read under. Operators must still keep `post_max_size` at or above the
+  framework's configured ceiling — the effective-ceiling resolution reports
+  accurately when `post_max_size` is lower, but does not raise it.
 - **Connector:** `AppAPIConnector` and `AppAPIMethod` provide an HTTP client for
   consuming another framework application's API remotely.
 - **Documentation:** `APIDocumentation` and `MethodDocumentation` generate the
@@ -213,7 +226,7 @@ discovers, indexes, and exposes through a single dispatcher entry point.
 | `Documentation/` | `APIDocumentation`, `MethodDocumentation`, `JSONMethodExample` — documentation rendering. |
 | `Events/` | Cache control event listeners for method index and response caches. |
 | `Groups/` | `APIGroupInterface`, `FrameworkAPIGroup`, `GenericAPIGroup` — method grouping. |
-| `Request/` | `RequestBodyReader`, `RequestBodyException` — reads the raw request body under a byte ceiling, detecting an over-ceiling body, a `post_max_size`-discarded body, and a read failure as distinct internal exceptions. Wired into ingress via `BaseAPIMethod::getRequestBody()`/`createRequestBodyReader()` — see "Request body ceiling" above. |
+| `Request/` | `RequestBodyReader`, `RequestBodyException` — reads the raw request body under a byte ceiling, detecting an over-ceiling body, a `post_max_size`-discarded body, and a read failure as distinct internal exceptions. `RequestBodyReader::resolveEffectiveCeiling()` resolves the lower of the configured ceiling and the server's `post_max_size`. Wired into ingress via `BaseAPIMethod::getRequestBody()`/`createRequestBodyReader()` — see "Request body ceiling" above. |
 | `Response/` | `ResponseInterface`, `JSONInfoSerializer` — response formatting utilities. |
 | `Traits/` | Mix-in interfaces and traits for JSON request/response, dry-run, and example rendering. |
 | `User/` | `APIRightsInterface`, `APIRightsTrait` — admin area access rights. |

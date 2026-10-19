@@ -42,6 +42,12 @@ decodes and size-limits file content in one place.
   `ErrorResponse::makePayloadTooLarge()` — a read failure still yields the existing 182801.
 - Build: `.context/generated-at.txt` is now written after CTX generation by both `composer build` and
   `composer build-docs`.
+- Media: `DocumentTrait::getMaxThumbnailSize()` is now abstract; also declared on `DocumentInterface`.
+- API: `BaseAPIMethod::createRequestBodyReader()` now resolves the effective request-body ceiling
+  as the lower of the configured `APP_API_MAX_REQUEST_BODY_SIZE` and the server's `post_max_size`,
+  so the reported limit is one the client can actually reach. A `post_max_size`-discarded body now
+  gets its own distinct client-facing message, and a rejected body (too large, discarded, or a read
+  failure) is now logged diagnostically when logging is enabled, matching `authorize()`'s logging.
 
 ## v7.6.0 - API Removed-Parameter Declaration
 

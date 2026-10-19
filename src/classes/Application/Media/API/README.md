@@ -218,7 +218,7 @@ Codes a caller sees as the response envelope's own `code`:
 | `681001` | `VALIDATION_UNSUPPORTED_EXTENSION` | `MediaWriterException` |
 | `681002` | `VALIDATION_TYPE_MISMATCH` | `MediaWriterException` |
 | `681003` | `VALIDATION_CONTENT_MISMATCH` | `MediaWriterException` |
-| `681004` | `VALIDATION_EMPTY_FILE` | `MediaWriterException` |
+| `681004` | `VALIDATION_EMPTY_FILE` | `MediaWriterException` (an empty `fileContent` value never reaches this check — `Base64FileParameter` resolves an empty string to `null`, which is instead reported as a missing required parameter, `183003`; `681004` only guards a zero-byte `MediaFileContent` built from a non-base64 content source) |
 | `681005` | `VALIDATION_EXTENSION_CHANGE_NOT_ALLOWED` | `MediaWriterException` |
 | `681006` | `VALIDATION_INVALID_FILE_NAME` | `MediaWriterException` |
 | `681201` | `VALIDATION_UNKNOWN_MEDIA_ID` | `MediaDocumentAPIInterface` |
@@ -260,23 +260,34 @@ decoded.
 **Request-body ceiling.** Independently of the file-content limit above,
 every JSON API method — including this module's — enforces a ceiling on the
 raw request body itself via `BaseAPIMethod::getRequestBody()` (see the `api`
-module's README, "Request body ceiling"). The ceiling,
+module's README, "Request body ceiling"). The *configured* ceiling,
 `AppConfig::getAPIMaxRequestBodySize()`, uses the explicitly configured
 `APP_API_MAX_REQUEST_BODY_SIZE` when set; otherwise it is derived from
 `APP_API_MAX_FILE_CONTENT_SIZE` as `floor(fileContentLimit × 4 / 3) + 1 MiB`
 — the base64 transfer overhead plus a fixed 1 MiB allowance for the
 surrounding JSON structure and other fields (at the 10 MiB default this
-derives to roughly 14.3 MiB). A body over the ceiling, or one PHP's own
-`post_max_size` silently discarded before the application could even read
-it, both surface as `182802`/HTTP 413 (see "Error codes" above).
+derives to roughly 14.3 MiB). The *effective* ceiling actually enforced is
+the lower of this configured value and the server's own `post_max_size`
+(`RequestBodyReader::resolveEffectiveCeiling()`), and it is the effective
+ceiling — not the raw configured one — that the response's
+`maxRequestBodySize` key reports. A body over the effective ceiling surfaces
+as `182802`/HTTP 413 with the standard "exceeds the maximum allowed size"
+message; a body PHP's own `post_max_size` silently discarded before the
+application could even read it surfaces as the same `182802`/HTTP 413, but
+with a distinct message naming the declared length and `post_max_size`
+explicitly (see "Error codes" above).
 
-**`post_max_size` guidance.** PHP's `post_max_size` must be configured on
-every target install to **at least the effective
+**`post_max_size` guidance.** PHP's `post_max_size` must still be configured
+on every target install to **at least the configured
 `AppConfig::getAPIMaxRequestBodySize()` ceiling** — not a fixed multiplier
-of the file-content limit. A smaller `post_max_size` silently discards an
-otherwise-valid request before `getRequestBody()` ever runs, which this
-module's request-body ceiling work detects and reports as `182802` rather
-than letting it masquerade as a missing-parameter error.
+of the file-content limit. The effective-ceiling resolution makes the
+framework *report* accurately when `post_max_size` is lower (so a shrunk
+request can actually succeed), but it does not raise `post_max_size` itself:
+an install where `post_max_size` is below the configured ceiling still
+discards otherwise-valid bodies before `getRequestBody()` ever runs, which
+this module's request-body ceiling work detects and reports as `182802`
+(with its own discard-specific message) rather than letting it masquerade
+as a missing-parameter error.
 
 ---
 
