@@ -1,5 +1,52 @@
 # Application Framework Changelog
 
+## v7.7.0 - Media Document APIs (Breaking-XS)
+
+**Media documents can now be added, fetched, listed, updated and deleted through the API.**
+File content travels as base64 inside a JSON request body, with the upload validated before anything
+is stored. Served media files are now hardened against inline-script attacks, and oversized API
+requests are rejected cleanly with HTTP 413. Any future JSON method can reuse the new request-body
+and file-upload handling.
+
+- Media: Added API methods to add, get, list, update and delete media documents.
+- Media: Uploads are validated by document type before a record is created.
+- Media: Added a write path that keeps files and database records consistent on failure.
+- Media: Updates require an actual change and reject a file replacement that changes the extension.
+- Media: Dry runs never write or delete anything; delete returns the document's pre-deletion state.
+- Media: Served files now send hardening headers, and SVGs are sandboxed against inline scripts.
+- Media: Fixed the thumbnail maximum size default; document types must now declare it.
+- API: Registered parameters of JSON-body methods now resolve from the body, then the query string.
+- API: Added a base64 file parameter with a configurable size limit (default 10 MiB).
+- API: Added a request body size limit, answering oversized requests with HTTP 413.
+- API: The limit respects the server's upload limit, and rejected requests are now logged.
+- API: Added pagination (limit, offset, total count) for list methods.
+- API: Unknown record IDs now answer with HTTP 404.
+- API: Removed parameters are now also detected inside JSON request bodies.
+- API: Development-mode error responses truncate long values from the echoed request body.
+- API: Callback validation of parameters now passes extra arguments to the callback.
+
+### Breaking Changes
+
+The thumbnail maximum size method on media documents no longer has a default implementation, because
+the old default returned wrong values. Custom media document classes that use the shared document
+trait must now implement it. Built-in document types are unaffected.
+
+## v7.6.0 - API Removed-Parameter Declaration
+
+**API methods can now declare a request parameter name as removed, instead of hand-writing a guard for it.**
+A request still sending a declared removed name is rejected with a new standard error code, a
+message naming the parameter and its replacement (if any), and structured error data — before the
+method's own validation runs.
+
+- API: Added `addRemovedParam()`, letting a method declare a removed/renamed parameter name with
+  an optional replacement, removed-since version, and note.
+- API: Requests sending a declared removed parameter are now rejected with the new
+  `ERROR_REMOVED_PARAMETER_USED` (183009) error, before validation runs.
+- API: Added `ErrorResponsePayload::getHttpStatusCode()`, exposing the HTTP status code an error
+  response was (or would be) sent with.
+- Docs: Documented removed-parameter declaration in the API README and the authoring rule to
+  declare, not hand-write, a removed-parameter guard.
+
 ## v7.5.3 - Revisionable Settings Form Fixes (Breaking-XS)
 
 **Settings forms for revisionable records now show the record's actual values when editing, and can be saved.**

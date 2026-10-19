@@ -121,7 +121,7 @@ class StringListParameter extends BaseAPIParameter
      */
     protected function resolveValue(): array|null
     {
-        $value = $this->getRequestParam()->get();
+        $value = $this->getRawRequestValue();
 
         if($value === null || $value === '') {
             return null;

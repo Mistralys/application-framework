@@ -128,6 +128,32 @@ trait SetAppConfigSettingTrait
     }
 
     /**
+     * Sets the maximum size, in bytes, of the decoded content accepted by
+     * a {@see \Application\API\Parameters\Type\Base64FileParameter}.
+     *
+     * @param int $bytes
+     * @return $this
+     */
+    public function setAPIMaxFileContentSize(int $bytes) : self
+    {
+        return $this->setBootDefine(BaseConfigRegistry::API_MAX_FILE_CONTENT_SIZE, $bytes);
+    }
+
+    /**
+     * Sets the maximum size, in bytes, of an incoming API request body.
+     * Use `0` to derive the ceiling from {@see self::setAPIMaxFileContentSize()}
+     * instead of setting it explicitly (see
+     * {@see \Application\ConfigSettings\AppConfig::deriveAPIMaxRequestBodySize()}).
+     *
+     * @param int $bytes
+     * @return $this
+     */
+    public function setAPIMaxRequestBodySize(int $bytes) : self
+    {
+        return $this->setBootDefine(BaseConfigRegistry::API_MAX_REQUEST_BODY_SIZE, $bytes);
+    }
+
+    /**
      * Sets the mode in which the application should run for this request.
      *
      * @param string $runMode

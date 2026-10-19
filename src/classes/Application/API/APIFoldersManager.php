@@ -12,6 +12,7 @@ use Application\Admin\Index\AdminScreenIndex;
 use Application\API\OpenAPI\GetOpenAPISpec;
 use Application\Countries\CountriesCollection;
 use Application\Locales;
+use Application\Media\Collection\MediaCollection;
 use Application\SourceFolders\Sources\APISourceFolders;
 use DBHelper;
 
@@ -37,6 +38,7 @@ class APIFoldersManager
             ->addFolder(CountriesCollection::getAPIMethodsFolder())
             ->addFolder(AdminScreenIndex::getAPIMethodsFolder())
             ->addFolder(DBHelper::getAPIMethodsFolder())
-            ->addFolder(GetOpenAPISpec::getAPIMethodsFolder());
+            ->addFolder(GetOpenAPISpec::getAPIMethodsFolder())
+            ->addFolder(MediaCollection::getAPIMethodsFolder());
     }
 }

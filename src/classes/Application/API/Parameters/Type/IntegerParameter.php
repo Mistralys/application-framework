@@ -75,7 +75,7 @@ class IntegerParameter extends BaseAPIParameter
 
     protected function resolveValue(): ?int
     {
-        $value = $this->getRequestParam()->get();
+        $value = $this->getRawRequestValue();
 
         if($value === null || $value === '') {
             return null;

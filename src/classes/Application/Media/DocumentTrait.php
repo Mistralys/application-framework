@@ -6,6 +6,7 @@ namespace Application\Media;
 
 use Application\AppFactory;
 use Application\Application;
+use Application\Media\Delivery\MediaResponseHeaders;
 use Application_Exception;
 use Application_Media_Delivery;
 use Application_Media_Document;
@@ -30,10 +31,18 @@ trait DocumentTrait
         return ImageHelper::createFromFile($this->getThumbnailSourcePath());
     }
 
-    public function getMaxThumbnailSize(): int
-    {
-        return $this-$this->getThumbnailSourceImage()->getWidth();
-    }
+    /**
+     * Retrieves the maximum size, in pixels, that a thumbnail of this
+     * document may be generated at. Used by {@see self::getThumbnailDefaultSize()}
+     * to cap the preferred size to what the document can actually provide.
+     *
+     * Must be implemented by the concrete document type, since the
+     * semantics differ per type: a raster image returns its own pixel
+     * width, a PDF returns the type icon's thumbnail size, and so on.
+     *
+     * @return int
+     */
+    abstract public function getMaxThumbnailSize() : int;
 
     public function thumbnailExists(?int $width = null, ?int $height = null) : bool
     {
@@ -168,8 +177,14 @@ trait DocumentTrait
      */
     public function sendFile(bool $forceDownload=false)
     {
+        $path = $this->getPath();
+
+        if(!MediaResponseHeaders::send(FileHelper::getExtension($path))) {
+            $this->log('Response headers were already sent; the media response header policy could not be applied.');
+        }
+
         FileHelper::sendFile(
-            $this->getPath(),
+            $path,
             $this->getFilename(),
             $forceDownload
         );
@@ -318,8 +333,14 @@ trait DocumentTrait
             $this->getPath()
         ));
 
+        $path = $this->createThumbnail($width, $height);
+
+        if(!MediaResponseHeaders::send(FileHelper::getExtension($path))) {
+            $this->log('Response headers were already sent; the media response header policy could not be applied.');
+        }
+
         FileHelper::sendFileAuto(
-            $this->createThumbnail($width, $height),
+            $path,
             $this->getFilename()
         );
 

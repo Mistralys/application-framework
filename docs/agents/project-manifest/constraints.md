@@ -262,6 +262,77 @@ API method classes are stored in `API/Methods/` subdirectories within their modu
 - **Route request-derived content through `ErrorResponse::addRequestData()`, never `addData()`.** `addData()` is for method-owned domain data that must always reach the client (e.g. a validation payload) and is never redacted. `addRequestData()` feeds the channel `getErrorData()` rebuilds into a minimal method/API-version allowlist outside a development environment. Putting `$_REQUEST` content, a parsed request body, or any other request-sourced value through `addData()` bypasses this redaction entirely.
 - **An API key parameter must stay header-only.** Never add an API key parameter that falls back to `$_REQUEST` (via `RequiredOnlyParamTrait`'s default resolution or similar) — it must resolve exclusively through `APIHeaderParameterTrait`/`APIHeaderParameterInterface`, the way `APIKeyParam` does. A `$_REQUEST`-visible API key would defeat the redaction boundary above, since `$_REQUEST` is exactly the channel it redacts.
 
+### API Trait Composition Model (Lego Rule)
+
+Each interface+trait pair in the API system is a **self-contained lego piece**:
+the trait is the single canonical implementation of its interface's contract.
+Every consuming class must **explicitly declare all traits** it uses — no trait
+should silently compose other traits on behalf of its consumers.
+
+**Rules:**
+
+1. **Never copy a trait's method implementation into another trait or class.**
+   Use the canonical trait via `use` instead. A hand-copied implementation
+   diverges silently as the original evolves, creates a second source of truth,
+   and is often the root cause of phantom type errors.
+
+2. **Never add a `@phpstan-ignore` to work around a type mismatch caused by
+   re-implementing a trait method.** A suppression of this kind is a symptom
+   that the composition is wrong — fix the composition, not the static analyser.
+
+3. **Traits must not compose other API traits via `use`.**
+   Each consuming class must explicitly declare every trait it needs. This keeps
+   dependencies visible and avoids "magic" behaviour where a trait silently
+   provides methods the consumer did not ask for.
+
+4. **Every interface contract must be satisfied by an explicit `use` in the
+   consuming class.** If a method's interface extends several `*APIInterface`
+   contracts, the consuming class declares the matching `*APITrait` for each
+   one — including inherited interfaces, not only the one named directly in
+   its own `implements` clause.
+
+5. **One validation code range per interface.** A piece's validation codes
+   stay inside its own numeric sub-range; mixing another piece's codes onto
+   the same interface defeats the purpose of splitting the pieces apart.
+
+**Framework references:**
+
+- `Countries/API` (`AppCountryAPIInterface`/`AppCountryAPITrait` +
+  `AppCountryParamsContainer` + `Params/AppCountryIDHandler`) — the
+  record-resolution piece shape: a `manage{X}Params()` container composes
+  parameter handlers and resolves to a single domain record.
+- `API/Traits/DryRunAPIInterface`/`DryRunAPITrait` and
+  `API/Traits/PaginatedAPIInterface`/`PaginatedAPITrait` — generic,
+  module-independent pieces (dry-run mode, `limit`/`offset`/`totalCount`
+  paging) any method in any module can combine.
+- `Media/API` (`MediaDocumentAPIInterface`/`MediaMetadataAPIInterface`/
+  `MediaFileUploadAPIInterface` and their traits) — three domain pieces for
+  a single module, each with its own validation sub-range (`68120x`,
+  `68121x`) and no inheritance between the piece interfaces: every one
+  extends `APIMethodInterface` directly, so each piece stays usable on its
+  own.
+
+> **Reference:** Adapted from the HCP Editor's own copy of this rule
+> (`hcp-editor/docs/agents/project-manifest/constraints.md`, "API Trait
+> Composition Model (Lego Rule)"), codified there after `ComtypeAPITrait`
+> accumulated a hand-copied `manageTenantParams()` that masked a
+> pre-existing interface omission. The framework's own first composable
+> domain pieces (`Media/API`) are documented here under the same rule.
+
+### JSON Request Bodies
+
+- **Read a `JSONRequestInterface` method's parameters through the registered parameter system, never by hand from `getRequestData()`.** Every registered, non-header, non-reserved parameter already resolves from the parsed JSON body (falling back to the query string/`$_REQUEST` for a key the body does not carry) via the injected `ParamValueSourceInterface` (`JSONBodyValueSource`, `src/classes/Application/API/Parameters/ValueSource/`). Reading `getRequestData()` directly in a method body bypasses required-checks, type validation and the OpenAPI documentation the parameter system already provides for free.
+- **File content in a JSON body uses `base64File()` (`Application\API\Parameters\Type\Base64FileParameter`), never a plain string parameter with ad-hoc decoding.** It validates and decodes the content in one place, enforces a configurable size limit (`AppConfig::getAPIMaxFileContentSize()`) checked from the *encoded* length before any decoding, and retains only the decoded binary — never the oversized intermediate base64 copy.
+- **A `ClearableStringParameter` (absent/empty/value three-state parameter) must resolve through `BaseAPIParameter::hasRawRequestValue()`/`getRawRequestValueUnprocessed()`, never through `getRawRequestValue()`'s normal no-source fallback (`RequestParam::get()`) or a direct `$_REQUEST` read.** `RequestParam::get()` collapses an empty string to `null`, which is harmless for every other parameter type (they already treat `''` as equivalent to absent) but destroys exactly the absent/empty distinction a clearable parameter exists to preserve — including when the value arrives through a `JSONBodyValueSource`'s request fallback, not just the no-value-source case.
+
+### Request Body Reading
+
+- **Read a request body only through `BaseAPIMethod::getRequestBody()`, never by hand from `php://input` or `$_SERVER['CONTENT_LENGTH']`.** `getRequestBody()` enforces the *effective* ceiling — the lower of the configured `AppConfig::getAPIMaxRequestBodySize()` and the server's own `post_max_size`, resolved via `RequestBodyReader::resolveEffectiveCeiling()` — via `RequestBodyReader`, built by the overridable `createRequestBodyReader()` factory, which resolves the effective ceiling before constructing the reader. It converts a `RequestBodyException` into the matching client-facing error: an over-ceiling body to `ERROR_REQUEST_BODY_TOO_LARGE` (182802, HTTP 413 via `ErrorResponse::makePayloadTooLarge()`) with its existing message; a body `post_max_size` silently discarded gets the same code and HTTP status but its own distinct message naming the declared length and `post_max_size`; a read failure still yields the existing `ERROR_FAILED_TO_READ_INPUT` (182801). Every rejection is logged via `$this->log()` when logging is enabled — a diagnostic entry, never an audit trail, since no authenticated caller identity exists yet at body-read time. Reading the stream directly bypasses the ceiling entirely, reintroducing the unbounded-buffering risk `RequestBodyReader` exists to close.
+
+### Removed Parameters
+
+- **Declare a removed or renamed request parameter with `addRemovedParam()`, never a hand-written `getParam()` guard in `collectRequestData()`.** `BaseAPIMethod::addRemovedParam()` registers the name on the method's `RemovedParamCollection`; the framework's `rejectRemovedParams()` lifecycle step then rejects any request still sending it — including an explicit empty value — with the standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) before `validate()` runs. A hand-written guard in `collectRequestData()` instead collapses into the generic `183001`/`183003` codes and loses the structured `removedParameters` response data.
+
 ### Structural Consistency Across Sibling Methods
 
 When a module implements a family of related write API methods (for example,
@@ -381,6 +452,26 @@ if ($resolvedPath === false || !str_starts_with($resolvedPath, $sourceBase)) {
 
 See the implementation in `ModuleJsonExportGenerator::resolveAdditionalDocs()` for a
 production example of this pattern.
+
+### Served-File Response Headers (Media)
+
+Every file `Application\Media\DocumentTrait` serves — through either `serveFromRequest()`
+(`media.php` → `Application_Media_Delivery`) or `sendFile()` — must get its response headers
+from `Application\Media\Delivery\MediaResponseHeaders::send()`, never a hand-written `header()`
+call at the call site.
+
+**Why:** `MediaResponseHeaders` is the single place both media documents and uploads get
+`X-Content-Type-Options: nosniff`, and a sandboxing `Content-Security-Policy` for a file
+extension in `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS` (currently `svg`/`svgz`) — closing
+the risk of a browser executing inline `<script>` content from a file opened directly (never
+reachable through `<img>` embedding). A second, independent `header()` call site would silently
+drift from this policy the next time it changes.
+
+**Rule:** A new file type that can carry active content a browser could execute when opened
+directly extends `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS`, rather than adding a second
+header-sending call site. The policy is keyed on the extension of the file actually sent (the
+thumbnail/original path), not the document's stored extension, since those can differ once a
+format's thumbnail is ever rendered to a different type than its source.
 
 ---
 

@@ -14,6 +14,7 @@ moduleMetaData:
     - API group (logical grouping of methods for documentation and API key permissions)
     - JSON envelope (standard response wrapper with state/code/data/message keys)
     - AppAPIConnector (HTTP client for consuming another framework application's API remotely)
+    - RequestBodyReader (reads the raw request body under a byte ceiling, converting over-ceiling, post_max_size-discarded and unreadable-stream failures into a RequestBodyException)
   relatedModules:
     - "api-parameters"
     - "api-cache"

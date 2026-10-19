@@ -14,13 +14,17 @@ use Application\API\ErrorResponse;
 use Application\API\ErrorResponsePayload;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\ParamTypeSelector;
+use Application\API\Parameters\Removed\RemovedParameter;
 use Application\API\Parameters\Reserved\APIMethodParameter;
 use Application\API\Parameters\Reserved\APIVersionParameter;
 use Application\API\Parameters\Validation\ParamValidationResults;
+use Application\API\Request\RequestBodyException;
+use Application\API\Request\RequestBodyReader;
 use Application\API\Response\JSONInfoSerializer;
 use Application\API\ResponsePayload;
 use Application\API\Traits\JSONRequestInterface;
 use Application\Application;
+use Application\ConfigSettings\AppConfig;
 use Application_CORS;
 use Application_Driver;
 use Application_ErrorLog_Log_Entry_Exception;
@@ -253,12 +257,60 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     }
 
     /**
+     * Rejects the request if it uses one or more request parameter names
+     * that the method has declared removed via {@see self::addRemovedParam()}.
+     *
+     * This runs before {@see self::validate()} so the stable
+     * {@see APIMethodInterface::ERROR_REMOVED_PARAMETER_USED} code is never
+     * collapsed into {@see APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS} —
+     * including when the removed parameter's replacement is itself a
+     * required parameter that was not submitted. Like {@see self::authorize()},
+     * this is a pure decision gate sent directly via {@see self::errorResponse()}:
+     * it either lets the request proceed unmodified or terminates it.
+     *
+     * @return void
+     * @throws APIResponseDataException When in return mode - see class description
+     */
+    private function rejectRemovedParams(): void
+    {
+        $removedParams = $this->manageParams()->getRemovedParams();
+
+        if($removedParams->isEmpty()) {
+            return;
+        }
+
+        $used = $removedParams->detectUsed(array_fill_keys($this->manageParams()->getValueSource()->getKeys(), true));
+
+        if(empty($used)) {
+            return;
+        }
+
+        $messages = array();
+        $data = array();
+
+        foreach($used as $param) {
+            $messages[] = $param->getErrorMessage();
+            $data[] = $param->toArray();
+        }
+
+        $this->errorResponse(APIMethodInterface::ERROR_REMOVED_PARAMETER_USED)
+            ->makeBadRequest()
+            ->setErrorMessage('%s', implode(' ', $messages))
+            ->addData(array(
+                APIMethodInterface::RESPONSE_KEY_REMOVED_PARAMETERS => $data,
+            ))
+            ->send();
+    }
+
+    /**
      * @return void
      * @throws APIResponseDataException When in return mode - see class description
      */
     private function _process(): void
     {
         $this->time = Microtime::createNow();
+
+        $this->rejectRemovedParams();
 
         $this->validate();
 
@@ -366,6 +418,21 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return $this->manageParams()->addParam($name, $label);
     }
 
+    /**
+     * Declares a request parameter name that this method used to accept,
+     * but has since removed: a request still sending it is rejected with
+     * {@see APIMethodInterface::ERROR_REMOVED_PARAMETER_USED} by
+     * {@see self::rejectRemovedParams()}, instead of the method having to
+     * hand-write a guard for it in {@see self::collectRequestData()}.
+     *
+     * @param string $name
+     * @return RemovedParameter
+     */
+    final protected function addRemovedParam(string $name) : RemovedParameter
+    {
+        return $this->manageParams()->addRemovedParam($name);
+    }
+
     private function initReservedParams() : void
     {
         $this->manageParams()
@@ -423,20 +490,139 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     /**
      * Utility method: Fetches the raw request body.
+     *
+     * A {@see self::setRequestBody()} preset bypasses {@see self::createRequestBodyReader()}
+     * entirely — it is already in memory, under test control, and was never
+     * subject to the ceiling a real request body is read under. Otherwise,
+     * the body is read through the factory's {@see RequestBodyReader}, which
+     * enforces the configured byte ceiling and detects a `post_max_size`
+     * discard; a {@see RequestBodyException} it throws is converted here into
+     * the matching client-facing error response.
+     *
      * @return string
      */
     final protected function getRequestBody() : string
     {
-        $raw = $this->requestBody ?? file_get_contents('php://input');
-
-        if($raw !== false)
-        {
-            return trim($raw);
+        if($this->requestBody !== null) {
+            return trim($this->requestBody);
         }
 
-        $this->errorResponse(JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT)
-            ->setErrorMessage('Failed to read request input data.')
+        $reader = $this->createRequestBodyReader();
+
+        try {
+            return trim($reader->read());
+        } catch (RequestBodyException $e) {
+            $this->handleRequestBodyException($e, $reader);
+        }
+    }
+
+    /**
+     * Converts a {@see RequestBodyException} raised while reading the
+     * request body into the matching client-facing error response.
+     *
+     * Each of the three rejection types gets its own branch, and each
+     * branch logs a diagnostic entry via {@see self::log()} before sending
+     * the error response, mirroring {@see self::authorize()}'s existing
+     * logging pattern. The log entry is diagnostic only — it carries the
+     * method name but no caller identity, since the body is read during
+     * {@see self::validate()}, before {@see self::authorize()} resolves an
+     * API key — and is only written when {@see self::isLoggingEnabled()}
+     * is true.
+     *
+     * - {@see RequestBodyException::ERROR_BODY_TOO_LARGE} maps to
+     *   {@see JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE} (182802)
+     *   and HTTP 413 ({@see ErrorResponse::makePayloadTooLarge()}), keeping
+     *   its existing message.
+     * - {@see RequestBodyException::ERROR_BODY_DISCARDED} maps to the same
+     *   182802/413, but with its own message naming the declared length
+     *   and `post_max_size` — the PHP setting that caused the discard.
+     * - {@see RequestBodyException::ERROR_BODY_READ_FAILED} maps to the
+     *   existing {@see JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT}
+     *   (182801), unchanged from the previous read-failure behaviour.
+     *
+     * @param RequestBodyException $e
+     * @param RequestBodyReader $reader
+     * @return never
+     */
+    private function handleRequestBodyException(RequestBodyException $e, RequestBodyReader $reader) : never
+    {
+        $declaredLength = $reader->getDeclaredLength() ?? 'unknown';
+
+        if($e->getCode() === RequestBodyException::ERROR_BODY_READ_FAILED) {
+            $this->log(
+                'Request body rejected: method [%s] read failed (declared length [%s], limit [%d] bytes).',
+                $this->getMethodName(),
+                $declaredLength,
+                $reader->getMaxBytes()
+            );
+
+            $this->errorResponse(JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT)
+                ->setErrorMessage('Failed to read request input data.')
+                ->send();
+        }
+
+        if($e->getCode() === RequestBodyException::ERROR_BODY_DISCARDED) {
+            $this->log(
+                'Request body rejected: method [%s] discarded by post_max_size (declared length [%s], limit [%d] bytes).',
+                $this->getMethodName(),
+                $declaredLength,
+                $reader->getMaxBytes()
+            );
+
+            $this->errorResponse(JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE)
+                ->makePayloadTooLarge()
+                ->setErrorMessage(
+                    'The request body ([%s] bytes declared) was discarded by the server because it exceeds the server upload limit (post_max_size).',
+                    $declaredLength
+                )
+                ->addData(array(
+                    JSONRequestInterface::RESPONSE_KEY_ERROR_MAX_REQUEST_BODY_SIZE => $reader->getMaxBytes(),
+                ))
+                ->send();
+        }
+
+        $this->log(
+            'Request body rejected: method [%s] too large (declared length [%s], limit [%d] bytes).',
+            $this->getMethodName(),
+            $declaredLength,
+            $reader->getMaxBytes()
+        );
+
+        $this->errorResponse(JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE)
+            ->makePayloadTooLarge()
+            ->setErrorMessage('The request body exceeds the maximum allowed size of [%d] bytes.', $reader->getMaxBytes())
+            ->addData(array(
+                JSONRequestInterface::RESPONSE_KEY_ERROR_MAX_REQUEST_BODY_SIZE => $reader->getMaxBytes(),
+            ))
             ->send();
+    }
+
+    /**
+     * Creates the reader {@see self::getRequestBody()} reads the raw request
+     * body through. Defaults to a reader over the real request
+     * (`php://input`, `$_SERVER['CONTENT_LENGTH']`) under the effective
+     * ceiling: the lower of the configured ceiling
+     * ({@see AppConfig::getAPIMaxRequestBodySize()}) and the server's
+     * `post_max_size` ({@see RequestBodyReader::resolveEffectiveCeiling()}) —
+     * so the ceiling reported to a client via `maxRequestBodySize` is one it
+     * can actually reach.
+     *
+     * Overridable so an in-process test can lower the effective ceiling to
+     * exercise {@see RequestBodyReader}'s `read()` path at a tiny size —
+     * the booted ceiling cannot be lowered from a test. A
+     * {@see self::setRequestBody()} preset bypasses this factory entirely;
+     * see {@see self::getRequestBody()}.
+     *
+     * @return RequestBodyReader
+     */
+    protected function createRequestBodyReader() : RequestBodyReader
+    {
+        return RequestBodyReader::fromGlobals(
+            RequestBodyReader::resolveEffectiveCeiling(
+                AppConfig::getAPIMaxRequestBodySize(),
+                ini_get('post_max_size')
+            )
+        );
     }
 
     private ?string $requestBody = null;

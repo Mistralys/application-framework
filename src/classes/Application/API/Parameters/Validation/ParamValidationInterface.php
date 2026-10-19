@@ -16,6 +16,8 @@ interface ParamValidationInterface
     public const int VALIDATION_WARNING_FLOAT_TO_INT = 183505;
     public const int VALIDATION_EMPTY_REQUIRED_PARAM = 183506;
     public const int VALIDATION_MAX_LENGTH_EXCEEDED = 183507;
+    public const int VALIDATION_INVALID_BASE64 = 183508;
+    public const int VALIDATION_FILE_SIZE_EXCEEDED = 183509;
 
     public function validate(int|float|bool|string|array|null $value, OperationResult $result, APIParameterInterface $param) : void;
 }

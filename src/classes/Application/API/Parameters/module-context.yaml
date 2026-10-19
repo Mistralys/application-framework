@@ -5,15 +5,18 @@
 moduleMetaData:
   id: "api-parameters"
   label: "API Parameters"
-  description: "Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle."
+  description: "Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, Base64FileParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), removed-parameter declarations (RemovedParameter, RemovedParamCollection) for rejecting requests that still send a parameter name the API method has stopped accepting, raw-value sources (ParamValueSourceInterface, RequestValueSource, JSONBodyValueSource) that abstract where a parameter's raw value comes from, and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle."
   keywords:
     - ParamTypeSelector (fluent builder returned by addParam for choosing the parameter type)
     - common type (reusable domain-specific parameter preset like AliasParameter or EmailParameter)
     - flavor (cross-cutting parameter behavior like header-sourced or always-required)
     - rule (cross-parameter constraint evaluated after individual validation; e.g. OrRule, RequiredIfOtherIsSetRule)
     - reserved parameter (framework-owned parameter name that application code cannot register)
+    - removed parameter (declared request parameter name an API method has stopped accepting; detected and rejected via RemovedParamCollection)
     - selectable value (fixed set of allowed values declared by a parameter for validation and documentation)
     - param handler (internal pipeline component that reads parameter values during method processing)
+    - ValueSource (ParamValueSourceInterface abstraction for a parameter's raw-value backing store; RequestValueSource for query/POST, JSONBodyValueSource for JSON request bodies)
+    - Base64FileParameter (file content as a base64-encoded string, with optional data URI prefix, decoded size checked against a configurable limit before decoding)
   relatedModules:
     - "api"
     - "api-openapi"
@@ -44,6 +47,7 @@ documents:
           - 'CommonTypes/'
           - 'Flavors/'
           - 'Handlers/'
+          - 'Removed/'
           - 'Reserved/'
           - 'Rules/'
           - 'Type/'
@@ -64,7 +68,7 @@ documents:
     outputPath: 'modules/api/parameters/architecture-types.md'
     sources:
       - type: file
-        description: "StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, ListParameterTrait"
+        description: "StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, Base64FileParameter, ListParameterTrait"
         sourcePaths:
           - ./Type
         filePattern: "*.php"
@@ -136,16 +140,36 @@ documents:
               keep_doc_comments: true
 
   -
-    description: 'API Parameters - Flavors, Handlers, Reserved, Value Lookup (Public API)'
+    description: 'API Parameters - Removed Parameters (Public API)'
+    outputPath: 'modules/api/parameters/architecture-removed.md'
+    sources:
+      - type: file
+        description: "RemovedParameter, RemovedParamCollection"
+        sourcePaths:
+          - ./Removed
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'API Parameters - Flavors, Handlers, Reserved, Value Lookup, Value Sources (Public API)'
     outputPath: 'modules/api/parameters/architecture-supporting.md'
     sources:
       - type: file
-        description: "APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, ParamHandlerInterface, BaseParamHandler, BaseRuleHandler, RuleHandlerInterface, APIHandlerInterface, BaseAPIHandler, ParamsHandlerContainerInterface, BaseParamsHandlerContainer, APIMethodParameter, APIVersionParameter, SelectableValueParamInterface/Trait, SelectableParamValue"
+        description: "APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, ParamHandlerInterface, BaseParamHandler, BaseRuleHandler, RuleHandlerInterface, APIHandlerInterface, BaseAPIHandler, ParamsHandlerContainerInterface, BaseParamsHandlerContainer, APIMethodParameter, APIVersionParameter, SelectableValueParamInterface/Trait, SelectableParamValue, ParamValueSourceInterface, RequestValueSource, JSONBodyValueSource"
         sourcePaths:
           - ./Flavors
           - ./Handlers
           - ./Reserved
           - ./ValueLookup
+          - ./ValueSource
         filePattern: "*.php"
         modifiers:
           - name: php-content-filter

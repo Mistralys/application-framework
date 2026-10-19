@@ -9,6 +9,7 @@ use Application\API\APIMethodInterface;
 use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\Traits\JSONRequestInterface;
 use Application\Application;
+use Connectors_ResponseCode;
 use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
 use ReflectionProperty;
 use TestDriver\API\TestAPIKeyMethod;
@@ -19,6 +20,22 @@ use TestDriver\API\TestUnexpectedThrowableAlwaysMethod;
 
 final class ErrorResponseTest extends APITestCase
 {
+    /**
+     * Covers {@see \Application\API\ErrorResponse::makeNotFound()}: it must
+     * set the HTTP status to 404, asserted directly through
+     * {@see \Application\API\ErrorResponse::getHttpStatusCode()} — not
+     * through a sent/returned payload.
+     */
+    public function test_makeNotFoundSetsHTTPStatus404() : void
+    {
+        $method = new TestErrorResponseMethod(APIManager::getInstance());
+
+        $response = $method->errorResponse(TestErrorResponseMethod::ERROR_CODE_ERROR_RESPONSE)
+            ->makeNotFound();
+
+        $this->assertSame(Connectors_ResponseCode::HTTP_NOT_FOUND, $response->getHttpStatusCode());
+    }
+
     public function test_errorDataIncludesValidationErrors() : void
     {
         $method = new TestAPIKeyMethod(APIManager::getInstance());

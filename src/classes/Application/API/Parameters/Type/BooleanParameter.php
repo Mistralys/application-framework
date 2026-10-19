@@ -38,7 +38,7 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
 
     protected function resolveValue(): ?bool
     {
-        $value = $this->getRequestParam()->get();
+        $value = $this->getRawRequestValue();
 
         if($value === null || $value === '') {
             return null;

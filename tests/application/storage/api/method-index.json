@@ -1,6 +1,18 @@
 {
     "schema_version": 2,
     "methods": {
+        "AddMediaDocument": {
+            "methodName": "AddMediaDocument",
+            "className": "Application\\Media\\API\\Methods\\AddMediaDocumentAPI",
+            "requiredRight": "CreateMedia",
+            "groupID": "media"
+        },
+        "DeleteMediaDocument": {
+            "methodName": "DeleteMediaDocument",
+            "className": "Application\\Media\\API\\Methods\\DeleteMediaDocumentAPI",
+            "requiredRight": "DeleteMedia",
+            "groupID": "media"
+        },
         "DescribeAdminAreas": {
             "methodName": "DescribeAdminAreas",
             "className": "Application\\Admin\\Index\\API\\Methods\\DescribeAdminAreasAPI",
@@ -31,11 +43,29 @@
             "requiredRight": null,
             "groupID": "LocalesAPI"
         },
+        "GetMediaDocument": {
+            "methodName": "GetMediaDocument",
+            "className": "Application\\Media\\API\\Methods\\GetMediaDocumentAPI",
+            "requiredRight": "ViewMedia",
+            "groupID": "media"
+        },
+        "GetMediaDocuments": {
+            "methodName": "GetMediaDocuments",
+            "className": "Application\\Media\\API\\Methods\\GetMediaDocumentsAPI",
+            "requiredRight": "ViewMedia",
+            "groupID": "media"
+        },
         "GetOpenAPISpec": {
             "methodName": "GetOpenAPISpec",
             "className": "Application\\API\\OpenAPI\\GetOpenAPISpec",
             "requiredRight": null,
             "groupID": "framework-system-methods"
+        },
+        "RequestBodyCeilingTest": {
+            "methodName": "RequestBodyCeilingTest",
+            "className": "TestDriver\\API\\RequestBodyCeilingTestMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
         },
         "TestAPIKey": {
             "methodName": "TestAPIKey",
@@ -109,9 +139,45 @@
             "requiredRight": null,
             "groupID": "testDriver"
         },
+        "TestJSONBodyParams": {
+            "methodName": "TestJSONBodyParams",
+            "className": "TestDriver\\API\\TestJSONBodyParamsMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
         "TestJSONRequestRedaction": {
             "methodName": "TestJSONRequestRedaction",
             "className": "TestDriver\\API\\TestJSONRequestRedactionMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestMediaDocument": {
+            "methodName": "TestMediaDocument",
+            "className": "TestDriver\\API\\TestMediaDocumentMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestMediaFileUpload": {
+            "methodName": "TestMediaFileUpload",
+            "className": "TestDriver\\API\\TestMediaFileUploadMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestMediaMetadata": {
+            "methodName": "TestMediaMetadata",
+            "className": "TestDriver\\API\\TestMediaMetadataMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestPaginated": {
+            "methodName": "TestPaginated",
+            "className": "TestDriver\\API\\TestPaginatedMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
+        "TestRemovedParam": {
+            "methodName": "TestRemovedParam",
+            "className": "TestDriver\\API\\TestRemovedParamMethod",
             "requiredRight": null,
             "groupID": "testDriver"
         },
@@ -144,6 +210,12 @@
             "className": "TestDriver\\API\\TestVersionedMethod",
             "requiredRight": null,
             "groupID": "testDriver"
+        },
+        "UpdateMediaDocument": {
+            "methodName": "UpdateMediaDocument",
+            "className": "Application\\Media\\API\\Methods\\UpdateMediaDocumentAPI",
+            "requiredRight": "EditMedia",
+            "groupID": "media"
         }
     }
 }

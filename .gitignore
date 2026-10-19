@@ -47,16 +47,21 @@ phpstan.result.txt
 phpstan-result.txt
 .phpunit.cache/test-results
 
-# Ledger Workflow Temp Files
-/docs/agents/**/work.md
+# AI Insights Ledger Temporary Files
 /docs/agents/**/work/
+/docs/agents/**/work.md
+/docs/agents/implementation-history/**/research-brief.md
 /docs/agents/**/audit.md
-/docs/agents/**/insights.jsonl
-/docs/agents/insights/
-/docs/agents/**/research-brief.md
 /docs/agents/**/design-review.md
-/docs/agents/**/work-packages-draft.md
-/docs/agents/**/pipeline-configuration.md
 /docs/agents/**/dependency-analysis.md
+/docs/agents/**/pipeline-configuration.md
+/docs/agents/**/work-packages-draft.md
+/docs/agents/**/.orchestrator-run.json
+/docs/agents/**/insights.jsonl
+/docs/agents/insights/*.jsonl
+
 
 .phpunit.cache/test-run-history
+
+# CTX Generator run logs
+/ctx-*.log

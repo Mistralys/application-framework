@@ -232,6 +232,16 @@ final class ParameterConverterTest extends TestCase
         $this->assertSame('Body description', $result['description']);
     }
 
+    public function test_convertParameter_jsonBodyParam_base64FileHasContentEncoding() : void
+    {
+        $converter = new ParameterConverter($this->createJsonMethodMock());
+        $result = $converter->convertParameter($this->createParamMock('fileContent', 'Base64 File'));
+
+        $this->assertIsArray($result);
+        $this->assertSame('string', $result['type']);
+        $this->assertSame('base64', $result['contentEncoding']);
+    }
+
     // -------------------------------------------------------------------------
     // Selectable values (enum)
     // -------------------------------------------------------------------------

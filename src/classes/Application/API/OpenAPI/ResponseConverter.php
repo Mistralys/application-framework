@@ -47,7 +47,7 @@ class ResponseConverter
     {
         $responses = array(
             self::HTTP_200 => $this->buildSuccessResponse($method),
-            self::HTTP_400 => $this->buildErrorResponse('Validation error or invalid parameters.'),
+            self::HTTP_400 => $this->buildErrorResponse($this->buildBadRequestDescription($method)),
             self::HTTP_500 => $this->buildErrorResponse('Internal server error.'),
         );
 
@@ -123,6 +123,38 @@ class ResponseConverter
             'content' => array(
                 $responseMime => $contentEntry,
             ),
+        );
+    }
+
+    /**
+     * Builds the 400 response description, appending a sentence naming the
+     * removed-parameter error code and the declared removed names for
+     * methods that have any — leaving the description byte-identical to the
+     * pre-existing string for methods without declarations.
+     *
+     * @param APIMethodInterface $method
+     * @return string
+     */
+    private function buildBadRequestDescription(APIMethodInterface $method) : string
+    {
+        $description = 'Validation error or invalid parameters.';
+
+        $removedParams = $method->manageParams()->getRemovedParams();
+
+        if($removedParams->isEmpty())
+        {
+            return $description;
+        }
+
+        $names = array_map(
+            static fn($param) => $param->getName(),
+            $removedParams->getAll()
+        );
+
+        return $description.sprintf(
+            ' Also returned when a removed request parameter is used (error %d): %s.',
+            APIMethodInterface::ERROR_REMOVED_PARAMETER_USED,
+            implode(', ', $names)
         );
     }
 

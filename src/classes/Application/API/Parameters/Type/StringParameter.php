@@ -141,9 +141,7 @@ class StringParameter extends BaseAPIParameter
 
     protected function resolveValue(): ?string
     {
-        $value = $this
-            ->getRequestParam()
-            ->get();
+        $value = $this->getRawRequestValue();
 
         if(is_numeric($value)) {
             $value = (string)$value;

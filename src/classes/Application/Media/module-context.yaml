@@ -1,0 +1,104 @@
+## ---------------------------------------------------------------
+## MEDIA — Media Document Management Module
+## ---------------------------------------------------------------
+
+moduleMetaData:
+  id: "media"
+  label: "Media"
+  description: "Media document management for the Application Framework: storing, serving and validating uploaded files (images, PDFs and other registered document types), with database metadata (name, type, extension, size, description, keywords) and physical file storage kept in sync. Covers the legacy Application_Media/Application_Media_Document domain classes, the namespaced Collection/Record layer, the Writer/ write path (MediaFileContent, MediaFileValidator, MediaDocumentWriter, MediaWriterException), and the five-method Media Document API (Add/Get/GetList/Update/Delete), built from composable interface+trait pieces following the API Lego Rule."
+  keywords:
+    - Application_Media (legacy singleton entry point — type registry, createFromFile()/createImageFromFile()/createFromUpload())
+    - Application_Media_Document (abstract per-document class — file paths, setSourceFile(), isContentValid())
+    - MediaCollection / MediaRecord (namespaced DBHelper collection/record for the media table)
+    - MediaFilterCriteria (type/extension filters, stable-paging tie-breaker ordering)
+    - isContentValid() (per-document-type, in-memory, filesystem-free content verification)
+    - MediaFileContent (immutable file name + binary content value object)
+    - MediaFileValidator (single in-memory validation channel, used by both dry and real writes)
+    - MediaDocumentWriter (the single namespaced write path — create/replaceFile/updateMetadata/delete, with disk/DB failure cleanup)
+    - MediaWriterException (6810xx client-facing validation codes, 6811xx internal error codes)
+    - AddMediaDocument / GetMediaDocument / GetMediaDocuments / UpdateMediaDocument / DeleteMediaDocument (the five media API methods)
+    - MediaDocumentAPIInterface / MediaMetadataAPIInterface / MediaFileUploadAPIInterface (the three media API Lego Rule pieces)
+    - MediaDocumentSerializer (stateless document-shape serializer, including the dry-run preview shape)
+    - dryRun (validate-only preview semantics for the three write methods — never mutates disk or the database)
+    - MediaResponseHeaders (response-header policy for served files — nosniff everywhere, sandboxing CSP for SVG/SVGZ — applied by DocumentTrait's shared serving seam)
+  relatedModules:
+    - "api"
+    - "api-parameters"
+    - "db-helper"
+
+documents:
+  -
+    description: 'Media - Overview'
+    outputPath: 'modules/media/overview.md'
+    sources:
+      - type: file
+        description: "Media Module Overview"
+        sourcePaths:
+          - README.md
+        filePattern: "README.md"
+
+  -
+    description: 'Media - Core Architecture (Domain & Writer)'
+    outputPath: 'modules/media/architecture-core.md'
+    sources:
+      - type: file
+        description: "Application_Media, Application_Media_Document, Document type classes, MediaCollection, MediaRecord, MediaFilterCriteria, MediaFileContent, MediaFileValidator, MediaDocumentWriter, MediaWriterException"
+        sourcePaths:
+          - ./
+          - ./Document
+          - ./Collection
+          - ./Writer
+        filePattern: "*.php"
+        excludePatterns:
+          - 'Admin/'
+          - 'API/'
+          - 'Configuration/'
+          - 'Events/'
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Media - API (Document Methods & Composable Pieces)'
+    outputPath: 'modules/media/architecture-api.md'
+    sources:
+      - type: file
+        description: "Media API README (methods, pieces, composition table, error codes)"
+        sourcePaths:
+          - API/README.md
+        filePattern: "README.md"
+      -
+        type: file
+        description: "MediaAPIGroup, MediaAPIResponseInterface, MediaDocumentSerializer, the three media pieces (document lookup, metadata, file upload), and the five method classes"
+        sourcePaths:
+          - ./API
+          - ./API/Methods
+          - ./API/Params
+        filePattern: "*.php"
+        modifiers:
+          - name: php-content-filter
+            options:
+              method_visibility: [ "public" ]
+              exclude_methods: [ "__construct" ]
+              property_visibility: [ "public" ]
+              constant_visibility: [ "public" ]
+              keep_method_bodies: false
+              keep_doc_comments: true
+
+  -
+    description: 'Media - File Structure'
+    outputPath: 'modules/media/file-structure.md'
+    sources:
+      - type: tree
+        description: 'Media Module File Tree'
+        sourcePaths: [ ./ ]
+        filePattern: '*.php'
+        renderFormat: ascii
+        showCharCount: false
+        maxDepth: 5

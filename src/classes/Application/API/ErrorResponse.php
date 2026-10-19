@@ -279,6 +279,30 @@ class ErrorResponse
         return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_FORBIDDEN);
     }
 
+    /**
+     * Sets the HTTP status code to 404 Not Found.
+     * Use when a record cannot be resolved from the submitted ID (e.g. an
+     * unknown `mediaID`), so an HTTP client can tell "no such record" apart
+     * from a generic bad request without parsing the error code. Its first
+     * caller is {@see \Application\Media\API\MediaDocumentParamsContainer::requireValue()}.
+     */
+    public function makeNotFound() : self
+    {
+        return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * Sets the HTTP status code to 413 Payload Too Large.
+     * Use when the request body exceeds the configured ceiling, or was
+     * silently discarded by PHP (`post_max_size`), so an HTTP client can
+     * tell "body too large" apart from a generic bad request. Its first
+     * caller is {@see \Application\API\BaseMethods\BaseAPIMethod::getRequestBody()}.
+     */
+    public function makePayloadTooLarge() : self
+    {
+        return $this->setHTTPStatusCode(Connectors_ResponseCode::HTTP_REQUEST_ENTITY_TOO_LARGE);
+    }
+
     public function send() : never
     {
         $this->addRequestData(array(

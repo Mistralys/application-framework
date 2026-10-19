@@ -12,6 +12,7 @@ use Application\API\Parameters\CommonTypes\EmailParameter;
 use Application\API\Parameters\CommonTypes\LabelParameter;
 use Application\API\Parameters\CommonTypes\MD5Parameter;
 use Application\API\Parameters\CommonTypes\NameOrTitleParameter;
+use Application\API\Parameters\Type\Base64FileParameter;
 use Application\API\Parameters\Type\BooleanParameter;
 use Application\API\Parameters\Type\ClearableStringParameter;
 use Application\API\Parameters\Type\IDListParameter;
@@ -192,6 +193,21 @@ class ParamTypeSelector
     public function nameOrTitle() : NameOrTitleParameter
     {
         $param = new NameOrTitleParameter($this->name, $this->label);
+
+        $this->manager->registerParam($param);
+
+        return $param;
+    }
+
+    /**
+     * File content as a base64-encoded string, either plain or with a
+     * `data:<mime>;base64,` URI prefix. Exposes the decoded binary content.
+     *
+     * @return Base64FileParameter
+     */
+    public function base64File() : Base64FileParameter
+    {
+        $param = new Base64FileParameter($this->name, $this->label);
 
         $this->manager->registerParam($param);
 

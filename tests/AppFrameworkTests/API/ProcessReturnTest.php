@@ -52,6 +52,26 @@ final class ProcessReturnTest extends APITestCase
     }
 
     /**
+     * {@see ErrorResponsePayload::getHttpStatusCode()} must expose the same
+     * HTTP status code that {@see \Application\API\BaseMethods\BaseAPIMethod::sendErrorResponse()}
+     * would have sent via the `HTTP/1.1` header on the live (non-return)
+     * path — {@see TestErrorResponseMethod} does not customize the status
+     * code, so the default {@see \Application\API\ErrorResponse}
+     * (400 Bad Request) applies.
+     */
+    public function test_errorPayloadExposesHttpStatusCode() : void
+    {
+        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestErrorResponseMethod::METHOD_NAME;
+
+        $method = new TestErrorResponseMethod(APIManager::getInstance());
+
+        $data = $method->processReturn();
+
+        $this->assertInstanceOf(ErrorResponsePayload::class, $data);
+        $this->assertSame(400, $data->getHttpStatusCode());
+    }
+
+    /**
      * A throwable raised before either data collector runs (via
      * {@see TestUnexpectedThrowableMethod::getActiveVersion()}) must still
      * produce a well-formed {@see ErrorResponsePayload} with the stable

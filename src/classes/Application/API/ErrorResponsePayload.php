@@ -16,10 +16,12 @@ class ErrorResponsePayload extends ArrayDataCollection implements ResponseInterf
     public const string KEY_ERROR_DATA = 'errorData';
 
     private APIMethodInterface $method;
+    private int $httpStatusCode;
 
     public function __construct(ErrorResponse $response)
     {
         $this->method = $response->getMethod();
+        $this->httpStatusCode = $response->getHttpStatusCode();
 
         parent::__construct(array(
             self::KEY_ERROR_CODE => $response->getErrorCode(),
@@ -31,6 +33,21 @@ class ErrorResponsePayload extends ArrayDataCollection implements ResponseInterf
     public function getMethod() : APIMethodInterface
     {
         return $this->method;
+    }
+
+    /**
+     * The HTTP status code this error response was (or would be) sent
+     * with, e.g. `400` for a bad request or `500` for an internal server
+     * error — see {@see ErrorResponse::getHttpStatusCode()}. Not part of
+     * the serialized array data: this is a testing/introspection accessor
+     * for code using {@see \Application\API\BaseMethods\BaseAPIMethod::processReturn()},
+     * where the actual HTTP header is never sent.
+     *
+     * @return int
+     */
+    public function getHttpStatusCode() : int
+    {
+        return $this->httpStatusCode;
     }
 
     public function getErrorCode() : int

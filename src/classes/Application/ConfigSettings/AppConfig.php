@@ -182,4 +182,66 @@ class AppConfig
     }
 
     // endregion
+
+    /**
+     * The maximum size, in bytes, of the decoded content a
+     * {@see \Application\API\Parameters\Type\Base64FileParameter} accepts
+     * by default, unless overridden with `setMaxSize()`.
+     *
+     * @return int
+     */
+    public static function getAPIMaxFileContentSize() : int
+    {
+        return (int)boot_constant(BaseConfigRegistry::API_MAX_FILE_CONTENT_SIZE);
+    }
+
+    /**
+     * The fixed overhead, in bytes, added on top of the base64-inflated
+     * file content limit when deriving the default API request body size
+     * ceiling (see {@see self::deriveAPIMaxRequestBodySize()}). Accounts for
+     * the rest of the JSON payload surrounding the encoded file content
+     * (metadata fields, JSON structure/escaping).
+     */
+    public const API_REQUEST_BODY_OVERHEAD = 1048576;
+
+    /**
+     * Derives the maximum accepted API request body size, in bytes.
+     *
+     * Pure helper (no boot-constant access), so it can be exercised directly
+     * in unit tests with arbitrary inputs — boot settings are fixed once the
+     * application has booted and cannot be lowered from a test.
+     *
+     * @param int $configured The explicitly configured ceiling
+     *        ({@see \Application\ConfigSettings\BaseConfigRegistry::API_MAX_REQUEST_BODY_SIZE}).
+     *        A value of `0` or less means "derive the default instead".
+     * @param int $fileContentLimit The configured file-content size limit
+     *        ({@see \Application\ConfigSettings\BaseConfigRegistry::API_MAX_FILE_CONTENT_SIZE}),
+     *        used as the basis for the derived default.
+     * @return int
+     */
+    public static function deriveAPIMaxRequestBodySize(int $configured, int $fileContentLimit) : int
+    {
+        if($configured > 0) {
+            return $configured;
+        }
+
+        return intdiv($fileContentLimit * 4, 3) + self::API_REQUEST_BODY_OVERHEAD;
+    }
+
+    /**
+     * The maximum size, in bytes, an incoming API request body may have.
+     * Uses the explicitly configured ceiling
+     * ({@see \Application\ConfigSettings\BaseConfigRegistry::API_MAX_REQUEST_BODY_SIZE})
+     * when set, otherwise derives a default from the configured file-content
+     * size limit (see {@see self::deriveAPIMaxRequestBodySize()}).
+     *
+     * @return int
+     */
+    public static function getAPIMaxRequestBodySize() : int
+    {
+        return self::deriveAPIMaxRequestBodySize(
+            (int)boot_constant(BaseConfigRegistry::API_MAX_REQUEST_BODY_SIZE),
+            self::getAPIMaxFileContentSize()
+        );
+    }
 }

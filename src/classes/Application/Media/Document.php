@@ -336,7 +336,24 @@ abstract class Application_Media_Document
      */
     abstract public static function getExtensions() : array;
 
-    abstract public function getMaxThumbnailSize() : int;
+    /**
+     * Checks whether the given file content is a genuine, well-formed file
+     * of this media type for the given extension — e.g. for the `Image`
+     * type, that `$content` is really an image whose detected format
+     * matches the extension's family (jpg/jpeg → JPEG, png → PNG,
+     * gif → GIF), or a well-formed SVG document.
+     *
+     * Must be implemented by the media type class, purely in memory: no
+     * filesystem access is allowed, so the check can run during a dry run
+     * and on content that has not been (and may never be) written to disk.
+     *
+     * @param string $content The raw file content to check.
+     * @param string $extension The file extension the content is claimed
+     *        to have (lowercase, without the leading dot), one of
+     *        {@see self::getExtensions()}.
+     * @return bool
+     */
+    abstract public static function isContentValid(string $content, string $extension) : bool;
 
     /**
      * Retrieves an identification string for the media document that
