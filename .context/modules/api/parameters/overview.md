@@ -54,6 +54,9 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
   `ParamValidationInterface`: `RequiredValidation`, `EnumValidation`,
   `RegexValidation`, `CallbackValidation`, `ValueExistsCallbackValidation`.
   Results are collected in `ParamValidationResults`.
+  `BaseAPIParameter::validateByCallback(callable $callback, ...$args)`
+  forwards its extra `$args` to `$callback` after the standard
+  `(value, result, param)` triplet.
 - **Rules:** Cross-parameter constraints implementing `RuleInterface`:
   `OrRule` (at least one of N params must be present), `RequiredIfOtherIsSetRule`
   (param required when another is set), `RequiredIfOtherValueEquals` (param
@@ -71,6 +74,43 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 - **Reserved Parameters:** `APIMethodParameter` and `APIVersionParameter`
   implement `ReservedParamInterface` and are automatically registered by
   `BaseAPIMethod`. Application code cannot register parameters with these names.
+- **Value Sources:** `ParamValueSourceInterface` (`hasKey()`, `getRawValue()`,
+  `getKeys()`) abstracts where a parameter's raw value comes from.
+  `RequestValueSource` wraps the request (query string/POST), with exactly the
+  semantics `BaseAPIParameter::getRequestParam()->get()` had before this seam
+  existed. `JSONBodyValueSource` resolves from a JSON method's parsed request
+  body first, falling back to a `RequestValueSource` for any key the body does
+  not carry — the body value wins when both are present, and `getKeys()`
+  returns the union of body and request keys. `APIParamManager::getValueSource()`
+  creates the right one lazily (`JSONBodyValueSource` for a
+  `JSONRequestInterface` method, `RequestValueSource` otherwise) and injects it
+  into every parameter at `registerParam()` time, except header and reserved
+  parameters. `BaseAPIParameter::setValueSource()`/`getRawRequestValue()` are
+  the injection point and the per-type read seam, used by all six core typed
+  parameters (string, integer, boolean, JSON, ID list, string list). The same
+  `getKeys()` also serves as `BaseAPIMethod::rejectRemovedParams()`'s
+  removed-parameter key source, so a declared removed name is detected in a
+  JSON body exactly as it would be in the query string.
+- **Base64 File Parameter:** `Base64FileParameter` (`ParamTypeSelector::base64File()`)
+  accepts file content as a base64-encoded string, either plain or with an
+  optional `data:<mime>;base64,` URI prefix, with whitespace stripped. The
+  decoded size is computed from the encoded length and checked against the
+  configured limit — `AppConfig::getAPIMaxFileContentSize()`
+  (`APP_API_MAX_FILE_CONTENT_SIZE`, 10 MiB by default) unless overridden with
+  `setMaxSize()` — before any decoding, so an oversized value is rejected
+  with `VALIDATION_FILE_SIZE_EXCEEDED` (183509) without ever being decoded.
+  A value that fails strict base64 decoding is rejected with
+  `VALIDATION_INVALID_BASE64` (183508). `getValue()`/`getDecodedContent()`
+  return the decoded binary content, and the parameter retains no base64
+  copy of it.
+- **Removed Parameters:** `RemovedParameter` and `RemovedParamCollection`
+  let an API method declare a request parameter name it has stopped
+  accepting, via `APIParamManager::addRemovedParam()`. A removed
+  declaration cannot share a name with an active parameter in either
+  registration order, and `RemovedParamCollection::detectUsed()` lets
+  the lifecycle reject requests that still send the old name with a
+  composed error message (`RemovedParameter::getErrorMessage()`),
+  instead of the application hand-writing a guard for it.
 
 ---
 
@@ -82,11 +122,13 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 | `CommonTypes/` | Reusable domain-specific parameter types (alias, date, email, etc.). |
 | `Flavors/` | Cross-cutting parameter behavior interfaces and traits (header params, required-only). |
 | `Handlers/` | Internal pipeline: param handlers, rule handlers, and handler containers. |
+| `Removed/` | Removed-parameter declarations (`RemovedParameter`, `RemovedParamCollection`) and request detection. |
 | `Reserved/` | Framework-reserved parameters (method name, API version). |
 | `Rules/` | Cross-parameter constraint rules and the rule type selector. |
-| `Type/` | Core typed parameter classes (string, clearable string, integer, boolean, JSON, ID list, string list). |
+| `Type/` | Core typed parameter classes (string, clearable string, integer, boolean, JSON, ID list, string list, base64 file). |
 | `Validation/` | Per-parameter validation types and result collection. |
 | `ValueLookup/` | Selectable value support for parameters with fixed value sets. |
+| `ValueSource/` | `ParamValueSourceInterface`, `RequestValueSource`, `JSONBodyValueSource` — the raw-value backing store injected into registered parameters. |
 
 ---
 

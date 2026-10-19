@@ -169,6 +169,9 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── RuleHandlerInterface.php
             │   │   ├── ParamTypeSelector.php
             │   │   ├── README.md
+            │   │   ├── Removed/
+            │   │   │   ├── RemovedParamCollection.php
+            │   │   │   ├── RemovedParameter.php
             │   │   ├── Reserved/
             │   │   │   ├── APIMethodParameter.php
             │   │   │   ├── APIVersionParameter.php
@@ -186,6 +189,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   │   └── RequiredIfOtherIsSetRule.php
             │   │   │   │   └── RequiredIfOtherValueEquals.php
             │   │   ├── Type/
+            │   │   │   ├── Base64FileParameter.php
             │   │   │   ├── BooleanParameter.php
             │   │   │   ├── ClearableStringParameter.php
             │   │   │   ├── IDListParameter.php
@@ -211,8 +215,15 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── SelectableParamValue.php
             │   │   │   ├── SelectableValueParamInterface.php
             │   │   │   ├── SelectableValueParamTrait.php
+            │   │   ├── ValueSource/
+            │   │   │   ├── JSONBodyValueSource.php
+            │   │   │   ├── ParamValueSourceInterface.php
+            │   │   │   ├── RequestValueSource.php
             │   │   ├── module-context.yaml
             │   ├── README.md
+            │   ├── Request/
+            │   │   ├── RequestBodyException.php
+            │   │   ├── RequestBodyReader.php
             │   ├── Response/
             │   │   ├── JSONInfoSerializer.php
             │   │   ├── ResponseInterface.php
@@ -228,6 +239,8 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── JSONResponseTrait.php
             │   │   ├── JSONResponseWithExampleInterface.php
             │   │   ├── JSONResponseWithExampleTrait.php
+            │   │   ├── PaginatedAPIInterface.php
+            │   │   ├── PaginatedAPITrait.php
             │   │   ├── RequestRequestInterface.php
             │   │   ├── RequestRequestTrait.php
             │   ├── User/
@@ -927,6 +940,27 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── public-api.md
             │   ├── module-context.yaml
             ├── Media/
+            │   ├── API/
+            │   │   ├── MediaAPIGroup.php
+            │   │   ├── MediaAPIResponseInterface.php
+            │   │   ├── MediaDocumentAPIInterface.php
+            │   │   ├── MediaDocumentAPITrait.php
+            │   │   ├── MediaDocumentParamsContainer.php
+            │   │   ├── MediaDocumentSerializer.php
+            │   │   ├── MediaFileUploadAPIInterface.php
+            │   │   ├── MediaFileUploadAPITrait.php
+            │   │   ├── MediaMetadataAPIInterface.php
+            │   │   ├── MediaMetadataAPITrait.php
+            │   │   ├── Methods/
+            │   │   │   ├── AddMediaDocumentAPI.php
+            │   │   │   ├── DeleteMediaDocumentAPI.php
+            │   │   │   ├── GetMediaDocumentAPI.php
+            │   │   │   ├── GetMediaDocumentsAPI.php
+            │   │   │   ├── UpdateMediaDocumentAPI.php
+            │   │   ├── Params/
+            │   │   │   ├── MediaIDHandler.php
+            │   │   │   ├── MediaIDParam.php
+            │   │   ├── README.md
             │   ├── Admin/
             │   │   ├── MediaAdminURLs.php
             │   │   ├── MediaRecordAdminURLs.php
@@ -959,6 +993,8 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── Image.php
             │   ├── Container.php
             │   ├── Delivery.php
+            │   ├── Delivery/
+            │   │   ├── MediaResponseHeaders.php
             │   ├── Document.php
             │   ├── Document/
             │   │   ├── Image.php
@@ -975,7 +1011,14 @@ _SOURCE: Tree of PHP Class Files_
             │   ├── MediaRightsTrait.php
             │   ├── MediaTagConnector.php
             │   ├── Processor.php
+            │   ├── README.md
             │   ├── ThumbnailRenderer.php
+            │   ├── Writer/
+            │   │   ├── MediaDocumentWriter.php
+            │   │   ├── MediaFileContent.php
+            │   │   ├── MediaFileValidator.php
+            │   │   ├── MediaWriterException.php
+            │   ├── module-context.yaml
             ├── Messagelogs/
             │   ├── Admin/
             │   │   ├── Screens/

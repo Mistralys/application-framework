@@ -120,17 +120,13 @@ when developing locally.
 ### Build
 
 The build step generates module documentation artefacts from `module-context.yaml`
-files discovered throughout the codebase, updates the CTX `generated-at.txt`
-timestamp, regenerates the API method index, and rebuilds offline event listeners.
+files discovered throughout the codebase, regenerates the API method index, and
+rebuilds offline event listeners. It then runs CTX generation and writes the
+`.context/generated-at.txt` timestamp afterwards — `composer build-docs` does the
+same for the documentation-only chain.
 
 ```bash
 composer build
-```
-
-For the full development build (includes module glossary and keyword index):
-
-```bash
-composer build-dev
 ```
 
 ### Setup
@@ -377,8 +373,12 @@ ctx server
 #### Generate all files
 
 ```bash
-ctx generate 
+composer build-docs
 ```
+
+This regenerates the module documentation and then the CTX files. Calling
+`ctx generate` directly skips the post-processing step (file statistics
+stripping and the `.context/generated-at.txt` timestamp).
 
 #### Server information
 
@@ -1341,6 +1341,77 @@ API method classes are stored in `API/Methods/` subdirectories within their modu
 - **Route request-derived content through `ErrorResponse::addRequestData()`, never `addData()`.** `addData()` is for method-owned domain data that must always reach the client (e.g. a validation payload) and is never redacted. `addRequestData()` feeds the channel `getErrorData()` rebuilds into a minimal method/API-version allowlist outside a development environment. Putting `$_REQUEST` content, a parsed request body, or any other request-sourced value through `addData()` bypasses this redaction entirely.
 - **An API key parameter must stay header-only.** Never add an API key parameter that falls back to `$_REQUEST` (via `RequiredOnlyParamTrait`'s default resolution or similar) — it must resolve exclusively through `APIHeaderParameterTrait`/`APIHeaderParameterInterface`, the way `APIKeyParam` does. A `$_REQUEST`-visible API key would defeat the redaction boundary above, since `$_REQUEST` is exactly the channel it redacts.
 
+### API Trait Composition Model (Lego Rule)
+
+Each interface+trait pair in the API system is a **self-contained lego piece**:
+the trait is the single canonical implementation of its interface's contract.
+Every consuming class must **explicitly declare all traits** it uses — no trait
+should silently compose other traits on behalf of its consumers.
+
+**Rules:**
+
+1. **Never copy a trait's method implementation into another trait or class.**
+   Use the canonical trait via `use` instead. A hand-copied implementation
+   diverges silently as the original evolves, creates a second source of truth,
+   and is often the root cause of phantom type errors.
+
+2. **Never add a `@phpstan-ignore` to work around a type mismatch caused by
+   re-implementing a trait method.** A suppression of this kind is a symptom
+   that the composition is wrong — fix the composition, not the static analyser.
+
+3. **Traits must not compose other API traits via `use`.**
+   Each consuming class must explicitly declare every trait it needs. This keeps
+   dependencies visible and avoids "magic" behaviour where a trait silently
+   provides methods the consumer did not ask for.
+
+4. **Every interface contract must be satisfied by an explicit `use` in the
+   consuming class.** If a method's interface extends several `*APIInterface`
+   contracts, the consuming class declares the matching `*APITrait` for each
+   one — including inherited interfaces, not only the one named directly in
+   its own `implements` clause.
+
+5. **One validation code range per interface.** A piece's validation codes
+   stay inside its own numeric sub-range; mixing another piece's codes onto
+   the same interface defeats the purpose of splitting the pieces apart.
+
+**Framework references:**
+
+- `Countries/API` (`AppCountryAPIInterface`/`AppCountryAPITrait` +
+  `AppCountryParamsContainer` + `Params/AppCountryIDHandler`) — the
+  record-resolution piece shape: a `manage{X}Params()` container composes
+  parameter handlers and resolves to a single domain record.
+- `API/Traits/DryRunAPIInterface`/`DryRunAPITrait` and
+  `API/Traits/PaginatedAPIInterface`/`PaginatedAPITrait` — generic,
+  module-independent pieces (dry-run mode, `limit`/`offset`/`totalCount`
+  paging) any method in any module can combine.
+- `Media/API` (`MediaDocumentAPIInterface`/`MediaMetadataAPIInterface`/
+  `MediaFileUploadAPIInterface` and their traits) — three domain pieces for
+  a single module, each with its own validation sub-range (`68120x`,
+  `68121x`) and no inheritance between the piece interfaces: every one
+  extends `APIMethodInterface` directly, so each piece stays usable on its
+  own.
+
+> **Reference:** Adapted from the HCP Editor's own copy of this rule
+> (`hcp-editor/docs/agents/project-manifest/constraints.md`, "API Trait
+> Composition Model (Lego Rule)"), codified there after `ComtypeAPITrait`
+> accumulated a hand-copied `manageTenantParams()` that masked a
+> pre-existing interface omission. The framework's own first composable
+> domain pieces (`Media/API`) are documented here under the same rule.
+
+### JSON Request Bodies
+
+- **Read a `JSONRequestInterface` method's parameters through the registered parameter system, never by hand from `getRequestData()`.** Every registered, non-header, non-reserved parameter already resolves from the parsed JSON body (falling back to the query string/`$_REQUEST` for a key the body does not carry) via the injected `ParamValueSourceInterface` (`JSONBodyValueSource`, `src/classes/Application/API/Parameters/ValueSource/`). Reading `getRequestData()` directly in a method body bypasses required-checks, type validation and the OpenAPI documentation the parameter system already provides for free.
+- **File content in a JSON body uses `base64File()` (`Application\API\Parameters\Type\Base64FileParameter`), never a plain string parameter with ad-hoc decoding.** It validates and decodes the content in one place, enforces a configurable size limit (`AppConfig::getAPIMaxFileContentSize()`) checked from the *encoded* length before any decoding, and retains only the decoded binary — never the oversized intermediate base64 copy.
+- **A `ClearableStringParameter` (absent/empty/value three-state parameter) must resolve through `BaseAPIParameter::hasRawRequestValue()`/`getRawRequestValueUnprocessed()`, never through `getRawRequestValue()`'s normal no-source fallback (`RequestParam::get()`) or a direct `$_REQUEST` read.** `RequestParam::get()` collapses an empty string to `null`, which is harmless for every other parameter type (they already treat `''` as equivalent to absent) but destroys exactly the absent/empty distinction a clearable parameter exists to preserve — including when the value arrives through a `JSONBodyValueSource`'s request fallback, not just the no-value-source case.
+
+### Request Body Reading
+
+- **Read a request body only through `BaseAPIMethod::getRequestBody()`, never by hand from `php://input` or `$_SERVER['CONTENT_LENGTH']`.** `getRequestBody()` enforces the *effective* ceiling — the lower of the configured `AppConfig::getAPIMaxRequestBodySize()` and the server's own `post_max_size`, resolved via `RequestBodyReader::resolveEffectiveCeiling()` — via `RequestBodyReader`, built by the overridable `createRequestBodyReader()` factory, which resolves the effective ceiling before constructing the reader. It converts a `RequestBodyException` into the matching client-facing error: an over-ceiling body to `ERROR_REQUEST_BODY_TOO_LARGE` (182802, HTTP 413 via `ErrorResponse::makePayloadTooLarge()`) with its existing message; a body `post_max_size` silently discarded gets the same code and HTTP status but its own distinct message naming the declared length and `post_max_size`; a read failure still yields the existing `ERROR_FAILED_TO_READ_INPUT` (182801). Every rejection is logged via `$this->log()` when logging is enabled — a diagnostic entry, never an audit trail, since no authenticated caller identity exists yet at body-read time. Reading the stream directly bypasses the ceiling entirely, reintroducing the unbounded-buffering risk `RequestBodyReader` exists to close.
+
+### Removed Parameters
+
+- **Declare a removed or renamed request parameter with `addRemovedParam()`, never a hand-written `getParam()` guard in `collectRequestData()`.** `BaseAPIMethod::addRemovedParam()` registers the name on the method's `RemovedParamCollection`; the framework's `rejectRemovedParams()` lifecycle step then rejects any request still sending it — including an explicit empty value — with the standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) before `validate()` runs. A hand-written guard in `collectRequestData()` instead collapses into the generic `183001`/`183003` codes and loses the structured `removedParameters` response data.
+
 ### Structural Consistency Across Sibling Methods
 
 When a module implements a family of related write API methods (for example,
@@ -1461,6 +1532,26 @@ if ($resolvedPath === false || !str_starts_with($resolvedPath, $sourceBase)) {
 See the implementation in `ModuleJsonExportGenerator::resolveAdditionalDocs()` for a
 production example of this pattern.
 
+### Served-File Response Headers (Media)
+
+Every file `Application\Media\DocumentTrait` serves — through either `serveFromRequest()`
+(`media.php` → `Application_Media_Delivery`) or `sendFile()` — must get its response headers
+from `Application\Media\Delivery\MediaResponseHeaders::send()`, never a hand-written `header()`
+call at the call site.
+
+**Why:** `MediaResponseHeaders` is the single place both media documents and uploads get
+`X-Content-Type-Options: nosniff`, and a sandboxing `Content-Security-Policy` for a file
+extension in `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS` (currently `svg`/`svgz`) — closing
+the risk of a browser executing inline `<script>` content from a file opened directly (never
+reachable through `<img>` embedding). A second, independent `header()` call site would silently
+drift from this policy the next time it changes.
+
+**Rule:** A new file type that can carry active content a browser could execute when opened
+directly extends `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS`, rather than adding a second
+header-sending call site. The policy is keyed on the extension of the file actually sent (the
+thumbnail/original path), not the document's stored extension, since those can differ once a
+format's thumbnail is ever rendered to a different type than its source.
+
 ---
 
 ## Known Gotchas
@@ -1552,7 +1643,7 @@ Instead, the project uses a **two-tier documentation strategy**:
 | Tier | Location | Scope | Maintained By |
 |---|---|---|---|
 | **Project Manifest** | `docs/agents/project-manifest/` | Cross-cutting concerns (conventions, testing, this guide) | Manifest Curator agent |
-| **CTX Module Docs** | `.context/` (root-level) and `.context/modules/` (per-module) | Per-module architecture, API surface, data flows, file structures | CTX Generator tool (`ctx generate`) |
+| **CTX Module Docs** | `.context/` (root-level) and `.context/modules/` (per-module) | Per-module architecture, API surface, data flows, file structures | CTX Generator, via `composer build-docs` / `composer build` |
 
 The manifest provides the "how we work" layer; the CTX docs provide the "what the code does" layer.
 
@@ -1565,10 +1656,17 @@ Generated by the [CTX Generator](https://github.com/context-hub/generator) from 
 ### Generation
 
 ```bash
-ctx generate
+composer build-docs   # module docs + CTX
+composer build        # full build (includes CTX)
 ```
 
-Run from the project root. Regenerates all `.context/` output files. The generation timestamp is recorded in `.context/generated-at.txt`.
+Run from the project root. Both chains run `ctx generate` and then `ComposerScripts::postCtxGenerate()`, which strips the file statistics sections from the generated Markdown and writes the generation timestamp to `.context/generated-at.txt`. Running `ctx generate` on its own skips that post-processing: the output keeps its statistics sections and the timestamp is not updated.
+
+### Freshness and drift
+
+`.context/` is a snapshot. It is regenerated and committed on `main` as part of the pre-release checks (see `AGENTS.md` §1 and §4, and `.github/skills/framework-release-check/SKILL.md`). On a feature branch it drifts from the source after every change, by design, and that drift is not a documentation defect.
+
+Agents that need current module docs on a feature branch run `composer build-docs` locally and do not commit the regenerated output. Documentation work on a feature branch updates the *sources* the CTX docs derive from — module `README.md` files and `module-context.yaml` — rather than the `.context/` files themselves.
 
 ### Root-Level Documents
 
@@ -1594,14 +1692,7 @@ Not every module has every file — the set depends on the module's complexity.
 
 ### Available Modules
 
-| Module | Path | Sub-Modules |
-|---|---|---|
-| **Application Sets** | `.context/modules/application-sets/` | — |
-| **Composer** | `.context/modules/composer/` | — |
-| **Connectors** | `.context/modules/connectors/` | — |
-| **DB Helper** | `.context/modules/db-helper/` | — |
-| **Event Handler** | `.context/modules/event-handler/` | — |
-| **UI** | `.context/modules/ui/` | `admin-urls/`, `bootstrap/`, `client-resources/`, `datagrid/`, `form/`, `markup-editor/`, `page/`, `properties-grid/`, `themes/`, `tree/` |
+The authoritative, always-current list of modules and their `.context/modules/` paths is generated by `composer build-docs` into [modules-overview.md](modules-overview.md). Consult that file rather than maintaining a copy here.
 
 ---
 
@@ -1611,7 +1702,7 @@ Not every module has every file — the set depends on the module's complexity.
 2. **Read `.context/` files** for module-specific knowledge: architecture, API surface, data flows.
 3. **Read the module's `overview.md` first** to understand purpose and key concepts before diving into architecture files.
 4. **Fall back to source code** only when the context docs do not cover the specific detail needed.
-5. **Check `.context/generated-at.txt`** to verify documentation freshness before relying on it.
+5. **Check `.context/generated-at.txt`** to verify documentation freshness before relying on it. It is written at the end of both composer chains (`composer build` and `composer build-docs`), so it reflects the last composer-driven CTX run — a raw `ctx generate` does not update it. On a feature branch, expect it to predate recent source changes (see [Freshness and drift](#freshness-and-drift)).
 
 ---
 
@@ -1631,13 +1722,14 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 
 ```md
 > **Auto-generated** — do not edit. Regenerated by `composer build-dev`.
-> Generated: 2026-09-30T07:31:05Z
+> Generated: 2026-10-19T14:36:01Z
 
 # Keyword Glossary
 
 | Keyword | Context | Module(s) |
 |---------|---------|-----------|
 | Action | an operation executed within a submode or mode | admin |
+| AddMediaDocument / GetMediaDocument / GetMediaDocuments / UpdateMediaDocument / DeleteMediaDocument | the five media API methods | media |
 | Admin URL | type-safe fluent builder for admin-screen navigation links using area/mode/submode routing | ui-admin-urls |
 | AdminScreenIndex | build-time index of all registered admin screens | admin |
 | AI tool | callable unit that returns structured data, discovered and executed by AI agents | ai |
@@ -1664,7 +1756,10 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | Application Sets | configuration controlling which administration areas are active per application instance | application-sets |
 | Application_Countries | singleton collection class extending DBHelper_BaseCollection; entry point for all country operations | countries |
 | Application_Countries_Country | record class extending DBHelper_BaseRecord; represents a single country with ISO code, label, and locale bridge | countries |
+| Application_Media | legacy singleton entry point — type registry, createFromFile()/createImageFromFile()/createFromUpload() | media |
+| Application_Media_Document | abstract per-document class — file paths, setSourceFile(), isContentValid() | media |
 | Area | top-level admin section grouping related modes | admin |
+| Base64FileParameter | file content as a base64-encoded string, with optional data URI prefix, decoded size checked against a configurable limit before decoding | api-parameters |
 | BigSelection widget | scrollable multi-item selector component built on Bootstrap v2 | ui-bootstrap |
 | ButtonBar | persistent country selection widget storing user choice in user settings | countries |
 | Cache strategy | pluggable caching policy per tool — fixed-duration or uncached | ai |
@@ -1689,6 +1784,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | DataGrid | tabular list component with column sorting, pagination, and bulk actions | ui-datagrid |
 | DataTable | raw SQL result wrapper for manual query output | db-helper |
 | dry-run | optional mode where a method validates and reports what it would do without side effects | api |
+| dryRun | validate-only preview semantics for the three write methods — never mutates disk or the database | media |
 | Eventable | mixin trait that adds instance-level event emitter capabilities to any class | event-handler |
 | FilterCriteria | query filter builder defining SQL WHERE conditions for a collection | db-helper |
 | FilterSettings | persisted user-facing filter values for a collection's list view | db-helper |
@@ -1715,6 +1811,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | invalidateMethod | APICacheManager static method; deletes the entire MethodName cache subfolder; no-op if folder does not exist | api-cache |
 | invariant country | special ISO code zz representing language-independent content; excluded by excludeInvariant filters | countries |
 | isCacheFileValid | APICacheStrategyInterface method; given a JSONFile returns whether the cached response is still valid | api-cache |
+| isContentValid() | per-document-type, in-memory, filesystem-free content verification | media |
 | ISO alias | alternative ISO code mapped to the canonical code during lookup; rejected during creation | countries |
 | JSON envelope | standard response wrapper with state/code/data/message keys | api |
 | KeywordGlossaryGenerator | build-time tool that produces module-glossary.md from module keywords | composer |
@@ -1724,6 +1821,15 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | ManualOnlyStrategy | built-in strategy with STRATEGY_ID=ManualOnly; cached file never expires automatically; invalidation is triggered only via invalidateCache or APICacheManager::clearAll | api-cache |
 | MarkdownRenderer | converts Markdown to styled HTML with CommonMark and custom tags | markdown-renderer |
 | MCP server | Model Context Protocol server exposing tools over stdio transport | ai |
+| MediaCollection / MediaRecord | namespaced DBHelper collection/record for the media table | media |
+| MediaDocumentAPIInterface / MediaMetadataAPIInterface / MediaFileUploadAPIInterface | the three media API Lego Rule pieces | media |
+| MediaDocumentSerializer | stateless document-shape serializer, including the dry-run preview shape | media |
+| MediaDocumentWriter | the single namespaced write path — create/replaceFile/updateMetadata/delete, with disk/DB failure cleanup | media |
+| MediaFileContent | immutable file name + binary content value object | media |
+| MediaFileValidator | single in-memory validation channel, used by both dry and real writes | media |
+| MediaFilterCriteria | type/extension filters, stable-paging tie-breaker ordering | media |
+| MediaResponseHeaders | response-header policy for served files — nosniff everywhere, sandboxing CSP for SVG/SVGZ — applied by DocumentTrait's shared serving seam | media |
+| MediaWriterException | 6810xx client-facing validation codes, 6811xx internal error codes | media |
 | method index | cached class map of all API methods; rebuilt by composer build | api |
 | method whitelist | per-key list of API methods the key is authorized to call; managed by APIKeyMethods | api-clients |
 | MethodConverter | converts a single APIMethodInterface to an OpenAPI path item; adds security requirement for APIKeyMethodInterface methods and x-validation-rules for methods with parameter rules | api-openapi |
@@ -1742,6 +1848,8 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | readFromCache | CacheableAPIMethodTrait: returns null on missing file, invalid strategy check, or corrupt JSON; on a corrupt file the file is automatically deleted before returning null; returns parsed array on a valid cache hit | api-cache |
 | Record | typed wrapper for a single database row with field accessors and lifecycle events | db-helper |
 | Redactor | alternative WYSIWYG rich-text editor available through the Markup Editor | ui-markup-editor |
+| removed parameter | declared request parameter name an API method has stopped accepting; detected and rejected via RemovedParamCollection | api-parameters |
+| RequestBodyReader | reads the raw request body under a byte ceiling, converting over-ceiling, post_max_size-discarded and unreadable-stream failures into a RequestBodyException | api |
 | RequestType | typed request parameter helper for fetching records from HTTP requests | admin |
 | reserved parameter | framework-owned parameter name that application code cannot register | api-parameters |
 | ResponseConverter | converts API method response metadata into OpenAPI 3.1 response objects for 200/400/500 status codes | api-openapi |
@@ -1759,6 +1867,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 | UI singleton | central access point for all framework rendering components | ui |
 | UserScopedCacheInterface | sub-interface of CacheableAPIMethodInterface for API methods returning user-specific data; declares getUserCacheIdentifier returning a unique non-empty string user identifier, and getUserScopedCacheKeyParameters returning method-specific parameters array; use with UserScopedCacheTrait; _userScope is a reserved key name | api-cache |
 | UserScopedCacheTrait | pair trait for UserScopedCacheInterface; uses CacheableAPIMethodTrait internally; overrides getCacheKeyParameters to inject _userScope key via array union operator; throws APICacheException ERROR_EMPTY_USER_CACHE_IDENTIFIER if getUserCacheIdentifier returns empty; annotated with @phpstan-require-implements UserScopedCacheInterface | api-cache |
+| ValueSource | ParamValueSourceInterface abstraction for a parameter's raw-value backing store; RequestValueSource for query/POST, JSONBodyValueSource for JSON request bodies | api-parameters |
 | Wizard | multi-step screen flow with step validation and invalidation handling | admin |
 | WizardConfigurator | session orchestrator and URL builder for the Wizard Preselection API | admin |
 | WizardPreselection | typed key/value container for pre-populating wizard step fields before redirect | admin |
@@ -1771,9 +1880,9 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 ```md
 # Modules Overview
 
-> Auto-generated on 2026-09-30 09:31:05. Do not edit manually.
+> Auto-generated on 2026-10-19 16:36:01. Do not edit manually.
 
-Total: 26 modules across 1 package.
+Total: 27 modules across 1 package.
 
 ## mistralys/application_framework
 
@@ -1785,7 +1894,7 @@ Total: 26 modules across 1 package.
 | `api-cache` | API Cache | File-based response caching for API methods. Provides a two-tier interface/trait composition pattern: (1) CacheableAPIMethodInterface + CacheableAPIMethodTrait for stateless, non-user-scoped methods; (2) UserScopedCacheInterface + UserScopedCacheTrait for user-specific methods that require per-user cache isolation — the trait automatically injects _userScope into the cache key using the array union operator so a user identifier can never be silently omitted or overwritten. Covers the full caching pipeline: strategy abstraction (APICacheStrategyInterface, FixedDurationStrategy, ManualOnlyStrategy with STRATEGY_ID PascalCase constants), file system management (APICacheManager: storage layout, method-level invalidation with path-traversal guard via APICacheException, cache size reporting), deterministic cache key generation via MD5 hash of method name + version + json_encode of sorted key parameters, read/write/invalidate operations (CacheableAPIMethodTrait: readFromCache returns null on miss, expired entry, or corrupt file — corrupt files are automatically deleted; writeToCache auto-creates parent dirs via JSONFile::putData; invalidateCache delegates to APICacheManager::invalidateMethod), error handling (APICacheException with ERROR_EMPTY_USER_CACHE_IDENTIFIER, ERROR_INVALID_METHOD_NAME, ERROR_CACHE_FILE_CORRUPT constants), and CacheControl admin UI integration (APIResponseCacheLocation). | `src/classes/Application/API/Cache/` | `.context/modules/api-cache/` | api-openapi, api, api-parameters |
 | `api-clients` | API Clients | Manages API client registrations and their API keys using the Collection/Record pattern. An API client represents an external application authorized to consume the API, with multiple API keys each having their own activation status and method permissions. Provides bearer token authentication for API methods via APIKeyMethodInterface/APIKeyMethodTrait, the complete admin UI for client and key management (APIClientsArea with list/create/view modes and key sub-modes), and type-safe URL builders for all admin screens. | `src/classes/Application/API/Clients/` | `.context/modules/api/clients/` | api, api-openapi, db-helper, ui |
 | `api-openapi` | API OpenAPI | End-to-end support for generating OpenAPI 3.1 specifications from the framework API system and serving them over HTTP. Covers parameter type mapping (TypeMapper), reusable component schemas and security schemes for the standard API response envelopes (OpenAPISchema), Apache .htaccess generation for RESTful URL rewriting (HtaccessGenerator), conversion of framework API parameters to OpenAPI parameter objects and request body schema properties (ParameterConverter), conversion of API method response metadata to OpenAPI response objects for 200/400/500 status codes (ResponseConverter), full spec assembly with error resilience and authentication/validation documentation (OpenAPIGenerator, MethodConverter), HTTP serving of the pre-generated spec as raw JSON (GetOpenAPISpec), and application-level convenience entry points (APIManager::generateOpenAPISpec, APIManager::generateHtaccess). The composer build pipeline calls both generation steps automatically via ComposerScripts. | `src/classes/Application/API/OpenAPI/` | `.context/modules/openapi/` | api, api-cache, api-clients, api-parameters |
-| `api-parameters` | API Parameters | Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle. | `src/classes/Application/API/Parameters/` | `.context/modules/api/parameters/` | api, api-openapi, api-cache, countries-api |
+| `api-parameters` | API Parameters | Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, Base64FileParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), removed-parameter declarations (RemovedParameter, RemovedParamCollection) for rejecting requests that still send a parameter name the API method has stopped accepting, raw-value sources (ParamValueSourceInterface, RequestValueSource, JSONBodyValueSource) that abstract where a parameter's raw value comes from, and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle. | `src/classes/Application/API/Parameters/` | `.context/modules/api/parameters/` | api, api-openapi, api-cache, countries-api |
 | `application-sets` | Application Sets | Configuration-level system to control which administration areas are enabled per application instance, supporting multiple feature configurations. | `src/classes/Application/AppSets/` | `.context/modules/application-sets/` | db-helper, admin |
 | `composer` | Application Composer | Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase, generate the OpenAPI 3.1 specification JSON, generate the API .htaccess for RESTful URL rewriting, and rebuild application custom icon methods from JSON definitions. Includes a shared BuildMessages registry for build-time notices. All steps are orchestrated by ComposerScripts::build(). | `src/classes/Application/Composer/` | `.context/modules/composer/` | event-handler |
 | `connectors` | Connectors | Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods. | `src/classes/Connectors/` | `.context/modules/connectors/` | api |
@@ -1794,6 +1903,7 @@ Total: 26 modules across 1 package.
 | `db-helper` | DBHelper | Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations. | `src/classes/DBHelper/` | `.context/modules/db-helper/` | event-handler, ui, ui-datagrid, application-sets, api-clients, countries |
 | `event-handler` | Event Handling | Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners. | `src/classes/Application/EventHandler/` | `.context/modules/event-handler/` | ui, ui-form, db-helper, composer, admin, ai, api, countries |
 | `markdown-renderer` | Markdown Renderer | Converts Markdown text to styled HTML using CommonMark with GFM extensions, extended with custom tags for media library images and API documentation links. | `src/classes/Application/MarkdownRenderer/` | `.context/modules/markdown-renderer/` | ui |
+| `media` | Media | Media document management for the Application Framework: storing, serving and validating uploaded files (images, PDFs and other registered document types), with database metadata (name, type, extension, size, description, keywords) and physical file storage kept in sync. Covers the legacy Application_Media/Application_Media_Document domain classes, the namespaced Collection/Record layer, the Writer/ write path (MediaFileContent, MediaFileValidator, MediaDocumentWriter, MediaWriterException), and the five-method Media Document API (Add/Get/GetList/Update/Delete), built from composable interface+trait pieces following the API Lego Rule. | `src/classes/Application/Media/` | `.context/modules/media/` | api, api-parameters, db-helper |
 | `ui` | User Interface | Central rendering layer of the framework: the UI singleton, Bootstrap component abstractions, page composition, client-side resource management, and the PHP-based theming engine. | `src/classes/UI/` | `.context/modules/ui/` | event-handler, db-helper, ui-datagrid, ui-tree, ui-markup-editor, ui-page, ui-form, ui-admin-urls, ui-bootstrap, ui-client-resources, ui-properties-grid, ui-themes, admin, api-clients, countries, markdown-renderer |
 | `ui-admin-urls` | UI Admin URLs | Type-safe fluent URL builder for constructing admin-screen navigation links using the framework's area/mode/submode/action routing scheme. | `src/classes/UI/AdminURLs/` | `.context/modules/ui/admin-urls/` | ui, ui-tree |
 | `ui-bootstrap` | UI Bootstrap Components | PHP abstractions for Bootstrap v2 UI components — dropdowns, tabs, button groups, popovers, and the BigSelection widget — each exposing a fluent builder API. | `src/classes/UI/Bootstrap/` | `.context/modules/ui/bootstrap/` | ui |
@@ -1823,6 +1933,7 @@ Total: 26 modules across 1 package.
 - **db-helper** → event-handler, ui, ui-datagrid, application-sets, api-clients, countries
 - **event-handler** → ui, ui-form, db-helper, composer, admin, ai, api, countries
 - **markdown-renderer** → ui
+- **media** → api, api-parameters, db-helper
 - **ui** → event-handler, db-helper, ui-datagrid, ui-tree, ui-markup-editor, ui-page, ui-form, ui-admin-urls, ui-bootstrap, ui-client-resources, ui-properties-grid, ui-themes, admin, api-clients, countries, markdown-renderer
 - **ui-admin-urls** → ui, ui-tree
 - **ui-bootstrap** → ui
@@ -2246,9 +2357,20 @@ Tests in this group:
 | `AppFrameworkTests\Connectors\RequestTest` | `test_adapterSockets`, `test_adapterCURL` |
 | `AppFrameworkTests\API\UnexpectedThrowableLiveHTTPTest` | All — proves a pre-collector throwable dispatched via the real `process()` path (not `processReturn()`) never escapes as an HTML page or HTTP 200. |
 | `AppFrameworkTests\API\ErrorPayloadRedactionLiveHTTPTest` | All — proves the `ErrorResponse` redaction shape over real HTTP dispatch matches the in-process `ErrorResponseTest` coverage. Cannot itself exercise the production ("not devel") redaction branch, since this test suite's own environment is permanently "dev" — see `ErrorResponseTest::withDevelEnvironment()` for that branch. |
+| `AppFrameworkTests\API\RemovedParamLiveHTTPTest` | All — proves a request still sending a declared removed parameter is rejected with the stable `ERROR_REMOVED_PARAMETER_USED` (183009) error over the real `process()` path, never HTTP 200 or an HTML page. |
+| `AppFrameworkTests\API\JSONBodyParamsLiveHTTPTest` | All — proves JSON-body parameter resolution (`JSONBodyValueSource`) works over real HTTP dispatch: body values resolve correctly, and a key absent from the body falls back to the query string. `test_unparseableBodyIsRejectedOverHTTP` proves the `process()`-path unparseable-body gap closed by the request-body ceiling work (HTTP 400, code 182801, dev-mode echo). `test_oversizedBodyIsRejectedOverHTTP` proves the request-body ceiling (`RequestBodyReader`) is enforced over `process()` dispatch (HTTP 413, code 182802) and that `maxRequestBodySize` reports the effective (server-aware) ceiling — **self-diagnosing**: if the webserver's `post_max_size` is below `AppConfig::getAPIMaxRequestBodySize()` and `display_errors` is on, PHP emits its own request-startup warning (`'POST Content-Length of'`) before the application boots; the test detects that exact signature and calls `markTestSkipped()` with a message naming `post_max_size`, `display_errors`, and this section, rather than failing on an under-provisioned environment. Remedy: raise the webserver's `post_max_size` to at least `AppConfig::getAPIMaxRequestBodySize()` bytes (or disable `display_errors`) to exercise the assertion instead of skipping it. |
+| `AppFrameworkTests\Media\Delivery\MediaDeliveryHeadersLiveHTTPTest` | All — proves `Application\Media\Delivery\MediaResponseHeaders` is applied over real HTTP dispatch to `tests/application/media.php`: an SVG document is served inline with `nosniff` and the sandboxing CSP, a PNG document gets `nosniff` only. Creates and removes its own committed media record and file, since it must be visible to the separate PHP process serving `media.php`. Skips with a stated reason unless `TESTS_SESSION_TYPE === 'NoAuth'`. |
 
 Do not remove the `#[Group('live-http')]` attribute or the `phpunit.xml` exclusion — without it,
 the CI pipeline and local runs without a web server will fail with network errors.
+
+---
+
+## Reusable test patterns
+
+- **Overridable protected factory pattern:** to let a test inject a collaborator a production class builds internally (e.g. `RequestBodyReader`), give the production class a `protected` factory method (`BaseAPIMethod::createRequestBodyReader()`), then in a `TestDriver` fixture subclass override it to return an injected test double when one has been set via a `setXxx()` method, falling back to `parent::createXxx()` otherwise; add a thin `exposeXxx()` public accessor when a test needs to inspect the real (non-overridden) default's state. See `TestDriver\API\RequestBodyCeilingTestMethod` (`createRequestBodyReader()` / `setTestReader()` / `exposeCreateRequestBodyReader()`), used by `RequestBodyCeilingTest`.
+- **Suppressed-warning assertion pattern (`error_reporting() & $errno`):** to assert that a call site never surfaces a PHP warning — even one normally raised by a native function (e.g. `ini_parse_quantity()` on malformed input) — install a `set_error_handler()` that checks `(error_reporting() & $errno) === 0` before recording the error; a true result means the warning was suppressed exactly as the `@` operator would mirror it (suppression sets `error_reporting()` to 0 for the call's duration but still invokes a custom handler), distinguishing a genuinely suppressed warning from one that would otherwise have surfaced. See `RequestBodyReaderTest::test_unreadableStreamThrowsReadFailed()` and its resolver-test uses.
+- **`// region: AC-NN` grouping convention:** group test methods under a `// region: AC-NN — <short description>` comment naming the acceptance criterion (or criteria) they verify, one region per AC or tightly related AC cluster, so a reviewer can map test methods back to the WP's acceptance criteria without cross-referencing the ledger. See `RequestBodyCeilingTest.php` (`// region: AC-04`, `AC-05`, `AC-06`) and `JSONBodyParamResolutionTest.php` (`// region: AC-01`, `AC-02`, `AC-05`).
 
 ---
 
@@ -2816,7 +2938,7 @@ Create one when a code area:
 - [ ] If the module has an Admin UI layer, add a separate UI architecture document.
 - [ ] If the module has API methods, add a separate API methods document.
 - [ ] Ensure the `id` is unique and follows the lowercase-hyphenated convention.
-- [ ] Run `ctx generate` and verify the output in `.context/`.
+- [ ] Run `composer build-docs` and verify the output in `.context/`.
 
 ---
 
@@ -2837,7 +2959,7 @@ Create one when a code area:
 
 ### Validation
 
-After any changes, run `ctx generate` and verify:
+After any changes, run `composer build-docs` and verify:
 
 1. The output files are created in `.context/modules/{id}/`.
 2. The architecture documents contain only public signatures (no method bodies).

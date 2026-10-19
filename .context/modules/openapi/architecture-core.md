@@ -287,6 +287,7 @@ namespace Application\API\OpenAPI;
 use Application\API\APIMethodInterface as APIMethodInterface;
 use Application\API\Clients\API\APIKeyMethodInterface as APIKeyMethodInterface;
 use Application\API\Groups\APIGroupInterface as APIGroupInterface;
+use Application\API\Parameters\Removed\RemovedParameter as RemovedParameter;
 use Application\API\Parameters\Rules\RuleInterface as RuleInterface;
 use Application\API\Parameters\Rules\Type\OrRule as OrRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherIsSetRule as RequiredIfOtherIsSetRule;
@@ -722,7 +723,9 @@ namespace Application\API\OpenAPI;
  * Maps framework parameter type labels to OpenAPI 3.1 type/format pairs.
  *
  * The mapping covers all types available in {@see \Application\API\Parameters\ParamTypeSelector}.
- * For unknown type labels, the mapper falls back to `string` type.
+ * For unknown type labels, the mapper falls back to `string` type. The
+ * `Base64 File` type maps to `string` with the `contentEncoding: base64`
+ * JSON Schema key, since OpenAPI 3.1 has no dedicated binary string type.
  *
  * @package API
  * @subpackage OpenAPI
@@ -742,6 +745,7 @@ class TypeMapper
 	public const TYPE_LABEL_LABEL = 'Label';
 	public const TYPE_LABEL_MD5 = 'MD5';
 	public const TYPE_LABEL_NAME_OR_TITLE = 'Name or Title';
+	public const TYPE_LABEL_BASE64_FILE = 'Base64 File';
 
 	/**
 	 * Maps a framework parameter type label to an OpenAPI 3.1 type/format pair.

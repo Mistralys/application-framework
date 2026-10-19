@@ -1,6 +1,6 @@
 # API Parameters - Parameter Types (Public API)
-_SOURCE: StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, ListParameterTrait_
-# StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, ListParameterTrait
+_SOURCE: StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, Base64FileParameter, ListParameterTrait_
+# StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, Base64FileParameter, ListParameterTrait
 ```
 // Structure of documents
 └── src/
@@ -9,6 +9,7 @@ _SOURCE: StringParameter, ClearableStringParameter, IntegerParameter, BooleanPar
             └── API/
                 └── Parameters/
                     └── Type/
+                        └── Base64FileParameter.php
                         └── BooleanParameter.php
                         └── ClearableStringParameter.php
                         └── IDListParameter.php
@@ -19,6 +20,111 @@ _SOURCE: StringParameter, ClearableStringParameter, IntegerParameter, BooleanPar
                         └── StringParam/
                             ├── StringValidations.php
                         └── StringParameter.php
+
+```
+###  Path: `/src/classes/Application/API/Parameters/Type/Base64FileParameter.php`
+
+```php
+namespace Application\API\Parameters\Type;
+
+use Application\API\Parameters\BaseAPIParameter as BaseAPIParameter;
+use Application\API\Parameters\Validation\ParamValidationInterface as ParamValidationInterface;
+use Application\ConfigSettings\AppConfig as AppConfig;
+
+/**
+ * Base64 File API Parameter.
+ *
+ * Accepts file content as a base64-encoded string, either plain or with an
+ * optional `data:<mime>;base64,` URI prefix, and exposes the decoded binary
+ * content.
+ *
+ * - An absent or empty value resolves to `null`.
+ * - A non-string value is a {@see ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE} warning.
+ * - All whitespace and an optional `data:<mime>;base64,` prefix are stripped before decoding.
+ * - The decoded size is computed from the encoded length and checked against
+ *   the configured limit **before** decoding; an oversized value is rejected
+ *   with {@see ParamValidationInterface::VALIDATION_FILE_SIZE_EXCEEDED} without
+ *   ever being decoded.
+ * - A value that fails strict base64 decoding is rejected with
+ *   {@see ParamValidationInterface::VALIDATION_INVALID_BASE64}.
+ *
+ * The parameter retains exactly one copy of the value: the decoded binary
+ * content. The normalised base64 string used for the size check and decoding
+ * is a local variable in {@see self::resolveValue()} that goes out of scope
+ * once resolution completes, and is never decoded at all when the size check
+ * fails.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+class Base64FileParameter extends BaseAPIParameter
+{
+	public function getTypeLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function getDefaultValue(): ?string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Overrides the maximum accepted decoded content size, in bytes.
+	 * The default is {@see AppConfig::getAPIMaxFileContentSize()}.
+	 *
+	 * @param int $bytes
+	 * @return $this
+	 */
+	public function setMaxSize(int $bytes): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * The maximum accepted decoded content size, in bytes: the value set
+	 * via {@see self::setMaxSize()}, or {@see AppConfig::getAPIMaxFileContentSize()}
+	 * otherwise.
+	 *
+	 * @return int
+	 */
+	public function getMaxSize(): int
+	{
+		/* ... */
+	}
+
+
+	public function getValue(): ?string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Typed alias of {@see self::getValue()}: the decoded binary content.
+	 * @return string|NULL
+	 */
+	public function getDecodedContent(): ?string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * The byte size of the decoded content, or `0` when the parameter
+	 * has no value.
+	 *
+	 * @return int
+	 */
+	public function getDecodedSize(): int
+	{
+		/* ... */
+	}
+}
+
 
 ```
 ###  Path: `/src/classes/Application/API/Parameters/Type/BooleanParameter.php`
@@ -114,10 +220,14 @@ use Application\API\Parameters\Validation\ParamValidationInterface as ParamValid
  * - **Present but empty** (empty string or whitespace-only after trim) → `''`
  * - **Present with value** (non-empty after trim) → trimmed string
  *
- * Reading `$_REQUEST` directly via `array_key_exists()` is intentional:
- * the framework's `RequestParam::get()` discards empty strings before the
- * parameter type ever sees them, which would collapse the absent/empty
- * distinction that this type relies on.
+ * Resolving through {@see BaseAPIParameter::hasRawRequestValue()} /
+ * {@see BaseAPIParameter::getRawRequestValueUnprocessed()} rather than
+ * `RequestParam::get()` is intentional: the framework's `RequestParam::get()`
+ * discards empty strings before the parameter type ever sees them, which
+ * would collapse the absent/empty distinction this type relies on. Resolving
+ * through the value-source seam (rather than reading `$_REQUEST` directly) is
+ * what lets this type's absent/empty/value distinction also work for a
+ * JSON-body method's body-delivered parameters, not just the query string.
  *
  * @package API
  * @subpackage Parameters

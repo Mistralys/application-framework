@@ -59,7 +59,7 @@ will not be matched and will return 404 on the clean-path URL.
 `Application\API\OpenAPI\TypeMapper`
 
 Maps parameter type labels (as returned by parameter classes in `Application\API\Parameters`)
-to their corresponding OpenAPI 3.1 `type`/`format` pair. The mapping covers all 13 framework
+to their corresponding OpenAPI 3.1 `type`/`format` pair. The mapping covers all framework
 parameter types. Unknown labels fall back to `{ "type": "string" }`.
 
 ### Supported type labels
@@ -81,10 +81,15 @@ All labels are exposed as class constants (`TypeMapper::TYPE_LABEL_*`).
 | `TYPE_LABEL_ALPHANUMERIC` | `Alphanumeric` | `string` | — |
 | `TYPE_LABEL_LABEL` | `Label` | `string` | — |
 | `TYPE_LABEL_NAME_OR_TITLE` | `Name or Title` | `string` | — |
+| `TYPE_LABEL_BASE64_FILE` | `Base64 File` | `string` | `contentEncoding: base64`** |
 
 \* `md5` uses the vendor extension key `x-format` (not the standard `format`), since `md5`
    is not a registered JSON Schema 2020-12 format. Strict validators allow `x-` prefixed
    vendor extension keys.
+
+\*\* `Base64 File` uses the standard JSON Schema `contentEncoding` key (not `format`), since
+    OpenAPI 3.1 has no dedicated binary string type. See
+    `Application\API\Parameters\Type\Base64FileParameter`.
 
 ### Usage
 
@@ -256,6 +261,13 @@ body schema properties (for JSON request methods).
 The converter is method-aware: the routing of each parameter to the correct OpenAPI location
 (query, header, or request body) depends on the method the converter is initialised with.
 
+> **Resolution note:** Since the `api-parameters` submodule's `JSONBodyValueSource`, a
+> non-header, non-reserved parameter on a `JSONRequestInterface` method actually
+> resolves its value from the parsed JSON request body at runtime (falling back to the
+> request for a key the body does not carry). This converter's request-body routing
+> above has always matched that resolution — it now also matches how the value is
+> read, not just where it is documented.
+
 ### Parameter location rules
 
 | Location | Condition |
@@ -346,7 +358,7 @@ across multiple methods.
 | `200` | `$ref: APIEnvelope` | All methods |
 | `200` + example | `$ref: APIEnvelope` + `example` | Method implements `JSONResponseInterface` and `getExampleJSONResponse()` returns non-empty data |
 | `200` + key descriptions | `allOf[$ref: APIEnvelope]` + `properties.data` | Method implements `JSONResponseInterface` and provides `getResponseKeyDescriptions()` |
-| `400` | `$ref: APIErrorEnvelope` | Always present |
+| `400` | `$ref: APIErrorEnvelope` | Always present. `description` additionally names the removed-parameter error code and names for methods with declared removed parameters (see [MethodConverter — Removed parameters](#removed-parameters-x-removed-parameters)) |
 | `403` | `$ref: APIErrorEnvelope` | Method implements `APIKeyMethodInterface` |
 | `500` | `$ref: APIErrorEnvelope` | Always present |
 
@@ -470,6 +482,7 @@ because `ParameterConverter` intentionally excludes reserved parameters (`method
 | `requestBody` | `ParameterConverter` result | Present only for `JSONRequestInterface` methods with body params |
 | `security` | `[{apiKey: []}]` | Present only for `APIKeyMethodInterface` methods |
 | `x-validation-rules` | `manageParams()->getRules()` | Present only when the method has parameter validation rules |
+| `x-removed-parameters` | `manageParams()->getRemovedParams()` | Present only when the method has declared removed parameters |
 | `x-changelog` | `getChangelog()` | Omitted when empty |
 | `x-related-methods` | `getRelatedMethodNames()` | Omitted when empty |
 | `externalDocs` | `getDocumentationURL()` | Omitted when URL is empty |
@@ -541,6 +554,43 @@ receive an `x-validation-rules` extension field. Each entry in the array describ
 | `OrRule` | `At least one of the following parameters must be provided: {param1}, {param2}, ...` |
 | `RequiredIfOtherIsSetRule` | `If "{otherParam}" is set, "{targetParam}" is required.` |
 | Other rules | `getTypeDescription()` when non-empty, otherwise `getLabel()` |
+
+### Removed parameters (`x-removed-parameters`)
+
+Methods with declared removed parameters (`manageParams()->getRemovedParams()`, see
+`Application\API\BaseMethods\BaseAPIMethod::addRemovedParam()`) receive an
+`x-removed-parameters` extension field, omitted entirely when the method has no
+declarations. Each entry always includes `name` and the stable `errorCode`
+(`Application\API\APIMethodInterface::ERROR_REMOVED_PARAMETER_USED`, `183009`) that a
+request still sending the parameter is rejected with; the optional `replacement`,
+`removedSince`, and `note` keys are present only when declared:
+
+```json
+{
+  "x-removed-parameters": [
+    {
+      "name": "oldName",
+      "replacement": "newName",
+      "removedSince": "2.0",
+      "note": "See the migration guide.",
+      "errorCode": 183009
+    },
+    {
+      "name": "legacyFlag",
+      "errorCode": 183009
+    }
+  ]
+}
+```
+
+A removed name is never added to `parameters` or `requestBody` (it is no longer
+accepted, so a request can no longer send it as a documented input) and is never
+marked `deprecated` — `deprecated` means "still accepted, avoid", which does not
+apply to a parameter the framework now rejects outright. The 400 response's
+`description` (see [ResponseConverter](#responseconverter)) also names the error
+code and the removed names for methods with declarations, while staying
+byte-identical to the plain `"Validation error or invalid parameters."` string for
+methods without any.
 
 ### Public API
 
@@ -1016,8 +1066,12 @@ part of the standard `composer build` pipeline, immediately after the API method
 ```
 clearCaches → indexOfflineEvents → indexAdminScreens → apiMethodIndex
   → generateOpenAPISpec → generateHtaccess → generateCSSClassesJS
-  → updateContextGenerateDate → updateModuleDocumentation
+  → rebuildIcons → updateModuleDocumentation
 ```
+
+The `.context/generated-at.txt` timestamp is not written by `build()`. It is written by
+`postCtxGenerate()`, which runs after `ctx generate` in both the `composer build` and
+`composer build-docs` script chains.
 
 ### Standalone invocation
 

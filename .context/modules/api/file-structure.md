@@ -140,6 +140,9 @@ _SOURCE: API Module File Structure_
                     │   ├── ParamsHandlerContainerInterface.php
                     │   ├── RuleHandlerInterface.php
                     ├── ParamTypeSelector.php
+                    ├── Removed/
+                    │   ├── RemovedParamCollection.php
+                    │   ├── RemovedParameter.php
                     ├── Reserved/
                     │   ├── APIMethodParameter.php
                     │   ├── APIVersionParameter.php
@@ -157,6 +160,7 @@ _SOURCE: API Module File Structure_
                     │   │   └── RequiredIfOtherIsSetRule.php
                     │   │   └── RequiredIfOtherValueEquals.php
                     ├── Type/
+                    │   ├── Base64FileParameter.php
                     │   ├── BooleanParameter.php
                     │   ├── ClearableStringParameter.php
                     │   ├── IDListParameter.php
@@ -179,9 +183,16 @@ _SOURCE: API Module File Structure_
                     │   │   └── RequiredValidation.php
                     │   │   └── ValueExistsCallbackValidation.php
                     ├── ValueLookup/
-                    │   └── SelectableParamValue.php
-                    │   └── SelectableValueParamInterface.php
-                    │   └── SelectableValueParamTrait.php
+                    │   ├── SelectableParamValue.php
+                    │   ├── SelectableValueParamInterface.php
+                    │   ├── SelectableValueParamTrait.php
+                    ├── ValueSource/
+                    │   └── JSONBodyValueSource.php
+                    │   └── ParamValueSourceInterface.php
+                    │   └── RequestValueSource.php
+                └── Request/
+                    ├── RequestBodyException.php
+                    ├── RequestBodyReader.php
                 └── Response/
                     ├── JSONInfoSerializer.php
                     ├── ResponseInterface.php
@@ -197,6 +208,8 @@ _SOURCE: API Module File Structure_
                     ├── JSONResponseTrait.php
                     ├── JSONResponseWithExampleInterface.php
                     ├── JSONResponseWithExampleTrait.php
+                    ├── PaginatedAPIInterface.php
+                    ├── PaginatedAPITrait.php
                     ├── RequestRequestInterface.php
                     ├── RequestRequestTrait.php
                 └── User/

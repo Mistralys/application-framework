@@ -20,6 +20,8 @@ _SOURCE: BaseAPIMethod lifecycle, JSONResponseInterface/Trait, JSONRequestInterf
                     └── JSONResponseTrait.php
                     └── JSONResponseWithExampleInterface.php
                     └── JSONResponseWithExampleTrait.php
+                    └── PaginatedAPIInterface.php
+                    └── PaginatedAPITrait.php
                     └── RequestRequestInterface.php
                     └── RequestRequestTrait.php
 
@@ -42,13 +44,17 @@ use Application\API\ErrorResponse as ErrorResponse;
 use Application\API\ErrorResponsePayload as ErrorResponsePayload;
 use Application\API\Parameters\APIParamManager as APIParamManager;
 use Application\API\Parameters\ParamTypeSelector as ParamTypeSelector;
+use Application\API\Parameters\Removed\RemovedParameter as RemovedParameter;
 use Application\API\Parameters\Reserved\APIMethodParameter as APIMethodParameter;
 use Application\API\Parameters\Reserved\APIVersionParameter as APIVersionParameter;
 use Application\API\Parameters\Validation\ParamValidationResults as ParamValidationResults;
+use Application\API\Request\RequestBodyException as RequestBodyException;
+use Application\API\Request\RequestBodyReader as RequestBodyReader;
 use Application\API\Response\JSONInfoSerializer as JSONInfoSerializer;
 use Application\API\ResponsePayload as ResponsePayload;
 use Application\API\Traits\JSONRequestInterface as JSONRequestInterface;
 use Application\Application as Application;
+use Application\ConfigSettings\AppConfig as AppConfig;
 use Application_CORS as Application_CORS;
 use Application_Driver as Application_Driver;
 use Application_ErrorLog_Log_Entry_Exception as Application_ErrorLog_Log_Entry_Exception;
@@ -140,6 +146,22 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
 
 	/**
+	 * Declares a request parameter name that this method used to accept,
+	 * but has since removed: a request still sending it is rejected with
+	 * {@see APIMethodInterface::ERROR_REMOVED_PARAMETER_USED} by
+	 * {@see self::rejectRemovedParams()}, instead of the method having to
+	 * hand-write a guard for it in {@see self::collectRequestData()}.
+	 *
+	 * @param string $name
+	 * @return RemovedParameter
+	 */
+	final protected function addRemovedParam(string $name): RemovedParameter
+	{
+		/* ... */
+	}
+
+
+	/**
 	 * Retrieves the value of a request parameter. Alias for the
 	 * request's getParam Method.
 	 *
@@ -183,9 +205,42 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
 	/**
 	 * Utility method: Fetches the raw request body.
+	 *
+	 * A {@see self::setRequestBody()} preset bypasses {@see self::createRequestBodyReader()}
+	 * entirely — it is already in memory, under test control, and was never
+	 * subject to the ceiling a real request body is read under. Otherwise,
+	 * the body is read through the factory's {@see RequestBodyReader}, which
+	 * enforces the configured byte ceiling and detects a `post_max_size`
+	 * discard; a {@see RequestBodyException} it throws is converted here into
+	 * the matching client-facing error response.
+	 *
 	 * @return string
 	 */
 	final protected function getRequestBody(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Creates the reader {@see self::getRequestBody()} reads the raw request
+	 * body through. Defaults to a reader over the real request
+	 * (`php://input`, `$_SERVER['CONTENT_LENGTH']`) under the effective
+	 * ceiling: the lower of the configured ceiling
+	 * ({@see AppConfig::getAPIMaxRequestBodySize()}) and the server's
+	 * `post_max_size` ({@see RequestBodyReader::resolveEffectiveCeiling()}) —
+	 * so the ceiling reported to a client via `maxRequestBodySize` is one it
+	 * can actually reach.
+	 *
+	 * Overridable so an in-process test can lower the effective ceiling to
+	 * exercise {@see RequestBodyReader}'s `read()` path at a tiny size —
+	 * the booted ceiling cannot be lowered from a test. A
+	 * {@see self::setRequestBody()} preset bypasses this factory entirely;
+	 * see {@see self::getRequestBody()}.
+	 *
+	 * @return RequestBodyReader
+	 */
+	protected function createRequestBodyReader(): RequestBodyReader
 	{
 		/* ... */
 	}
@@ -443,7 +498,39 @@ use Application\API\APIMethodInterface as APIMethodInterface;
 interface JSONRequestInterface extends APIMethodInterface
 {
 	public const ERROR_FAILED_TO_READ_INPUT = 182801;
+
+	/**
+	 * Thrown by {@see \Application\API\BaseMethods\BaseAPIMethod::getRequestBody()}
+	 * when the request body exceeds the configured ceiling
+	 * ({@see \Application\ConfigSettings\AppConfig::getAPIMaxRequestBodySize()}),
+	 * whether the body was rejected outright (declared or actual length over
+	 * the ceiling) or PHP silently discarded it (`post_max_size`). Both
+	 * causes map to this single code — and HTTP 413 via
+	 * {@see \Application\API\ErrorResponse::makePayloadTooLarge()} — since the
+	 * client action is identical in either case: send a smaller body.
+	 */
+	public const ERROR_REQUEST_BODY_TOO_LARGE = 182802;
+
+	/**
+	 * Error-data key carrying the configured byte ceiling
+	 * ({@see \Application\ConfigSettings\AppConfig::getAPIMaxRequestBodySize()})
+	 * alongside {@see self::ERROR_REQUEST_BODY_TOO_LARGE}, so a client can
+	 * tell by how much its request needs to shrink without parsing the
+	 * error message.
+	 */
+	public const RESPONSE_KEY_ERROR_MAX_REQUEST_BODY_SIZE = 'maxRequestBodySize';
 	public const RESPONSE_KEY_ERROR_JSON_REQUEST_DATA = 'JSONRequest';
+
+	/**
+	 * Sub-key of {@see self::RESPONSE_KEY_ERROR_JSON_REQUEST_DATA} used when
+	 * the request body could not be parsed (invalid JSON, or a top level
+	 * that is not an object): carries the echo form of the raw body
+	 * recorded once by {@see JSONRequestTrait::getRequestData()} — the raw
+	 * body verbatim when it is at most `ECHO_MAX_STRING_LENGTH` characters,
+	 * otherwise `[N characters truncated]`. Never re-reads or re-parses
+	 * the body, so it cannot re-enter the parse on a repeated error response.
+	 */
+	public const RESPONSE_KEY_ERROR_UNPARSEABLE_BODY = 'unparseableBody';
 
 	public function getRequestData(): ArrayDataCollection;
 }
@@ -456,6 +543,7 @@ interface JSONRequestInterface extends APIMethodInterface
 namespace Application\API\Traits;
 
 use AppUtils\ArrayDataCollection as ArrayDataCollection;
+use AppUtils\ConvertHelper\JSONConverter as JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException as JSONConverterException;
 use Application\Application as Application;
 
@@ -472,6 +560,21 @@ trait JSONRequestTrait
 	}
 
 
+	/**
+	 * Lazily parses and returns the JSON request body, once per request.
+	 *
+	 * Re-entry guard (audit cycle 3, Major 1): {@see \Application\API\BaseMethods\BaseAPIMethod::errorResponse()}
+	 * calls {@see self::collectRequestErrorData()} while building every
+	 * error response, which in a development environment reads this very
+	 * method. Without a guard, an unparseable body would recurse without
+	 * end: the first call assigns a provisional empty collection to
+	 * `$requestData` *before* reading or parsing the body, so a reentrant
+	 * call triggered while building the resulting error response sees that
+	 * already non-null collection and returns it immediately, instead of
+	 * reading or parsing the body a second time.
+	 *
+	 * @return ArrayDataCollection
+	 */
 	public function getRequestData(): ArrayDataCollection
 	{
 		/* ... */
@@ -498,6 +601,11 @@ trait JSONRequestTrait
 	 * parameter (see the contract comment on
 	 * {@see \Application\API\Clients\API\Params\APIKeyParam::getHeaderValue()})
 	 * and is never part of the request body this trait parses.
+	 *
+	 * Every string value echoed here, at any nesting depth, is truncated to
+	 * {@see self::ECHO_MAX_STRING_LENGTH} characters — covering registered
+	 * and unregistered keys alike (e.g. a mistyped `fileContent`), with no
+	 * parameter lookup involved.
 	 *
 	 * @return array<string,mixed>
 	 */
@@ -628,6 +736,186 @@ trait JSONResponseWithExampleTrait
 
 
 	public function getExampleJSONResponse(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Traits/PaginatedAPIInterface.php`
+
+```php
+namespace Application\API\Traits;
+
+use AppUtils\ArrayDataCollection as ArrayDataCollection;
+use Application\API\APIMethodInterface as APIMethodInterface;
+use Application\API\Utilities\KeyDescription as KeyDescription;
+use Application_FilterCriteria as Application_FilterCriteria;
+
+/**
+ * Interface for API methods that support paging a list result through a
+ * `limit`/`offset` pair, with a `totalCount` response key independent of
+ * paging — matching the existing HCP Editor response shape of
+ * `GetMailingsAPI`/`GetComtypesAPI`, so those can adopt this piece later
+ * without a breaking response change.
+ *
+ * An out-of-range `limit` or a negative `offset` is **rejected**, never
+ * silently clamped — a client must never mistake a truncated page for a
+ * complete one.
+ *
+ * > **Note:** This rejection only covers numeric out-of-range values. A
+ * > non-numeric `limit`/`offset` (e.g. `abc`) is not rejected with
+ * > {@see self::VALIDATION_INVALID_LIMIT}/{@see self::VALIDATION_INVALID_OFFSET} —
+ * > it is treated as an `IntegerParameter` warning and silently falls back
+ * > to the configured default via null-coalescing, inherited from
+ * > `IntegerParameter`'s own non-numeric-value handling.
+ *
+ * Use the trait {@see PaginatedAPITrait} to implement this interface.
+ *
+ * @package API
+ * @subpackage Traits
+ * @see PaginatedAPITrait
+ */
+interface PaginatedAPIInterface extends APIMethodInterface
+{
+	public const PARAM_LIMIT = 'limit';
+	public const PARAM_OFFSET = 'offset';
+	public const KEY_LIMIT = 'limit';
+	public const KEY_OFFSET = 'offset';
+	public const KEY_TOTAL_COUNT = 'totalCount';
+
+	/**
+	 * The submitted `limit` is outside the `1`-`$maxLimit` range configured
+	 * via {@see self::registerPaginationParams()}.
+	 */
+	public const VALIDATION_INVALID_LIMIT = 183701;
+
+	/** The submitted `offset` is negative. */
+	public const VALIDATION_INVALID_OFFSET = 183702;
+
+	/**
+	 * Registers the `limit` and `offset` parameters.
+	 *
+	 * @param int $defaultLimit Used for {@see self::getPaginationLimit()} when `limit` is not submitted.
+	 * @param int $maxLimit The maximum value accepted for `limit`; a higher value is rejected with {@see self::VALIDATION_INVALID_LIMIT}.
+	 * @return $this
+	 */
+	public function registerPaginationParams(int $defaultLimit, int $maxLimit): self;
+
+
+	/**
+	 * The resolved `limit` value: the submitted value, or the configured
+	 * default when `limit` was not submitted.
+	 *
+	 * @return int
+	 */
+	public function getPaginationLimit(): int;
+
+
+	/**
+	 * The resolved `offset` value: the submitted value, or `0` when
+	 * `offset` was not submitted.
+	 *
+	 * @return int
+	 */
+	public function getPaginationOffset(): int;
+
+
+	/**
+	 * Applies the resolved `limit`/`offset` to the given filter criteria,
+	 * through its public {@see Application_FilterCriteria::setLimit()} signature only.
+	 *
+	 * @param Application_FilterCriteria $criteria
+	 * @return $this
+	 */
+	public function applyPagination(Application_FilterCriteria $criteria): self;
+
+
+	/**
+	 * Writes the `limit`, `offset` and `totalCount` response keys.
+	 *
+	 * @param ArrayDataCollection $response
+	 * @param int $totalCount Total number of matching results, independent of paging.
+	 * @return $this
+	 */
+	public function addPaginationResponseKeys(ArrayDataCollection $response, int $totalCount): self;
+
+
+	/**
+	 * Key descriptions for the `limit`, `offset` and `totalCount` response
+	 * keys, for a consuming method to merge into its own
+	 * `getResponseKeyDescriptions()`.
+	 *
+	 * @return KeyDescription[]
+	 */
+	public function getPaginationKeyDescriptions(): array;
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Traits/PaginatedAPITrait.php`
+
+```php
+namespace Application\API\Traits;
+
+use AppUtils\ArrayDataCollection as ArrayDataCollection;
+use AppUtils\OperationResult as OperationResult;
+use Application\API\Parameters\APIParameterInterface as APIParameterInterface;
+use Application\API\Parameters\Type\IntegerParameter as IntegerParameter;
+use Application\API\Utilities\KeyDescription as KeyDescription;
+use Application_FilterCriteria as Application_FilterCriteria;
+
+/**
+ * Trait used to implement the interface {@see PaginatedAPIInterface}.
+ *
+ * @package API
+ * @subpackage Traits
+ * @see PaginatedAPIInterface
+ */
+trait PaginatedAPITrait
+{
+	public function registerPaginationParams(int $defaultLimit, int $maxLimit): self
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * NOTE: {@see IntegerParameter::resolveValue()} resolves an absent
+	 * parameter to `null` regardless of any configured default value (its
+	 * own `setDefaultValue()` only ever takes effect through
+	 * {@see \Application\API\Parameters\BaseAPIParameter::getDefaultValue()},
+	 * which is reached only when validation itself fails — never merely
+	 * because the value is absent). The configured default is therefore
+	 * applied here explicitly, rather than relying on the parameter's own
+	 * default-value plumbing.
+	 */
+	public function getPaginationLimit(): int
+	{
+		/* ... */
+	}
+
+
+	public function getPaginationOffset(): int
+	{
+		/* ... */
+	}
+
+
+	public function applyPagination(Application_FilterCriteria $criteria): self
+	{
+		/* ... */
+	}
+
+
+	public function addPaginationResponseKeys(ArrayDataCollection $response, int $totalCount): self
+	{
+		/* ... */
+	}
+
+
+	public function getPaginationKeyDescriptions(): array
 	{
 		/* ... */
 	}

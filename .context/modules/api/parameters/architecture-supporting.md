@@ -1,6 +1,6 @@
-# API Parameters - Flavors, Handlers, Reserved, Value Lookup (Public API)
-_SOURCE: APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, ParamHandlerInterface, BaseParamHandler, BaseRuleHandler, RuleHandlerInterface, APIHandlerInterface, BaseAPIHandler, ParamsHandlerContainerInterface, BaseParamsHandlerContainer, APIMethodParameter, APIVersionParameter, SelectableValueParamInterface/Trait, SelectableParamValue_
-# APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, ParamHandlerInterface, BaseParamHandler, BaseRuleHandler, RuleHandlerInterface, APIHandlerInterface, BaseAPIHandler, ParamsHandlerContainerInterface, BaseParamsHandlerContainer, APIMethodParameter, APIVersionParameter, SelectableValueParamInterface/Trait, SelectableParamValue
+# API Parameters - Flavors, Handlers, Reserved, Value Lookup, Value Sources (Public API)
+_SOURCE: APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, ParamHandlerInterface, BaseParamHandler, BaseRuleHandler, RuleHandlerInterface, APIHandlerInterface, BaseAPIHandler, ParamsHandlerContainerInterface, BaseParamsHandlerContainer, APIMethodParameter, APIVersionParameter, SelectableValueParamInterface/Trait, SelectableParamValue, ParamValueSourceInterface, RequestValueSource, JSONBodyValueSource_
+# APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, ParamHandlerInterface, BaseParamHandler, BaseRuleHandler, RuleHandlerInterface, APIHandlerInterface, BaseAPIHandler, ParamsHandlerContainerInterface, BaseParamsHandlerContainer, APIMethodParameter, APIVersionParameter, SelectableValueParamInterface/Trait, SelectableParamValue, ParamValueSourceInterface, RequestValueSource, JSONBodyValueSource
 ```
 // Structure of documents
 └── src/
@@ -26,9 +26,13 @@ _SOURCE: APIHeaderParameterInterface/Trait, RequiredOnlyParamInterface/Trait, Pa
                         ├── APIMethodParameter.php
                         ├── APIVersionParameter.php
                     └── ValueLookup/
-                        └── SelectableParamValue.php
-                        └── SelectableValueParamInterface.php
-                        └── SelectableValueParamTrait.php
+                        ├── SelectableParamValue.php
+                        ├── SelectableValueParamInterface.php
+                        ├── SelectableValueParamTrait.php
+                    └── ValueSource/
+                        └── JSONBodyValueSource.php
+                        └── ParamValueSourceInterface.php
+                        └── RequestValueSource.php
 
 ```
 ###  Path: `/src/classes/Application/API/Parameters/Flavors/APIHeaderParameterInterface.php`
@@ -764,6 +768,153 @@ trait SelectableValueParamTrait
 	 * @return SelectableParamValue[]
 	 */
 	abstract protected function _getValues(): array;
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Parameters/ValueSource/JSONBodyValueSource.php`
+
+```php
+namespace Application\API\Parameters\ValueSource;
+
+use Application\API\Traits\JSONRequestInterface as JSONRequestInterface;
+
+/**
+ * {@see ParamValueSourceInterface} implementation for methods implementing
+ * {@see JSONRequestInterface}: resolves raw values from the parsed JSON
+ * request body first, falling back to a {@see RequestValueSource} (query
+ * string / POST) for any key the body does not carry.
+ *
+ * The body value always wins when a key is present in both: this lets a
+ * `callApi()`-style caller keep sending small parameters as query/POST
+ * values while a JSON body carries the rest (e.g. file content), per the
+ * plan's Approach §1.
+ *
+ * The body is read through the method's {@see JSONRequestInterface::getRequestData()}
+ * on every call, never cached locally here: that method is itself the
+ * lazy, re-entry-guarded, once-per-request parse point (see
+ * {@see \Application\API\Traits\JSONRequestTrait::getRequestData()}), so
+ * this class stays a thin, side-effect-free view over it.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+class JSONBodyValueSource implements ParamValueSourceInterface
+{
+	public function hasKey(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	public function getRawValue(string $name): mixed
+	{
+		/* ... */
+	}
+
+
+	public function getKeys(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Parameters/ValueSource/ParamValueSourceInterface.php`
+
+```php
+namespace Application\API\Parameters\ValueSource;
+
+/**
+ * Interface for the raw-value backing store a {@see \Application\API\Parameters\BaseAPIParameter}
+ * resolves itself against, injected by {@see \Application\API\Parameters\APIParamManager::getValueSource()}.
+ *
+ * Decouples a parameter's {@see \Application\API\Parameters\BaseAPIParameter::resolveValue()}
+ * implementation from where its raw value physically comes from: today, either the
+ * request (query/POST, {@see RequestValueSource}) or a JSON request body falling back
+ * to the request ({@see JSONBodyValueSource}).
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+interface ParamValueSourceInterface
+{
+	/**
+	 * Whether a value is present for the given parameter name in this source.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	public function hasKey(string $name): bool;
+
+
+	/**
+	 * Retrieves the raw, unvalidated value for the given parameter name,
+	 * or `null` when it is not present in this source.
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function getRawValue(string $name): mixed;
+
+
+	/**
+	 * The full list of parameter names known to this source, used as the
+	 * key source for removed-parameter detection
+	 * (see {@see \Application\API\BaseMethods\BaseAPIMethod::rejectRemovedParams()}).
+	 *
+	 * @return string[]
+	 */
+	public function getKeys(): array;
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Parameters/ValueSource/RequestValueSource.php`
+
+```php
+namespace Application\API\Parameters\ValueSource;
+
+use Application\AppFactory as AppFactory;
+use Application_Request as Application_Request;
+
+/**
+ * Default {@see ParamValueSourceInterface} implementation: resolves raw
+ * values from the application's request (query string / POST / `$_REQUEST`).
+ *
+ * {@see self::getRawValue()} reads directly from {@see Application_Request::getParams()}
+ * (the underlying `$_REQUEST` array) rather than through
+ * `registerParam($name)->get()`: the latter collapses an empty string to
+ * `null`, which every already-migrated concrete parameter type treats as
+ * equivalent to an absent value in its own {@see \Application\API\Parameters\BaseAPIParameter::resolveValue()}
+ * anyway (so this is behaviourally neutral for them) — but it would
+ * collapse exactly the absent/empty distinction
+ * {@see \Application\API\Parameters\Type\ClearableStringParameter} depends
+ * on. This preserves the pre-value-source-seam behaviour for every other
+ * type while making this source usable by a clearable parameter too.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+class RequestValueSource implements ParamValueSourceInterface
+{
+	public function hasKey(string $name): bool
+	{
+		/* ... */
+	}
+
+
+	public function getRawValue(string $name): mixed
+	{
+		/* ... */
+	}
+
+
+	public function getKeys(): array
+	{
+		/* ... */
+	}
 }
 
 

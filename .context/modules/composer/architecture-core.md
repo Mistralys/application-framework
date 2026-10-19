@@ -294,6 +294,25 @@ class ComposerScripts
 	}
 
 
+	/**
+	 * Writes the current date and time into the `generated-at.txt` file
+	 * of the specified context folder, creating the folder if it does
+	 * not exist yet. Agents use this file as the freshness signal for
+	 * the CTX-generated documentation.
+	 *
+	 * Called by {@see self::postCtxGenerate()} after `ctx generate`, so
+	 * the timestamp reflects the actual CTX generation run in both the
+	 * `composer build` and `composer build-docs` script chains.
+	 *
+	 * @param string $contextFolder Absolute path to the `.context` folder.
+	 * @return void
+	 */
+	public static function doUpdateContextGenerateDate(string $contextFolder): void
+	{
+		/* ... */
+	}
+
+
 	public static function clearCaches(): void
 	{
 		/* ... */
@@ -386,9 +405,11 @@ class ComposerScripts
 
 	/**
 	 * Post-CTX-generation entry point: strips file statistics sections
-	 * from all generated context Markdown files under `.context/`.
+	 * from all generated context Markdown files under `.context/`, then
+	 * writes the `.context/generated-at.txt` timestamp.
 	 *
-	 * Called as a separate Composer script entry after `ctx generate`.
+	 * Called as a separate Composer script entry after `ctx generate`
+	 * in both the `build` and `build-docs` script chains.
 	 */
 	public static function postCtxGenerate(): void
 	{
