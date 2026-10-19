@@ -1,53 +1,35 @@
 # Application Framework Changelog
 
-## v7.7.0 - **WIP; UNRELEASED** - Media Document APIs
+## v7.7.0 - Media Document APIs (Breaking-XS)
 
-**A complete media document API: upload, inspect, list, update and delete media documents without the admin UI.**
-File content travels as base64 inside a JSON request body. Two reusable infrastructure changes to the API
-module make this possible for any future JSON method: registered parameters of JSON-body methods now resolve
-from the parsed body (falling back to the query string), and a new base64 file parameter type validates,
-decodes and size-limits file content in one place.
+**Media documents can now be added, fetched, listed, updated and deleted through the API.**
+File content travels as base64 inside a JSON request body, with the upload validated before anything
+is stored. Served media files are now hardened against inline-script attacks, and oversized API
+requests are rejected cleanly with HTTP 413. Any future JSON method can reuse the new request-body
+and file-upload handling.
 
-- API: Registered parameters of `JSONRequestInterface` methods now resolve from the parsed JSON body, falling
-  back to the query string/`$_REQUEST` for a key the body does not carry.
-- API: Removed parameters declared via `addRemovedParam()` are now also detected inside JSON request bodies,
-  not just the query string.
-- API: Development-mode error responses now truncate long string values in the echoed JSON body, so a
-  mistakenly large payload never comes back in full in an error response.
-- API: Added the `base64File()` parameter type (`Base64FileParameter`), validating and decoding base64 file
-  content (plain or a `data:<mime>;base64,` URI) with a configurable size limit
-  (`APP_API_MAX_FILE_CONTENT_SIZE`, default 10 MiB) checked before decoding.
-- API: Added `ErrorResponse::makeNotFound()`, sending HTTP 404 for an unknown record ID.
-- API: Added the `PaginatedAPIInterface`/`PaginatedAPITrait` pagination piece (`limit`, `offset`, `totalCount`),
-  reusable by any list method.
-- Media: Added five API methods — `AddMediaDocument`, `GetMediaDocument`, `GetMediaDocuments`,
-  `UpdateMediaDocument`, `DeleteMediaDocument` — each requiring its own right and built from composable
-  interface+trait pieces (document lookup, metadata, file upload) following the API Lego Rule.
-- Media: `AddMediaDocument` validates the uploaded file's content and extension before creating the
-  record; a dry run never writes to disk or the database and always returns a null ID.
-- Media: `UpdateMediaDocument` requires at least one actual change, applies metadata changes before a
-  file replacement, and rejects a replacement file that changes the document's current extension.
-- Media: `DeleteMediaDocument` returns the document's pre-deletion shape; a dry run never deletes,
-  since the file removal cannot be safely previewed or undone.
-- Media: Added per-document-type, in-memory content validation (`isContentValid()`) and a new namespaced
-  `MediaDocumentWriter` write path that keeps disk and database consistent on failure.
-- API: `BaseAPIParameter::validateByCallback()` now forwards its extra `...$args` to the callback, matching
-  `CallbackValidation`'s existing support for them.
-- Media: Added `MediaResponseHeaders`, sending `X-Content-Type-Options: nosniff` for every file served
-  through `DocumentTrait`'s shared serving seam, plus a sandboxing `Content-Security-Policy` for SVG/SVGZ —
-  closing the inline-SVG-script risk reachable via `media.php` without altering the served file's bytes.
-- API: `BaseAPIMethod::getRequestBody()` now enforces the request-body size ceiling
-  (`APP_API_MAX_REQUEST_BODY_SIZE`) via `RequestBodyReader`, converting an over-ceiling or
-  `post_max_size`-discarded body to `ERROR_REQUEST_BODY_TOO_LARGE` (182802) and HTTP 413 via the new
-  `ErrorResponse::makePayloadTooLarge()` — a read failure still yields the existing 182801.
-- Build: `.context/generated-at.txt` is now written after CTX generation by both `composer build` and
-  `composer build-docs`.
-- Media: `DocumentTrait::getMaxThumbnailSize()` is now abstract; also declared on `DocumentInterface`.
-- API: `BaseAPIMethod::createRequestBodyReader()` now resolves the effective request-body ceiling
-  as the lower of the configured `APP_API_MAX_REQUEST_BODY_SIZE` and the server's `post_max_size`,
-  so the reported limit is one the client can actually reach. A `post_max_size`-discarded body now
-  gets its own distinct client-facing message, and a rejected body (too large, discarded, or a read
-  failure) is now logged diagnostically when logging is enabled, matching `authorize()`'s logging.
+- Media: Added API methods to add, get, list, update and delete media documents.
+- Media: Uploads are validated by document type before a record is created.
+- Media: Added a write path that keeps files and database records consistent on failure.
+- Media: Updates require an actual change and reject a file replacement that changes the extension.
+- Media: Dry runs never write or delete anything; delete returns the document's pre-deletion state.
+- Media: Served files now send hardening headers, and SVGs are sandboxed against inline scripts.
+- Media: Fixed the thumbnail maximum size default; document types must now declare it.
+- API: Registered parameters of JSON-body methods now resolve from the body, then the query string.
+- API: Added a base64 file parameter with a configurable size limit (default 10 MiB).
+- API: Added a request body size limit, answering oversized requests with HTTP 413.
+- API: The limit respects the server's upload limit, and rejected requests are now logged.
+- API: Added pagination (limit, offset, total count) for list methods.
+- API: Unknown record IDs now answer with HTTP 404.
+- API: Removed parameters are now also detected inside JSON request bodies.
+- API: Development-mode error responses truncate long values from the echoed request body.
+- API: Callback validation of parameters now passes extra arguments to the callback.
+
+### Breaking Changes
+
+The thumbnail maximum size method on media documents no longer has a default implementation, because
+the old default returned wrong values. Custom media document classes that use the shared document
+trait must now implement it. Built-in document types are unaffected.
 
 ## v7.6.0 - API Removed-Parameter Declaration
 
