@@ -65,4 +65,14 @@ final class MediaMetadataPieceTest extends MediaTestCase
         $this->assertInstanceOf(ErrorResponsePayload::class, $response);
         $this->assertSame(MediaMetadataAPIInterface::VALIDATION_HTML_NOT_ALLOWED, $response->getErrorCode());
     }
+
+    public function test_htmlInKeywordsIsRejected() : void
+    {
+        $_REQUEST[MediaMetadataAPIInterface::PARAM_KEYWORDS] = '<i>tag</i>, other';
+
+        $response = $this->createMethod()->processReturn();
+
+        $this->assertInstanceOf(ErrorResponsePayload::class, $response);
+        $this->assertSame(MediaMetadataAPIInterface::VALIDATION_HTML_NOT_ALLOWED, $response->getErrorCode());
+    }
 }
