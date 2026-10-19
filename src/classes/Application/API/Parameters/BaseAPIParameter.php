@@ -11,6 +11,7 @@ use Application\API\Parameters\Validation\Type\EnumValidation;
 use Application\API\Parameters\Validation\Type\RequiredValidation;
 use Application\API\Parameters\Validation\Type\ValueExistsCallbackValidation;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
+use Application\API\Parameters\ValueSource\ParamValueSourceInterface;
 use Application\AppFactory;
 use Application\Validation\ValidationLoggableTrait;
 use Application\Validation\ValidationResults;
@@ -82,6 +83,95 @@ abstract class BaseAPIParameter implements APIParameterInterface
             ->registerParam($this->getName());
 
         return $this->param;
+    }
+
+    private ?ParamValueSourceInterface $valueSource = null;
+
+    /**
+     * Injects the raw-value backing store this parameter resolves itself
+     * against (see {@see \Application\API\Parameters\APIParamManager::registerParam()}).
+     * Not called for header or reserved parameters, which keep their
+     * existing resolution paths.
+     *
+     * @param ParamValueSourceInterface $source
+     * @return $this
+     */
+    public function setValueSource(ParamValueSourceInterface $source) : self
+    {
+        $this->valueSource = $source;
+        return $this;
+    }
+
+    /**
+     * Retrieves the parameter's raw, unvalidated value, used by the
+     * concrete type classes in {@see resolveValue()}. Uses the injected
+     * {@see ParamValueSourceInterface} when one has been set (the normal
+     * case for a parameter registered through {@see \Application\API\Parameters\APIParamManager}),
+     * falling back to {@see self::getRequestParam()} otherwise — e.g. when
+     * a parameter is instantiated standalone, as in unit tests.
+     *
+     * @return mixed
+     */
+    protected function getRawRequestValue() : mixed
+    {
+        if(isset($this->valueSource)) {
+            return $this->valueSource->getRawValue($this->getName());
+        }
+
+        return $this->getRequestParam()->get();
+    }
+
+    /**
+     * Whether a value is present for this parameter in its backing store,
+     * as opposed to the key being entirely absent. Used by
+     * {@see \Application\API\Parameters\Type\ClearableStringParameter}'s
+     * three-state (absent / empty / value) resolution, which needs to tell
+     * "not sent" from "sent as an empty string" — a distinction
+     * {@see self::getRawRequestValue()} alone cannot make, since it returns
+     * `null` for both.
+     *
+     * Uses the injected {@see ParamValueSourceInterface} when one has been
+     * set (the normal case for a parameter registered through
+     * {@see \Application\API\Parameters\APIParamManager}), so a JSON-body
+     * method's clearable parameters resolve from the body exactly like every
+     * other parameter type (see {@see \Application\API\Parameters\ValueSource\JSONBodyValueSource}).
+     * Falls back to `$_REQUEST` directly otherwise — e.g. when a parameter is
+     * instantiated standalone, as in unit tests.
+     *
+     * @return bool
+     */
+    protected function hasRawRequestValue() : bool
+    {
+        if(isset($this->valueSource)) {
+            return $this->valueSource->hasKey($this->getName());
+        }
+
+        return array_key_exists($this->getName(), $_REQUEST);
+    }
+
+    /**
+     * Retrieves this parameter's raw value exactly as stored in its backing
+     * store, with no intermediate processing. Used exclusively by
+     * {@see \Application\API\Parameters\Type\ClearableStringParameter}, which
+     * needs the untouched value to preserve its absent/empty/value
+     * distinction — unlike {@see self::getRawRequestValue()}'s no-source
+     * fallback ({@see self::getRequestParam()}), which discards empty
+     * strings before this class ever sees them.
+     *
+     * Uses the injected {@see ParamValueSourceInterface} when one has been
+     * set, falling back to `$_REQUEST` directly otherwise (e.g. a parameter
+     * instantiated standalone, as in unit tests). Only meaningful together
+     * with a preceding {@see self::hasRawRequestValue()} check.
+     *
+     * @return mixed
+     */
+    protected function getRawRequestValueUnprocessed() : mixed
+    {
+        if(isset($this->valueSource)) {
+            return $this->valueSource->getRawValue($this->getName());
+        }
+
+        return $_REQUEST[$this->getName()] ?? null;
     }
 
     public function getLabel(): string

@@ -16,6 +16,10 @@ use Application\API\Parameters\Removed\RemovedParamCollection;
 use Application\API\Parameters\Rules\RuleInterface;
 use Application\API\Parameters\Rules\RuleTypeSelector;
 use Application\API\Parameters\Validation\ParamValidationResults;
+use Application\API\Parameters\ValueSource\JSONBodyValueSource;
+use Application\API\Parameters\ValueSource\ParamValueSourceInterface;
+use Application\API\Parameters\ValueSource\RequestValueSource;
+use Application\API\Traits\JSONRequestInterface;
 use Application\Validation\ValidationResultInterface;
 
 /**
@@ -94,6 +98,14 @@ class APIParamManager implements ValidationResultInterface
 
         if(!isset($this->params[$name])) {
             $this->params[$name] = $param;
+
+            if($param instanceof BaseAPIParameter
+                && !($param instanceof APIHeaderParameterInterface)
+                && !($param instanceof ReservedParamInterface)
+            ) {
+                $param->setValueSource($this->getValueSource());
+            }
+
             return $this;
         }
 
@@ -106,6 +118,37 @@ class APIParamManager implements ValidationResultInterface
             ),
             APIParameterException::ERROR_PARAM_ALREADY_REGISTERED
         );
+    }
+
+    private ?ParamValueSourceInterface $valueSource = null;
+
+    /**
+     * The raw-value backing store injected into every registered parameter
+     * (other than header and reserved parameters, see {@see self::registerParam()}):
+     * a {@see JSONBodyValueSource} (falling back to a {@see RequestValueSource})
+     * for a method implementing {@see JSONRequestInterface}, or a plain
+     * {@see RequestValueSource} otherwise. Created lazily and shared by all
+     * parameters of this manager, and reused by
+     * {@see \Application\API\BaseMethods\BaseAPIMethod::rejectRemovedParams()}
+     * as its removed-parameter key source via {@see ParamValueSourceInterface::getKeys()}.
+     *
+     * @return ParamValueSourceInterface
+     */
+    public function getValueSource() : ParamValueSourceInterface
+    {
+        if(isset($this->valueSource)) {
+            return $this->valueSource;
+        }
+
+        $request = new RequestValueSource();
+
+        if($this->method instanceof JSONRequestInterface) {
+            $this->valueSource = new JSONBodyValueSource($this->method, $request);
+        } else {
+            $this->valueSource = $request;
+        }
+
+        return $this->valueSource;
     }
 
     /**

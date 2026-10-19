@@ -41,10 +41,16 @@ class JSONParameter extends BaseAPIParameter
 
     protected function resolveValue(): array|null
     {
-        $value = $this->getRequestParam()->get();
+        $value = $this->getRawRequestValue();
 
         if(empty($value)) {
             return null;
+        }
+
+        // A JSON request body carries objects/arrays natively: no string
+        // round-trip is needed (or possible) in that case.
+        if(is_array($value)) {
+            return $value;
         }
 
         if(!is_string($value))

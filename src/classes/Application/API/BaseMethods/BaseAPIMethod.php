@@ -276,7 +276,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
             return;
         }
 
-        $used = $removedParams->detectUsed($this->request->getParams());
+        $used = $removedParams->detectUsed(array_fill_keys($this->manageParams()->getValueSource()->getKeys(), true));
 
         if(empty($used)) {
             return;

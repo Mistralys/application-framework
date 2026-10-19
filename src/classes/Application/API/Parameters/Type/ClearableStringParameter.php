@@ -21,10 +21,14 @@ use Application\API\Parameters\Validation\ParamValidationInterface;
  * - **Present but empty** (empty string or whitespace-only after trim) → `''`
  * - **Present with value** (non-empty after trim) → trimmed string
  *
- * Reading `$_REQUEST` directly via `array_key_exists()` is intentional:
- * the framework's `RequestParam::get()` discards empty strings before the
- * parameter type ever sees them, which would collapse the absent/empty
- * distinction that this type relies on.
+ * Resolving through {@see BaseAPIParameter::hasRawRequestValue()} /
+ * {@see BaseAPIParameter::getRawRequestValueUnprocessed()} rather than
+ * `RequestParam::get()` is intentional: the framework's `RequestParam::get()`
+ * discards empty strings before the parameter type ever sees them, which
+ * would collapse the absent/empty distinction this type relies on. Resolving
+ * through the value-source seam (rather than reading `$_REQUEST` directly) is
+ * what lets this type's absent/empty/value distinction also work for a
+ * JSON-body method's body-delivered parameters, not just the query string.
  *
  * @package API
  * @subpackage Parameters
@@ -54,7 +58,9 @@ class ClearableStringParameter extends StringParameter
     }
 
     /**
-     * Resolves the parameter value from `$_REQUEST` with three-state semantics.
+     * Resolves the parameter value from its backing store (the request, or
+     * a JSON body for a {@see \Application\API\Traits\JSONRequestInterface}
+     * method) with three-state semantics.
      *
      * - Key absent → `null`
      * - Key present, value empty or whitespace-only (after trim) → `''`
@@ -66,11 +72,11 @@ class ClearableStringParameter extends StringParameter
      */
     protected function resolveValue(): ?string
     {
-        if(!array_key_exists($this->getName(), $_REQUEST)) {
+        if(!$this->hasRawRequestValue()) {
             return null;
         }
 
-        $raw = $_REQUEST[$this->getName()];
+        $raw = $this->getRawRequestValueUnprocessed();
 
         if(is_numeric($raw)) {
             return trim((string)$raw);

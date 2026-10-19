@@ -23,6 +23,21 @@ final class JSONParamTest extends APITestCase
         $this->assertTrue($param->getValidationResults()->isValid());
     }
 
+    /**
+     * A JSON body carries objects/arrays natively: a parameter resolving
+     * from one must accept the native array as-is, with no string
+     * round-trip (AC-03).
+     */
+    public function test_nativeArrayValueInRequest() : void
+    {
+        $_REQUEST['foo'] = array('foo' => 'bar');
+
+        $param = new JSONParameter('foo', 'Param Label');
+
+        $this->assertSame(array('foo' => 'bar'), $param->getValue());
+        $this->assertTrue($param->getValidationResults()->isValid());
+    }
+
     public function test_invalidValueInRequest() : void
     {
         $_REQUEST['foo'] = 42;
