@@ -1613,6 +1613,139 @@
                 }
             }
         },
+        "/api/RequestBodyCeilingTest": {
+            "post": {
+                "operationId": "RequestBodyCeilingTest",
+                "summary": "Test API method stub proving JSON-body parameter resolution, with request (query/POST) fallback, for one parameter of each non-header, non-reserved type.",
+                "description": "Test API method stub proving JSON-body parameter resolution, with request (query/POST) fallback, for one parameter of each non-header, non-reserved type.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "label": {
+                                                    "type": "string"
+                                                },
+                                                "count": {
+                                                    "type": "integer"
+                                                },
+                                                "flag": {
+                                                    "type": "boolean"
+                                                },
+                                                "meta": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "key": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "label": "example-label",
+                                    "count": 1,
+                                    "flag": true,
+                                    "meta": {
+                                        "key": "value"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters. Also returned when a removed request parameter is used (error 183009): legacyLabel.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "count": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    },
+                                    "flag": {
+                                        "type": "boolean",
+                                        "enum": [
+                                            "false",
+                                            "no",
+                                            "true",
+                                            "yes"
+                                        ]
+                                    },
+                                    "label": {
+                                        "type": "string"
+                                    },
+                                    "meta": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=RequestBodyCeilingTest"
+                },
+                "x-removed-parameters": [
+                    {
+                        "name": "legacyLabel",
+                        "errorCode": 183009
+                    }
+                ]
+            }
+        },
         "/api/TestAPIKey": {
             "post": {
                 "operationId": "TestAPIKey",

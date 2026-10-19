@@ -61,6 +61,12 @@
             "requiredRight": null,
             "groupID": "framework-system-methods"
         },
+        "RequestBodyCeilingTest": {
+            "methodName": "RequestBodyCeilingTest",
+            "className": "TestDriver\\API\\RequestBodyCeilingTestMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
         "TestAPIKey": {
             "methodName": "TestAPIKey",
             "className": "TestDriver\\API\\TestAPIKeyMethod",

@@ -300,6 +300,16 @@ abstract class BaseConfigRegistry implements SetConfigSettingInterface
     public const API_MAX_FILE_CONTENT_SIZE = 'APP_API_MAX_FILE_CONTENT_SIZE';
 
     /**
+     * The maximum size, in bytes, of an incoming API request body. A value
+     * of `0` (the default) means the ceiling is derived from
+     * {@see self::API_MAX_FILE_CONTENT_SIZE} instead of being set explicitly
+     * (see {@see \Application\ConfigSettings\AppConfig::deriveAPIMaxRequestBodySize()}).
+     *
+     * @see APP_API_MAX_REQUEST_BODY_SIZE
+     */
+    public const API_MAX_REQUEST_BODY_SIZE = 'APP_API_MAX_REQUEST_BODY_SIZE';
+
+    /**
      * @see APP_LDAP_HOST
      */
     public const LDAP_HOST = 'APP_LDAP_HOST';

@@ -18,10 +18,13 @@ use Application\API\Parameters\Removed\RemovedParameter;
 use Application\API\Parameters\Reserved\APIMethodParameter;
 use Application\API\Parameters\Reserved\APIVersionParameter;
 use Application\API\Parameters\Validation\ParamValidationResults;
+use Application\API\Request\RequestBodyException;
+use Application\API\Request\RequestBodyReader;
 use Application\API\Response\JSONInfoSerializer;
 use Application\API\ResponsePayload;
 use Application\API\Traits\JSONRequestInterface;
 use Application\Application;
+use Application\ConfigSettings\AppConfig;
 use Application_CORS;
 use Application_Driver;
 use Application_ErrorLog_Log_Entry_Exception;
@@ -487,20 +490,83 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     /**
      * Utility method: Fetches the raw request body.
+     *
+     * A {@see self::setRequestBody()} preset bypasses {@see self::createRequestBodyReader()}
+     * entirely — it is already in memory, under test control, and was never
+     * subject to the ceiling a real request body is read under. Otherwise,
+     * the body is read through the factory's {@see RequestBodyReader}, which
+     * enforces the configured byte ceiling and detects a `post_max_size`
+     * discard; a {@see RequestBodyException} it throws is converted here into
+     * the matching client-facing error response.
+     *
      * @return string
      */
     final protected function getRequestBody() : string
     {
-        $raw = $this->requestBody ?? file_get_contents('php://input');
-
-        if($raw !== false)
-        {
-            return trim($raw);
+        if($this->requestBody !== null) {
+            return trim($this->requestBody);
         }
 
-        $this->errorResponse(JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT)
-            ->setErrorMessage('Failed to read request input data.')
+        $reader = $this->createRequestBodyReader();
+
+        try {
+            return trim($reader->read());
+        } catch (RequestBodyException $e) {
+            $this->handleRequestBodyException($e, $reader);
+        }
+    }
+
+    /**
+     * Converts a {@see RequestBodyException} raised while reading the
+     * request body into the matching client-facing error response.
+     *
+     * - {@see RequestBodyException::ERROR_BODY_TOO_LARGE} and
+     *   {@see RequestBodyException::ERROR_BODY_DISCARDED} both map to
+     *   {@see JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE} (182802)
+     *   and HTTP 413 ({@see ErrorResponse::makePayloadTooLarge()}) — the
+     *   client action is identical either way: send a smaller body.
+     * - {@see RequestBodyException::ERROR_BODY_READ_FAILED} maps to the
+     *   existing {@see JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT}
+     *   (182801), unchanged from the previous read-failure behaviour.
+     *
+     * @param RequestBodyException $e
+     * @param RequestBodyReader $reader
+     * @return never
+     */
+    private function handleRequestBodyException(RequestBodyException $e, RequestBodyReader $reader) : never
+    {
+        if($e->getCode() === RequestBodyException::ERROR_BODY_READ_FAILED) {
+            $this->errorResponse(JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT)
+                ->setErrorMessage('Failed to read request input data.')
+                ->send();
+        }
+
+        $this->errorResponse(JSONRequestInterface::ERROR_REQUEST_BODY_TOO_LARGE)
+            ->makePayloadTooLarge()
+            ->setErrorMessage('The request body exceeds the maximum allowed size of [%d] bytes.', $reader->getMaxBytes())
+            ->addData(array(
+                JSONRequestInterface::RESPONSE_KEY_ERROR_MAX_REQUEST_BODY_SIZE => $reader->getMaxBytes(),
+            ))
             ->send();
+    }
+
+    /**
+     * Creates the reader {@see self::getRequestBody()} reads the raw request
+     * body through. Defaults to a reader over the real request
+     * (`php://input`, `$_SERVER['CONTENT_LENGTH']`) under the configured
+     * ceiling ({@see AppConfig::getAPIMaxRequestBodySize()}).
+     *
+     * Overridable so an in-process test can lower the effective ceiling to
+     * exercise {@see RequestBodyReader}'s `read()` path at a tiny size —
+     * the booted ceiling cannot be lowered from a test. A
+     * {@see self::setRequestBody()} preset bypasses this factory entirely;
+     * see {@see self::getRequestBody()}.
+     *
+     * @return RequestBodyReader
+     */
+    protected function createRequestBodyReader() : RequestBodyReader
+    {
+        return RequestBodyReader::fromGlobals(AppConfig::getAPIMaxRequestBodySize());
     }
 
     private ?string $requestBody = null;

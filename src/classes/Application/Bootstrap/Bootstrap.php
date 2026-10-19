@@ -271,6 +271,7 @@ class Application_Bootstrap
         self::registerOptionalSetting(BaseConfigRegistry::AUTOMATIC_DELETION_DELAY, 60*60*24*5);
         self::registerOptionalSetting(BaseConfigRegistry::SIMULATE_SESSION, false);
         self::registerOptionalSetting(BaseConfigRegistry::API_MAX_FILE_CONTENT_SIZE, 10485760);
+        self::registerOptionalSetting(BaseConfigRegistry::API_MAX_REQUEST_BODY_SIZE, 0);
     }
     
    /**
