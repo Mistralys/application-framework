@@ -281,6 +281,36 @@ class Application_Media implements TagCollectionInterface
     }
 
     /**
+     * Retrieves the IDs of all registered media document types
+     * (e.g. `Image`, `PDF`), sorted alphabetically.
+     *
+     * @return string[]
+     */
+    public function getTypeIDs() : array
+    {
+        $this->loadTypes();
+
+        $result = array_keys($this->types);
+        sort($result);
+
+        return $result;
+    }
+
+    /**
+     * Retrieves the human-readable label of the given media document
+     * type ID, or the type ID itself if it is not a known type.
+     *
+     * @param string $typeID
+     * @return string
+     */
+    public function getTypeLabel(string $typeID) : string
+    {
+        $this->loadTypes();
+
+        return $this->types[$typeID]['label'] ?? $typeID;
+    }
+
+    /**
      * Creates a media configuration instance. These are document
      * type-specific, and are used to store configurations for
      * media pre-processing using the media processor class. For

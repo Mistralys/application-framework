@@ -17,6 +17,7 @@ use Application\Tags\Taggables\TagCollectionTrait;
 use Application\Tags\TagRecord;
 use Application_Formable;
 use Application_Media;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Microtime;
 use DBHelper;
 use DBHelper_BaseCollection;
@@ -54,6 +55,17 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     public function getCollectionRegistrationClass(): string
     {
         return RegisterMediaTagsListener::class;
+    }
+
+    /**
+     * The folder that the API method index discovers this module's API
+     * method classes from. Registered in {@see \Application\API\APIFoldersManager::register()}.
+     *
+     * @return FolderInfo
+     */
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(dirname(__DIR__).'/API/Methods');
     }
 
     private static ?bool $hasSizeColumn = null;

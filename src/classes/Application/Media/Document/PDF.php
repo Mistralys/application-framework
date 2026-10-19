@@ -23,6 +23,20 @@ class Application_Media_Document_PDF extends Application_Media_Document
         );
     }
 
+    /**
+     * Checks the content starts with the PDF file signature (`%PDF-`).
+     * This is a file-type check only, not a structural validation of the
+     * rest of the document.
+     *
+     * @param string $content
+     * @param string $extension
+     * @return bool
+     */
+    public static function isContentValid(string $content, string $extension): bool
+    {
+        return str_starts_with($content, '%PDF-');
+    }
+
     public function getMaxThumbnailSize(): int
     {
         return Application_Media_DocumentInterface::DEFAULT_TYPE_ICON_THUMBNAIL_SIZE;
