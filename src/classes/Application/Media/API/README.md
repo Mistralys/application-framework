@@ -204,8 +204,14 @@ file writes and record deletion are not transactional:
 
 ## Error codes
 
-All client-facing codes a caller of the media API may see, from every piece
-and the shared writer:
+A caller branching on the response envelope's top-level `code` must not
+confuse it with the nested `validationErrors[].code` a `183003` response
+carries — the two tables below are reported on the wire in different
+places.
+
+### Top-level codes
+
+Codes a caller sees as the response envelope's own `code`:
 
 | Code | Constant | Source |
 |---|---|---|
@@ -218,17 +224,28 @@ and the shared writer:
 | `681201` | `VALIDATION_UNKNOWN_MEDIA_ID` | `MediaDocumentAPIInterface` |
 | `681211` | `VALIDATION_HTML_NOT_ALLOWED` | `MediaMetadataAPIInterface` |
 | `681221` | `VALIDATION_NO_CHANGES` | `UpdateMediaDocumentAPI` (the only method that raises it) |
-| `183508` | `VALIDATION_INVALID_BASE64` | `ParamValidationInterface` (`Base64FileParameter`) |
-| `183509` | `VALIDATION_FILE_SIZE_EXCEEDED` | `ParamValidationInterface` (`Base64FileParameter`) |
-| `183701` | `VALIDATION_INVALID_LIMIT` | `PaginatedAPIInterface` |
-| `183702` | `VALIDATION_INVALID_OFFSET` | `PaginatedAPIInterface` |
 | `182801` | `ERROR_FAILED_TO_READ_INPUT` | `JSONRequestInterface` (an unparseable or non-object JSON body) |
+| `182802` | `ERROR_REQUEST_BODY_TOO_LARGE` | `JSONRequestInterface` (request body over the ceiling, or discarded by PHP's `post_max_size` — see "Size limits" below; HTTP 413 via `ErrorResponse::makePayloadTooLarge()`) |
+| `183003` | `ERROR_INVALID_REQUEST_PARAMS` | `BaseAPIMethod::validate()` — the envelope's top-level code for **every** parameter-validation failure, including the `1835xx`/`1837xx` codes below, which never themselves reach the top level |
 
 `681001`–`681006` are reported only as `MediaWriterException`, the module's
 one validation failure channel (`isValidationError()` distinguishes them
 from the writer's internal `6811xx` codes, which are never surfaced to a
 client and instead reach the shared execution boundary as unexpected
 throwables).
+
+### Parameter-validation codes
+
+Codes reported only inside the `183003` response's `validationErrors[].code`
+(see the `api` module's README for the full `validationErrors` shape) —
+never as the envelope's own top-level `code`:
+
+| Code | Constant | Source |
+|---|---|---|
+| `183508` | `VALIDATION_INVALID_BASE64` | `ParamValidationInterface` (`Base64FileParameter`) |
+| `183509` | `VALIDATION_FILE_SIZE_EXCEEDED` | `ParamValidationInterface` (`Base64FileParameter`) |
+| `183701` | `VALIDATION_INVALID_LIMIT` | `PaginatedAPIInterface` |
+| `183702` | `VALIDATION_INVALID_OFFSET` | `PaginatedAPIInterface` |
 
 ---
 
@@ -240,11 +257,26 @@ default 10 MiB), checked from the *encoded* length before any decoding
 occurs. Oversized input is rejected with `183509` without ever being
 decoded.
 
-**`post_max_size` guidance.** Base64 adds roughly 33% transfer overhead, so
-a 10 MiB decoded limit needs a raw JSON body of around 13–14 MiB. Configure
-PHP's `post_max_size` on target installs to at least **about 1.4× the
-configured `APP_API_MAX_FILE_CONTENT_SIZE`** value, to leave headroom for
-the surrounding JSON structure and other fields.
+**Request-body ceiling.** Independently of the file-content limit above,
+every JSON API method — including this module's — enforces a ceiling on the
+raw request body itself via `BaseAPIMethod::getRequestBody()` (see the `api`
+module's README, "Request body ceiling"). The ceiling,
+`AppConfig::getAPIMaxRequestBodySize()`, uses the explicitly configured
+`APP_API_MAX_REQUEST_BODY_SIZE` when set; otherwise it is derived from
+`APP_API_MAX_FILE_CONTENT_SIZE` as `floor(fileContentLimit × 4 / 3) + 1 MiB`
+— the base64 transfer overhead plus a fixed 1 MiB allowance for the
+surrounding JSON structure and other fields (at the 10 MiB default this
+derives to roughly 14.3 MiB). A body over the ceiling, or one PHP's own
+`post_max_size` silently discarded before the application could even read
+it, both surface as `182802`/HTTP 413 (see "Error codes" above).
+
+**`post_max_size` guidance.** PHP's `post_max_size` must be configured on
+every target install to **at least the effective
+`AppConfig::getAPIMaxRequestBodySize()` ceiling** — not a fixed multiplier
+of the file-content limit. A smaller `post_max_size` silently discards an
+otherwise-valid request before `getRequestBody()` ever runs, which this
+module's request-body ceiling work detects and reports as `182802` rather
+than letting it masquerade as a missing-parameter error.
 
 ---
 
@@ -253,11 +285,17 @@ the surrounding JSON structure and other fields.
 - **SVG** is accepted, exactly as in the admin UI. The content check for SVG
   only confirms the uploaded bytes really are a well-formed SVG document
   (its root element is `svg`) — this is a file-type check, not a content or
-  security policy. SVGs served from the application origin can carry
-  scripts; access to the media API requires an explicitly granted key, and
-  any further restriction (e.g. serving SVGs with a non-rendering
-  `Content-Type` or `Content-Disposition: attachment`) is the responsibility
-  of the delivery path, not this API.
+  security policy. Neutralising an SVG's potential inline script is instead
+  the delivery path's responsibility: every file served through
+  `DocumentTrait`'s shared serving seam gets `X-Content-Type-Options: nosniff`
+  from `MediaResponseHeaders`, and a file whose extension is SVG or SVGZ
+  additionally gets a sandboxing `Content-Security-Policy`
+  (`default-src 'none'; style-src 'unsafe-inline'; sandbox`) that disables
+  script execution without altering the served file's bytes. Neither header
+  affects an SVG embedded via `<img>` — a browser never executes a CSP or
+  acts on `X-Content-Type-Options` for an image resource load, only for a
+  document opened directly — so inline `<img>` use of an uploaded SVG is
+  unaffected.
 - **Duplicate uploads are accepted.** There is no content-hash
   deduplication — uploading the same bytes twice creates two independent
   media documents.

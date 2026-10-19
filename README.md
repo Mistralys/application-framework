@@ -109,17 +109,13 @@ when developing locally.
 ### Build
 
 The build step generates module documentation artefacts from `module-context.yaml`
-files discovered throughout the codebase, updates the CTX `generated-at.txt`
-timestamp, regenerates the API method index, and rebuilds offline event listeners.
+files discovered throughout the codebase, regenerates the API method index, and
+rebuilds offline event listeners. It then runs CTX generation and writes the
+`.context/generated-at.txt` timestamp afterwards — `composer build-docs` does the
+same for the documentation-only chain.
 
 ```bash
 composer build
-```
-
-For the full development build (includes module glossary and keyword index):
-
-```bash
-composer build-dev
 ```
 
 ### Setup
@@ -366,8 +362,12 @@ ctx server
 #### Generate all files
 
 ```bash
-ctx generate 
+composer build-docs
 ```
+
+This regenerates the module documentation and then the CTX files. Calling
+`ctx generate` directly skips the post-processing step (file statistics
+stripping and the `.context/generated-at.txt` timestamp).
 
 #### Server information
 

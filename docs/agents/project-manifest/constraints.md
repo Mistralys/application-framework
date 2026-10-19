@@ -325,6 +325,10 @@ should silently compose other traits on behalf of its consumers.
 - **File content in a JSON body uses `base64File()` (`Application\API\Parameters\Type\Base64FileParameter`), never a plain string parameter with ad-hoc decoding.** It validates and decodes the content in one place, enforces a configurable size limit (`AppConfig::getAPIMaxFileContentSize()`) checked from the *encoded* length before any decoding, and retains only the decoded binary — never the oversized intermediate base64 copy.
 - **A `ClearableStringParameter` (absent/empty/value three-state parameter) must resolve through `BaseAPIParameter::hasRawRequestValue()`/`getRawRequestValueUnprocessed()`, never through `getRawRequestValue()`'s normal no-source fallback (`RequestParam::get()`) or a direct `$_REQUEST` read.** `RequestParam::get()` collapses an empty string to `null`, which is harmless for every other parameter type (they already treat `''` as equivalent to absent) but destroys exactly the absent/empty distinction a clearable parameter exists to preserve — including when the value arrives through a `JSONBodyValueSource`'s request fallback, not just the no-value-source case.
 
+### Request Body Reading
+
+- **Read a request body only through `BaseAPIMethod::getRequestBody()`, never by hand from `php://input` or `$_SERVER['CONTENT_LENGTH']`.** `getRequestBody()` enforces the configured byte ceiling (`AppConfig::getAPIMaxRequestBodySize()`) via `RequestBodyReader` — built by the overridable `createRequestBodyReader()` factory — and converts a `RequestBodyException` into the matching client-facing error: an over-ceiling or `post_max_size`-discarded body to `ERROR_REQUEST_BODY_TOO_LARGE` (182802, HTTP 413 via `ErrorResponse::makePayloadTooLarge()`), a read failure to the existing `ERROR_FAILED_TO_READ_INPUT` (182801). Reading the stream directly bypasses the ceiling entirely, reintroducing the unbounded-buffering risk `RequestBodyReader` exists to close.
+
 ### Removed Parameters
 
 - **Declare a removed or renamed request parameter with `addRemovedParam()`, never a hand-written `getParam()` guard in `collectRequestData()`.** `BaseAPIMethod::addRemovedParam()` registers the name on the method's `RemovedParamCollection`; the framework's `rejectRemovedParams()` lifecycle step then rejects any request still sending it — including an explicit empty value — with the standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) before `validate()` runs. A hand-written guard in `collectRequestData()` instead collapses into the generic `183001`/`183003` codes and loses the structured `removedParameters` response data.
@@ -448,6 +452,26 @@ if ($resolvedPath === false || !str_starts_with($resolvedPath, $sourceBase)) {
 
 See the implementation in `ModuleJsonExportGenerator::resolveAdditionalDocs()` for a
 production example of this pattern.
+
+### Served-File Response Headers (Media)
+
+Every file `Application\Media\DocumentTrait` serves — through either `serveFromRequest()`
+(`media.php` → `Application_Media_Delivery`) or `sendFile()` — must get its response headers
+from `Application\Media\Delivery\MediaResponseHeaders::send()`, never a hand-written `header()`
+call at the call site.
+
+**Why:** `MediaResponseHeaders` is the single place both media documents and uploads get
+`X-Content-Type-Options: nosniff`, and a sandboxing `Content-Security-Policy` for a file
+extension in `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS` (currently `svg`/`svgz`) — closing
+the risk of a browser executing inline `<script>` content from a file opened directly (never
+reachable through `<img>` embedding). A second, independent `header()` call site would silently
+drift from this policy the next time it changes.
+
+**Rule:** A new file type that can carry active content a browser could execute when opened
+directly extends `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS`, rather than adding a second
+header-sending call site. The policy is keyed on the extension of the file actually sent (the
+thumbnail/original path), not the document's stored extension, since those can differ once a
+format's thumbnail is ever rendered to a different type than its source.
 
 ---
 

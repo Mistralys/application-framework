@@ -20,6 +20,7 @@ moduleMetaData:
     - MediaDocumentAPIInterface / MediaMetadataAPIInterface / MediaFileUploadAPIInterface (the three media API Lego Rule pieces)
     - MediaDocumentSerializer (stateless document-shape serializer, including the dry-run preview shape)
     - dryRun (validate-only preview semantics for the three write methods — never mutates disk or the database)
+    - MediaResponseHeaders (response-header policy for served files — nosniff everywhere, sandboxing CSP for SVG/SVGZ — applied by DocumentTrait's shared serving seam)
   relatedModules:
     - "api"
     - "api-parameters"

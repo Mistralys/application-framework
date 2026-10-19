@@ -1050,8 +1050,12 @@ part of the standard `composer build` pipeline, immediately after the API method
 ```
 clearCaches → indexOfflineEvents → indexAdminScreens → apiMethodIndex
   → generateOpenAPISpec → generateHtaccess → generateCSSClassesJS
-  → updateContextGenerateDate → updateModuleDocumentation
+  → rebuildIcons → updateModuleDocumentation
 ```
+
+The `.context/generated-at.txt` timestamp is not written by `build()`. It is written by
+`postCtxGenerate()`, which runs after `ctx generate` in both the `composer build` and
+`composer build-docs` script chains.
 
 ### Standalone invocation
 

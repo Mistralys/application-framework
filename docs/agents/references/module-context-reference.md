@@ -408,7 +408,7 @@ Create one when a code area:
 - [ ] If the module has an Admin UI layer, add a separate UI architecture document.
 - [ ] If the module has API methods, add a separate API methods document.
 - [ ] Ensure the `id` is unique and follows the lowercase-hyphenated convention.
-- [ ] Run `ctx generate` and verify the output in `.context/`.
+- [ ] Run `composer build-docs` and verify the output in `.context/`.
 
 ---
 
@@ -429,7 +429,7 @@ Create one when a code area:
 
 ### Validation
 
-After any changes, run `ctx generate` and verify:
+After any changes, run `composer build-docs` and verify:
 
 1. The output files are created in `.context/modules/{id}/`.
 2. The architecture documents contain only public signatures (no method bodies).

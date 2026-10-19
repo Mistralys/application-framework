@@ -31,6 +31,17 @@ decodes and size-limits file content in one place.
   since the file removal cannot be safely previewed or undone.
 - Media: Added per-document-type, in-memory content validation (`isContentValid()`) and a new namespaced
   `MediaDocumentWriter` write path that keeps disk and database consistent on failure.
+- API: `BaseAPIParameter::validateByCallback()` now forwards its extra `...$args` to the callback, matching
+  `CallbackValidation`'s existing support for them.
+- Media: Added `MediaResponseHeaders`, sending `X-Content-Type-Options: nosniff` for every file served
+  through `DocumentTrait`'s shared serving seam, plus a sandboxing `Content-Security-Policy` for SVG/SVGZ —
+  closing the inline-SVG-script risk reachable via `media.php` without altering the served file's bytes.
+- API: `BaseAPIMethod::getRequestBody()` now enforces the request-body size ceiling
+  (`APP_API_MAX_REQUEST_BODY_SIZE`) via `RequestBodyReader`, converting an over-ceiling or
+  `post_max_size`-discarded body to `ERROR_REQUEST_BODY_TOO_LARGE` (182802) and HTTP 413 via the new
+  `ErrorResponse::makePayloadTooLarge()` — a read failure still yields the existing 182801.
+- Build: `.context/generated-at.txt` is now written after CTX generation by both `composer build` and
+  `composer build-docs`.
 
 ## v7.6.0 - API Removed-Parameter Declaration
 

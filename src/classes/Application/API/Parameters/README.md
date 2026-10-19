@@ -38,6 +38,9 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
   `ParamValidationInterface`: `RequiredValidation`, `EnumValidation`,
   `RegexValidation`, `CallbackValidation`, `ValueExistsCallbackValidation`.
   Results are collected in `ParamValidationResults`.
+  `BaseAPIParameter::validateByCallback(callable $callback, ...$args)`
+  forwards its extra `$args` to `$callback` after the standard
+  `(value, result, param)` triplet.
 - **Rules:** Cross-parameter constraints implementing `RuleInterface`:
   `OrRule` (at least one of N params must be present), `RequiredIfOtherIsSetRule`
   (param required when another is set), `RequiredIfOtherValueEquals` (param

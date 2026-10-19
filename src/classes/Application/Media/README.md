@@ -121,6 +121,21 @@ layers that were added on top of them.
   - Each piece interface extends `APIMethodInterface` directly (no
     inheritance between pieces) and each trait declares no traits of its own;
     each piece's validation codes stay inside its own `6812xx` sub-range.
+- **Delivery** — `Application\Media\Delivery\MediaResponseHeaders` is the
+  single response-header policy applied to every file `DocumentTrait` serves
+  (`serveFromRequest()` and `sendFile()`, shared by media documents and
+  uploads): every served file gets `X-Content-Type-Options: nosniff`, and a
+  file extension in `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS`
+  (`svg`/`svgz`, matched case-insensitively) additionally gets a sandboxing
+  `Content-Security-Policy` (`MediaResponseHeaders::ACTIVE_CONTENT_CSP`),
+  neutralising inline `<script>` content a browser could otherwise execute
+  when such a file is opened directly — `<img>`-embedded SVG is unaffected,
+  since browsers never run script in that context. The policy is keyed on
+  the extension of the file actually sent (the thumbnail/original path), not
+  the document's stored extension. If headers have already been sent by the
+  time either call site reaches `MediaResponseHeaders::send()`, nothing is
+  emitted and the skip is logged through `$this->log()`, so the one
+  mitigation for this risk cannot silently disappear.
 
 ---
 
@@ -133,6 +148,7 @@ layers that were added on top of them.
 | `Admin/` | Admin UI layer: screens, admin URL builders, mode/view traits. |
 | `Collection/` | Namespaced DBHelper collection/record/filter criteria (`MediaCollection`, `MediaRecord`, `MediaFilterCriteria`, `MediaFilterSettings`, `MediaSettingsManager`). |
 | `Configuration/` | Per-type processing configuration (e.g. `Image.php` for resize presets). |
+| `Delivery/` | `MediaResponseHeaders`, the response-header policy applied to every file `DocumentTrait` serves. See "Delivery" above. |
 | `Document/` | Concrete document type classes (`Image.php`, `PDF.php`), each declaring extensions, label/icon and `isContentValid()`. |
 | `Events/` | Domain event listeners (tag registration). |
 | `Writer/` | The namespaced write path: `MediaFileContent`, `MediaFileValidator`, `MediaDocumentWriter`, `MediaWriterException`. |
