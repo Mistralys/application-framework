@@ -6,6 +6,7 @@ namespace Application\Media;
 
 use Application\AppFactory;
 use Application\Application;
+use Application\Media\Delivery\MediaResponseHeaders;
 use Application_Exception;
 use Application_Media_Delivery;
 use Application_Media_Document;
@@ -168,8 +169,14 @@ trait DocumentTrait
      */
     public function sendFile(bool $forceDownload=false)
     {
+        $path = $this->getPath();
+
+        if(!MediaResponseHeaders::send(FileHelper::getExtension($path))) {
+            $this->log('Response headers were already sent; the media response header policy could not be applied.');
+        }
+
         FileHelper::sendFile(
-            $this->getPath(),
+            $path,
             $this->getFilename(),
             $forceDownload
         );
@@ -318,8 +325,14 @@ trait DocumentTrait
             $this->getPath()
         ));
 
+        $path = $this->createThumbnail($width, $height);
+
+        if(!MediaResponseHeaders::send(FileHelper::getExtension($path))) {
+            $this->log('Response headers were already sent; the media response header policy could not be applied.');
+        }
+
         FileHelper::sendFileAuto(
-            $this->createThumbnail($width, $height),
+            $path,
             $this->getFilename()
         );
 
