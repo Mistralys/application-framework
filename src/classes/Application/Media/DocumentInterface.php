@@ -79,6 +79,15 @@ interface Application_Media_DocumentInterface extends Application_Interfaces_Log
     public function getThumbnailDefaultSize(?int $preferredSize=null): int;
 
     /**
+     * Retrieves the maximum size, in pixels, that a thumbnail of this
+     * document may be generated at. Used by {@see self::getThumbnailDefaultSize()}
+     * to cap the preferred size to what the document can actually provide.
+     *
+     * @return int
+     */
+    public function getMaxThumbnailSize() : int;
+
+    /**
      * Renders a thumbnail image HTML tag for the document.
      *
      * @param int|null $preferredSize Will be used if the document allows this size. Use 0 or NULL to ignore.

@@ -31,10 +31,18 @@ trait DocumentTrait
         return ImageHelper::createFromFile($this->getThumbnailSourcePath());
     }
 
-    public function getMaxThumbnailSize(): int
-    {
-        return $this-$this->getThumbnailSourceImage()->getWidth();
-    }
+    /**
+     * Retrieves the maximum size, in pixels, that a thumbnail of this
+     * document may be generated at. Used by {@see self::getThumbnailDefaultSize()}
+     * to cap the preferred size to what the document can actually provide.
+     *
+     * Must be implemented by the concrete document type, since the
+     * semantics differ per type: a raster image returns its own pixel
+     * width, a PDF returns the type icon's thumbnail size, and so on.
+     *
+     * @return int
+     */
+    abstract public function getMaxThumbnailSize() : int;
 
     public function thumbnailExists(?int $width = null, ?int $height = null) : bool
     {

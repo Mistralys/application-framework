@@ -355,8 +355,6 @@ abstract class Application_Media_Document
      */
     abstract public static function isContentValid(string $content, string $extension) : bool;
 
-    abstract public function getMaxThumbnailSize() : int;
-
     /**
      * Retrieves an identification string for the media document that
      * is mainly used for logging purposes. Contains the document's ID
