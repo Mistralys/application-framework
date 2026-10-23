@@ -13,6 +13,7 @@ use Application\Admin\Traits\DevelModeInterface;
 use Application\Admin\Traits\DevelModeTrait;
 use Application\AppFactory;
 use Application\CacheControl\CacheManager;
+use Application\CacheControl\CacheManagerException;
 use Application\Development\Admin\DevScreenRights;
 use AppUtils\ConvertHelper;
 use UI;
@@ -158,6 +159,8 @@ class CacheControlMode extends BaseMode implements DevelModeInterface
             ->multiple(t('%1$s cache locations have been cleared.', '$amount'))
             ->none(t('No cache locations selected that could be cleared.'));
 
+        $failedLabels = array();
+
         foreach($action->getSelectedValues() as $locationID)
         {
             $locationID = (string)$locationID;
@@ -166,9 +169,32 @@ class CacheControlMode extends BaseMode implements DevelModeInterface
             }
 
             $location = $this->manager->getByID($locationID);
-            $location->clear();
+
+            try
+            {
+                $this->manager->clearLocation($location);
+            }
+            catch(CacheManagerException $e)
+            {
+                if($e->getCode() !== CacheManagerException::ERROR_REGENERATION_FAILED) {
+                    throw $e;
+                }
+
+                $failedLabels[] = $location->getLabel();
+                continue;
+            }
 
             $msg->addAffected($location->getLabel());
+        }
+
+        if(!empty($failedLabels))
+        {
+            $this->redirectWithErrorMessage(
+                sb()
+                    ->t('Failed to regenerate the following cache location(s):')
+                    ->bold(implode(', ', $failedLabels)),
+                $this->getURL()
+            );
         }
 
         $msg->redirect();

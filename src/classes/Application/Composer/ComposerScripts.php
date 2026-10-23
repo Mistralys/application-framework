@@ -14,6 +14,7 @@ use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
 use Application\Bootstrap\Screen\TestSuiteBootstrap;
 use Application\CacheControl\CacheManager;
+use Application\CacheControl\CacheManagerException;
 use Application\Composer\IconBuilder\IconBuilder;
 use Application\Composer\KeywordGlossary\KeywordGlossaryGenerator;
 use Application\Composer\ModulesOverview\ModulesOverviewGenerator;
@@ -135,7 +136,15 @@ class ComposerScripts
         // which may not exist at this point.
         ClassCacheHandler::clearClassCache();
 
-        CacheManager::getInstance()->clearAll();
+        try {
+            CacheManager::getInstance()->clearAll();
+        } catch (CacheManagerException $e) {
+            if ($e->getCode() !== CacheManagerException::ERROR_REGENERATION_FAILED) {
+                throw $e;
+            }
+
+            echo sprintf('  WARNING: %s'.PHP_EOL, $e->getMessage());
+        }
 
         echo '  DONE.'.PHP_EOL;
     }
