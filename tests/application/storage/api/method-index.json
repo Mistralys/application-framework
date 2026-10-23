@@ -175,6 +175,12 @@
             "requiredRight": null,
             "groupID": "testDriver"
         },
+        "TestPaginatedExample": {
+            "methodName": "TestPaginatedExample",
+            "className": "TestDriver\\API\\TestPaginatedExampleMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
         "TestRemovedParam": {
             "methodName": "TestRemovedParam",
             "className": "TestDriver\\API\\TestRemovedParamMethod",

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API\Traits;
 
+use Application\API\APIException;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Type\IntegerParameter;
 use Application\API\Utilities\KeyDescription;
@@ -27,9 +28,23 @@ trait PaginatedAPITrait
     private ?IntegerParameter $paginationLimitParam = null;
     private ?IntegerParameter $paginationOffsetParam = null;
     private int $paginationDefaultLimit = 10;
+    private ?int $paginationExampleLimit = null;
 
-    public function registerPaginationParams(int $defaultLimit, int $maxLimit) : self
+    public function registerPaginationParams(int $defaultLimit, int $maxLimit, ?int $exampleLimit = null) : self
     {
+        if($exampleLimit !== null && ($exampleLimit < 1 || $exampleLimit > $maxLimit)) {
+            throw new APIException(
+                'Invalid example limit for pagination',
+                sprintf(
+                    'The example limit [%s] must be between 1 and the configured maximum limit [%s].',
+                    $exampleLimit,
+                    $maxLimit
+                ),
+                PaginatedAPIInterface::ERROR_INVALID_EXAMPLE_LIMIT
+            );
+        }
+
+        $this->paginationExampleLimit = $exampleLimit;
         $this->paginationDefaultLimit = $defaultLimit;
 
         $this->paginationLimitParam = new IntegerParameter(PaginatedAPIInterface::PARAM_LIMIT, t('Limit'));
@@ -88,12 +103,32 @@ trait PaginatedAPITrait
      */
     public function getPaginationLimit() : int
     {
+        if($this->isPaginationExampleMode()) {
+            return $this->paginationExampleLimit ?? $this->paginationDefaultLimit;
+        }
+
         return $this->paginationLimitParam?->getValue() ?? $this->paginationDefaultLimit;
     }
 
     public function getPaginationOffset() : int
     {
+        if($this->isPaginationExampleMode()) {
+            return 0;
+        }
+
         return $this->paginationOffsetParam?->getValue() ?? 0;
+    }
+
+    /**
+     * Whether the response currently being built is an example response,
+     * per {@see JSONResponseWithExampleInterface::isExampleResponse()} —
+     * used so {@see self::getPaginationLimit()}/{@see self::getPaginationOffset()}
+     * resolve the registered example page instead of request values (see
+     * the "Example responses" note on {@see PaginatedAPIInterface}).
+     */
+    private function isPaginationExampleMode() : bool
+    {
+        return $this instanceof JSONResponseWithExampleInterface && $this->isExampleResponse();
     }
 
     public function applyPagination(Application_FilterCriteria $criteria) : self

@@ -135,6 +135,23 @@ final class GetMediaDocumentsAPITest extends MediaTestCase
 
     // endregion
 
+    // region: Example response
+
+    public function test_exampleResponseUsesDefaultLimit() : void
+    {
+        $method = $this->createMethod($this->createKey());
+        $data = $method->getExampleJSONResponse();
+
+        $this->assertSame(50, $data[PaginatedAPIInterface::KEY_LIMIT]);
+        $this->assertSame(0, $data[PaginatedAPIInterface::KEY_OFFSET]);
+        $this->assertLessThanOrEqual(
+            $data[PaginatedAPIInterface::KEY_TOTAL_COUNT],
+            count($data[MediaAPIResponseInterface::KEY_MEDIA_DOCUMENTS])
+        );
+    }
+
+    // endregion
+
     // region: Search
 
     public function test_searchMatchesName() : void
