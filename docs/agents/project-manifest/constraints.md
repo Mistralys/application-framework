@@ -333,6 +333,31 @@ should silently compose other traits on behalf of its consumers.
 
 - **Declare a removed or renamed request parameter with `addRemovedParam()`, never a hand-written `getParam()` guard in `collectRequestData()`.** `BaseAPIMethod::addRemovedParam()` registers the name on the method's `RemovedParamCollection`; the framework's `rejectRemovedParams()` lifecycle step then rejects any request still sending it — including an explicit empty value — with the standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) before `validate()` runs. A hand-written guard in `collectRequestData()` instead collapses into the generic `183001`/`183003` codes and loses the structured `removedParameters` response data.
 
+### Example-Mode Pagination
+
+A paginated method's example response (`JSONResponseWithExampleInterface`) must not
+hand-write `limit`/`offset` values in `collectResponseData()` that can drift out of sync
+with the list it actually queried for the example. Instead, register an example page
+size via `PaginatedAPITrait::registerPaginationParams()`'s optional third parameter:
+
+```php
+$this->registerPaginationParams(
+    defaultLimit: 10,
+    maxLimit: 100,
+    exampleLimit: 3, // used only while building an example response
+);
+```
+
+While an example response is being built (`isExampleResponse()` true), `getPaginationLimit()`
+resolves to the registered `$exampleLimit` (falling back to `$defaultLimit` when none was
+registered) and `getPaginationOffset()` always resolves to `0`, regardless of any request
+`limit`/`offset` values. Because `applyPagination()` and `addPaginationResponseKeys()`
+already delegate to these two getters, an example built this way is structurally
+guaranteed to report the same page it queried — there is nothing further to keep in sync
+by hand. An out-of-range `$exampleLimit` (outside `1`–`$maxLimit`) throws `APIException`
+code `183703` from `registerPaginationParams()` itself, before any pagination state is
+mutated.
+
 ### Structural Consistency Across Sibling Methods
 
 When a module implements a family of related write API methods (for example,
@@ -472,6 +497,65 @@ directly extends `MediaResponseHeaders::ACTIVE_CONTENT_EXTENSIONS`, rather than 
 header-sending call site. The policy is keyed on the extension of the file actually sent (the
 thumbnail/original path), not the document's stored extension, since those can differ once a
 format's thumbnail is ever rendered to a different type than its source.
+
+---
+
+## Cache Locations for Generated Artefacts
+
+A cache location whose artefact is required at runtime — e.g. a committed, git-tracked
+index file — must never be left absent by a cache clear operation. Implement
+`RegeneratingCacheLocationInterface` (extends `CacheLocationInterface`,
+`src/classes/Application/CacheControl/`) in addition to the plain interface to opt a
+location into "regenerate in place" instead of "delete."
+
+**The interface:**
+
+```php
+interface RegeneratingCacheLocationInterface extends CacheLocationInterface
+{
+    /**
+     * @throws \Throwable On any failure to regenerate the artefact.
+     */
+    public function regenerate() : void;
+}
+```
+
+Implementations must never leave the artefact absent: on a failed `regenerate()`, the
+previously existing artefact must be left untouched, and an exception thrown — never a
+delete-then-fail. `APICacheLocation` (`src/classes/Application/API/Collection/`) is the
+framework's own example: its `regenerate()` is `$this->index->build()->clearIndexCache()`,
+and `APIMethodIndex::build()` only ever writes the data file after a successful build, so
+a failed regeneration leaves the previous index file in place.
+
+**Routing through `CacheManager`:** Every cache-clear call site — `CacheManager::clearAll()`,
+`clearLocation()`, `clearLocations()`, and the admin Cache Control screen's
+`CacheControlMode::handle_multiClearCache()` — must go through `CacheManager`'s own
+`clearLocation()`/`clearLocations()` methods rather than calling a location's `clear()`
+directly. A caller that calls `clear()` by hand bypasses the regenerate-in-place rule
+entirely, deleting an artefact `CacheManager` would otherwise have rebuilt.
+
+**The two-phase order:** `clearLocations()` processes its given locations in two phases:
+
+1. Every plain (non-regenerating) location is cleared via `CacheLocationInterface::clear()`.
+2. Every `RegeneratingCacheLocationInterface` location is then regenerated via
+   `regenerate()`, never `clear()`.
+
+A regenerating location is never cleared — only regenerated — and phase 2 always runs
+after phase 1 completes.
+
+**The `183801` failure contract:** A regeneration failure does not stop the remaining
+locations from being processed. All regeneration failures are collected; once every
+regenerating location has had a chance to run, `CacheManager` throws a single
+`CacheManagerException` (`ERROR_REGENERATION_FAILED = 183801`) naming every failed
+location ID, chaining the *first* encountered throwable as `previous`. Callers:
+
+- `CacheControlMode::handle_multiClearCache()` catches `183801` per location, excludes
+  the failed location from the affected list, lets the loop continue over the remaining
+  selected locations, and reports the failed location labels as an error message on
+  redirect. Any other exception still propagates.
+- `ComposerScripts::doClearCaches()` catches `183801` and prints a `WARNING:` line instead
+  of failing the Composer script — so `composer dump-autoload`'s `clearCaches` hook stays
+  usable in an incompletely configured environment.
 
 ---
 

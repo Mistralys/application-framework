@@ -234,7 +234,16 @@ Step 4 is not optional — `tearDown()`'s rollback only reverts an *open* transa
 
 ### Verifying the Generated Method Index After Editing It
 
-`tests/application/storage/api/method-index.json` is git-tracked, but `composer dump-autoload`'s `clearCaches` step deletes it outright as a cache artifact — any manual edit to this file (e.g. adding a new test fixture's entry) is silently wiped by a subsequent `dump-autoload`. After editing this file (or after running `composer dump-autoload` for any other reason), run a test that calls `APIMethodIndex::build()` — `MethodIndexEntryTest` is the simplest choice — and re-inspect the file to confirm your fixture's entry survived the regeneration before relying on it.
+`tests/application/storage/api/method-index.json` is git-tracked. `APICacheLocation`
+implements `RegeneratingCacheLocationInterface` (see "Cache Locations for Generated
+Artefacts" in `constraints.md`), so `composer dump-autoload`'s `clearCaches` step now
+regenerates this file in place via `APIMethodIndex::build()` instead of deleting it — a
+manual edit to this file (e.g. adding a new test fixture's entry by hand) is still
+overwritten by the regenerated content on the next `dump-autoload`, just no longer left
+absent. After editing this file (or after running `composer dump-autoload` for any other
+reason), run a test that calls `APIMethodIndex::build()` — `MethodIndexEntryTest` is the
+simplest choice — and re-inspect the file to confirm your fixture's entry survived the
+regeneration before relying on it.
 
 ---
 

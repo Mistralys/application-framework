@@ -1,5 +1,22 @@
 # Application Framework Changelog
 
+## v7.7.0 - **WIP; UNRELEASED** - Regenerated Cache Artefacts & Example Pagination (Breaking-XS)
+
+**Generated cache artefacts, such as the API method index, are now regenerated in place instead of
+being deleted on cache clear.** Paginated API methods can also register an example-mode page size, so
+their example responses stay internally consistent with the list they queried.
+
+- Cache: Generated artefacts registered as cache locations are regenerated in place, never deleted.
+- Cache: The admin cache screen follows the same rule.
+- Cache: Regeneration failures are reported after all locations are processed; Composer warns instead of failing.
+- API: The method index survives `composer clear-caches` and `dump-autoload`.
+- API: Paginated methods can register an example page size; examples report the page they queried.
+
+### Breaking Changes
+
+`PaginatedAPIInterface::registerPaginationParams()` gained an optional third parameter. This only
+matters for implementers that do not use `PaginatedAPITrait`, which already accounts for it.
+
 ## v7.6.0 - Media Document APIs & Removed-Parameter Declaration (Breaking-XS)
 
 **Media documents can now be added, fetched, listed, updated and deleted through the API.**

@@ -162,7 +162,7 @@ Run PHPStan via Composer scripts — **never invoke `vendor/bin/phpstan` directl
 | `composer build-docs` | Regenerates module docs (overview, glossary) and CTX files; surfaces any `relatedModules` warnings in the CLI |
 | `composer generate-openapi-spec` | Generates the OpenAPI specification file to `APP_ROOT/api/openapi.json` |
 | `composer generate-htaccess` | Generates the `.htaccess` file for the application |
-| `composer clear-caches` | Clears all framework caches including the dynamic class cache |
+| `composer clear-caches` | Clears all framework caches including the dynamic class cache. A generated artefact registered as a `RegeneratingCacheLocationInterface` location (e.g. the API method index) is regenerated in place rather than deleted — see "Cache Locations for Generated Artefacts" in `constraints.md`. |
 
 ---
 
