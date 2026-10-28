@@ -232,9 +232,27 @@ When a test does this deliberately (see `KeyAuthorizationTest::test_updateLastUs
 
 Step 4 is not optional — `tearDown()`'s rollback only reverts an *open* transaction; a fixture committed in step 2 will otherwise leak into every subsequent test run against the same database.
 
-### Verifying the Generated Method Index After Editing It
+### Verifying a Generated Index After Editing It
 
-`tests/application/storage/api/method-index.json` is git-tracked, but `composer dump-autoload`'s `clearCaches` step deletes it outright as a cache artifact — any manual edit to this file (e.g. adding a new test fixture's entry) is silently wiped by a subsequent `dump-autoload`. After editing this file (or after running `composer dump-autoload` for any other reason), run a test that calls `APIMethodIndex::build()` — `MethodIndexEntryTest` is the simplest choice — and re-inspect the file to confirm your fixture's entry survived the regeneration before relying on it.
+Three committed, git-tracked index files are regenerated in place rather than deleted on
+cache clear, because their cache locations implement `RegeneratingCacheLocationInterface`
+(see "Cache Locations for Generated Artefacts" in `constraints.md`):
+
+- `tests/application/storage/api/method-index.json`, rebuilt via `APIMethodIndex::build()`
+  (`APICacheLocation`).
+- `tests/application/storage/admin/sitemap.php`, rebuilt via `AdminScreenIndexer::index()`
+  (`AdminScreenIndexCacheLocation`).
+- `tests/application/storage/events/offline-events-index.php`, rebuilt via
+  `EventIndexer::reindex()` (`EventIndexCacheLocation`).
+
+`composer dump-autoload`'s `clearCaches` step regenerates all three in place — a manual
+edit to any of them (e.g. adding a new test fixture's entry by hand) is still overwritten
+by the regenerated content on the next `dump-autoload`, just no longer left absent. After
+editing one of these files (or after running `composer dump-autoload` for any other
+reason), run a test that exercises the matching build method — `MethodIndexEntryTest` for
+the API index, `IndexerTests` for the admin screen index, `OfflineEventTest` for the
+offline-events index — and re-inspect the file to confirm your fixture's entry survived
+the regeneration before relying on it.
 
 ---
 

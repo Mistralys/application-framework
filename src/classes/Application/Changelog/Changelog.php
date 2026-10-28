@@ -153,7 +153,7 @@ class Application_Changelog implements EventableInterface
         $this->log(sprintf('Committing entry of type [%s].', $type));
         
         $record = $this->getInsertColumns();
-        $record[self::COL_AUTHOR] = Application::getUser()->getID();
+        $record[self::COL_AUTHOR] = $this->owner->getChangelogOwner()->getID();
         $record[self::COL_TYPE] = $type;
         $record[self::COL_DATE] = date('Y-m-d H:i:s');
         $record[self::COL_DATA] = JSONConverter::var2json($data);

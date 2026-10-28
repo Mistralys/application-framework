@@ -333,6 +333,31 @@ should silently compose other traits on behalf of its consumers.
 
 - **Declare a removed or renamed request parameter with `addRemovedParam()`, never a hand-written `getParam()` guard in `collectRequestData()`.** `BaseAPIMethod::addRemovedParam()` registers the name on the method's `RemovedParamCollection`; the framework's `rejectRemovedParams()` lifecycle step then rejects any request still sending it — including an explicit empty value — with the standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) before `validate()` runs. A hand-written guard in `collectRequestData()` instead collapses into the generic `183001`/`183003` codes and loses the structured `removedParameters` response data.
 
+### Example-Mode Pagination
+
+A paginated method's example response (`JSONResponseWithExampleInterface`) must not
+hand-write `limit`/`offset` values in `collectResponseData()` that can drift out of sync
+with the list it actually queried for the example. Instead, register an example page
+size via `PaginatedAPITrait::registerPaginationParams()`'s optional third parameter:
+
+```php
+$this->registerPaginationParams(
+    defaultLimit: 10,
+    maxLimit: 100,
+    exampleLimit: 3, // used only while building an example response
+);
+```
+
+While an example response is being built (`isExampleResponse()` true), `getPaginationLimit()`
+resolves to the registered `$exampleLimit` (falling back to `$defaultLimit` when none was
+registered) and `getPaginationOffset()` always resolves to `0`, regardless of any request
+`limit`/`offset` values. Because `applyPagination()` and `addPaginationResponseKeys()`
+already delegate to these two getters, an example built this way is structurally
+guaranteed to report the same page it queried — there is nothing further to keep in sync
+by hand. An out-of-range `$exampleLimit` (outside `1`–`$maxLimit`) throws `APIException`
+code `183703` from `registerPaginationParams()` itself, before any pagination state is
+mutated.
+
 ### Structural Consistency Across Sibling Methods
 
 When a module implements a family of related write API methods (for example,
@@ -475,6 +500,97 @@ format's thumbnail is ever rendered to a different type than its source.
 
 ---
 
+## Cache Locations for Generated Artefacts
+
+A cache location whose artefact is required at runtime — e.g. a committed, git-tracked
+index file — must never be left absent by a cache clear operation. Implement
+`RegeneratingCacheLocationInterface` (extends `CacheLocationInterface`,
+`src/classes/Application/CacheControl/`) in addition to the plain interface to opt a
+location into "regenerate in place" instead of "delete."
+
+**The interface:**
+
+```php
+interface RegeneratingCacheLocationInterface extends CacheLocationInterface
+{
+    /**
+     * @throws \Throwable On any failure to regenerate the artefact.
+     */
+    public function regenerate() : void;
+}
+```
+
+Implementations must never leave the artefact absent: on a failed `regenerate()`, the
+previously existing artefact must be left untouched, and an exception thrown — never a
+delete-then-fail. `APICacheLocation` (`src/classes/Application/API/Collection/`) is the
+framework's own example: its `regenerate()` is `$this->index->build()->clearIndexCache()`,
+and `APIMethodIndex::build()` only ever writes the data file after a successful build, so
+a failed regeneration leaves the previous index file in place.
+
+**Routing through `CacheManager`:** Every cache-clear call site — `CacheManager::clearAll()`,
+`clearLocation()`, `clearLocations()`, and the admin Cache Control screen's
+`CacheControlMode::handle_multiClearCache()` — must go through `CacheManager`'s own
+`clearLocation()`/`clearLocations()` methods rather than calling a location's `clear()`
+directly. A caller that calls `clear()` by hand bypasses the regenerate-in-place rule
+entirely, deleting an artefact `CacheManager` would otherwise have rebuilt.
+
+**The two-phase order:** `clearLocations()` processes its given locations in two phases:
+
+1. Every plain (non-regenerating) location is cleared via `CacheLocationInterface::clear()`.
+2. Every `RegeneratingCacheLocationInterface` location is then regenerated via
+   `regenerate()`, never `clear()`.
+
+A regenerating location is never cleared — only regenerated — and phase 2 always runs
+after phase 1 completes.
+
+**The `183801` failure contract:** A regeneration failure does not stop the remaining
+locations from being processed. All regeneration failures are collected; once every
+regenerating location has had a chance to run, `CacheManager` throws a single
+`CacheManagerException` (`ERROR_REGENERATION_FAILED = 183801`) naming every failed
+location ID, chaining the *first* encountered throwable as `previous`. Callers:
+
+- `CacheControlMode::handle_multiClearCache()` catches `183801` per location, excludes
+  the failed location from the affected list, lets the loop continue over the remaining
+  selected locations, and reports the failed location labels as an error message on
+  redirect. Any other exception still propagates.
+- `ComposerScripts::doClearCaches()` catches `183801` and prints a `WARNING:` line instead
+  of failing the Composer script — so `composer dump-autoload`'s `clearCaches` hook stays
+  usable in an incompletely configured environment.
+
+**Current regenerating locations:** Three locations implement
+`RegeneratingCacheLocationInterface` today, all under `src/classes/Application/`:
+`APICacheLocation` (`API/Collection/`, the API method index), `AdminScreenIndexCacheLocation`
+(`Admin/Index/`, the admin screen sitemap), and `EventIndexCacheLocation`
+(`EventHandler/OfflineEvents/Index/`, the offline-events index). Each pairs with an
+`Events\Register…CacheListener` class that registers its location with `CacheManager`.
+
+**Locale safety:** A regenerating location's build step must never leave the active app
+locale changed as a side effect, even on failure. `AdminScreenIndexer::index()` captures
+the active locale before indexing and restores it in a `finally` block wrapping the entire
+index body (including the file write), because the indexer walks admin screens under a
+fixed `en_GB` locale — without the restore, a mid-request regeneration (e.g. triggered by
+the Cache Control screen) would silently switch the requesting user's UI language.
+
+**In-place refresh — eager vs. lazy:** The two singleton-backed indexes refresh
+differently after `regenerate()` runs, and the difference matters to callers that read
+immediately afterward:
+
+- `AdminScreenIndex::reload()` eagerly re-reads the index file and repopulates the
+  singleton's in-memory state in the same call, so a caller reading the singleton
+  immediately after `regenerate()` always sees the freshly rebuilt data.
+- `EventIndex::clearIndexCache()` only resets the singleton's `$loaded`, `$events` and
+  `$listeners` state — it does **not** re-read the index file itself. The offline-events
+  index is therefore only refreshed lazily, on the *next* access that triggers
+  `EventIndex`'s own lazy `load()` guard. A caller holding a reference to the singleton
+  from before the clear transparently sees the new data on its next read, but nothing is
+  eagerly reloaded at `regenerate()` time.
+
+Both `AdminScreenIndex::reload()` and `EventIndex::clearIndexCache()` refresh the
+*existing* singleton instance in place rather than resetting it — a caller already holding
+a reference to the singleton never ends up pointing at stale, detached data.
+
+---
+
 ## Known Gotchas
 
 ### `Application::createUser()` — cache
@@ -512,6 +628,18 @@ $this->registerSetting('alias')
 
 Omitting the callback for even one setting on a revisionable-backed manager reproduces the
 unconditional `setRecordKey()` throw on save.
+
+### Changelog entry authorship follows the transaction owner, not the session user
+
+`Changelog::commitQueueEntry()` stamps every committed entry's author from
+`ChangelogableInterface::getChangelogOwner()` on the transaction's owning revisionable —
+**not** from `Application::getUser()`. For the common case of a
+`startCurrentUserTransaction()`, the owner is the session user, so this is invisible. For a
+transaction started with an explicit, different owner ID (e.g. an API call acting as a
+pseudo-user, or a script importing data on behalf of another account), the committed entry
+is attributed to that owner, not to whichever user or process actually executed the request.
+Any code reading a changelog entry's author to mean "who was logged in" must instead read
+it as "who the transaction was recorded as belonging to."
 
 ### `BaseRevisionable::getFormValues()` is no longer data-keys-only
 

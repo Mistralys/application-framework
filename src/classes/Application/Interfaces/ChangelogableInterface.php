@@ -116,6 +116,10 @@ interface ChangelogableInterface
      * Only used when adding new entries, not for existing entries
      * in the database.
      *
+     * Its ID is stamped as the author of every entry committed
+     * via {@see \Application_Changelog::commitQueueEntry()}, regardless
+     * of the global session user.
+     *
      * @return Application_User
      */
     public function getChangelogOwner(): Application_User;

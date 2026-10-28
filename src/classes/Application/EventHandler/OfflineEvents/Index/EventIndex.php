@@ -178,4 +178,16 @@ class EventIndex implements Application_Interfaces_Loggable
             fn($listenerClasses) => in_array($class, $listenerClasses, true)
         );
     }
+
+    /**
+     * Resets the in-memory index so the next read re-reads the
+     * data file from disk, refreshing this singleton instance in
+     * place instead of leaving it serving stale data.
+     */
+    public function clearIndexCache() : void
+    {
+        $this->loaded = false;
+        $this->events = array();
+        $this->listeners = array();
+    }
 }

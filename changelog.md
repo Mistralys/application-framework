@@ -1,5 +1,33 @@
 # Application Framework Changelog
 
+## v7.7.0 - Regenerated Cache Artefacts & Example Pagination (Breaking-XS)
+
+**Generated cache artefacts — the API method index, admin screen sitemap, and offline-events index —
+are now regenerated in place instead of being deleted on cache clear.** Changelog entries are now
+attributed to the transaction's actual owner rather than the session user, and a namespace mismatch
+on the API cache location has been corrected. Paginated API methods can also register an example-mode
+page size, so their example responses stay internally consistent with the list they queried.
+
+- Cache: Generated artefacts registered as cache locations are regenerated in place, never deleted.
+- Cache: Admin screen sitemap and offline-events indexes also regenerate in place.
+- Cache: The admin cache screen follows the same rule.
+- Cache: Regeneration failures are reported after all locations are processed; Composer warns instead of failing.
+- Changelog: Committed entries are now attributed to the transaction's actual owner instead of the session user.
+- AdminScreenIndex: Fixed indexing leaving the active locale switched afterwards.
+- API: The method index survives `composer clear-caches` and `dump-autoload`.
+- API: Paginated methods can register an example page size; examples report the page they queried.
+- API: Corrected the method index cache location's namespace to match its actual location.
+- Docs: The media module's relations to the API, API parameters and DBHelper modules are now declared in both directions, so module builds no longer report asymmetric relations.
+
+### Breaking Changes
+
+`PaginatedAPIInterface::registerPaginationParams()` gained an optional third parameter. This only
+matters for implementers that do not use `PaginatedAPITrait`, which already accounts for it.
+
+The API method index cache location's namespace moved from `Application\AppFactory` to
+`Application\API\Collection`. Anyone referencing `Application\AppFactory\APICacheLocation` directly
+must update to `Application\API\Collection\APICacheLocation`.
+
 ## v7.6.0 - Media Document APIs & Removed-Parameter Declaration (Breaking-XS)
 
 **Media documents can now be added, fetched, listed, updated and deleted through the API.**

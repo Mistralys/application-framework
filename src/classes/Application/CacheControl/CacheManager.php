@@ -90,22 +90,113 @@ class CacheManager extends BaseStringPrimaryCollection implements Application_In
     }
 
     /**
+     * Clears all registered cache locations.
+     *
+     * Plain locations are cleared via {@see CacheLocationInterface::clear()};
+     * {@see RegeneratingCacheLocationInterface} locations are rebuilt in
+     * place instead, once every plain location has been cleared.
+     *
      * @return $this
+     * @throws CacheManagerException {@see CacheManagerException::ERROR_REGENERATION_FAILED}
      */
     public function clearAll() : self
     {
         $this->log('Clearing all caches...');
 
-        foreach($this->getAll() as $location)
+        return $this->clearLocations($this->getAll());
+    }
+
+    /**
+     * Clears a single cache location.
+     *
+     * If the location implements {@see RegeneratingCacheLocationInterface},
+     * it is regenerated in place instead of being cleared.
+     *
+     * @param CacheLocationInterface $location
+     * @return $this
+     * @throws CacheManagerException {@see CacheManagerException::ERROR_REGENERATION_FAILED}
+     */
+    public function clearLocation(CacheLocationInterface $location) : self
+    {
+        return $this->clearLocations(array($location));
+    }
+
+    /**
+     * Clears a list of cache locations, in two phases:
+     *
+     * 1. Every plain location is cleared via {@see CacheLocationInterface::clear()}.
+     * 2. Every {@see RegeneratingCacheLocationInterface} location is then
+     *    regenerated in place via {@see RegeneratingCacheLocationInterface::regenerate()}.
+     *
+     * Regeneration failures do not stop the remaining locations from being
+     * processed: all failures are collected, and a single wrapped exception
+     * is thrown once every location has had a chance to run, naming the
+     * failed locations and chaining the first encountered throwable.
+     *
+     * @param CacheLocationInterface[] $locations
+     * @return $this
+     * @throws CacheManagerException {@see CacheManagerException::ERROR_REGENERATION_FAILED}
+     */
+    public function clearLocations(array $locations) : self
+    {
+        $regenerating = array();
+
+        foreach($locations as $location)
         {
+            if($location instanceof RegeneratingCacheLocationInterface) {
+                $regenerating[] = $location;
+                continue;
+            }
+
             $this->log(
-                '[%s] %s (%s bytes)',
+                '[%s] %s (%s bytes) | Clearing.',
                 $location->getID(),
                 $location->getLabel(),
                 $location->getByteSize()
             );
 
             $location->clear();
+        }
+
+        /**
+         * @var array<string,\Throwable> $failures Location ID => original throwable.
+         */
+        $failures = array();
+
+        foreach($regenerating as $location)
+        {
+            $this->log(
+                '[%s] %s (%s bytes) | Regenerating.',
+                $location->getID(),
+                $location->getLabel(),
+                $location->getByteSize()
+            );
+
+            try
+            {
+                $location->regenerate();
+            }
+            catch(\Throwable $e)
+            {
+                $failures[$location->getID()] = $e;
+            }
+        }
+
+        if(!empty($failures))
+        {
+            $ids = array_keys($failures);
+            $first = $failures[$ids[0]];
+
+            throw new CacheManagerException(
+                'Failed to regenerate one or more cache locations',
+                sprintf(
+                    'The following cache location(s) failed to regenerate: [%s]. '.PHP_EOL.
+                    'See the chained exception for the first failure encountered.',
+                    implode(', ', $ids)
+                ),
+                CacheManagerException::ERROR_REGENERATION_FAILED,
+                $first
+            );
         }
 
         return $this;

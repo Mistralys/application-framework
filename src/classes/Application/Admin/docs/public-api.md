@@ -28,11 +28,15 @@ Abstract base for wizard-style multi-step screens (extends the legacy `Applicati
 
 ### `Application\Admin\Index\AdminScreenIndex`
 
-Singleton that provides runtime access to the indexed admin screen sitemap. Used to resolve URL paths to screen classes and to retrieve the full screen tree.
+Singleton that provides runtime access to the indexed admin screen sitemap. Used to resolve URL paths to screen classes and to retrieve the full screen tree. `reload()` eagerly re-reads the committed sitemap file and refreshes the singleton's in-memory state in place, so a caller reading the singleton immediately after a rebuild sees the freshly rebuilt data — unlike the offline-events index (see `EventHandler/README.md`), which only refreshes lazily on next access.
 
 ### `Application\Admin\Index\AdminScreenIndexer`
 
-Build-time class-loader-based indexer. Discovers all admin screen classes in the application, instantiates them in stub mode, and produces the sitemap file consumed by `AdminScreenIndex`.
+Build-time class-loader-based indexer. Discovers all admin screen classes in the application, instantiates them in stub mode, and produces the sitemap file consumed by `AdminScreenIndex`. `index()` captures the active app locale before indexing and restores it in a `finally` block, including on failure, since the discovery walk runs under a fixed locale and must never leak a locale change into the calling request.
+
+### `Application\Admin\Index\AdminScreenIndexCacheLocation`
+
+Cache location description for the admin screen sitemap, implementing `RegeneratingCacheLocationInterface` (see "Cache Locations for Generated Artefacts" in `constraints.md`): a cache clear rebuilds the sitemap in place via `AdminScreenIndexer::index()` followed by `AdminScreenIndex::reload()`, rather than deleting the committed file.
 
 ### `Application\Admin\BaseScreenRights`
 

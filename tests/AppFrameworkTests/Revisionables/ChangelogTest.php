@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
+use Application\Application;
 use TestDriver\Revisionables\ChangelogHandler;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 
@@ -45,5 +46,40 @@ final class ChangelogTest extends RevisionableTestCase
         $record->endTransaction();
 
         $this->assertEmpty($record->getChangelogQueue());
+    }
+
+    public function test_changelogAuthorIsTransactionOwner() : void
+    {
+        $record = $this->createTestRevisionable('FooBar');
+        $owner = $this->createTestUser();
+
+        $this->assertNotSame(
+            $owner->getID(),
+            Application::getUser()->getID(),
+            'The test owner must differ from the session user for this test to be meaningful.'
+        );
+
+        $record->startTransaction($owner->getID(), $owner->getName());
+        $record->setAlias('foo_bar');
+        $record->endTransaction();
+
+        $latest = $record->getChangelog()->getFilters()->getLatest();
+
+        $this->assertNotNull($latest);
+        $this->assertSame($owner->getID(), $latest->getAuthorID());
+    }
+
+    public function test_changelogAuthorForCurrentUserTransactionIsUnchanged() : void
+    {
+        $record = $this->createTestRevisionable('FooBar');
+
+        $record->startCurrentUserTransaction();
+        $record->setAlias('foo_bar');
+        $record->endTransaction();
+
+        $latest = $record->getChangelog()->getFilters()->getLatest();
+
+        $this->assertNotNull($latest);
+        $this->assertSame(Application::getUser()->getID(), $latest->getAuthorID());
     }
 }

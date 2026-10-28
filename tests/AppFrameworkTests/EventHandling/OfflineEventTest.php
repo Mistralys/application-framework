@@ -12,6 +12,7 @@ use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
 use application\assets\classes\TestDriver\OfflineEvents\PriorityTest\PriorityListenerC;
 use Application\EventHandler\OfflineEvents\Index\EventIndex;
+use Application\EventHandler\OfflineEvents\Index\EventIndexer;
 use Application\EventHandler\OfflineEvents\OfflineEventContainer;
 use TestDriver\OfflineEvents\PriorityTest\PriorityListenerA;
 use TestDriver\OfflineEvents\PriorityTest\PriorityListenerB;
@@ -113,5 +114,52 @@ final class OfflineEventTest extends ApplicationTestCase
         $this->assertInstanceOf(PriorityListenerB::class, $listeners[0]);
         $this->assertInstanceOf(PriorityListenerC::class, $listeners[1]);
         $this->assertInstanceOf(PriorityListenerA::class, $listeners[2]);
+    }
+
+    /**
+     * {@see EventIndexer::index()} must stay idempotent within a
+     * process (other callers, like the Composer build script, rely
+     * on this), while {@see EventIndexer::reindex()} must rewrite the
+     * index file unconditionally, bypassing that guard.
+     */
+    public function test_reindexRewritesAfterIndex() : void
+    {
+        $indexer = EventIndexer::getInstance();
+
+        // Ensure the once-per-process guard has already tripped,
+        // whether by an earlier test or this call.
+        $indexer->index();
+
+        $file = EventIndex::getIndexFile();
+        $file->delete();
+        $this->assertFalse($file->exists());
+
+        $indexer->index();
+        $this->assertFalse(
+            $file->exists(),
+            'index() must not rewrite the index once the guard has already tripped.'
+        );
+
+        $indexer->reindex();
+        $this->assertTrue(
+            $file->exists(),
+            'reindex() must rewrite the index regardless of the once-per-process guard.'
+        );
+    }
+
+    /**
+     * After {@see EventIndex::clearIndexCache()}, the singleton must
+     * keep serving data from the same instance once reloaded, so
+     * existing references are not left pointing at stale data.
+     */
+    public function test_clearIndexCacheReloadsSameInstance() : void
+    {
+        $instance = EventIndex::getInstance();
+        $this->assertNotEmpty($instance->getAllEventClasses());
+
+        $instance->clearIndexCache();
+
+        $this->assertSame($instance, EventIndex::getInstance());
+        $this->assertNotEmpty($instance->getAllListenerClasses());
     }
 }

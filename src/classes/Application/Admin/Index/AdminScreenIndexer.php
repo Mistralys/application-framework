@@ -53,32 +53,38 @@ class AdminScreenIndexer extends BaseClassLoaderCollectionMulti
 
         $this->indexed = true;
 
-        Localization::selectAppLocale(Localization\Locale\en_GB::LOCALE_NAME);
+        $previousLocale = Localization::getAppLocaleName();
 
-        $this->stubArea = new StubArea($this->driver, false);
-        $this->stubMode = new StubMode($this->driver, $this->stubArea);
-        $this->stubSubmode = new StubSubmode($this->driver, $this->stubMode);
+        try {
+            Localization::selectAppLocale(Localization\Locale\en_GB::LOCALE_NAME);
 
-        $this->infos = array();
-        $this->roots = array();
-        $this->countContentScreens = 0;
-        foreach($this->getAll() as $item) {
-            $this->infos[] = $item;
+            $this->stubArea = new StubArea($this->driver, false);
+            $this->stubMode = new StubMode($this->driver, $this->stubArea);
+            $this->stubSubmode = new StubSubmode($this->driver, $this->stubMode);
 
-            if($item->getScreen() instanceof AdminAreaInterface) {
-                $this->roots[] = $item;
+            $this->infos = array();
+            $this->roots = array();
+            $this->countContentScreens = 0;
+            foreach($this->getAll() as $item) {
+                $this->infos[] = $item;
+
+                if($item->getScreen() instanceof AdminAreaInterface) {
+                    $this->roots[] = $item;
+                }
+
+                // Only screens without subscreens actually generate
+                // content.
+                if(!$item->getScreen()->hasSubscreens()) {
+                    $this->countContentScreens++;
+                }
             }
 
-            // Only screens without subscreens actually generate
-            // content.
-            if(!$item->getScreen()->hasSubscreens()) {
-                $this->countContentScreens++;
-            }
+            $this->buildTree();
+
+            AdminScreenIndex::getIndexFile()->putStatements('return '.var_export($this->serialize(), true).';');
+        } finally {
+            Localization::selectAppLocale($previousLocale);
         }
-
-        $this->buildTree();
-
-        AdminScreenIndex::getIndexFile()->putStatements('return '.var_export($this->serialize(), true).';');
 
         return $this;
     }

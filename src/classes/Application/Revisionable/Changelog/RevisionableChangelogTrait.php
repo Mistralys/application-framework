@@ -84,6 +84,14 @@ trait RevisionableChangelogTrait
         return $result;
     }
 
+    /**
+     * Retrieves the author of the revision targeted by the current
+     * transaction, so this author's ID is stamped on every changelog
+     * entry committed during that transaction, rather than the
+     * global session user.
+     *
+     * @return Application_User
+     */
     public function getChangelogOwner() : Application_User
     {
         return Application::createUser($this->getRevisionAuthorID());
