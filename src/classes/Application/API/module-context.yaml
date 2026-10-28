@@ -23,6 +23,7 @@ moduleMetaData:
     - "connectors"
     - "event-handler"
     - "countries-api"
+    - "media"
 
 documents:
   -

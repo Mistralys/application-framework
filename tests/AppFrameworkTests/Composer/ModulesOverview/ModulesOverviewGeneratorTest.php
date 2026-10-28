@@ -6,6 +6,7 @@ namespace AppFrameworkTests\Composer\ModulesOverview;
 
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
+use Application\Composer\BuildMessages;
 use Application\Composer\ModulesOverview\ModulesOverviewGenerator;
 use AppFrameworkTestClasses\ApplicationTestCase;
 
@@ -125,5 +126,25 @@ final class ModulesOverviewGeneratorTest extends ApplicationTestCase
             $secondRun,
             'Two successive generator runs must produce the same output (excluding the timestamp).'
         );
+    }
+
+    /**
+     * The framework's own module relations must be symmetric: if module A
+     * lists module B in `relatedModules`, B must list A back. Running the
+     * generator against the framework's real module structure must not
+     * raise any asymmetric-`relatedModules` build errors.
+     */
+    public function test_generate_frameworkModuleRelationsAreSymmetric() : void
+    {
+        BuildMessages::reset();
+
+        $this->createGenerator()->generate();
+
+        $this->assertFalse(
+            BuildMessages::hasErrors(),
+            'Generating the modules overview must not report asymmetric relatedModules entries.'
+        );
+
+        BuildMessages::reset();
     }
 }

@@ -20,6 +20,7 @@ moduleMetaData:
     - application-sets
     - api-clients
     - countries
+    - media
 
 documents:
 -
