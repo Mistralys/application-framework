@@ -127,6 +127,9 @@
     "rector/rector": ">=2.3"
   },
   "config": {
+    "platform": {
+      "php": "8.4.27"
+    },
     "allow-plugins": {
       "php-http/discovery": true,
       "composer/installers": true,
