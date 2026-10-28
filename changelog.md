@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v7.7.0 - **WIP; UNRELEASED** - Regenerated Cache Artefacts & Example Pagination (Breaking-XS)
+## v7.7.0 - Regenerated Cache Artefacts & Example Pagination (Breaking-XS)
 
 **Generated cache artefacts — the API method index, admin screen sitemap, and offline-events index —
 are now regenerated in place instead of being deleted on cache clear.** Changelog entries are now
@@ -27,10 +27,6 @@ matters for implementers that do not use `PaginatedAPITrait`, which already acco
 The API method index cache location's namespace moved from `Application\AppFactory` to
 `Application\API\Collection`. Anyone referencing `Application\AppFactory\APICacheLocation` directly
 must update to `Application\API\Collection\APICacheLocation`.
-
-Changelog entries committed through the changelog queue are now attributed to the revisionable
-transaction's actual owner, not the global session user. Code that relied on committed entries
-always carrying the session user's attribution must be reviewed.
 
 ## v7.6.0 - Media Document APIs & Removed-Parameter Declaration (Breaking-XS)
 
