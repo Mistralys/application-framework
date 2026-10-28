@@ -227,7 +227,7 @@ discovers, indexes, and exposes through a single dispatcher entry point.
 | Directory | Contents |
 |---|---|
 | `BaseMethods/` | `BaseAPIMethod` — abstract base class implementing the full method lifecycle. |
-| `Collection/` | `APIMethodCollection`, `APIMethodIndex`, `APIMethodIndexEntry`, `APICacheLocation` — method discovery, typed index entries, and cache control integration. `APICacheLocation` implements `RegeneratingCacheLocationInterface` (see "Cache Locations for Generated Artefacts" in `constraints.md`): a cache clear rebuilds the method index in place via `APIMethodIndex::build()` rather than deleting the committed `method-index.json` artefact. |
+| `Collection/` | `APIMethodCollection`, `APIMethodIndex`, `APIMethodIndexEntry`, `APICacheLocation` (`Application\API\Collection\APICacheLocation`) — method discovery, typed index entries, and cache control integration. `APICacheLocation` implements `RegeneratingCacheLocationInterface` (see "Cache Locations for Generated Artefacts" in `constraints.md`): a cache clear rebuilds the method index in place via `APIMethodIndex::build()` rather than deleting the committed `method-index.json` artefact. |
 | `Connector/` | `AppAPIConnector`, `AppAPIMethod` — HTTP client for remote API consumption. |
 | `Documentation/` | `APIDocumentation`, `MethodDocumentation`, `JSONMethodExample` — documentation rendering. |
 | `Events/` | Cache control event listeners for method index and response caches. |

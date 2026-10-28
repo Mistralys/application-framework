@@ -6,9 +6,8 @@
 
 declare(strict_types=1);
 
-namespace Application\AppFactory;
+namespace Application\API\Collection;
 
-use Application\API\Collection\APIMethodIndex;
 use Application\CacheControl\BaseCacheLocation;
 use Application\CacheControl\RegeneratingCacheLocationInterface;
 use AppUtils\FileHelper\JSONFile;

@@ -12,7 +12,6 @@ use Application\API\APIException;
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use Application\API\Clients\API\APIKeyMethodInterface;
-use Application\AppFactory\APICacheLocation;
 use Application\Application;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;

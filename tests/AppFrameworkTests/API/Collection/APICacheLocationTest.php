@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AppFrameworkTests\API\Collection;
 
 use Application\API\APIManager;
+use Application\API\Collection\APICacheLocation;
 use Application\API\Collection\APIMethodIndex;
-use Application\AppFactory\APICacheLocation;
 use Application\CacheControl\CacheManager;
 use Application\CacheControl\RegeneratingCacheLocationInterface;
 use AppFrameworkTestClasses\ApplicationTestCase;
