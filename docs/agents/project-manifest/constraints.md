@@ -557,6 +557,38 @@ location ID, chaining the *first* encountered throwable as `previous`. Callers:
   of failing the Composer script — so `composer dump-autoload`'s `clearCaches` hook stays
   usable in an incompletely configured environment.
 
+**Current regenerating locations:** Three locations implement
+`RegeneratingCacheLocationInterface` today, all under `src/classes/Application/`:
+`APICacheLocation` (`API/Collection/`, the API method index), `AdminScreenIndexCacheLocation`
+(`Admin/Index/`, the admin screen sitemap), and `EventIndexCacheLocation`
+(`EventHandler/OfflineEvents/Index/`, the offline-events index). Each pairs with an
+`Events\Register…CacheListener` class that registers its location with `CacheManager`.
+
+**Locale safety:** A regenerating location's build step must never leave the active app
+locale changed as a side effect, even on failure. `AdminScreenIndexer::index()` captures
+the active locale before indexing and restores it in a `finally` block wrapping the entire
+index body (including the file write), because the indexer walks admin screens under a
+fixed `en_GB` locale — without the restore, a mid-request regeneration (e.g. triggered by
+the Cache Control screen) would silently switch the requesting user's UI language.
+
+**In-place refresh — eager vs. lazy:** The two singleton-backed indexes refresh
+differently after `regenerate()` runs, and the difference matters to callers that read
+immediately afterward:
+
+- `AdminScreenIndex::reload()` eagerly re-reads the index file and repopulates the
+  singleton's in-memory state in the same call, so a caller reading the singleton
+  immediately after `regenerate()` always sees the freshly rebuilt data.
+- `EventIndex::clearIndexCache()` only resets the singleton's `$loaded`, `$events` and
+  `$listeners` state — it does **not** re-read the index file itself. The offline-events
+  index is therefore only refreshed lazily, on the *next* access that triggers
+  `EventIndex`'s own lazy `load()` guard. A caller holding a reference to the singleton
+  from before the clear transparently sees the new data on its next read, but nothing is
+  eagerly reloaded at `regenerate()` time.
+
+Both `AdminScreenIndex::reload()` and `EventIndex::clearIndexCache()` refresh the
+*existing* singleton instance in place rather than resetting it — a caller already holding
+a reference to the singleton never ends up pointing at stale, detached data.
+
 ---
 
 ## Known Gotchas
@@ -596,6 +628,18 @@ $this->registerSetting('alias')
 
 Omitting the callback for even one setting on a revisionable-backed manager reproduces the
 unconditional `setRecordKey()` throw on save.
+
+### Changelog entry authorship follows the transaction owner, not the session user
+
+`Changelog::commitQueueEntry()` stamps every committed entry's author from
+`ChangelogableInterface::getChangelogOwner()` on the transaction's owning revisionable —
+**not** from `Application::getUser()`. For the common case of a
+`startCurrentUserTransaction()`, the owner is the session user, so this is invisible. For a
+transaction started with an explicit, different owner ID (e.g. an API call acting as a
+pseudo-user, or a script importing data on behalf of another account), the committed entry
+is attributed to that owner, not to whichever user or process actually executed the request.
+Any code reading a changelog entry's author to mean "who was logged in" must instead read
+it as "who the transaction was recorded as belonging to."
 
 ### `BaseRevisionable::getFormValues()` is no longer data-keys-only
 

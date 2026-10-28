@@ -45,6 +45,20 @@ class EventIndexer implements Application_Interfaces_Loggable
 
         $this->indexed = true;
 
+        $this->reindex();
+    }
+
+    /**
+     * Rewrites the index file unconditionally, regardless of whether
+     * {@see self::index()} has already run in the current process.
+     *
+     * Used by {@see EventIndexCacheLocation::regenerate()} to refresh
+     * the index in place, since {@see self::index()}'s once-per-process
+     * guard must stay in place for its other callers (e.g. the Composer
+     * build script) to remain idempotent.
+     */
+    public function reindex() : void
+    {
         $this->logHeader('Indexing offline events');
 
         EventIndex::getIndexFile()->putStatements('return '.var_export($this->serialize(), true).';');

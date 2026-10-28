@@ -49,6 +49,24 @@ class AdminScreenIndex
 
     private function __construct()
     {
+        $this->load();
+    }
+
+    /**
+     * Refreshes this singleton instance in place with the index
+     * file's current contents, so existing references keep pointing
+     * at an up-to-date instance instead of going stale.
+     *
+     * @return $this
+     */
+    public function reload() : self
+    {
+        $this->load();
+        return $this;
+    }
+
+    private function load() : void
+    {
         $file = self::getIndexFile();
 
         $this->paths = array();
