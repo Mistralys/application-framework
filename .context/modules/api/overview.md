@@ -56,7 +56,13 @@ discovers, indexes, and exposes through a single dispatcher entry point.
     `limit`/`offset`, which `IntegerParameter` treats as a warning and silently
     resolves to the configured default. `applyPagination()` applies the resolved
     values to an `Application_FilterCriteria` through its public `setLimit()`
-    signature only.
+    signature only. `registerPaginationParams()` takes an optional third
+    `$exampleLimit` parameter (out-of-range throws `ERROR_INVALID_EXAMPLE_LIMIT`,
+    183703, before any pagination state is mutated): while a
+    `JSONResponseWithExampleInterface` example response is being built,
+    `getPaginationLimit()` resolves to `$exampleLimit` (or `$defaultLimit` if none
+    was registered) and `getPaginationOffset()` always resolves to `0`, so an
+    example response can no longer disagree with the page it queried.
 - **Composing methods from pieces:** Shared, reusable method features are
   self-contained interface+trait pairs ("pieces"), never one catch-all trait.
   See the "API Trait Composition Model (Lego Rule)" section of
@@ -236,7 +242,7 @@ discovers, indexes, and exposes through a single dispatcher entry point.
 | Directory | Contents |
 |---|---|
 | `BaseMethods/` | `BaseAPIMethod` — abstract base class implementing the full method lifecycle. |
-| `Collection/` | `APIMethodCollection`, `APIMethodIndex`, `APIMethodIndexEntry`, `APICacheLocation` — method discovery, typed index entries, and cache control integration. |
+| `Collection/` | `APIMethodCollection`, `APIMethodIndex`, `APIMethodIndexEntry`, `APICacheLocation` (`Application\API\Collection\APICacheLocation`) — method discovery, typed index entries, and cache control integration. `APICacheLocation` implements `RegeneratingCacheLocationInterface` (see "Cache Locations for Generated Artefacts" in `constraints.md`): a cache clear rebuilds the method index in place via `APIMethodIndex::build()` rather than deleting the committed `method-index.json` artefact. |
 | `Connector/` | `AppAPIConnector`, `AppAPIMethod` — HTTP client for remote API consumption. |
 | `Documentation/` | `APIDocumentation`, `MethodDocumentation`, `JSONMethodExample` — documentation rendering. |
 | `Events/` | Cache control event listeners for method index and response caches. |

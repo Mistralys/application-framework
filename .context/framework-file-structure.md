@@ -279,8 +279,11 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── Methods/
             │   │   │   │   └── DescribeAdminAreasAPI.php
             │   │   ├── AdminScreenIndex.php
+            │   │   ├── AdminScreenIndexCacheLocation.php
             │   │   ├── AdminScreenIndexer.php
             │   │   ├── AdminScreenInfoCollector.php
+            │   │   ├── Events/
+            │   │   │   ├── RegisterAdminScreenIndexCacheListener.php
             │   │   ├── ScreenDataInterface.php
             │   │   ├── Screens/
             │   │   │   ├── SitemapMode.php
@@ -463,9 +466,10 @@ _SOURCE: Tree of PHP Class Files_
             │   ├── CacheManager.php
             │   ├── CacheManagerException.php
             │   ├── Events/
-            │   │   └── BaseRegisterCacheLocationsListener.php
-            │   │   └── RegisterCacheLocationsEvent.php
-            │   │   └── RegisterClassCacheListener.php
+            │   │   ├── BaseRegisterCacheLocationsListener.php
+            │   │   ├── RegisterCacheLocationsEvent.php
+            │   │   ├── RegisterClassCacheListener.php
+            │   ├── RegeneratingCacheLocationInterface.php
             ├── Changelog/
             │   ├── BaseChangelogHandler.php
             │   ├── Changelog.php
@@ -749,7 +753,10 @@ _SOURCE: Tree of PHP Class Files_
             │   │   ├── Index/
             │   │   │   ├── EventClassFinder.php
             │   │   │   ├── EventIndex.php
+            │   │   │   ├── EventIndexCacheLocation.php
             │   │   │   ├── EventIndexer.php
+            │   │   │   ├── Events/
+            │   │   │   │   ├── RegisterEventIndexCacheListener.php
             │   │   │   ├── ListenerClassFinder.php
             │   │   ├── OfflineEventContainer.php
             │   │   ├── OfflineEventException.php

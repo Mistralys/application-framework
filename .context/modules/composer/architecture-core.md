@@ -247,6 +247,7 @@ use Application\AppFactory as AppFactory;
 use Application\AppFactory\ClassCacheHandler as ClassCacheHandler;
 use Application\Bootstrap\Screen\TestSuiteBootstrap as TestSuiteBootstrap;
 use Application\CacheControl\CacheManager as CacheManager;
+use Application\CacheControl\CacheManagerException as CacheManagerException;
 use Application\Composer\IconBuilder\IconBuilder as IconBuilder;
 use Application\Composer\KeywordGlossary\KeywordGlossaryGenerator as KeywordGlossaryGenerator;
 use Application\Composer\ModulesOverview\ModulesOverviewGenerator as ModulesOverviewGenerator;

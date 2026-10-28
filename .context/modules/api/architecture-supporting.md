@@ -44,20 +44,26 @@ _SOURCE: APIGroupInterface, FrameworkAPIGroup, GenericAPIGroup, APIDocumentation
 ###  Path: `/src/classes/Application/API/Collection/APICacheLocation.php`
 
 ```php
-namespace Application\AppFactory;
+namespace Application\API\Collection;
 
 use AppUtils\FileHelper\JSONFile as JSONFile;
-use Application\API\Collection\APIMethodIndex as APIMethodIndex;
 use Application\CacheControl\BaseCacheLocation as BaseCacheLocation;
+use Application\CacheControl\RegeneratingCacheLocationInterface as RegeneratingCacheLocationInterface;
 
 /**
  * Cache location description class for the API method index,
  * so it can be handled via the cache control system.
  *
+ * The index is a runtime-required, committed artefact: clearing
+ * it would leave the application without a method index until the
+ * next explicit build, so it implements {@see RegeneratingCacheLocationInterface}
+ * to be rebuilt in place by the cache control system instead of
+ * being deleted.
+ *
  * @package API
  * @subpackage Method Collection
  */
-class APICacheLocation extends BaseCacheLocation
+class APICacheLocation extends BaseCacheLocation implements RegeneratingCacheLocationInterface
 {
 	public const CACHE_ID = 'APIMethodIndex';
 
@@ -79,7 +85,27 @@ class APICacheLocation extends BaseCacheLocation
 	}
 
 
+	/**
+	 * Deletes the index file, without rebuilding it.
+	 *
+	 * > NOTE: This is only called directly by consumers that bypass
+	 * > the cache manager. {@see \Application\CacheControl\CacheManager}
+	 * > never calls this method on this class, using {@see self::regenerate()}
+	 * > instead, since this is a {@see RegeneratingCacheLocationInterface}.
+	 */
 	public function clear(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Rebuilds the index file in place, and resets the in-memory
+	 * index cache so the next read picks up the freshly built data.
+	 *
+	 * @throws \Application\API\APIException On build failures (e.g. unknown declared rights).
+	 */
+	public function regenerate(): void
 	{
 		/* ... */
 	}
@@ -149,7 +175,6 @@ use Application\API\APIException as APIException;
 use Application\API\APIManager as APIManager;
 use Application\API\APIMethodInterface as APIMethodInterface;
 use Application\API\Clients\API\APIKeyMethodInterface as APIKeyMethodInterface;
-use Application\AppFactory\APICacheLocation as APICacheLocation;
 use Application\Application as Application;
 use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
 use Application_Traits_Loggable as Application_Traits_Loggable;

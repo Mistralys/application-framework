@@ -188,6 +188,18 @@ The framework includes an indexing utility that scans the codebase for event and
 listener classes and creates an index. This index is then used to quickly look up 
 listeners for a given event type, avoiding resource-intensive discovery on every request.
 
+The committed index file is a runtime-required artefact: `EventIndexCacheLocation`
+(`OfflineEvents/Index/EventIndexCacheLocation.php`) implements
+`RegeneratingCacheLocationInterface` (see "Cache Locations for Generated Artefacts" in
+`constraints.md`), so a cache clear rebuilds the index in place via
+`EventIndexer::reindex()` rather than deleting it. `reindex()` writes unconditionally,
+bypassing `index()`'s once-per-process guard, so it can be used to force a rebuild even
+when `index()` has already run earlier in the same request. After a rebuild,
+`EventIndex::clearIndexCache()` resets the singleton's in-memory state (`$loaded`,
+`$events`, `$listeners`) so the *next* read picks up the freshly written data — unlike
+the admin screen index (see `Admin/docs/public-api.md`), nothing is eagerly reloaded at
+rebuild time.
+
 ### Related Classes
 
 **Interfaces:**
@@ -203,8 +215,10 @@ listeners for a given event type, avoiding resource-intensive discovery on every
 - [OfflineEventContainer](OfflineEvents/OfflineEventContainer.php): Container for a single offline event instance. Loads listeners, sorts them by priority, and triggers them.
 
 **Event Indexing and Discovery:**
-- [EventIndexer](OfflineEvents/Index/EventIndexer.php): Indexing utility that scans the codebase and generates the event index file.
-- [EventIndex](OfflineEvents/Index/EventIndex.php): Utility class to query the generated event index. Provides methods to look up event classes and their listeners.
+- [EventIndexer](OfflineEvents/Index/EventIndexer.php): Indexing utility that scans the codebase and generates the event index file. `index()` writes once per process; `reindex()` writes unconditionally, used by `EventIndexCacheLocation::regenerate()` to force a rebuild in place.
+- [EventIndex](OfflineEvents/Index/EventIndex.php): Utility class to query the generated event index. Provides methods to look up event classes and their listeners. `clearIndexCache()` resets the singleton's in-memory state so the next read reloads from the regenerated file.
+- [EventIndexCacheLocation](OfflineEvents/Index/EventIndexCacheLocation.php): Cache location description for the event index, implementing `RegeneratingCacheLocationInterface` so `CacheManager` rebuilds the index in place instead of deleting it.
+- [RegisterEventIndexCacheListener](OfflineEvents/Index/Events/RegisterEventIndexCacheListener.php): Registers `EventIndexCacheLocation` with `CacheManager`.
 - [EventClassFinder](OfflineEvents/Index/EventClassFinder.php): Scans the codebase to discover all classes implementing `OfflineEventInterface`.
 - [ListenerClassFinder](OfflineEvents/Index/ListenerClassFinder.php): Scans the codebase to discover all classes implementing `OfflineEventListenerInterface`.
 

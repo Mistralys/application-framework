@@ -13,7 +13,10 @@ _SOURCE: Public Classes and APIs_
                     └── Index/
                         ├── EventClassFinder.php
                         ├── EventIndex.php
+                        ├── EventIndexCacheLocation.php
                         ├── EventIndexer.php
+                        ├── Events/
+                        │   ├── RegisterEventIndexCacheListener.php
                         ├── ListenerClassFinder.php
                     └── OfflineEventContainer.php
                     └── OfflineEventException.php
@@ -216,6 +219,91 @@ class EventIndex implements Application_Interfaces_Loggable
 	{
 		/* ... */
 	}
+
+
+	/**
+	 * Resets the in-memory index so the next read re-reads the
+	 * data file from disk, refreshing this singleton instance in
+	 * place instead of leaving it serving stale data.
+	 */
+	public function clearIndexCache(): void
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/EventHandler/OfflineEvents/Index/EventIndexCacheLocation.php`
+
+```php
+namespace Application\EventHandler\OfflineEvents\Index;
+
+use AppUtils\FileHelper\PHPFile as PHPFile;
+use Application\CacheControl\BaseCacheLocation as BaseCacheLocation;
+use Application\CacheControl\RegeneratingCacheLocationInterface as RegeneratingCacheLocationInterface;
+
+/**
+ * Cache location description class for the offline events index,
+ * so it can be handled via the cache control system.
+ *
+ * The index is a runtime-required, committed artefact: clearing
+ * it would leave the application without an offline event/listener
+ * index until the next explicit build, so it implements
+ * {@see RegeneratingCacheLocationInterface} to be rebuilt in place
+ * by the cache control system instead of being deleted.
+ *
+ * @package Application
+ * @subpackage EventHandler
+ */
+class EventIndexCacheLocation extends BaseCacheLocation implements RegeneratingCacheLocationInterface
+{
+	public const CACHE_ID = 'OfflineEventIndex';
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getByteSize(): int
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Deletes the index file, without rebuilding it.
+	 *
+	 * > NOTE: This is only called directly by consumers that bypass
+	 * > the cache manager. {@see \Application\CacheControl\CacheManager}
+	 * > never calls this method on this class, using {@see self::regenerate()}
+	 * > instead, since this is a {@see RegeneratingCacheLocationInterface}.
+	 */
+	public function clear(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Rebuilds the index file in place via {@see EventIndexer::reindex()},
+	 * bypassing its once-per-process guard, and resets the {@see EventIndex}
+	 * singleton's in-memory cache so the next read picks up the freshly
+	 * built data.
+	 *
+	 * @throws \Throwable On build failures.
+	 */
+	public function regenerate(): void
+	{
+		/* ... */
+	}
 }
 
 
@@ -250,6 +338,21 @@ class EventIndexer implements Application_Interfaces_Loggable
 	}
 
 
+	/**
+	 * Rewrites the index file unconditionally, regardless of whether
+	 * {@see self::index()} has already run in the current process.
+	 *
+	 * Used by {@see EventIndexCacheLocation::regenerate()} to refresh
+	 * the index in place, since {@see self::index()}'s once-per-process
+	 * guard must stay in place for its other callers (e.g. the Composer
+	 * build script) to remain idempotent.
+	 */
+	public function reindex(): void
+	{
+		/* ... */
+	}
+
+
 	public function countEvents(): int
 	{
 		/* ... */
@@ -269,6 +372,28 @@ class EventIndexer implements Application_Interfaces_Loggable
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/Application/EventHandler/OfflineEvents/Index/Events/RegisterEventIndexCacheListener.php`
+
+```php
+namespace Application\EventHandler\OfflineEvents\Index\Events;
+
+use Application\CacheControl\Events\BaseRegisterCacheLocationsListener as BaseRegisterCacheLocationsListener;
+use Application\EventHandler\OfflineEvents\Index\EventIndexCacheLocation as EventIndexCacheLocation;
+
+/**
+ * Registers the offline event index cache location.
+ *
+ * @package Application
+ * @subpackage EventHandler
+ *
+ * @see EventIndexCacheLocation
+ */
+class RegisterEventIndexCacheListener extends BaseRegisterCacheLocationsListener
+{
 }
 
 

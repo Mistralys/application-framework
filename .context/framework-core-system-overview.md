@@ -1412,6 +1412,31 @@ should silently compose other traits on behalf of its consumers.
 
 - **Declare a removed or renamed request parameter with `addRemovedParam()`, never a hand-written `getParam()` guard in `collectRequestData()`.** `BaseAPIMethod::addRemovedParam()` registers the name on the method's `RemovedParamCollection`; the framework's `rejectRemovedParams()` lifecycle step then rejects any request still sending it — including an explicit empty value — with the standard `ERROR_REMOVED_PARAMETER_USED` (183009, HTTP 400) before `validate()` runs. A hand-written guard in `collectRequestData()` instead collapses into the generic `183001`/`183003` codes and loses the structured `removedParameters` response data.
 
+### Example-Mode Pagination
+
+A paginated method's example response (`JSONResponseWithExampleInterface`) must not
+hand-write `limit`/`offset` values in `collectResponseData()` that can drift out of sync
+with the list it actually queried for the example. Instead, register an example page
+size via `PaginatedAPITrait::registerPaginationParams()`'s optional third parameter:
+
+```php
+$this->registerPaginationParams(
+    defaultLimit: 10,
+    maxLimit: 100,
+    exampleLimit: 3, // used only while building an example response
+);
+```
+
+While an example response is being built (`isExampleResponse()` true), `getPaginationLimit()`
+resolves to the registered `$exampleLimit` (falling back to `$defaultLimit` when none was
+registered) and `getPaginationOffset()` always resolves to `0`, regardless of any request
+`limit`/`offset` values. Because `applyPagination()` and `addPaginationResponseKeys()`
+already delegate to these two getters, an example built this way is structurally
+guaranteed to report the same page it queried — there is nothing further to keep in sync
+by hand. An out-of-range `$exampleLimit` (outside `1`–`$maxLimit`) throws `APIException`
+code `183703` from `registerPaginationParams()` itself, before any pagination state is
+mutated.
+
 ### Structural Consistency Across Sibling Methods
 
 When a module implements a family of related write API methods (for example,
@@ -1554,6 +1579,97 @@ format's thumbnail is ever rendered to a different type than its source.
 
 ---
 
+## Cache Locations for Generated Artefacts
+
+A cache location whose artefact is required at runtime — e.g. a committed, git-tracked
+index file — must never be left absent by a cache clear operation. Implement
+`RegeneratingCacheLocationInterface` (extends `CacheLocationInterface`,
+`src/classes/Application/CacheControl/`) in addition to the plain interface to opt a
+location into "regenerate in place" instead of "delete."
+
+**The interface:**
+
+```php
+interface RegeneratingCacheLocationInterface extends CacheLocationInterface
+{
+    /**
+     * @throws \Throwable On any failure to regenerate the artefact.
+     */
+    public function regenerate() : void;
+}
+```
+
+Implementations must never leave the artefact absent: on a failed `regenerate()`, the
+previously existing artefact must be left untouched, and an exception thrown — never a
+delete-then-fail. `APICacheLocation` (`src/classes/Application/API/Collection/`) is the
+framework's own example: its `regenerate()` is `$this->index->build()->clearIndexCache()`,
+and `APIMethodIndex::build()` only ever writes the data file after a successful build, so
+a failed regeneration leaves the previous index file in place.
+
+**Routing through `CacheManager`:** Every cache-clear call site — `CacheManager::clearAll()`,
+`clearLocation()`, `clearLocations()`, and the admin Cache Control screen's
+`CacheControlMode::handle_multiClearCache()` — must go through `CacheManager`'s own
+`clearLocation()`/`clearLocations()` methods rather than calling a location's `clear()`
+directly. A caller that calls `clear()` by hand bypasses the regenerate-in-place rule
+entirely, deleting an artefact `CacheManager` would otherwise have rebuilt.
+
+**The two-phase order:** `clearLocations()` processes its given locations in two phases:
+
+1. Every plain (non-regenerating) location is cleared via `CacheLocationInterface::clear()`.
+2. Every `RegeneratingCacheLocationInterface` location is then regenerated via
+   `regenerate()`, never `clear()`.
+
+A regenerating location is never cleared — only regenerated — and phase 2 always runs
+after phase 1 completes.
+
+**The `183801` failure contract:** A regeneration failure does not stop the remaining
+locations from being processed. All regeneration failures are collected; once every
+regenerating location has had a chance to run, `CacheManager` throws a single
+`CacheManagerException` (`ERROR_REGENERATION_FAILED = 183801`) naming every failed
+location ID, chaining the *first* encountered throwable as `previous`. Callers:
+
+- `CacheControlMode::handle_multiClearCache()` catches `183801` per location, excludes
+  the failed location from the affected list, lets the loop continue over the remaining
+  selected locations, and reports the failed location labels as an error message on
+  redirect. Any other exception still propagates.
+- `ComposerScripts::doClearCaches()` catches `183801` and prints a `WARNING:` line instead
+  of failing the Composer script — so `composer dump-autoload`'s `clearCaches` hook stays
+  usable in an incompletely configured environment.
+
+**Current regenerating locations:** Three locations implement
+`RegeneratingCacheLocationInterface` today, all under `src/classes/Application/`:
+`APICacheLocation` (`API/Collection/`, the API method index), `AdminScreenIndexCacheLocation`
+(`Admin/Index/`, the admin screen sitemap), and `EventIndexCacheLocation`
+(`EventHandler/OfflineEvents/Index/`, the offline-events index). Each pairs with an
+`Events\Register…CacheListener` class that registers its location with `CacheManager`.
+
+**Locale safety:** A regenerating location's build step must never leave the active app
+locale changed as a side effect, even on failure. `AdminScreenIndexer::index()` captures
+the active locale before indexing and restores it in a `finally` block wrapping the entire
+index body (including the file write), because the indexer walks admin screens under a
+fixed `en_GB` locale — without the restore, a mid-request regeneration (e.g. triggered by
+the Cache Control screen) would silently switch the requesting user's UI language.
+
+**In-place refresh — eager vs. lazy:** The two singleton-backed indexes refresh
+differently after `regenerate()` runs, and the difference matters to callers that read
+immediately afterward:
+
+- `AdminScreenIndex::reload()` eagerly re-reads the index file and repopulates the
+  singleton's in-memory state in the same call, so a caller reading the singleton
+  immediately after `regenerate()` always sees the freshly rebuilt data.
+- `EventIndex::clearIndexCache()` only resets the singleton's `$loaded`, `$events` and
+  `$listeners` state — it does **not** re-read the index file itself. The offline-events
+  index is therefore only refreshed lazily, on the *next* access that triggers
+  `EventIndex`'s own lazy `load()` guard. A caller holding a reference to the singleton
+  from before the clear transparently sees the new data on its next read, but nothing is
+  eagerly reloaded at `regenerate()` time.
+
+Both `AdminScreenIndex::reload()` and `EventIndex::clearIndexCache()` refresh the
+*existing* singleton instance in place rather than resetting it — a caller already holding
+a reference to the singleton never ends up pointing at stale, detached data.
+
+---
+
 ## Known Gotchas
 
 ### `Application::createUser()` — cache
@@ -1591,6 +1707,18 @@ $this->registerSetting('alias')
 
 Omitting the callback for even one setting on a revisionable-backed manager reproduces the
 unconditional `setRecordKey()` throw on save.
+
+### Changelog entry authorship follows the transaction owner, not the session user
+
+`Changelog::commitQueueEntry()` stamps every committed entry's author from
+`ChangelogableInterface::getChangelogOwner()` on the transaction's owning revisionable —
+**not** from `Application::getUser()`. For the common case of a
+`startCurrentUserTransaction()`, the owner is the session user, so this is invisible. For a
+transaction started with an explicit, different owner ID (e.g. an API call acting as a
+pseudo-user, or a script importing data on behalf of another account), the committed entry
+is attributed to that owner, not to whichever user or process actually executed the request.
+Any code reading a changelog entry's author to mean "who was logged in" must instead read
+it as "who the transaction was recorded as belonging to."
 
 ### `BaseRevisionable::getFormValues()` is no longer data-keys-only
 
@@ -1722,7 +1850,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 
 ```md
 > **Auto-generated** — do not edit. Regenerated by `composer build-dev`.
-> Generated: 2026-10-19T14:36:01Z
+> Generated: 2026-10-28T12:10:36Z
 
 # Keyword Glossary
 
@@ -1880,7 +2008,7 @@ Each `module-context.yaml` declares the sources (files, trees, classes) that the
 ```md
 # Modules Overview
 
-> Auto-generated on 2026-10-19 16:36:01. Do not edit manually.
+> Auto-generated on 2026-10-28 13:10:35. Do not edit manually.
 
 Total: 27 modules across 1 package.
 
@@ -1890,17 +2018,17 @@ Total: 27 modules across 1 package.
 |----|-------|-------------|-------------|--------------|-----------------|
 | `admin` | Administration Screens | Hierarchical administration screen system providing the Area → Mode → Submode → Action screen lifecycle, rendering pipeline, rights, locking, and navigation. | `src/classes/Application/Admin/` | `.context/modules/admin/` | ui, event-handler, application-sets |
 | `ai` | AI Tools | Infrastructure for exposing application logic as cacheable AI tools and serving them via an MCP server over stdio. | `src/classes/Application/AI/` | `.context/modules/ai/` | event-handler, countries |
-| `api` | API | Central API subsystem providing request dispatching, method registration, versioning, response envelope construction, documentation, and remote API consumption. The APIManager singleton processes requests by resolving method names via APIMethodIndex, instantiating method classes extending BaseAPIMethod, and delegating the full lifecycle (parameter validation, execution, response). Methods declare group affiliation (APIGroupInterface), version support (VersionedAPIInterface/VersionedAPITrait with per-version response classes), and response format via mix-in traits (JSONResponseInterface, JSONRequestInterface, DryRunAPIInterface). AppAPIConnector provides an HTTP client for consuming other framework applications' APIs remotely. | `src/classes/Application/API/` | `.context/modules/api/` | api-parameters, api-cache, api-openapi, api-clients, connectors, event-handler, countries-api |
+| `api` | API | Central API subsystem providing request dispatching, method registration, versioning, response envelope construction, documentation, and remote API consumption. The APIManager singleton processes requests by resolving method names via APIMethodIndex, instantiating method classes extending BaseAPIMethod, and delegating the full lifecycle (parameter validation, execution, response). Methods declare group affiliation (APIGroupInterface), version support (VersionedAPIInterface/VersionedAPITrait with per-version response classes), and response format via mix-in traits (JSONResponseInterface, JSONRequestInterface, DryRunAPIInterface). AppAPIConnector provides an HTTP client for consuming other framework applications' APIs remotely. | `src/classes/Application/API/` | `.context/modules/api/` | api-parameters, api-cache, api-openapi, api-clients, connectors, event-handler, countries-api, media |
 | `api-cache` | API Cache | File-based response caching for API methods. Provides a two-tier interface/trait composition pattern: (1) CacheableAPIMethodInterface + CacheableAPIMethodTrait for stateless, non-user-scoped methods; (2) UserScopedCacheInterface + UserScopedCacheTrait for user-specific methods that require per-user cache isolation — the trait automatically injects _userScope into the cache key using the array union operator so a user identifier can never be silently omitted or overwritten. Covers the full caching pipeline: strategy abstraction (APICacheStrategyInterface, FixedDurationStrategy, ManualOnlyStrategy with STRATEGY_ID PascalCase constants), file system management (APICacheManager: storage layout, method-level invalidation with path-traversal guard via APICacheException, cache size reporting), deterministic cache key generation via MD5 hash of method name + version + json_encode of sorted key parameters, read/write/invalidate operations (CacheableAPIMethodTrait: readFromCache returns null on miss, expired entry, or corrupt file — corrupt files are automatically deleted; writeToCache auto-creates parent dirs via JSONFile::putData; invalidateCache delegates to APICacheManager::invalidateMethod), error handling (APICacheException with ERROR_EMPTY_USER_CACHE_IDENTIFIER, ERROR_INVALID_METHOD_NAME, ERROR_CACHE_FILE_CORRUPT constants), and CacheControl admin UI integration (APIResponseCacheLocation). | `src/classes/Application/API/Cache/` | `.context/modules/api-cache/` | api-openapi, api, api-parameters |
 | `api-clients` | API Clients | Manages API client registrations and their API keys using the Collection/Record pattern. An API client represents an external application authorized to consume the API, with multiple API keys each having their own activation status and method permissions. Provides bearer token authentication for API methods via APIKeyMethodInterface/APIKeyMethodTrait, the complete admin UI for client and key management (APIClientsArea with list/create/view modes and key sub-modes), and type-safe URL builders for all admin screens. | `src/classes/Application/API/Clients/` | `.context/modules/api/clients/` | api, api-openapi, db-helper, ui |
 | `api-openapi` | API OpenAPI | End-to-end support for generating OpenAPI 3.1 specifications from the framework API system and serving them over HTTP. Covers parameter type mapping (TypeMapper), reusable component schemas and security schemes for the standard API response envelopes (OpenAPISchema), Apache .htaccess generation for RESTful URL rewriting (HtaccessGenerator), conversion of framework API parameters to OpenAPI parameter objects and request body schema properties (ParameterConverter), conversion of API method response metadata to OpenAPI response objects for 200/400/500 status codes (ResponseConverter), full spec assembly with error resilience and authentication/validation documentation (OpenAPIGenerator, MethodConverter), HTTP serving of the pre-generated spec as raw JSON (GetOpenAPISpec), and application-level convenience entry points (APIManager::generateOpenAPISpec, APIManager::generateHtaccess). The composer build pipeline calls both generation steps automatically via ComposerScripts. | `src/classes/Application/API/OpenAPI/` | `.context/modules/openapi/` | api, api-cache, api-clients, api-parameters |
-| `api-parameters` | API Parameters | Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, Base64FileParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), removed-parameter declarations (RemovedParameter, RemovedParamCollection) for rejecting requests that still send a parameter name the API method has stopped accepting, raw-value sources (ParamValueSourceInterface, RequestValueSource, JSONBodyValueSource) that abstract where a parameter's raw value comes from, and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle. | `src/classes/Application/API/Parameters/` | `.context/modules/api/parameters/` | api, api-openapi, api-cache, countries-api |
+| `api-parameters` | API Parameters | Complete parameter type system for API methods. Provides typed parameter classes (StringParameter, ClearableStringParameter, IntegerParameter, BooleanParameter, JSONParameter, IDListParameter, StringListParameter, Base64FileParameter), reusable domain-specific common types (AliasParameter, DateParameter, EmailParameter, etc.), a fluent registration API (APIParamManager, ParamTypeSelector), cross-parameter validation rules (OrRule, RequiredIfOtherIsSetRule, RequiredIfOtherValueEquals), per-parameter validations (RequiredValidation, EnumValidation, RegexValidation, CallbackValidation), selectable value lookups (SelectableValueParamInterface), header parameter support (APIHeaderParameterInterface), removed-parameter declarations (RemovedParameter, RemovedParamCollection) for rejecting requests that still send a parameter name the API method has stopped accepting, raw-value sources (ParamValueSourceInterface, RequestValueSource, JSONBodyValueSource) that abstract where a parameter's raw value comes from, and the internal handler pipeline (BaseParamHandler, BaseRuleHandler) that bridges parameters and rules into the API method processing lifecycle. | `src/classes/Application/API/Parameters/` | `.context/modules/api/parameters/` | api, api-openapi, api-cache, countries-api, media |
 | `application-sets` | Application Sets | Configuration-level system to control which administration areas are enabled per application instance, supporting multiple feature configurations. | `src/classes/Application/AppSets/` | `.context/modules/application-sets/` | db-helper, admin |
 | `composer` | Application Composer | Build-time utilities that generate Markdown documentation artefacts (Modules Overview and Keyword Glossary) from module-context.yaml files discovered throughout the codebase, generate the OpenAPI 3.1 specification JSON, generate the API .htaccess for RESTful URL rewriting, and rebuild application custom icon methods from JSON definitions. Includes a shared BuildMessages registry for build-time notices. All steps are orchestrated by ComposerScripts::build(). | `src/classes/Application/Composer/` | `.context/modules/composer/` | event-handler |
 | `connectors` | Connectors | Scaffold for building HTTP connector classes to access external APIs, supporting GET, POST, PUT, and DELETE methods. | `src/classes/Connectors/` | `.context/modules/connectors/` | api |
 | `countries` | Countries | Country management following the DBHelper Collection/Record pattern. Application_Countries (singleton collection) manages Application_Countries_Country records, supporting lookup by ID or ISO code, ISO aliases (e.g. uk→gb), invariant country (zz) handling, locale code parsing, and filter criteria. Includes admin UI for country CRUD, AI tool integrations, domain events, user rights, and UI components (navigator, selector, button bar, flag icons). | `src/classes/Application/Countries/` | `.context/modules/countries/` | countries-api, db-helper, event-handler, ui, ai |
 | `countries-api` | Countries API | Reusable trait-based infrastructure for country parameter handling in API methods. Provides two complementary patterns: AppCountryAPITrait (singular — resolves one Application_Countries_Country from countryID or countryISO) and AppCountriesAPITrait (plural — resolves Application_Countries_Country[] from countryIDs or countryISOs). Both enforce mutual exclusivity via OrRule. Parameter classes live in Params/; OrRule components live in ParamSets/. | `src/classes/Application/Countries/API/` | `.context/modules/countries/api/` | countries, api, api-parameters |
-| `db-helper` | DBHelper | Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations. | `src/classes/DBHelper/` | `.context/modules/db-helper/` | event-handler, ui, ui-datagrid, application-sets, api-clients, countries |
+| `db-helper` | DBHelper | Provides database abstraction for manual SQL operations and an ORM-like record collection system with filtering, events, and CRUD operations. | `src/classes/DBHelper/` | `.context/modules/db-helper/` | event-handler, ui, ui-datagrid, application-sets, api-clients, countries, media |
 | `event-handler` | Event Handling | Comprehensive event handling system supporting global events, instance-scoped Eventable objects, and offline just-in-time event listeners. | `src/classes/Application/EventHandler/` | `.context/modules/event-handler/` | ui, ui-form, db-helper, composer, admin, ai, api, countries |
 | `markdown-renderer` | Markdown Renderer | Converts Markdown text to styled HTML using CommonMark with GFM extensions, extended with custom tags for media library images and API documentation links. | `src/classes/Application/MarkdownRenderer/` | `.context/modules/markdown-renderer/` | ui |
 | `media` | Media | Media document management for the Application Framework: storing, serving and validating uploaded files (images, PDFs and other registered document types), with database metadata (name, type, extension, size, description, keywords) and physical file storage kept in sync. Covers the legacy Application_Media/Application_Media_Document domain classes, the namespaced Collection/Record layer, the Writer/ write path (MediaFileContent, MediaFileValidator, MediaDocumentWriter, MediaWriterException), and the five-method Media Document API (Add/Get/GetList/Update/Delete), built from composable interface+trait pieces following the API Lego Rule. | `src/classes/Application/Media/` | `.context/modules/media/` | api, api-parameters, db-helper |
@@ -1920,17 +2048,17 @@ Total: 27 modules across 1 package.
 
 - **admin** → ui, event-handler, application-sets
 - **ai** → event-handler, countries
-- **api** → api-parameters, api-cache, api-openapi, api-clients, connectors, event-handler, countries-api
+- **api** → api-parameters, api-cache, api-openapi, api-clients, connectors, event-handler, countries-api, media
 - **api-cache** → api-openapi, api, api-parameters
 - **api-clients** → api, api-openapi, db-helper, ui
 - **api-openapi** → api, api-cache, api-clients, api-parameters
-- **api-parameters** → api, api-openapi, api-cache, countries-api
+- **api-parameters** → api, api-openapi, api-cache, countries-api, media
 - **application-sets** → db-helper, admin
 - **composer** → event-handler
 - **connectors** → api
 - **countries** → countries-api, db-helper, event-handler, ui, ai
 - **countries-api** → countries, api, api-parameters
-- **db-helper** → event-handler, ui, ui-datagrid, application-sets, api-clients, countries
+- **db-helper** → event-handler, ui, ui-datagrid, application-sets, api-clients, countries, media
 - **event-handler** → ui, ui-form, db-helper, composer, admin, ai, api, countries
 - **markdown-renderer** → ui
 - **media** → api, api-parameters, db-helper
@@ -2184,9 +2312,27 @@ When a test does this deliberately (see `KeyAuthorizationTest::test_updateLastUs
 
 Step 4 is not optional — `tearDown()`'s rollback only reverts an *open* transaction; a fixture committed in step 2 will otherwise leak into every subsequent test run against the same database.
 
-### Verifying the Generated Method Index After Editing It
+### Verifying a Generated Index After Editing It
 
-`tests/application/storage/api/method-index.json` is git-tracked, but `composer dump-autoload`'s `clearCaches` step deletes it outright as a cache artifact — any manual edit to this file (e.g. adding a new test fixture's entry) is silently wiped by a subsequent `dump-autoload`. After editing this file (or after running `composer dump-autoload` for any other reason), run a test that calls `APIMethodIndex::build()` — `MethodIndexEntryTest` is the simplest choice — and re-inspect the file to confirm your fixture's entry survived the regeneration before relying on it.
+Three committed, git-tracked index files are regenerated in place rather than deleted on
+cache clear, because their cache locations implement `RegeneratingCacheLocationInterface`
+(see "Cache Locations for Generated Artefacts" in `constraints.md`):
+
+- `tests/application/storage/api/method-index.json`, rebuilt via `APIMethodIndex::build()`
+  (`APICacheLocation`).
+- `tests/application/storage/admin/sitemap.php`, rebuilt via `AdminScreenIndexer::index()`
+  (`AdminScreenIndexCacheLocation`).
+- `tests/application/storage/events/offline-events-index.php`, rebuilt via
+  `EventIndexer::reindex()` (`EventIndexCacheLocation`).
+
+`composer dump-autoload`'s `clearCaches` step regenerates all three in place — a manual
+edit to any of them (e.g. adding a new test fixture's entry by hand) is still overwritten
+by the regenerated content on the next `dump-autoload`, just no longer left absent. After
+editing one of these files (or after running `composer dump-autoload` for any other
+reason), run a test that exercises the matching build method — `MethodIndexEntryTest` for
+the API index, `IndexerTests` for the admin screen index, `OfflineEventTest` for the
+offline-events index — and re-inspect the file to confirm your fixture's entry survived
+the regeneration before relying on it.
 
 ---
 

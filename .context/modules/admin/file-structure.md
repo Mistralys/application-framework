@@ -32,8 +32,11 @@ _SOURCE: Admin module file tree_
                     │   ├── Methods/
                     │   │   └── DescribeAdminAreasAPI.php
                     ├── AdminScreenIndex.php
+                    ├── AdminScreenIndexCacheLocation.php
                     ├── AdminScreenIndexer.php
                     ├── AdminScreenInfoCollector.php
+                    ├── Events/
+                    │   ├── RegisterAdminScreenIndexCacheListener.php
                     ├── ScreenDataInterface.php
                     ├── Screens/
                     │   ├── SitemapMode.php

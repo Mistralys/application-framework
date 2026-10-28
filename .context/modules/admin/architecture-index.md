@@ -21,8 +21,11 @@ _SOURCE: Index and sitemap classes_
                         ├── Methods/
                         │   └── DescribeAdminAreasAPI.php
                     └── AdminScreenIndex.php
+                    └── AdminScreenIndexCacheLocation.php
                     └── AdminScreenIndexer.php
                     └── AdminScreenInfoCollector.php
+                    └── Events/
+                        ├── RegisterAdminScreenIndexCacheListener.php
                     └── ScreenDataInterface.php
                     └── Screens/
                         ├── SitemapMode.php
@@ -167,6 +170,19 @@ class AdminScreenIndex
 	}
 
 
+	/**
+	 * Refreshes this singleton instance in place with the index
+	 * file's current contents, so existing references keep pointing
+	 * at an up-to-date instance instead of going stale.
+	 *
+	 * @return $this
+	 */
+	public function reload(): self
+	{
+		/* ... */
+	}
+
+
 	public static function getIndexFile(): PHPFile
 	{
 		/* ... */
@@ -267,6 +283,80 @@ class AdminScreenIndex
 	 * @return string[]
 	 */
 	public function getAdminAreaURLNames(): array
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/Admin/Index/AdminScreenIndexCacheLocation.php`
+
+```php
+namespace Application\Admin\Index;
+
+use AppUtils\FileHelper\PHPFile as PHPFile;
+use Application\AppFactory as AppFactory;
+use Application\CacheControl\BaseCacheLocation as BaseCacheLocation;
+use Application\CacheControl\RegeneratingCacheLocationInterface as RegeneratingCacheLocationInterface;
+
+/**
+ * Cache location description class for the admin screen index,
+ * so it can be handled via the cache control system.
+ *
+ * The index is a runtime-required, committed artefact: clearing
+ * it would leave the application without a sitemap until the
+ * next explicit build, so it implements {@see RegeneratingCacheLocationInterface}
+ * to be rebuilt in place by the cache control system instead of
+ * being deleted.
+ *
+ * @package Application
+ * @subpackage Admin
+ */
+class AdminScreenIndexCacheLocation extends BaseCacheLocation implements RegeneratingCacheLocationInterface
+{
+	public const CACHE_ID = 'AdminScreenIndex';
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	public function getByteSize(): int
+	{
+		/* ... */
+	}
+
+
+	public function getLabel(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Deletes the index file, without rebuilding it.
+	 *
+	 * > NOTE: This is only called directly by consumers that bypass
+	 * > the cache manager. {@see \Application\CacheControl\CacheManager}
+	 * > never calls this method on this class, using {@see self::regenerate()}
+	 * > instead, since this is a {@see RegeneratingCacheLocationInterface}.
+	 */
+	public function clear(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Rebuilds the index file in place, using a fresh indexer instance,
+	 * and refreshes the {@see AdminScreenIndex} singleton so it serves
+	 * the newly rebuilt data.
+	 *
+	 * @throws \Throwable On build failures.
+	 */
+	public function regenerate(): void
 	{
 		/* ... */
 	}
@@ -455,6 +545,28 @@ class AdminScreenInfoCollector implements StringPrimaryRecordInterface
 	{
 		/* ... */
 	}
+}
+
+
+```
+###  Path: `/src/classes/Application/Admin/Index/Events/RegisterAdminScreenIndexCacheListener.php`
+
+```php
+namespace Application\Admin\Index\Events;
+
+use Application\Admin\Index\AdminScreenIndexCacheLocation as AdminScreenIndexCacheLocation;
+use Application\CacheControl\Events\BaseRegisterCacheLocationsListener as BaseRegisterCacheLocationsListener;
+
+/**
+ * Registers the admin screen index cache location.
+ *
+ * @package Application
+ * @subpackage Admin
+ *
+ * @see AdminScreenIndexCacheLocation
+ */
+class RegisterAdminScreenIndexCacheListener extends BaseRegisterCacheLocationsListener
+{
 }
 
 

@@ -780,20 +780,26 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 ###  Path: `/src/classes/Application/API/Collection/APICacheLocation.php`
 
 ```php
-namespace Application\AppFactory;
+namespace Application\API\Collection;
 
 use AppUtils\FileHelper\JSONFile as JSONFile;
-use Application\API\Collection\APIMethodIndex as APIMethodIndex;
 use Application\CacheControl\BaseCacheLocation as BaseCacheLocation;
+use Application\CacheControl\RegeneratingCacheLocationInterface as RegeneratingCacheLocationInterface;
 
 /**
  * Cache location description class for the API method index,
  * so it can be handled via the cache control system.
  *
+ * The index is a runtime-required, committed artefact: clearing
+ * it would leave the application without a method index until the
+ * next explicit build, so it implements {@see RegeneratingCacheLocationInterface}
+ * to be rebuilt in place by the cache control system instead of
+ * being deleted.
+ *
  * @package API
  * @subpackage Method Collection
  */
-class APICacheLocation extends BaseCacheLocation
+class APICacheLocation extends BaseCacheLocation implements RegeneratingCacheLocationInterface
 {
 	public const CACHE_ID = 'APIMethodIndex';
 
@@ -815,7 +821,27 @@ class APICacheLocation extends BaseCacheLocation
 	}
 
 
+	/**
+	 * Deletes the index file, without rebuilding it.
+	 *
+	 * > NOTE: This is only called directly by consumers that bypass
+	 * > the cache manager. {@see \Application\CacheControl\CacheManager}
+	 * > never calls this method on this class, using {@see self::regenerate()}
+	 * > instead, since this is a {@see RegeneratingCacheLocationInterface}.
+	 */
 	public function clear(): void
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * Rebuilds the index file in place, and resets the in-memory
+	 * index cache so the next read picks up the freshly built data.
+	 *
+	 * @throws \Application\API\APIException On build failures (e.g. unknown declared rights).
+	 */
+	public function regenerate(): void
 	{
 		/* ... */
 	}
@@ -885,7 +911,6 @@ use Application\API\APIException as APIException;
 use Application\API\APIManager as APIManager;
 use Application\API\APIMethodInterface as APIMethodInterface;
 use Application\API\Clients\API\APIKeyMethodInterface as APIKeyMethodInterface;
-use Application\AppFactory\APICacheLocation as APICacheLocation;
 use Application\Application as Application;
 use Application_Interfaces_Loggable as Application_Interfaces_Loggable;
 use Application_Traits_Loggable as Application_Traits_Loggable;
@@ -2144,6 +2169,7 @@ trait JSONResponseWithExampleTrait
 namespace Application\API\Traits;
 
 use AppUtils\ArrayDataCollection as ArrayDataCollection;
+use Application\API\APIException as APIException;
 use Application\API\APIMethodInterface as APIMethodInterface;
 use Application\API\Utilities\KeyDescription as KeyDescription;
 use Application_FilterCriteria as Application_FilterCriteria;
@@ -2165,6 +2191,17 @@ use Application_FilterCriteria as Application_FilterCriteria;
  * > it is treated as an `IntegerParameter` warning and silently falls back
  * > to the configured default via null-coalescing, inherited from
  * > `IntegerParameter`'s own non-numeric-value handling.
+ *
+ * **Example responses.** A method whose example response is produced while
+ * {@see \Application\API\Traits\JSONResponseWithExampleInterface::isExampleResponse()}
+ * returns `true` resolves its page through the optional `$exampleLimit`
+ * registered via {@see self::registerPaginationParams()} instead of the
+ * submitted request values: {@see self::getPaginationLimit()} returns
+ * `$exampleLimit ?? $defaultLimit`, and {@see self::getPaginationOffset()}
+ * always returns `0`. This is by design — an example response is not a
+ * response to any actual request, so `limit`/`offset` request values are
+ * ignored on purpose, keeping `applyPagination()`/`addPaginationResponseKeys()`
+ * automatically consistent with the example page that was built.
  *
  * Use the trait {@see PaginatedAPITrait} to implement this interface.
  *
@@ -2190,13 +2227,22 @@ interface PaginatedAPIInterface extends APIMethodInterface
 	public const VALIDATION_INVALID_OFFSET = 183702;
 
 	/**
+	 * The `$exampleLimit` passed to {@see self::registerPaginationParams()}
+	 * is outside the `1`-`$maxLimit` range. This is a developer error raised
+	 * at registration time, not a request validation failure.
+	 */
+	public const ERROR_INVALID_EXAMPLE_LIMIT = 183703;
+
+	/**
 	 * Registers the `limit` and `offset` parameters.
 	 *
 	 * @param int $defaultLimit Used for {@see self::getPaginationLimit()} when `limit` is not submitted.
 	 * @param int $maxLimit The maximum value accepted for `limit`; a higher value is rejected with {@see self::VALIDATION_INVALID_LIMIT}.
+	 * @param int|null $exampleLimit Used for {@see self::getPaginationLimit()} instead of `$defaultLimit` while building an example response (see the "Example responses" note above). Must be between `1` and `$maxLimit`, or `APIException` with {@see self::ERROR_INVALID_EXAMPLE_LIMIT} is thrown.
 	 * @return $this
+	 * @throws APIException {@see self::ERROR_INVALID_EXAMPLE_LIMIT}
 	 */
-	public function registerPaginationParams(int $defaultLimit, int $maxLimit): self;
+	public function registerPaginationParams(int $defaultLimit, int $maxLimit, ?int $exampleLimit = null): self;
 
 
 	/**
@@ -2256,6 +2302,7 @@ namespace Application\API\Traits;
 
 use AppUtils\ArrayDataCollection as ArrayDataCollection;
 use AppUtils\OperationResult as OperationResult;
+use Application\API\APIException as APIException;
 use Application\API\Parameters\APIParameterInterface as APIParameterInterface;
 use Application\API\Parameters\Type\IntegerParameter as IntegerParameter;
 use Application\API\Utilities\KeyDescription as KeyDescription;
@@ -2270,7 +2317,7 @@ use Application_FilterCriteria as Application_FilterCriteria;
  */
 trait PaginatedAPITrait
 {
-	public function registerPaginationParams(int $defaultLimit, int $maxLimit): self
+	public function registerPaginationParams(int $defaultLimit, int $maxLimit, ?int $exampleLimit = null): self
 	{
 		/* ... */
 	}
