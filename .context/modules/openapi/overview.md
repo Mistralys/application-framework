@@ -553,6 +553,7 @@ receive an `x-validation-rules` extension field. Each entry in the array describ
 |---|---|
 | `OrRule` | `At least one of the following parameters must be provided: {param1}, {param2}, ...` |
 | `RequiredIfOtherIsSetRule` | `If "{otherParam}" is set, "{targetParam}" is required.` |
+| `OnlyIfOtherValueInRule` | `The parameter "{targetParam}" is only accepted when "{otherParam}" is one of: {value1}, {value2}, ...` |
 | Other rules | `getTypeDescription()` when non-empty, otherwise `getLabel()` |
 
 ### Removed parameters (`x-removed-parameters`)
@@ -1231,3 +1232,8 @@ API method collection alongside other built-in methods.
 
 
 ```
+---
+**File Statistics**
+- **Size**: 51.61 KB
+- **Lines**: 1240
+File: `modules/openapi/overview.md`

@@ -60,7 +60,10 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
 - **Rules:** Cross-parameter constraints implementing `RuleInterface`:
   `OrRule` (at least one of N params must be present), `RequiredIfOtherIsSetRule`
   (param required when another is set), `RequiredIfOtherValueEquals` (param
-  required when another has a specific value). Rules are registered via
+  required when another has a specific value), `OnlyIfOtherValueInRule`
+  (param only accepted when another's value — or a fallback resolver's value,
+  when the other is absent — is in a given set; rejected with
+  `VALIDATION_PARAM_NOT_APPLICABLE` otherwise). Rules are registered via
   `APIParamManager::addRule()` through a `RuleTypeSelector`.
 - **Value Lookups:** `SelectableValueParamInterface`/`SelectableValueParamTrait`
   allow parameters to declare a fixed set of selectable values
@@ -144,3 +147,8 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
   parameters and rules.
 
 ```
+---
+**File Statistics**
+- **Size**: 8.36 KB
+- **Lines**: 155
+File: `modules/api/parameters/overview.md`

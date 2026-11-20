@@ -17,6 +17,7 @@ _SOURCE: RuleInterface, BaseRule, OrRule, RequiredIfOtherIsSetRule, RequiredIfOt
                         └── RuleInterface.php
                         └── RuleTypeSelector.php
                         └── Type/
+                            └── OnlyIfOtherValueInRule.php
                             └── OrRule.php
                             └── RequiredIfOtherIsSetRule.php
                             └── RequiredIfOtherValueEquals.php
@@ -329,6 +330,7 @@ use UI as UI;
 interface RuleInterface extends ValidationLoggableInterface
 {
 	public const VALIDATION_NO_PARAM_SET_MATCHED = 183601;
+	public const VALIDATION_PARAM_NOT_APPLICABLE = 183602;
 
 	public function getID(): string;
 
@@ -405,6 +407,7 @@ namespace Application\API\Parameters\Rules;
 
 use Application\API\Parameters\APIParamManager as APIParamManager;
 use Application\API\Parameters\APIParameterInterface as APIParameterInterface;
+use Application\API\Parameters\Rules\Type\OnlyIfOtherValueInRule as OnlyIfOtherValueInRule;
 use Application\API\Parameters\Rules\Type\OrRule as OrRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherIsSetRule as RequiredIfOtherIsSetRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherValueEquals as RequiredIfOtherValueEquals;
@@ -440,6 +443,130 @@ class RuleTypeSelector
 		APIParameterInterface $other,
 		mixed $expectedValue,
 	): RequiredIfOtherValueEquals
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * A target parameter is only accepted when another parameter's value
+	 * is one of a given set of allowed values; otherwise it is rejected
+	 * with {@see RuleInterface::VALIDATION_PARAM_NOT_APPLICABLE}.
+	 *
+	 * @param string $label
+	 * @param APIParameterInterface $target The parameter that is only accepted conditionally.
+	 * @param APIParameterInterface $other The parameter whose value decides whether the target is accepted.
+	 * @param array<int,int|float|string|bool> $allowedValues The values of `$other` for which `$target` is accepted.
+	 * @return OnlyIfOtherValueInRule
+	 */
+	public function onlyIfOtherValueIn(
+		string $label,
+		APIParameterInterface $target,
+		APIParameterInterface $other,
+		array $allowedValues,
+	): OnlyIfOtherValueInRule
+	{
+		/* ... */
+	}
+}
+
+
+```
+###  Path: `/src/classes/Application/API/Parameters/Rules/Type/OnlyIfOtherValueInRule.php`
+
+```php
+namespace Application\API\Parameters\Rules\Type;
+
+use Application\API\Parameters\APIParameterInterface as APIParameterInterface;
+use Application\API\Parameters\Rules\BaseRule as BaseRule;
+use Application\API\Parameters\Rules\RuleInterface as RuleInterface;
+use UI as UI;
+
+/**
+ * Validation rule: A target parameter is only accepted when another
+ * parameter's value is one of a given set of allowed values.
+ *
+ * Unlike {@see RequiredIfOtherValueEquals}, which only ever makes the
+ * target *required*, this rule *rejects* the target outright with
+ * {@see RuleInterface::VALIDATION_PARAM_NOT_APPLICABLE} when the
+ * condition is not met.
+ *
+ * ## Fallback value resolution
+ *
+ * In PATCH-style update methods, the "other" parameter is frequently
+ * omitted from the request because the client is not changing it -
+ * the condition value then has to be read from the stored record
+ * instead. {@see self::setFallbackValueResolver()} covers this case:
+ * it is only ever consulted when the other parameter has no value.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+class OnlyIfOtherValueInRule extends BaseRule
+{
+	public const RULE_ID = 'ONLY_IF_OTHER_VALUE_IN';
+
+	/**
+	 * Registers a callback used to resolve the condition value when the
+	 * "other" parameter has no value of its own (e.g. not sent in an
+	 * update request). Typically used to read the current value from
+	 * the stored record being updated.
+	 *
+	 * @param callable():(int|float|string|bool|null) $resolver
+	 * @return $this
+	 */
+	public function setFallbackValueResolver(callable $resolver): self
+	{
+		/* ... */
+	}
+
+
+	public function getID(): string
+	{
+		/* ... */
+	}
+
+
+	/**
+	 * @return array<int,int|float|string|bool>
+	 */
+	public function getAllowedValues(): array
+	{
+		/* ... */
+	}
+
+
+	public function getParams(): array
+	{
+		/* ... */
+	}
+
+
+	public function preValidate(): void
+	{
+		/* ... */
+	}
+
+
+	protected function _validate(): void
+	{
+		/* ... */
+	}
+
+
+	public function getTypeLabel(): string
+	{
+		/* ... */
+	}
+
+
+	public function getTypeDescription(): string
+	{
+		/* ... */
+	}
+
+
+	public function renderDocumentation(UI $ui): string
 	{
 		/* ... */
 	}
@@ -679,3 +806,8 @@ class RequiredIfOtherValueEquals extends BaseRule
 
 
 ```
+---
+**File Statistics**
+- **Size**: 16.54 KB
+- **Lines**: 814
+File: `modules/api/parameters/architecture-rules.md`

@@ -289,6 +289,7 @@ use Application\API\Clients\API\APIKeyMethodInterface as APIKeyMethodInterface;
 use Application\API\Groups\APIGroupInterface as APIGroupInterface;
 use Application\API\Parameters\Removed\RemovedParameter as RemovedParameter;
 use Application\API\Parameters\Rules\RuleInterface as RuleInterface;
+use Application\API\Parameters\Rules\Type\OnlyIfOtherValueInRule as OnlyIfOtherValueInRule;
 use Application\API\Parameters\Rules\Type\OrRule as OrRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherIsSetRule as RequiredIfOtherIsSetRule;
 use Application\API\Traits\JSONRequestInterface as JSONRequestInterface;
@@ -769,3 +770,8 @@ class TypeMapper
 
 
 ```
+---
+**File Statistics**
+- **Size**: 22.73 KB
+- **Lines**: 778
+File: `modules/openapi/architecture-core.md`
