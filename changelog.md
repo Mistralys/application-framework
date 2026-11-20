@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v7.8.0 - **WIP; UNRELEASED**
+
+- API: Added `OnlyIfOtherValueInRule`, rejecting a parameter with `183602` when another parameter's value is not one of a given allowed set.
+
 ## v7.7.0 - Regenerated Cache Artefacts & Example Pagination (Breaking-XS)
 
 **Generated cache artefacts — the API method index, admin screen sitemap, and offline-events index —

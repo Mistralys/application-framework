@@ -169,6 +169,12 @@
             "requiredRight": null,
             "groupID": "testDriver"
         },
+        "TestOnlyIfOtherValueIn": {
+            "methodName": "TestOnlyIfOtherValueIn",
+            "className": "TestDriver\\API\\TestOnlyIfOtherValueInMethod",
+            "requiredRight": null,
+            "groupID": "testDriver"
+        },
         "TestPaginated": {
             "methodName": "TestPaginated",
             "className": "TestDriver\\API\\TestPaginatedMethod",

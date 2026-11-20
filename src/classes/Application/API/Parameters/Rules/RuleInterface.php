@@ -25,6 +25,7 @@ use UI;
 interface RuleInterface extends ValidationLoggableInterface
 {
     public const int VALIDATION_NO_PARAM_SET_MATCHED = 183601;
+    public const int VALIDATION_PARAM_NOT_APPLICABLE = 183602;
 
     public function getID() : string;
     public function getLabel() : string;

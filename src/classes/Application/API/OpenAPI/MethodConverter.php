@@ -13,9 +13,11 @@ use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\Groups\APIGroupInterface;
 use Application\API\Parameters\Removed\RemovedParameter;
 use Application\API\Parameters\Rules\RuleInterface;
+use Application\API\Parameters\Rules\Type\OnlyIfOtherValueInRule;
 use Application\API\Parameters\Rules\Type\OrRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherIsSetRule;
 use Application\API\Traits\JSONRequestInterface;
+use function AppUtils\parseVariable;
 
 /**
  * Converts a single `APIMethodInterface` instance into a complete OpenAPI 3.1 path item object.
@@ -290,6 +292,7 @@ class MethodConverter
      * Produces type-specific, human-readable descriptions for the known rule types:
      * - {@see OrRule}: "At least one of the following parameters must be provided: …"
      * - {@see RequiredIfOtherIsSetRule}: "If '{other}' is set, '{target}' is required."
+     * - {@see OnlyIfOtherValueInRule}: "The parameter '{target}' is only accepted when '{other}' is one of: …"
      * - All other rules: falls back to `getLabel()` and `getTypeDescription()`.
      *
      * @param RuleInterface $rule
@@ -316,6 +319,16 @@ class MethodConverter
                 'If "%s" is set, "%s" is required.',
                 $params[1]->getName(),
                 $params[0]->getName()
+            );
+        }
+        elseif($rule instanceof OnlyIfOtherValueInRule)
+        {
+            $params = $rule->getParams();
+            $description = sprintf(
+                'The parameter "%s" is only accepted when "%s" is one of: %s.',
+                $params[0]->getName(),
+                $params[1]->getName(),
+                implode(', ', array_map(static fn($value) => parseVariable($value)->enableType()->toString(), $rule->getAllowedValues()))
             );
         }
         else

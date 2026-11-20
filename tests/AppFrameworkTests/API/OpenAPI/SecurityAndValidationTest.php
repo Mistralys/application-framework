@@ -15,6 +15,7 @@ use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\Removed\RemovedParamCollection;
 use Application\API\Parameters\Rules\RuleInterface;
+use Application\API\Parameters\Rules\Type\OnlyIfOtherValueInRule;
 use Application\API\Parameters\Rules\Type\OrRule;
 use Application\API\Parameters\Rules\Type\RequiredIfOtherIsSetRule;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -179,6 +180,30 @@ final class SecurityAndValidationTest extends TestCase
         $rule->method('getID')->willReturn(RequiredIfOtherIsSetRule::RULE_ID);
         $rule->method('getLabel')->willReturn('Required if other is set');
         $rule->method('getTypeDescription')->willReturn('');
+        $rule->method('getParams')->willReturn(array(
+            $this->createParamMock($targetName),
+            $this->createParamMock($otherName),
+        ));
+        return $rule;
+    }
+
+    /**
+     * Creates an `OnlyIfOtherValueInRule` mock for the given target/other param
+     * names and allowed values.
+     *
+     * @param string $targetName
+     * @param string $otherName
+     * @param array<int,int|float|string|bool> $allowedValues
+     * @return OnlyIfOtherValueInRule&MockObject
+     */
+    private function createOnlyIfOtherValueInRuleMock(string $targetName, string $otherName, array $allowedValues) : OnlyIfOtherValueInRule
+    {
+        /** @var OnlyIfOtherValueInRule&MockObject $rule */
+        $rule = $this->createMock(OnlyIfOtherValueInRule::class);
+        $rule->method('getID')->willReturn(OnlyIfOtherValueInRule::RULE_ID);
+        $rule->method('getLabel')->willReturn('Only if other value in');
+        $rule->method('getTypeDescription')->willReturn('');
+        $rule->method('getAllowedValues')->willReturn($allowedValues);
         $rule->method('getParams')->willReturn(array(
             $this->createParamMock($targetName),
             $this->createParamMock($otherName),
@@ -363,6 +388,28 @@ final class SecurityAndValidationTest extends TestCase
         $this->assertSame(RequiredIfOtherIsSetRule::RULE_ID, $entry['id']);
         $this->assertStringContainsString('targetParam', $entry['description']);
         $this->assertStringContainsString('triggerParam', $entry['description']);
+    }
+
+    /**
+     * A method with an `OnlyIfOtherValueInRule` must produce an `x-validation-rules` entry
+     * with `id` = `ONLY_IF_OTHER_VALUE_IN`, a description naming both the target and other
+     * parameter and the allowed values, and a `parameters` array containing both names.
+     */
+    public function test_methodConverter_onlyIfOtherValueInProducesReadableConstraint() : void
+    {
+        $rule      = $this->createOnlyIfOtherValueInRuleMock('aOnlyOption', 'mode', array('a'));
+        $method    = $this->createPlainMethodMock(array($rule));
+        $operation = $this->extractOperation($method);
+
+        $this->assertArrayHasKey('x-validation-rules', $operation);
+
+        $entry = $operation['x-validation-rules'][0];
+        $this->assertSame(OnlyIfOtherValueInRule::RULE_ID, $entry['id']);
+        $this->assertStringContainsString('aOnlyOption', $entry['description']);
+        $this->assertStringContainsString('mode', $entry['description']);
+        $this->assertStringContainsString('a', $entry['description']);
+        $this->assertContains('aOnlyOption', $entry['parameters']);
+        $this->assertContains('mode', $entry['parameters']);
     }
 
     /**

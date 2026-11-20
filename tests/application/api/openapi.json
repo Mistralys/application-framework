@@ -3466,6 +3466,114 @@
                 }
             }
         },
+        "/api/TestPaginatedExample": {
+            "post": {
+                "operationId": "TestPaginatedExample",
+                "summary": "Test API method stub for the pagination piece's example-mode page size (PaginatedAPIInterface/PaginatedAPITrait).",
+                "description": "Test API method stub for the pagination piece's example-mode page size (PaginatedAPIInterface/PaginatedAPITrait).",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "Maximum number of results to return. Must be between 1 and 25. Defaults to 10 if not specified."
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "description": "Zero-based offset into the result set. Defaults to 0 if not specified."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "limit": {
+                                                    "type": "integer",
+                                                    "description": "The maximum number of results returned."
+                                                },
+                                                "offset": {
+                                                    "type": "integer",
+                                                    "description": "The zero-based offset applied to the result set."
+                                                },
+                                                "totalCount": {
+                                                    "type": "integer",
+                                                    "description": "Total number of matching results, independent of paging."
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "limit": 3,
+                                    "offset": 0,
+                                    "totalCount": 42
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestPaginatedExample"
+                }
+            }
+        },
         "/api/TestRemovedParam": {
             "post": {
                 "operationId": "TestRemovedParam",
