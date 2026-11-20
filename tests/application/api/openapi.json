@@ -3358,6 +3358,116 @@
                 }
             }
         },
+        "/api/TestOnlyIfOtherValueIn": {
+            "post": {
+                "operationId": "TestOnlyIfOtherValueIn",
+                "summary": "Test API method stub for the OnlyIfOtherValueInRule validation rule.",
+                "description": "Test API method stub for the OnlyIfOtherValueInRule validation rule.",
+                "tags": [
+                    "Test application"
+                ],
+                "parameters": [
+                    {
+                        "name": "apiVersion",
+                        "in": "query",
+                        "required": false,
+                        "description": "API version to use. Defaults to the current version when omitted.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "1.0"
+                            ],
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "aOnlyOption",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Only accepted when mode is \"a\"."
+                    },
+                    {
+                        "name": "mode",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Either \"a\" or \"b\"."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/APIEnvelope"
+                                        }
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "mode": {
+                                                    "type": "string"
+                                                },
+                                                "aOnlyOption": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "mode": "a",
+                                    "aOnlyOption": "example-value"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error or invalid parameters.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/APIErrorEnvelope"
+                                }
+                            }
+                        }
+                    }
+                },
+                "externalDocs": {
+                    "url": "documentation.php?method=TestOnlyIfOtherValueIn"
+                },
+                "x-validation-rules": [
+                    {
+                        "id": "ONLY_IF_OTHER_VALUE_IN",
+                        "label": "aOnlyOption is only accepted when mode is \"a\"",
+                        "description": "The parameter \"aOnlyOption\" is only accepted when \"mode\" is one of: string \"a\".",
+                        "parameters": [
+                            "aOnlyOption",
+                            "mode"
+                        ]
+                    }
+                ]
+            }
+        },
         "/api/TestPaginated": {
             "post": {
                 "operationId": "TestPaginated",
