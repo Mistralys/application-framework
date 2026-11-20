@@ -89,8 +89,3 @@ _SOURCE: API Parameters File Structure_
                         └── RequestValueSource.php
 
 ```
----
-**File Statistics**
-- **Size**: 4.64 KB
-- **Lines**: 97
-File: `modules/api/parameters/file-structure.md`

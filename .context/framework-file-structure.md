@@ -185,6 +185,7 @@ _SOURCE: Tree of PHP Class Files_
             │   │   │   ├── RuleInterface.php
             │   │   │   ├── RuleTypeSelector.php
             │   │   │   ├── Type/
+            │   │   │   │   └── OnlyIfOtherValueInRule.php
             │   │   │   │   └── OrRule.php
             │   │   │   │   └── RequiredIfOtherIsSetRule.php
             │   │   │   │   └── RequiredIfOtherValueEquals.php

@@ -806,8 +806,3 @@ class RequiredIfOtherValueEquals extends BaseRule
 
 
 ```
----
-**File Statistics**
-- **Size**: 16.54 KB
-- **Lines**: 814
-File: `modules/api/parameters/architecture-rules.md`

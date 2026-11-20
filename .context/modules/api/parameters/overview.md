@@ -147,8 +147,3 @@ parameter extends `BaseAPIParameter` and implements `APIParameterInterface`.
   parameters and rules.
 
 ```
----
-**File Statistics**
-- **Size**: 8.36 KB
-- **Lines**: 155
-File: `modules/api/parameters/overview.md`
