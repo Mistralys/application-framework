@@ -1,8 +1,8 @@
 # Application Framework Changelog
 
-## v7.8.0 - **WIP; UNRELEASED**
+## v7.8.0 - Conditional API Parameter Rule
 
-- API: Added `OnlyIfOtherValueInRule`, rejecting a parameter with `183602` when another parameter's value is not one of a given allowed set.
+- API: Added a rule rejecting a parameter unless another has an allowed value (error 183602).
 
 ## v7.7.0 - Regenerated Cache Artefacts & Example Pagination (Breaking-XS)
 
