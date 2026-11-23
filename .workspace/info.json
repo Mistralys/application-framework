@@ -1,0 +1,9 @@
+{
+    "SchemaVersion": 1,
+    "Id": "application-framework",
+    "Name": "App Framework",
+    "Url": "https://github.com/Mistralys/application-framework",
+    "Description": "PHP framework and UI layer for building custom web and intranet administration applications. Provides the application skeleton and shared infrastructure: screens and forms, database records with versioning, templating, localization, events, CAS single sign-on, media library. Not a CMS: consuming applications implement their own business logic on top. Read its own AGENTS.md first; its docs are split into a project manifest and generated module docs.",
+    "Settings": {},
+    "Files": []
+}
